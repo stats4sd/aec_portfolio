@@ -9,7 +9,7 @@ class Principle extends Model
 {
     use \Backpack\CRUD\app\Models\Traits\CrudTrait;
     use HasFactory;
-    
+
     protected $guarded = ['id'];
 
     /**
@@ -24,6 +24,21 @@ class Principle extends Model
 
     public function projects()
     {
-        return $this->belongsToMany(Project::class);
+        return $this->belongsToMany(Project::class)
+            ->withPivot([
+                'rating',
+                'rating_comment',
+            ]);
+            //->using(PrincipleProject::class);
+    }
+
+    public function principleProjects()
+    {
+        return $this->hasMany(PrincipleProject::class);
+    }
+
+    public function scoreTags()
+    {
+        return $this->hasMany(ScoreTag::class);
     }
 }

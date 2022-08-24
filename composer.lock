@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "f1c4846a8bf11dbe59b7699600e9ead9",
+    "content-hash": "a487c914e5d6cd843a9e9e814438f6a3",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -232,6 +232,75 @@
                 "source": "https://github.com/Laravel-Backpack/PermissionManager/tree/6.0.15"
             },
             "time": "2022-04-18T13:32:50+00:00"
+        },
+        {
+            "name": "backpack/pro",
+            "version": "1.2.5",
+            "source": {
+                "type": "git",
+                "url": "git@github.com:Laravel-Backpack/PRO.git",
+                "reference": "f921b5ab5c76af1d8869b0d87a21d82ea57210bd"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://repo.backpackforlaravel.com/dist/backpack/pro/backpack-pro-f921b5ab5c76af1d8869b0d87a21d82ea57210bd-zip-b449a2.zip",
+                "reference": "f921b5ab5c76af1d8869b0d87a21d82ea57210bd",
+                "shasum": "c35853a7e575d55440d9a23dd5c12e7c51ba14b8"
+            },
+            "require": {
+                "backpack/crud": "^5.2"
+            },
+            "require-dev": {
+                "orchestra/testbench": "~5|~6",
+                "phpunit/phpunit": "~9.0"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Backpack\\Pro\\AddonServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Backpack\\Pro\\": "src/"
+                }
+            },
+            "autoload-dev": {
+                "psr-4": {
+                    "Backpack\\Pro\\Tests\\": "tests"
+                }
+            },
+            "scripts": {
+                "test": [
+                    "vendor/bin/phpunit --testdox"
+                ]
+            },
+            "license": [
+                "Proprietary"
+            ],
+            "authors": [
+                {
+                    "name": "Cristian Tabacitu",
+                    "email": "cristian.tabacitu@backpackforlaravel.com",
+                    "homepage": "https://backpackforlaravel.com"
+                }
+            ],
+            "description": "Operations, Fields, Columns, Filters and Widgets for not-so-simple admin panels.",
+            "homepage": "https://github.com/digitallyhappy/backpack-pro",
+            "keywords": [
+                "Backpack",
+                "Backpack Addon",
+                "Backpack for Laravel",
+                "Laravel",
+                "Pro"
+            ],
+            "support": {
+                "source": "https://github.com/Laravel-Backpack/PRO/tree/1.2.5",
+                "issues": "https://github.com/Laravel-Backpack/PRO/issues"
+            },
+            "time": "2022-08-19T12:39:25+00:00"
         },
         {
             "name": "brick/math",
@@ -4540,6 +4609,68 @@
                 }
             ],
             "time": "2022-06-29T23:11:42+00:00"
+        },
+        {
+            "name": "stats4sd/laravel-backpack-section-title",
+            "version": "dev-main",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/stats4sd/laravel-backpack-section-title.git",
+                "reference": "22d62d1af72be9f73f4ac25e9b50aa784f0a7942"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/stats4sd/laravel-backpack-section-title/zipball/22d62d1af72be9f73f4ac25e9b50aa784f0a7942",
+                "reference": "22d62d1af72be9f73f4ac25e9b50aa784f0a7942",
+                "shasum": ""
+            },
+            "require": {
+                "backpack/crud": "^4.1.0|^5.0.0",
+                "illuminate/support": "~7|~8|~9"
+            },
+            "require-dev": {
+                "orchestra/testbench": "~5|~6",
+                "phpunit/phpunit": "~9.0"
+            },
+            "default-branch": true,
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Stats4sd\\LaravelBackpackSectionTitle\\AddonServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Stats4sd\\LaravelBackpackSectionTitle\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Dave Mills",
+                    "email": "d.e.mills@stats4sd.org",
+                    "homepage": "https://stats4sd.org"
+                }
+            ],
+            "description": "A custom Backpack Field that lets you easily add custom headings and information boxes to split up the form.",
+            "homepage": "https://github.com/stats4sd/laravel-backpack-section-title",
+            "keywords": [
+                "Backpack Addon",
+                "Backpack for Laravel",
+                "LaravelBackpackSectionTitle",
+                "backpack",
+                "laravel"
+            ],
+            "support": {
+                "issues": "https://github.com/stats4sd/laravel-backpack-section-title/issues",
+                "source": "https://github.com/stats4sd/laravel-backpack-section-title/tree/main"
+            },
+            "time": "2022-08-01T10:30:08+00:00"
         },
         {
             "name": "stats4sd/laravel-file-util",
@@ -10183,6 +10314,7 @@
     "aliases": [],
     "minimum-stability": "dev",
     "stability-flags": {
+        "stats4sd/laravel-backpack-section-title": 20,
         "stats4sd/laravel-file-util": 20
     },
     "prefer-stable": true,

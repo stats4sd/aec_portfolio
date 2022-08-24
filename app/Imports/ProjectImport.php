@@ -9,21 +9,18 @@ use Maatwebsite\Excel\Concerns\ToModel;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use Maatwebsite\Excel\Concerns\WithUpserts;
 
-class ProjectImport implements ToModel, WithHeadingRow, WithUpserts
+class ProjectImport implements ToModel, WithHeadingRow
 {
 
     public function model(array $row)
     {
         return new Project([
-                'code' => $row['code'],
-                'name' => $row['name'],
-                'description' => $row['description'],
+            'code' => $row['code'],
+            'name' => $row['name'],
+            'description' => $row['description'],
             'budget' => $row['budget'],
-            ]);
+        ]);
     }
 
-    public function uniqueBy()
-    {
-        return 'code';
-    }
+
 }

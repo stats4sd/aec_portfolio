@@ -14,8 +14,12 @@ class CreatePrincipleProjectTable extends Migration
     public function up()
     {
         Schema::create('principle_project', function (Blueprint $table) {
+            $table->id();
             $table->foreignId('principle_id');
             $table->foreignId('project_id');
+            $table->integer('rating')->nullable();
+            $table->text('rating_comment')->nullable();
+            $table->timestamps();
         });
     }
 

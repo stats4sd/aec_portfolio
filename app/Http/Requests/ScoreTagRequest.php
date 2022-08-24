@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class ProjectRequest extends FormRequest
+class ScoreTagRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -25,10 +25,7 @@ class ProjectRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => 'required|string',
-            'code' => 'required|string|unique:projects,code',
-            'description' => 'nullable|string',
-            'budget' => 'required|integer',
+            // 'name' => 'required|min:5|max:255'
         ];
     }
 

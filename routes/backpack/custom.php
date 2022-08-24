@@ -17,4 +17,5 @@ Route::group([
     Route::crud('project', 'ProjectCrudController');
     Route::crud('red-line', 'RedLineCrudController');
     Route::crud('principle', 'PrincipleCrudController');
+    Route::crud('score-tag', 'ScoreTagCrudController');
 }); // this should be the absolute last line of this file

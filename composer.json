@@ -8,6 +8,7 @@
         "php": "^8.1",
         "backpack/crud": "^5.1.0",
         "backpack/permissionmanager": "^6.0",
+        "backpack/pro": "^1.2",
         "fideloper/proxy": "^4.4",
         "fruitcake/laravel-cors": "^2.0",
         "guzzlehttp/guzzle": "^7.0.1",
@@ -16,6 +17,7 @@
         "laravel/tinker": "^2.5",
         "maatwebsite/excel": "^3.1",
         "psr/simple-cache": "^2.0",
+        "stats4sd/laravel-backpack-section-title": "dev-main",
         "stats4sd/laravel-file-util": "dev-local-only"
     },
     "require-dev": {

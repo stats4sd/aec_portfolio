@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateProjectRedLineTable extends Migration
+return new class extends Migration
 {
     /**
      * Run the migrations.
@@ -13,10 +13,12 @@ class CreateProjectRedLineTable extends Migration
      */
     public function up()
     {
-        Schema::create('project_red_line', function (Blueprint $table) {
-            $table->foreignId('project_id');
-            $table->foreignId('red_line_id');
-            $table->integer('value')->nullable();
+        Schema::create('score_tags', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('principle_id');
+            $table->string('name');
+            $table->text('description');
+            $table->timestamps();
         });
     }
 
@@ -27,6 +29,6 @@ class CreateProjectRedLineTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('project_red_line');
+        Schema::dropIfExists('score_tags');
     }
-}
+};

@@ -12,17 +12,21 @@ class RedLine extends Model
 
     protected $guarded = ['id'];
 
-    /**
-     * The attributes that should be cast to native types.
-     *
-     * @var array
-     */
-    protected $casts = [
-        'id' => 'integer',
-    ];
+    protected static function booted()
+    {
+        parent::booted();
+
+        static::created(function($redLine) {
+            $redLine->projects()->sync(Project::all()->pluck('id')->toArray());
+        });
+
+    }
 
     public function projects()
     {
-        return $this->belongsToMany(Project::class);
+        return $this->belongsToMany(Project::class)
+            ->withPivot([
+                'value'
+            ]);
     }
 }

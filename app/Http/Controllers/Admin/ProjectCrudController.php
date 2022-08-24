@@ -2,10 +2,16 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Http\Controllers\Admin\Operations\AssessOperation;
 use App\Http\Requests\ProjectRequest;
 use App\Imports\ProjectImport;
+use App\Models\Principle;
+use App\Models\RedLine;
+use App\Models\ScoreTag;
 use Backpack\CRUD\app\Http\Controllers\CrudController;
 use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
+use Backpack\CRUD\app\Library\Widget;
+use Backpack\Pro\Http\Controllers\Operations\FetchOperation;
 use Stats4sd\FileUtil\Http\Controllers\Operations\ImportOperation;
 
 /**
@@ -22,6 +28,8 @@ class ProjectCrudController extends CrudController
     use \Backpack\CRUD\app\Http\Controllers\Operations\ShowOperation;
 
     use ImportOperation;
+    use AssessOperation;
+    use FetchOperation;
 
     /**
      * Configure the CrudPanel object. Apply settings to all operations.
@@ -53,11 +61,6 @@ class ProjectCrudController extends CrudController
         CRUD::column('description');
         CRUD::column('budget');
 
-        /**
-         * Columns can be defined using the fluent syntax or array syntax:
-         * - CRUD::column('price')->type('number');
-         * - CRUD::addColumn(['name' => 'price', 'type' => 'number']);
-         */
     }
 
     /**
@@ -92,4 +95,85 @@ class ProjectCrudController extends CrudController
     {
         $this->setupCreateOperation();
     }
+
+    public function setupAssessOperation()
+    {
+        Widget::add()->type('script')->content('assets/js/admin/forms/project_assess.js');
+
+        CRUD::field('redLines')
+            ->type('relationship')
+            ->subFields([
+                [
+                    'name' => 'value',
+                    'type' => 'select_from_array',
+                    'options' => [
+                        1 => 'Yes',
+                        0 => 'No',
+                        -99 => 'N/A',
+                    ],
+                    'wrapper' => [
+                        'class' => 'col-md-6',
+                    ],
+                ],
+            ])
+            ->pivotSelect([
+                'label' => 'Name',
+                'attributes' => ['disabled' => 'disabled'],
+                'wrapper' => [
+                    'class' => 'col-md-6',
+                ]])
+            ->min_rows(RedLine::all()->count())
+            ->max_rows(RedLine::all()->count())
+            ->tab('Red Lines');
+
+        // cannot use relationship with repeatable because we need to filter the scoretags...
+        $entry = CRUD::getCurrentEntry();
+
+        foreach ($entry->principles as $principle) {
+
+            CRUD::field($principle->id . '_title')
+                ->tab($principle->name)
+                ->type('section-title')
+                ->view_namespace('stats4sd.laravel-backpack-section-title::fields')
+                ->title($principle->name);
+
+            CRUD::field($principle->id . '_rating')
+                ->tab($principle->name)
+                ->label('Rating for ' . $principle->name)
+                ->type('number')
+                ->min(0)
+                ->max(2)
+            ->default($principle->pivot->rating);
+
+            CRUD::field($principle->id . '_rating_comment')
+                ->tab($principle->name)
+                ->label('Comment for ' . $principle->name)
+                ->type('textarea')
+            ->default($principle->pivot->rating_comment);
+
+            CRUD::field($principle->id . '_scoreTags')
+                ->tab($principle->name)
+                ->label('Presence of Examples/Indicators for ' . $principle->name)
+                ->type('checklist')
+                ->number_of_columns(1)
+                ->model(ScoreTag::class)
+                ->options(function ($query) use ($principle) {
+                    return $query->where('principle_id', $principle->id)
+                        ->get()
+                        ->pluck('name', 'id')
+                        ->toArray();
+                })
+            ->default($principle->principleProjects()->where('project_id', $entry->id)->first()?->scoreTags->pluck('id')->toArray() ?? []);
+            CRUD::field($principle->id.'divider')
+                ->type('custom_html')
+                ->content('</hr>');
+        }
+    }
+
+
+    public function fetchScoreTag()
+    {
+        $test = collect(request()->input('form'));
+    }
+
 }
