@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Admin\Operations;
 
 use App\Models\Principle;
 use App\Models\PrincipleProject;
+use App\Models\Project;
+use App\Models\RedLine;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -78,32 +80,15 @@ trait RedlineOperation
     public function postRedlineForm(Request $request)
     {
 
-        ddd($request);
-
-
-        $this->crud->hasAccessOrFail('update');
-
-        // execute the FormRequest authorization and validation, if one is required
-        $request = $this->crud->validateRequest();
-
-        // register any Model Events defined on fields
-        $this->crud->registerFieldEvents();
-
-        // update the row in the db
-        $item = $this->crud->update(
-            $request->get($this->crud->model->getKeyName()),
-            $this->crud->getStrippedSaveRequest($request)
-        );
-        $this->data['entry'] = $this->crud->entry = $item;
-
-        // show a success message
-        \Alert::success(trans('backpack::crud.update_success'))->flash();
-
-        // save the redirect choice for next time
-        $this->crud->setSaveAction();
-
-        return $this->crud->performSaveAction($item->getKey());
-
+        $updates = [];
+        // custom handling of redline-project relationship data
+        foreach(Redline::all() as $redline) {
+            if($request->has('redline_value_'.$redline->id)) {
+                $updates[$redline->id] = ['value' => $request->{'redline_value_'.$redline->id}];
+            }
+        }
+        $project = Project::findOrFail($request->id);
+        $project->redlines()->sync($updates);
 
         return redirect($this->crud->route);
     }

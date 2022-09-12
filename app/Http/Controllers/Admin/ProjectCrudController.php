@@ -150,7 +150,7 @@ class ProjectCrudController extends CrudController
     public function setupRedlineOperation()
     {
         CRUD::setHeading('');
-
+        $entry = CRUD::getCurrentEntry();
 
         CRUD::field('section-title')
             ->type('section-title')
@@ -164,39 +164,33 @@ class ProjectCrudController extends CrudController
                     If any one of these is not relevant for the assessed project, select "N/A"
                           ');
 
+        // We cannot use the relationship with subfields field here, because we do not want the user to be able to unassign any redlines from the project.
+        foreach ($entry->redLines as $redline) {
+            CRUD::field('redline_title_' . $redline->id)
+                ->wrapper([
+                    'class' => 'col-md-6'
+                ])
+                ->type('custom_html')
+                ->value("<h4>{$redline->name}</h4><p>{$redline->description}</p>");
 
-        CRUD::field('redLines')
-            ->type('relationship')
-            ->subFields([
-                // hidden field to replace the pivotselect
-                [
-                    'name' => 'redlines',
-                    'type' => 'hidden',
-                    'value' => ,
-                ],
-                [
-                    'name' => 'value',
-                    'type' => 'select_from_array',
-                    'options' => [
-                        1 => 'Yes',
-                        0 => 'No',
-                        -99 => 'N/A',
-                    ],
-                    'wrapper' => [
-                        'class' => 'col-md-6',
-                    ],
-                ],
-            ])
-            ->pivotSelect([
-                'label' => 'Name',
-                'attributes' => ['disabled' => 'disabled'],
-                'wrapper' => [
-                    'class' => 'col-md-6',
-                ]
-            ])
-            ->min_rows(RedLine::all()->count())
-            ->max_rows(RedLine::all()->count())
-            ->tab('Red Lines');
+            CRUD::field('redline_value_' . $redline->id)
+                ->label('Present?')
+                ->default($redline->pivot->value)
+                ->type('select_from_array')
+                ->wrapper([
+                    'class' => 'col-md-6'
+                ])
+                ->options([
+                    1 => 'Yes',
+                    0 => 'No',
+                    -99 => 'N/A',
+                ]);
+
+            CRUD::field('redline_divider_' . $redline->id)
+                ->type('custom_html')
+                ->value('<hr/>');
+        }
+
     }
 
 
