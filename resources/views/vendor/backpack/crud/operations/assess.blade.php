@@ -63,7 +63,7 @@
               @endif
               {{-- This makes sure that all field assets are loaded. --}}
             <div class="d-none" id="parentLoadedAssets">{{ json_encode(Assets::loaded()) }}</div>
-            <input type="submit">
+            @include('crud::inc.form_save_buttons')
 		  </form>
 	</div>
 </div>

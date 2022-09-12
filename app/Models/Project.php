@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Enums\AssessmentStatus;
+use App\Http\Controllers\Admin\Operations\RedlineOperation;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -11,6 +13,11 @@ class Project extends Model
     use HasFactory;
 
     protected $guarded = ['id'];
+    protected $appends = ['overall_score'];
+
+    protected $casts = [
+        'assessment_status' => AssessmentStatus::class,
+    ];
 
     protected static function booted()
     {
@@ -30,12 +37,25 @@ class Project extends Model
             ]);
     }
 
+    public function completedRedlines()
+    {
+        return $this->belongsToMany(RedLine::class)
+            ->wherePivot('value', '!=', null);
+    }
+
+    // relationship to get Failing redlines
+    public function failingRedlines()
+    {
+        return $this->belongsToMany(RedLine::class)->wherePivot('value', 1);
+    }
+
     public function principles()
     {
         return $this->belongsToMany(Principle::class)
             ->withPivot([
                 'rating',
                 'rating_comment',
+                'is_na',
             ]);
             //->using(PrincipleProject::class);
     }
@@ -43,6 +63,15 @@ class Project extends Model
     public function principleProjects()
     {
         return  $this->belongsTo(PrincipleProject::class);
+    }
+
+    public function getOverallScoreAttribute()
+    {
+        if($this->failingRedlines()->count() > 0) {
+            return 0;
+        }
+
+        return null;
     }
 
 

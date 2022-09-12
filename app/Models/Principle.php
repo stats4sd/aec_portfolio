@@ -28,6 +28,7 @@ class Principle extends Model
             ->withPivot([
                 'rating',
                 'rating_comment',
+                'is_na',
             ]);
             //->using(PrincipleProject::class);
     }

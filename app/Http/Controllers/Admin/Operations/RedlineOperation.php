@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers\Admin\Operations;
 
+use App\Enums\AssessmentStatus;
 use App\Models\Principle;
 use App\Models\PrincipleProject;
 use App\Models\Project;
 use App\Models\RedLine;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Validation\ValidationException;
 
 trait RedlineOperation
 {
@@ -80,15 +82,42 @@ trait RedlineOperation
     public function postRedlineForm(Request $request)
     {
 
+        // validate - if the redlines are complete, all entries must have a value:
+
+        // TODO: Make this work!
+        if($request->has('redlines_compelete') && $request->redlines_complete === 1) {
+            foreach(RedLine::all() as $redline) {
+                if($request->has('redline_value_' . $redline->id)) {
+
+                    if($request->{'redline_value'.$redline->id} === null) {
+                        $field = 'redline_value_' . $redline->id;
+                        throw ValidationException::withMessages([
+                            $field => 'You must select an option for every Redline before marking the assessment as complete',
+                        ]);
+                    }
+                }
+            }
+        }
+
         $updates = [];
         // custom handling of redline-project relationship data
-        foreach(Redline::all() as $redline) {
-            if($request->has('redline_value_'.$redline->id)) {
-                $updates[$redline->id] = ['value' => $request->{'redline_value_'.$redline->id}];
+        foreach (Redline::all() as $redline) {
+            if ($request->has('redline_value_' . $redline->id)) {
+                $updates[$redline->id] = ['value' => $request->{'redline_value_' . $redline->id}];
             }
         }
         $project = Project::findOrFail($request->id);
         $project->redlines()->sync($updates);
+
+        // if the main assessment is already in progress, only update the status if the redlines are 'no longer' complete:
+        if (collect(AssessmentStatus::InProgress, AssessmentStatus::Complete)->contains($project->assment_status)) {
+            $project->assessment_status = !$request->redlines_complete ? AssessmentStatus::RedlinesIncomplete : $project->assessment_status;
+        } else {
+            $project->assessment_status = $request->redlines_complete ? AssessmentStatus::RedlinesComplete : AssessmentStatus::RedlinesIncomplete;
+        }
+
+        $project->save();
+
 
         return redirect($this->crud->route);
     }

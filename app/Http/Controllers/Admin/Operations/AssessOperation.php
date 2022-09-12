@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers\Admin\Operations;
 
+use App\Enums\AssessmentStatus;
 use App\Models\Principle;
 use App\Models\PrincipleProject;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Validator;
 
 trait AssessOperation
 {
@@ -77,22 +79,40 @@ trait AssessOperation
 
     public function postAssessForm(Request $request)
     {
+        $project = $this->crud->getEntry($request->input('id'));
+
+        // validate fields
+        $rules = [];
+
+        foreach (Principle::all() as $principle) {
+            $rules[$principle->id . "_rating"] = ['nullable', 'numeric', 'max:2', 'min:0'];
+        }
+
+        // TODO: figure out why validator redirects and then _current_tab is reset to 1st tab, even though a different tab is shown...
+        Validator::make($request->input(), $rules, [
+            'max' => 'Ratings must be between 0 and 2',
+            'min' => 'Ratings must be between 0 and 2',
+            'numeric' => 'Ratings cannot be text - they must be a number',
+        ])->validate();
+
 
         foreach (Principle::all() as $principle) {
             $principleId = $principle->id;
 
-
-            $project = $this->crud->getEntry($request->input('id'));
             $project->principles()->updateExistingPivot($principleId, [
-                    'rating' => $request->input("${principleId}_rating"),
-                    'rating_comment' => $request->input("${principleId}_rating_comment"),
-                ]);
+                'rating' => $request->input("${principleId}_rating"),
+                'rating_comment' => $request->input("${principleId}_rating_comment"),
+                'is_na' => $request->input("${principleId}_is_na") ?? 0,
+            ]);
 
             $principleProject = PrincipleProject::where('project_id', $project->id)->where('principle_id', $principleId)->first();
             $principleProject->scoreTags()->sync(json_decode($request->input($principle->id . "_scoreTags")));
 
         }
 
-        return redirect($this->crud->route);
+        $project->assessment_status = $request->assessment_complete ? AssessmentStatus::Complete : AssessmentStatus::InProgress;
+        $project->save();
+
+        return $this->crud->performSaveAction();
     }
 }
