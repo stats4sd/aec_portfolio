@@ -17,7 +17,7 @@
         "laravel/tinker": "^2.5",
         "maatwebsite/excel": "^3.1",
         "psr/simple-cache": "^2.0",
-        "stats4sd/laravel-backpack-section-title": "dev-main",
+        "stats4sd/laravel-backpack-section-title": "dev-backpack-5",
         "stats4sd/laravel-file-util": "dev-local-only"
     },
     "require-dev": {

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "a487c914e5d6cd843a9e9e814438f6a3",
+    "content-hash": "9799f82d69568324d353e5ab56c1925b",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -4612,16 +4612,16 @@
         },
         {
             "name": "stats4sd/laravel-backpack-section-title",
-            "version": "dev-main",
+            "version": "dev-backpack-5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/stats4sd/laravel-backpack-section-title.git",
-                "reference": "22d62d1af72be9f73f4ac25e9b50aa784f0a7942"
+                "reference": "03dc54d30763f0008ad1fd99ed97f53027987e08"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/stats4sd/laravel-backpack-section-title/zipball/22d62d1af72be9f73f4ac25e9b50aa784f0a7942",
-                "reference": "22d62d1af72be9f73f4ac25e9b50aa784f0a7942",
+                "url": "https://api.github.com/repos/stats4sd/laravel-backpack-section-title/zipball/03dc54d30763f0008ad1fd99ed97f53027987e08",
+                "reference": "03dc54d30763f0008ad1fd99ed97f53027987e08",
                 "shasum": ""
             },
             "require": {
@@ -4632,7 +4632,6 @@
                 "orchestra/testbench": "~5|~6",
                 "phpunit/phpunit": "~9.0"
             },
-            "default-branch": true,
             "type": "library",
             "extra": {
                 "laravel": {
@@ -4668,9 +4667,9 @@
             ],
             "support": {
                 "issues": "https://github.com/stats4sd/laravel-backpack-section-title/issues",
-                "source": "https://github.com/stats4sd/laravel-backpack-section-title/tree/main"
+                "source": "https://github.com/stats4sd/laravel-backpack-section-title/tree/backpack-5"
             },
-            "time": "2022-08-01T10:30:08+00:00"
+            "time": "2022-07-31T19:58:56+00:00"
         },
         {
             "name": "stats4sd/laravel-file-util",

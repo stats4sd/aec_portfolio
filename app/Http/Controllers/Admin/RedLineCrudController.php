@@ -46,7 +46,7 @@ class RedLineCrudController extends CrudController
     protected function setupListOperation()
     {
         CRUD::setResponsiveTable(false);
-        CRUD::column('name');
+        CRUD::column('name')->limit(500);
         CRUD::column('description')->limit(5000);
 
         /**

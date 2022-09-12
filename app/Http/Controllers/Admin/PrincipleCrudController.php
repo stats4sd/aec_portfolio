@@ -46,18 +46,13 @@ class PrincipleCrudController extends CrudController
     protected function setupListOperation()
     {
         CRUD::column('name');
-        CRUD::column('rating_two');
-        CRUD::column('rating_one');
-        CRUD::column('rating_zero');
-        CRUD::column('rating_na');
         CRUD::column('can_be_na');
 
-        /**
-         * Columns can be defined using the fluent syntax or array syntax:
-         * - CRUD::column('price')->type('number');
-         * - CRUD::addColumn(['name' => 'price', 'type' => 'number']);
-         */
+        CRUD::enableDetailsRow();
+        CRUD::setDetailsRowView('details.principle');
+
     }
+
 
     /**
      * Define what happens when the Create operation is loaded.

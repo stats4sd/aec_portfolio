@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Admin\Operations\AssessOperation;
+use App\Http\Controllers\Admin\Operations\RedlineOperation;
 use App\Http\Requests\ProjectRequest;
 use App\Imports\ProjectImport;
 use App\Models\Principle;
@@ -25,9 +26,11 @@ class ProjectCrudController extends CrudController
     use \Backpack\CRUD\app\Http\Controllers\Operations\CreateOperation;
     use \Backpack\CRUD\app\Http\Controllers\Operations\UpdateOperation;
     use \Backpack\CRUD\app\Http\Controllers\Operations\DeleteOperation;
-    use \Backpack\CRUD\app\Http\Controllers\Operations\ShowOperation;
+
+    //use \Backpack\CRUD\app\Http\Controllers\Operations\ShowOperation;
 
     use ImportOperation;
+    use RedlineOperation;
     use AssessOperation;
     use FetchOperation;
 
@@ -98,33 +101,7 @@ class ProjectCrudController extends CrudController
 
     public function setupAssessOperation()
     {
-        Widget::add()->type('script')->content('assets/js/admin/forms/project_assess.js');
-
-        CRUD::field('redLines')
-            ->type('relationship')
-            ->subFields([
-                [
-                    'name' => 'value',
-                    'type' => 'select_from_array',
-                    'options' => [
-                        1 => 'Yes',
-                        0 => 'No',
-                        -99 => 'N/A',
-                    ],
-                    'wrapper' => [
-                        'class' => 'col-md-6',
-                    ],
-                ],
-            ])
-            ->pivotSelect([
-                'label' => 'Name',
-                'attributes' => ['disabled' => 'disabled'],
-                'wrapper' => [
-                    'class' => 'col-md-6',
-                ]])
-            ->min_rows(RedLine::all()->count())
-            ->max_rows(RedLine::all()->count())
-            ->tab('Red Lines');
+        //Widget::add()->type('script')->content('assets/js/admin/forms/project_assess.js');
 
         // cannot use relationship with repeatable because we need to filter the scoretags...
         $entry = CRUD::getCurrentEntry();
@@ -143,13 +120,13 @@ class ProjectCrudController extends CrudController
                 ->type('number')
                 ->min(0)
                 ->max(2)
-            ->default($principle->pivot->rating);
+                ->default($principle->pivot->rating);
 
             CRUD::field($principle->id . '_rating_comment')
                 ->tab($principle->name)
                 ->label('Comment for ' . $principle->name)
                 ->type('textarea')
-            ->default($principle->pivot->rating_comment);
+                ->default($principle->pivot->rating_comment);
 
             CRUD::field($principle->id . '_scoreTags')
                 ->tab($principle->name)
@@ -163,11 +140,63 @@ class ProjectCrudController extends CrudController
                         ->pluck('name', 'id')
                         ->toArray();
                 })
-            ->default($principle->principleProjects()->where('project_id', $entry->id)->first()?->scoreTags->pluck('id')->toArray() ?? []);
-            CRUD::field($principle->id.'divider')
+                ->default($principle->principleProjects()->where('project_id', $entry->id)->first()?->scoreTags->pluck('id')->toArray() ?? []);
+            CRUD::field($principle->id . 'divider')
                 ->type('custom_html')
                 ->content('</hr>');
         }
+    }
+
+    public function setupRedlineOperation()
+    {
+        CRUD::setHeading('');
+
+
+        CRUD::field('section-title')
+            ->type('section-title')
+            ->view_namespace('stats4sd.laravel-backpack-section-title::fields')
+            ->title(function ($entry) {
+                return "Assess Redlines for " . $entry->name;
+            })
+            ->content('
+                    Listed below is the set of red lines to check for each project.<br/><br/>
+                    These are the Red Line elements, which are counter-productive or harmful to the values and principles of agroecology. If any one of these is present in the project being rated, then the Agroecology Overall Score is 0.<br/><br/>
+                    If any one of these is not relevant for the assessed project, select "N/A"
+                          ');
+
+
+        CRUD::field('redLines')
+            ->type('relationship')
+            ->subFields([
+                // hidden field to replace the pivotselect
+                [
+                    'name' => 'redlines',
+                    'type' => 'hidden',
+                    'value' => ,
+                ],
+                [
+                    'name' => 'value',
+                    'type' => 'select_from_array',
+                    'options' => [
+                        1 => 'Yes',
+                        0 => 'No',
+                        -99 => 'N/A',
+                    ],
+                    'wrapper' => [
+                        'class' => 'col-md-6',
+                    ],
+                ],
+            ])
+            ->pivotSelect([
+                'label' => 'Name',
+                'attributes' => ['disabled' => 'disabled'],
+                'wrapper' => [
+                    'class' => 'col-md-6',
+                ]
+            ])
+            ->min_rows(RedLine::all()->count())
+            ->max_rows(RedLine::all()->count())
+            ->tab('Red Lines');
     }
 
 
