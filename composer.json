@@ -18,7 +18,7 @@
         "maatwebsite/excel": "^3.1",
         "psr/simple-cache": "^2.0",
         "stats4sd/laravel-backpack-section-title": "dev-backpack-5",
-        "stats4sd/laravel-file-util": "dev-local-only"
+        "stats4sd/laravel-file-util": "dev-laravel-9-support"
     },
     "require-dev": {
         "backpack/devtools": "^1.0",
@@ -68,10 +68,6 @@
         {
             "type": "composer",
             "url": "https://repo.backpackforlaravel.com/"
-        },
-        {
-            "type": "path",
-            "url": "../../Projects/Packages/laravel-file-util"
         }
     ],
     "minimum-stability": "dev",

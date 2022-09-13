@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "9799f82d69568324d353e5ab56c1925b",
+    "content-hash": "5fb5a2c400269ff5ffb1cc6dbb673fc6",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -4683,11 +4683,17 @@
         },
         {
             "name": "stats4sd/laravel-file-util",
-            "version": "dev-local-only",
+            "version": "dev-laravel-9-support",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/stats4sd/laravel-file-util.git",
+                "reference": "89693be751ad841eae8fe2de9c3cc0cd997556d3"
+            },
             "dist": {
-                "type": "path",
-                "url": "../../Projects/Packages/laravel-file-util",
-                "reference": "5a82f8a98f1da8ccd60ef78a9f37938220bde62d"
+                "type": "zip",
+                "url": "https://api.github.com/repos/stats4sd/laravel-file-util/zipball/89693be751ad841eae8fe2de9c3cc0cd997556d3",
+                "reference": "89693be751ad841eae8fe2de9c3cc0cd997556d3",
+                "shasum": ""
             },
             "require": {
                 "intervention/image": "^2.5",
@@ -4717,19 +4723,7 @@
                     "Stats4sd\\FileUtil\\Database\\Factories\\": "database/factories"
                 }
             },
-            "autoload-dev": {
-                "psr-4": {
-                    "Stats4sd\\FileUtil\\Tests\\": "tests"
-                }
-            },
-            "scripts": {
-                "test": [
-                    "./vendor/bin/pest --no-coverage"
-                ],
-                "test-coverage": [
-                    "vendor/bin/phpunit --coverage-html coverage"
-                ]
-            },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -4747,9 +4741,17 @@
                 "laravel",
                 "stats4sd"
             ],
-            "transport-options": {
-                "relative": true
-            }
+            "support": {
+                "issues": "https://github.com/stats4sd/laravel-file-util/issues",
+                "source": "https://github.com/stats4sd/laravel-file-util/tree/laravel-9-support"
+            },
+            "funding": [
+                {
+                    "url": "https://github.com/stats4sd",
+                    "type": "github"
+                }
+            ],
+            "time": "2022-07-21T08:48:13+00:00"
         },
         {
             "name": "symfony/console",
