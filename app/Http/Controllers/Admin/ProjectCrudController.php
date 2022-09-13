@@ -16,7 +16,7 @@ use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
 use Backpack\CRUD\app\Library\Widget;
 use Backpack\Pro\Http\Controllers\Operations\FetchOperation;
 use Illuminate\Support\Str;
-use Stats4sd\FileUtil\Http\Controllers\Operations\ImportOperation;
+use App\Http\Controllers\Admin\Operations\ImportOperation;
 
 /**
  * Class ProjectCrudController
@@ -50,7 +50,7 @@ class ProjectCrudController extends CrudController
         CRUD::setEntityNameStrings('project', 'projects');
 
         CRUD::set('import.importer', ProjectImport::class);
-
+        CRUD::set('import.template-path', 'AE Marker - Project Import Template.xlsx');
 
     }
 
@@ -85,7 +85,7 @@ class ProjectCrudController extends CrudController
         CRUD::column('assessment_status')->type('closure')->function(function ($entry) {
             return $entry->assessment_status?->value;
         });
-        CRUD::column('overall_score')->type('number');
+        CRUD::column('overall_score')->type('number')->decimals(1)->suffix('%');
 
         CRUD::filter('assessment_status')
             ->type('select2')
@@ -107,7 +107,9 @@ class ProjectCrudController extends CrudController
     {
         CRUD::setValidation(ProjectRequest::class);
 
-        CRUD::field('title')->type('section-title')->content('Enter the key project details below. The code should uniquely identify the project within your portfolio');
+        CRUD::field('title')->type('section-title')
+            ->content('Enter the key project details below. The code should uniquely identify the project within your portfolio')
+        ->view_namespace('stats4sd.laravel-backpack-section-title::fields');
 
         CRUD::field('name');
         CRUD::field('code');
@@ -311,7 +313,8 @@ class ProjectCrudController extends CrudController
 
         CRUD::field('redlines_complete')
             ->type('boolean')
-            ->label('I confirm the Redlines assessment is complete');
+            ->label('I confirm the Redlines assessment is complete')
+        ->default($entry->assessment_status !== AssessmentStatus::NotStarted && $entry->assessment_status !== AssessmentStatus::RedlinesIncomplete);
 
         CRUD::field('redlines_incomplete')
             ->type('boolean')
