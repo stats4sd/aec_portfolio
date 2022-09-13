@@ -38,4 +38,10 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    public function organisations()
+    {
+        return $this->belongsToMany(Organisation::class, 'organisation_members')
+            ->withPivot('role');
+    }
 }

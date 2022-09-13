@@ -8,6 +8,7 @@ use App\Http\Controllers\Admin\Operations\RedlineOperation;
 use App\Http\Controllers\Admin\Traits\UsesSaveAndNextAction;
 use App\Http\Requests\ProjectRequest;
 use App\Imports\ProjectImport;
+use App\Models\Organisation;
 use App\Models\Principle;
 use App\Models\RedLine;
 use App\Models\ScoreTag;
@@ -15,6 +16,7 @@ use Backpack\CRUD\app\Http\Controllers\CrudController;
 use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
 use Backpack\CRUD\app\Library\Widget;
 use Backpack\Pro\Http\Controllers\Operations\FetchOperation;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use App\Http\Controllers\Admin\Operations\ImportOperation;
 
@@ -78,7 +80,7 @@ class ProjectCrudController extends CrudController
                 ',
             ]);
 
-        CRUD::column('number');
+        CRUD::column('organisation')->type('relationship');
         CRUD::column('name');
         CRUD::column('code');
         CRUD::column('budget')->type('number')->prefix('$')->decimals(2)->thousands_sep(',');
@@ -95,6 +97,17 @@ class ProjectCrudController extends CrudController
                 $this->crud->query->where('assessment_status', $value);
             });
 
+        if (Auth::user()->hasRole('admin')) {
+
+            CRUD::filter('organisation_id')
+                ->type('select2')
+                ->label('Filter by Organisation')
+                ->options(Organisation::all()->pluck('name', 'id')->toArray())
+                ->active(function ($value) {
+                    $this->crud->query->where('organisation_id', $value);
+                });
+        }
+
     }
 
     /**
@@ -109,7 +122,7 @@ class ProjectCrudController extends CrudController
 
         CRUD::field('title')->type('section-title')
             ->content('Enter the key project details below. The code should uniquely identify the project within your portfolio')
-        ->view_namespace('stats4sd.laravel-backpack-section-title::fields');
+            ->view_namespace('stats4sd.laravel-backpack-section-title::fields');
 
         CRUD::field('name');
         CRUD::field('code');
@@ -133,7 +146,7 @@ class ProjectCrudController extends CrudController
     {
         Widget::add()->type('script')->content('assets/js/admin/forms/project_assess.js');
 
-         CRUD::field('section-title')
+        CRUD::field('section-title')
             ->type('section-title')
             ->view_namespace('stats4sd.laravel-backpack-section-title::fields')
             ->title(function ($entry) {
@@ -188,7 +201,6 @@ class ProjectCrudController extends CrudController
                 ->default($principle->pivot->rating);
 
 
-
             CRUD::field($principle->id . '_rating_comment')
                 ->tab($principle->name)
                 ->label('Comment for ' . $principle->name)
@@ -233,7 +245,7 @@ class ProjectCrudController extends CrudController
             ->attributes([
                 'data-check-complete' => '1',
             ])
-        ->default($entry->assessment_status === AssessmentStatus::Complete);
+            ->default($entry->assessment_status === AssessmentStatus::Complete);
 
 
         CRUD::field('assessment_incomplete')
@@ -253,7 +265,7 @@ class ProjectCrudController extends CrudController
     public function setupRedlineOperation()
     {
 
-         Widget::add()->type('script')->content('assets/js/admin/forms/redlines.js');
+        Widget::add()->type('script')->content('assets/js/admin/forms/redlines.js');
 
 
         CRUD::setHeading('');
@@ -314,15 +326,15 @@ class ProjectCrudController extends CrudController
         CRUD::field('redlines_complete')
             ->type('boolean')
             ->label('I confirm the Redlines assessment is complete')
-        ->default($entry->assessment_status !== AssessmentStatus::NotStarted && $entry->assessment_status !== AssessmentStatus::RedlinesIncomplete);
+            ->default($entry->assessment_status !== AssessmentStatus::NotStarted && $entry->assessment_status !== AssessmentStatus::RedlinesIncomplete);
 
         CRUD::field('redlines_incomplete')
             ->type('boolean')
             ->label('I confirm the Redlines assessment is complete')
             ->hint('You must assign a value (or mark as NA) for every redline above before marking the redline assessment as complete.')
-        ->attributes([
-            'disabled' => 'disabled',
-    ]);
+            ->attributes([
+                'disabled' => 'disabled',
+            ]);
 
     }
 

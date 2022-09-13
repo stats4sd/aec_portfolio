@@ -4,8 +4,10 @@ namespace App\Models;
 
 use App\Enums\AssessmentStatus;
 use App\Http\Controllers\Admin\Operations\RedlineOperation;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 
 class Project extends Model
 {
@@ -25,6 +27,18 @@ class Project extends Model
             $project->redLines()->sync(RedLine::all()->pluck('id')->toArray());
 
             $project->principles()->sync(Principle::all()->pluck('id')->toArray());
+        });
+
+        static::addGlobalScope('organisation', function(Builder $builder) {
+
+            if(!Auth::check()) {
+                return;
+            }
+
+            if(Auth::user()->hasRole('admin')) {
+                return;
+            }
+            $builder->whereIn('organisation_id', Auth::user()->organisations->pluck('id')->toArray());
         });
     }
 
@@ -84,6 +98,11 @@ class Project extends Model
 
 
         return null;
+    }
+
+    public function organisation()
+    {
+        return $this->belongsTo(Organisation::class);
     }
 
 
