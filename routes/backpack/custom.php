@@ -40,7 +40,7 @@ Route::group([
 
     Route::get('dashboard', function() {
         if(Auth::user()->organisations()->count() > 1 || Auth::user()->hasRole('admin')) {
-            return redirect(backpack_url('organisations'));
+            return redirect(backpack_url('organisation'));
         }
 
         if(Auth::user()->organisations()->count() === 1) {
