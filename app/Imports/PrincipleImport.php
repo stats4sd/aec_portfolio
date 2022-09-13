@@ -21,7 +21,7 @@ class PrincipleImport implements ToModel, WithHeadingRow, WithUpserts, SkipsEmpt
             'rating_two' => $row['rating_two_definition'],
             'rating_one' => $row['rating_one_definition'],
             'rating_zero' => $row['rating_zero_definition'],
-            'rating_na' => $row['rating_na_defintion'],
+            'rating_na' => $row['rating_na_definition'],
             'can_be_na' => $row['can_be_na'],
         ]);
     }
