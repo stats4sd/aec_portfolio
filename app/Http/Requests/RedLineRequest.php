@@ -25,7 +25,7 @@ class RedLineRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => 'required|string|unique',
+            'name' => 'required|string',
             'description' => 'required|string',
         ];
     }
