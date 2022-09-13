@@ -84,7 +84,7 @@ class ProjectCrudController extends CrudController
         CRUD::column('organisation')->type('relationship');
         CRUD::column('name');
         CRUD::column('code');
-        CRUD::column('budget')->type('number')->prefix('$')->decimals(2)->thousands_sep(',');
+        CRUD::column('budget')->type('number')->prefix('USD')->decimals(2)->thousands_sep(',');
         CRUD::column('assessment_status')->type('closure')->function(function ($entry) {
             return $entry->assessment_status?->value;
         });
@@ -135,7 +135,7 @@ class ProjectCrudController extends CrudController
         CRUD::field('name');
         CRUD::field('code');
         CRUD::field('description');
-        CRUD::field('budget');
+        CRUD::field('budget')->prefix('USD');
 
     }
 
