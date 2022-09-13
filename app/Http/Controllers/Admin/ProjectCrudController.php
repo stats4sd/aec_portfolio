@@ -65,6 +65,7 @@ class ProjectCrudController extends CrudController
     protected function setupListOperation()
     {
         CRUD::setPersistentTable(false);
+        CRUD::setResponsiveTable(false);
         Widget::add()
             ->type('card')
             ->wrapper([
@@ -124,6 +125,13 @@ class ProjectCrudController extends CrudController
             ->content('Enter the key project details below. The code should uniquely identify the project within your portfolio')
             ->view_namespace('stats4sd.laravel-backpack-section-title::fields');
 
+        if(Auth::user()?->hasRole('admin') || Auth::user()?->organisations()->count() > 1)
+            CRUD::field('organisation_id')->type('relationship');
+        else {
+            $organisation = Auth::user()?->organisations()->first();
+            CRUD::field('organisation_id')->type('hidden')->value($organisation->id);
+            CRUD::field('organisation_title')->type('section-title')->view_namespace('stats4sd.laravel-backpack-section-title::fields')->content('Creating a Project for <b>' . $organisation->name . '</b>');
+        }
         CRUD::field('name');
         CRUD::field('code');
         CRUD::field('description');

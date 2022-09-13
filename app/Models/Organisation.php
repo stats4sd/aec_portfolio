@@ -3,7 +3,9 @@
 namespace App\Models;
 
 use Backpack\CRUD\app\Models\Traits\CrudTrait;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 
 class Organisation extends Model
@@ -18,6 +20,25 @@ class Organisation extends Model
 
     protected $table = 'organisations';
     protected $guarded = ['id'];
+
+protected static function booted()
+    {
+
+        static::addGlobalScope('owned', function(Builder $builder) {
+
+            if(!Auth::check()) {
+                return;
+            }
+
+            if(Auth::user()->hasRole('admin')) {
+                return;
+            }
+
+            $builder->whereHas('users', function($query) {
+                $query->where('users.id', Auth::id());
+            });
+        });
+    }
 
 
     public function projects()
