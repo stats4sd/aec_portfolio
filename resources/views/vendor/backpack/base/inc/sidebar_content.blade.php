@@ -1,9 +1,9 @@
 <!-- This file is used to store sidebar items, starting with Backpack\Base 0.9.0 -->
 
-@if(Auth::user()->organisations()->count() > 1)
+@if(Auth::user()->organisations()->count() > 1 || Auth::user()->hasRole('admin'))
     <li class="nav-item"><a class="nav-link" href="{{ backpack_url('dashboard') }}"><i class="la la-home nav-icon"></i> Organisations</a></li>
-@else
-    <li class="nav-item"><a class="nav-link" href="{{ backpack_url('organisation/'.Auth::user()->organisations->first()->id).'/show' }}"><i class="la la-home nav-icon"></i> Organisation: {{ Auth::user()->organisations->first()->name }}</a></li>
+@elseif(Auth::user()->organisations()->count() === 1)
+    <li class="nav-item"><a class="nav-link" href="{{ backpack_url('organisation/'.Auth::user()->organisations->first()?->id).'/show' }}"><i class="la la-home nav-icon"></i> Organisation: {{ Auth::user()->organisations->first()->name }}</a></li>
 @endif
 <hr/>
 
@@ -17,7 +17,6 @@
     <li class="nav-item"><a class="nav-link" href="{{ backpack_url('score-tag') }}"><i class="nav-icon la la-question"></i> Score tags</a></li>
     <hr/>
 
-    <li class="nav-item"><a class="nav-link" href="{{ backpack_url('organisation') }}"><i class="nav-icon la la-question"></i> Organisations</a></li>
     <li class="nav-item"><a class="nav-link" href="{{ backpack_url('user') }}"><i class="nav-icon la la-question"></i> Users</a></li>
     <li class="nav-item"><a class="nav-link" href="{{ backpack_url('role-invite') }}"><i class="nav-icon la la-question"></i> Admin User Invites</a></li>
 @endif
