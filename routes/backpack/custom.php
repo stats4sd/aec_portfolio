@@ -51,6 +51,8 @@ Route::group([
 
         abort(403, "It looks like you are not a member of any organisation, and are not a site admin. If you think this is incorrect, please contact support@stats4sd.org");
     })->name('backpack.dashboard');
-    Route::get('/', 'AdminController@redirect')->name('backpack');
+
+
+    Route::get('/', [  Backpack\CRUD\app\Http\Controllers\AdminController::class, 'redirect'])->name('backpack');
 
 }); // this should be the absolute last line of this file
