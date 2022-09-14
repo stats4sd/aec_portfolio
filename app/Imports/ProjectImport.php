@@ -18,7 +18,7 @@ class ProjectImport implements ToModel, WithHeadingRow
             'code' => $row['code'],
             'name' => $row['name'],
             'description' => $row['description'],
-            'budget' => $row['budget'],
+            'budget' => $row['budget_usd'],
         ]);
     }
 
