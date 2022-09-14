@@ -85,15 +85,6 @@ trait ImportOperation
             'label' => 'Select Excel File to Upload',
         ]);
 
-//        return view(
-//            'file-util::vendor.backpack.crud.import',
-//            [
-//                'fields' => $this->crud->fields('import'),q
-//                'crud' => $this->crud,
-//            ]
-//        );
-
-
         return view('file-util::vendor.backpack.crud.import::import', $this->data);
     }
 

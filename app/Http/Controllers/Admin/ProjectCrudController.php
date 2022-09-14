@@ -19,6 +19,8 @@ use Backpack\Pro\Http\Controllers\Operations\FetchOperation;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use App\Http\Controllers\Admin\Operations\ImportOperation;
+use Maatwebsite\Excel\Facades\Excel;
+use Prologue\Alerts\Facades\Alert;
 
 /**
  * Class ProjectCrudController
@@ -351,5 +353,58 @@ class ProjectCrudController extends CrudController
     {
         $test = collect(request()->input('form'));
     }
+
+    public function getImportForm()
+    {
+        $this->crud->hasAccessOrFail('import');
+        $this->crud->setOperation('import');
+
+        $this->data['crud'] = $this->crud;
+        $this->data['saveAction'] = $this->crud->getSaveAction();
+
+        $this->data['title'] = 'Import ' . $this->crud->entity_name . ' from excel file';
+
+
+        $this->crud->addField([
+            'name' => 'organisation',
+            'type' => 'relationship',
+            'validationRules' => 'required',
+        ]);
+
+        $this->crud->addField([
+            'name' => 'importFile',
+            'type' => 'upload',
+            'label' => 'Select Excel File to Upload',
+        ]);
+
+        return view('file-util::vendor.backpack.crud.import::import', $this->data);
+    }
+
+    public function postImportForm()
+    {
+        $this->crud->hasAccessOrFail('import');
+        $importer = $this->crud->get('import.importer');
+
+        if (!$importer) {
+            return response("Importer Class not found - please check the importer is properly setup for this page", 500);
+        }
+
+        $request = $this->crud->validateRequest();
+
+
+        // pass organisation to importer;
+        $organisation = Organisation::find($request->organisation);
+        Excel::import(new $importer($organisation), $request->importFile);
+
+
+        Alert::success(trans('backpack::crud.insert_success'))->flash();
+
+        if ($route = $this->crud->get('import.redirect')) {
+            return redirect(url($route));
+        }
+
+        return redirect(url($this->crud->route));
+    }
+
 
 }
