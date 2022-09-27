@@ -127,7 +127,7 @@ class ProjectCrudController extends CrudController
             ->content('Enter the key project details below. The code should uniquely identify the project within your portfolio')
             ->view_namespace('stats4sd.laravel-backpack-section-title::fields');
 
-        if(Auth::user()?->hasRole('admin') || Auth::user()?->organisations()->count() > 1)
+        if (Auth::user()?->hasRole('admin') || Auth::user()?->organisations()->count() > 1)
             CRUD::field('organisation_id')->type('relationship');
         else {
             $organisation = Auth::user()?->organisations()->first();
@@ -179,12 +179,41 @@ class ProjectCrudController extends CrudController
         $entry = CRUD::getCurrentEntry();
 
         foreach ($entry->principles as $principle) {
+            $ratingZeroDefintionRow = '';
+            if ($principle->can_be_na) {
+                $ratingZeroDefintionRow = "
+                                            <tr>
+                                                <td>na</td>
+                                                <td>{$principle->rating_na}</td>
+                                            </tr>";
+            }
 
             CRUD::field($principle->id . '_title')
                 ->tab($principle->name)
                 ->type('section-title')
                 ->view_namespace('stats4sd.laravel-backpack-section-title::fields')
-                ->title($principle->name);
+                ->title($principle->name)
+                ->content("<h5>Spectrum Definition</h5>
+                            <table class='table table - striped'>
+                                <tr>
+                                    <th>Score</th>
+                                    <th>Definition</th>
+                                </tr>
+                                {$ratingZeroDefintionRow}
+                                <tr>
+                                    <td>0</td>
+                                    <td>{$principle->rating_zero}</td>
+                                </tr>
+                                <tr>
+                                    <td>1</td>
+                                    <td>{$principle->rating_one}</td>
+                                </tr>
+                                <tr>
+                                    <td>2</td>
+                                    <td>{$principle->rating_two}</td>
+                                </tr>
+                            </table>");
+
 
             if ($principle->can_be_na) {
                 CRUD::field($principle->id . "_is_na")
