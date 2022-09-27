@@ -12,3 +12,24 @@
 @import "~line-awesome/dist/line-awesome/css/line-awesome.min.css";
 //@import "~animate.css/source/_base";
 @import "~noty/src/noty";
+
+.full-width-choices .select2-selection__choice {
+    width: 85%;
+    padding-top: 0.5em !important;
+    padding-bottom: 0.5em !important;
+    font-size: medium;
+    border-radius: 0.5em;
+    padding-left: 0 !important;
+    white-space:  normal;
+    word-wrap: break-word;
+
+    .select2-selection__choice__remove {
+        padding-left: 1em;
+        padding-right: 1em;
+        top: -0.5em !important;
+        position: relative;
+        margin-right: 1em !important;
+        background-color: lightgrey;
+        border-right: grey;
+    }
+}

@@ -107,9 +107,25 @@ trait AssessOperation
             ]);
 
             $principleProject = PrincipleProject::where('project_id', $project->id)->where('principle_id', $principleId)->first();
-            $principleProject->scoreTags()->sync(json_decode($request->input($principle->id . "_scoreTags")));
+
+            $sync = $request->input("scoreTags" . $principle->id);
+            $syncPivot = [];
+
+            if ($sync) {
+
+                for ($i = 0, $iMax = count($sync); $i < $iMax; $i++) {
+                    $syncPivot[] = ['project_id' => $project->id];
+                }
+
+                $sync = collect($sync)->combine($syncPivot);
+                 $principleProject->scoreTags()->sync($sync->toArray());
+            }
+
+            ///dump($sync);
+
 
         }
+
 
         $project->assessment_status = $request->assessment_complete ? AssessmentStatus::Complete : AssessmentStatus::InProgress;
         $project->save();

@@ -246,19 +246,15 @@ class ProjectCrudController extends CrudController
                 ->type('textarea')
                 ->default($principle->pivot->rating_comment);
 
-            CRUD::field($principle->id . '_scoreTags')
+            CRUD::field('scoreTags' . $principle->id)
                 ->tab($principle->name)
                 ->label('Presence of Examples/Indicators for ' . $principle->name)
-                ->type('checklist')
-                ->number_of_columns(1)
-                ->model(ScoreTag::class)
-                ->options(function ($query) use ($principle) {
-                    return $query->where('principle_id', $principle->id)
-                        ->get()
-                        ->pluck('name', 'id')
-                        ->toArray();
-                })
-                ->default($principle->principleProjects()->where('project_id', $entry->id)->first()?->scoreTags->pluck('id')->toArray() ?? []);
+                ->type('relationship')
+                ->inline_create(['entity' => 'score-tag', 'modal_route' => route('score-tag-inline-create', ['principleId' => $principle->id])])
+                ->default($principle->principleProjects()->where('project_id', $entry->id)->first()?->scoreTags->pluck('id')->toArray() ?? [])
+                ->wrapper([
+                    'class' => ' form-group col-md-12 full-width-choices',
+                ]);
         }
 
         CRUD::field('complete_title')
@@ -433,6 +429,137 @@ class ProjectCrudController extends CrudController
         }
 
         return redirect(url($this->crud->route));
+    }
+
+    public function fetchScoreTags1()
+    {
+        return $this->fetch([
+            'model' => ScoreTag::class,
+            'query' => function ($model) {
+                return $model->where('principle_id', 1);
+            }
+        ]);
+    }
+
+    public function fetchScoreTags2()
+    {
+        return $this->fetch([
+            'model' => ScoreTag::class,
+            'query' => function ($model) {
+                return $model->where('principle_id', 2);
+            }
+        ]);
+    }
+
+    public function fetchScoreTags3()
+    {
+        return $this->fetch([
+            'model' => ScoreTag::class,
+            'query' => function ($model) {
+                return $model->where('principle_id', 3);
+            }
+        ]);
+    }
+
+    public function fetchScoreTags4()
+    {
+        return $this->fetch([
+            'model' => ScoreTag::class,
+            'query' => function ($model) {
+                return $model->where('principle_id', 4);
+            }
+        ]);
+    }
+
+    public function fetchScoreTags5()
+    {
+        return $this->fetch([
+            'model' => ScoreTag::class,
+            'query' => function ($model) {
+                return $model->where('principle_id', 5);
+            }
+        ]);
+    }
+
+    public function fetchScoreTags6()
+    {
+        return $this->fetch([
+            'model' => ScoreTag::class,
+            'query' => function ($model) {
+                return $model->where('principle_id', 6);
+            }
+        ]);
+    }
+
+    public function fetchScoreTags7()
+    {
+        return $this->fetch([
+            'model' => ScoreTag::class,
+            'query' => function ($model) {
+                return $model->where('principle_id', 7);
+            }
+        ]);
+    }
+
+    public function fetchScoreTags8()
+    {
+        return $this->fetch([
+            'model' => ScoreTag::class,
+            'query' => function ($model) {
+                return $model->where('principle_id', 8);
+            }
+        ]);
+    }
+
+    public function fetchScoreTags9()
+    {
+        return $this->fetch([
+            'model' => ScoreTag::class,
+            'query' => function ($model) {
+                return $model->where('principle_id', 9);
+            }
+        ]);
+    }
+
+    public function fetchScoreTags10()
+    {
+        return $this->fetch([
+            'model' => ScoreTag::class,
+            'query' => function ($model) {
+                return $model->where('principle_id', 10);
+            }
+        ]);
+    }
+
+    public function fetchScoreTags11()
+    {
+        return $this->fetch([
+            'model' => ScoreTag::class,
+            'query' => function ($model) {
+                return $model->where('principle_id', 11);
+            }
+        ]);
+    }
+
+    public function fetchScoreTags12()
+    {
+        return $this->fetch([
+            'model' => ScoreTag::class,
+            'query' => function ($model) {
+                return $model->where('principle_id', 12);
+            }
+        ]);
+    }
+
+
+    public function fetchScoreTags13()
+    {
+        return $this->fetch([
+            'model' => ScoreTag::class,
+            'query' => function ($model) {
+                return $model->where('principle_id', 13);
+            }
+        ]);
     }
 
 

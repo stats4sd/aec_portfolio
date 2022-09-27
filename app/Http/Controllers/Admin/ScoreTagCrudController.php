@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Http\Controllers\Admin\Traits\ScoreTagInlineCreateOperation;
 use App\Http\Requests\ScoreTagRequest;
 use Backpack\CRUD\app\Http\Controllers\CrudController;
 use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
+use Backpack\Pro\Http\Controllers\Operations\InlineCreateOperation;
 
 /**
  * Class ScoreTagCrudController
@@ -18,6 +20,8 @@ class ScoreTagCrudController extends CrudController
     use \Backpack\CRUD\app\Http\Controllers\Operations\UpdateOperation;
     use \Backpack\CRUD\app\Http\Controllers\Operations\DeleteOperation;
     use \Backpack\CRUD\app\Http\Controllers\Operations\ShowOperation;
+
+    use ScoreTagInlineCreateOperation;
 
     /**
      * Configure the CrudPanel object. Apply settings to all operations.
@@ -83,5 +87,12 @@ class ScoreTagCrudController extends CrudController
     protected function setupUpdateOperation()
     {
         $this->setupCreateOperation();
+    }
+
+    public function setupInlineCreateOperation()
+    {
+
+        CRUD::field('name')->label('Enter a brief description of the evidence or indicator.');
+        CRUD::field('description')->label('(optional) Enter a longer description for this evidence or indicator');
     }
 }
