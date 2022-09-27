@@ -70,7 +70,8 @@ trait AssessOperation
 
         $this->data['crud'] = $this->crud;
         $this->data['saveAction'] = $this->crud->getSaveAction();
-        $this->data['title'] = $this->crud->getTitle() ?? 'Assess ' . $this->crud->entity_name;
+        $this->data['title'] = 'Assess ' . $this->crud->entity_name;
+        $this->data['heading'] = 'Assess AE Principles for ' . $this->crud->entity_name;
         $this->data['id'] = $id;
 
         // load the view

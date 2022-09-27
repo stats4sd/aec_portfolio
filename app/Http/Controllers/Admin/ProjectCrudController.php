@@ -160,7 +160,7 @@ class ProjectCrudController extends CrudController
             ->type('section-title')
             ->view_namespace('stats4sd.laravel-backpack-section-title::fields')
             ->title(function ($entry) {
-                return "Assess Redlines for " . $entry->name;
+                return "Assess Project: " . $entry->name;
             })
             ->content('
                     This is the main section of the review. Below are the 13 Agroecology Principles, and you should rate the project against each one. <br/><br/>
@@ -179,7 +179,7 @@ class ProjectCrudController extends CrudController
         $entry = CRUD::getCurrentEntry();
 
         foreach ($entry->principles as $principle) {
-            $ratingZeroDefintionRow = '';
+            $ratingZeroDefintionRow = '<span class="text-secondary">This principle cannot be marked as not applicable</span>';
             if ($principle->can_be_na) {
                 $ratingZeroDefintionRow = "
                                             <tr>
