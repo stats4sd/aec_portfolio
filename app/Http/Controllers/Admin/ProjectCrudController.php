@@ -21,6 +21,7 @@ use Illuminate\Support\Str;
 use App\Http\Controllers\Admin\Operations\ImportOperation;
 use Maatwebsite\Excel\Facades\Excel;
 use Prologue\Alerts\Facades\Alert;
+use function mysql_xdevapi\getSession;
 
 /**
  * Class ProjectCrudController
@@ -250,7 +251,11 @@ class ProjectCrudController extends CrudController
                 ->tab($principle->name)
                 ->label('Presence of Examples/Indicators for ' . $principle->name)
                 ->type('relationship')
-                ->inline_create(['entity' => 'score-tag', 'modal_route' => route('score-tag-inline-create', ['principleId' => $principle->id])])
+                ->inline_create([
+                    'entity' => 'score-tag',
+                    'modal_route' => route('score-tag-inline-create', ['principleId' => $principle->id]),
+                    'add_button_label' => 'Add new evidence / indicator entry',getSession()
+                ])
                 ->default($principle->principleProjects()->where('project_id', $entry->id)->first()?->scoreTags->pluck('id')->toArray() ?? [])
                 ->wrapper([
                     'class' => ' form-group col-md-12 full-width-choices',
