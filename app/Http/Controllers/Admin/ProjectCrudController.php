@@ -254,7 +254,7 @@ class ProjectCrudController extends CrudController
                 ->inline_create([
                     'entity' => 'score-tag',
                     'modal_route' => route('score-tag-inline-create', ['principleId' => $principle->id]),
-                    'add_button_label' => 'Add new evidence / indicator entry',
+                    'add_button_label' => 'Add new example',
                 ])
                 ->default($principle->principleProjects()->where('project_id', $entry->id)->first()?->scoreTags->pluck('id')->toArray() ?? [])
                 ->wrapper([
@@ -319,8 +319,7 @@ class ProjectCrudController extends CrudController
             })
             ->content('
                     Listed below is the set of red lines to check for each project.<br/><br/>
-                    These are the Red Line elements, which are counter-productive or harmful to the values and principles of agroecology. If any one of these is present in the project being rated, then the Agroecology Overall Score is 0.<br/><br/>
-                    If any one of these is not relevant for the assessed project, select "N/A"
+                    These are the Red Line elements, which are counter-productive or harmful to the values and principles of agroecology. If any one of these is present in the project being rated, then the Agroecology Overall Score is 0.
                           ');
 
         // We cannot use the relationship with subfields field here, because we do not want the user to be able to unassign any redlines from the project.
@@ -345,7 +344,6 @@ class ProjectCrudController extends CrudController
                 ->options([
                     1 => 'Yes',
                     0 => 'No',
-                    -99 => 'N/A',
                 ]);
 
             CRUD::field('redline_divider_' . $redline->id)
