@@ -20,11 +20,24 @@ class RegisteredUserController extends Controller
         $invite = null;
         $inviteMessage = null;
         if (request()->has('token')) {
-            $invite = Invite::where('token', '=', request()->token)->first();
+            $invite = Invite::withoutGlobalScope('unconfirmed')
+                ->where('token', '=', request()->token)
+                ->first();
         }
         if (!$invite) {
-            $invite = RoleInvite::where('token', '=', request()->token)->first();
+            $invite = RoleInvite::withoutGlobalScope('unconfirmed')
+                ->where('token', '=', request()->token)
+                ->first();
         }
+
+        if(!$invite) {
+            abort(403, "It looks like the invitation token is invalid. Please contact the person who invited you to the platform and ask for a new invitation.");
+        }
+
+        if($invite->is_confirmed) {
+           abort(403, "It looks like this invitation has already been used. If you have created an account, please <a href='" .url('login') . "'>login</a>. If you need a new invitation, please contact the person who sent you the invitation email.");
+        }
+
 
         $messageStub = $invite->team ? $invite->team->name : config('app.name');
 
