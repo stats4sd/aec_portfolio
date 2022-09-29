@@ -254,7 +254,7 @@ class ProjectCrudController extends CrudController
                 ->inline_create([
                     'entity' => 'score-tag',
                     'modal_route' => route('score-tag-inline-create', ['principleId' => $principle->id]),
-                    'add_button_label' => 'Add new evidence / indicator entry',getSession()
+                    'add_button_label' => 'Add new evidence / indicator entry',
                 ])
                 ->default($principle->principleProjects()->where('project_id', $entry->id)->first()?->scoreTags->pluck('id')->toArray() ?? [])
                 ->wrapper([
