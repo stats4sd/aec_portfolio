@@ -2,7 +2,7 @@
 A proof of concept for the AEC Consortium Project Management / Assessment System
 
 # Development
-This platform is built using Laravel/PHP. The admin panel uses Backpack for Laravel.
+This platform is built using Laravel/PHP. The admin panel uses [Backpack for Laravel PRO.](https://backpackforlaravel.com/products/pro-for-one-project)
 
 ## Setup Local Environment
 1.	Clone repo: `git@github.com:stats4sd/aec_portfolio.git`
