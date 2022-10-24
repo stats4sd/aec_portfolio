@@ -80,10 +80,22 @@ document.querySelectorAll("[data-update-tab='1']")
             if (e.target.value) {
 
                 // validate value =< 2
-                if(e.target.value > 2) {
+                if(e.target.value > 2  || e.target.value < 0) {
+                    console.log('invalid');
                     e.target.classList.add('is-invalid')
+
+                    let validationMessage = document.createElement("p");
+                    validationMessage.setAttribute("id", "custom-validation-text-rating_"+ e.target.getAttribute('data-tab'))
+                    validationMessage.innerHTML = '<p class="invalid-feedback d-block">Ratings must be between 0 and 2</p>'
+
+                    e.target.after(validationMessage)
                 } else {
+                    console.log('VALID');
                     e.target.classList.remove('is-invalid')
+                    let validationMessage = document.getElementById("custom-validation-text-rating_"+ e.target.getAttribute('data-tab'))
+                    if(validationMessage) validationMessage.remove()
+
+
                 }
 
                 setRelatedTabToComplete(e.target);
