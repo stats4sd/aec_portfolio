@@ -197,24 +197,23 @@ class ProjectCrudController extends CrudController
                 ->content("<h5>Spectrum Definition</h5>
                             <table class='table table - striped'>
                                 <tr>
-                                    <th>Score</th>
-                                    <th>Definition</th>
-                                </tr>
-                                {$ratingZeroDefintionRow}
-                                <tr>
-                                    <td>0</td>
-                                    <td>{$principle->rating_zero}</td>
+                                    <td>2</td>
+                                    <td>{$principle->rating_two}</td>
                                 </tr>
                                 <tr>
                                     <td>1</td>
                                     <td>{$principle->rating_one}</td>
                                 </tr>
                                 <tr>
-                                    <td>2</td>
-                                    <td>{$principle->rating_two}</td>
+                                    <td>0</td>
+                                    <td>{$principle->rating_zero}</td>
                                 </tr>
+                                <tr>
+                                    <th>Score</th>
+                                    <th>Definition</th>
+                                </tr>
+                                {$ratingZeroDefintionRow}
                             </table>");
-
 
             if ($principle->can_be_na) {
                 CRUD::field($principle->id . "_is_na")
