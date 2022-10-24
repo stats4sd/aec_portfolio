@@ -1,3 +1,8 @@
+function validateScore(el) {
+
+}
+
+
 // when a principle rating is added; mark that tab as green / complete:
 
 function setTabAsComplete(tab) {
@@ -66,11 +71,33 @@ function updateCount() {
 crud.field('assessment_complete').hide();
 crud.field('assessment_incomplete').show();
 
+
+// add Event listeners to all rating fields
 document.querySelectorAll("[data-update-tab='1']")
 
     .forEach((el) => {
         el.addEventListener('change', (e) => {
             if (e.target.value) {
+
+                // validate value =< 2
+                if(e.target.value > 2  || e.target.value < 0) {
+                    console.log('invalid');
+                    e.target.classList.add('is-invalid')
+
+                    let validationMessage = document.createElement("p");
+                    validationMessage.setAttribute("id", "custom-validation-text-rating_"+ e.target.getAttribute('data-tab'))
+                    validationMessage.innerHTML = '<p class="invalid-feedback d-block">Ratings must be between 0 and 2</p>'
+
+                    e.target.after(validationMessage)
+                } else {
+                    console.log('VALID');
+                    e.target.classList.remove('is-invalid')
+                    let validationMessage = document.getElementById("custom-validation-text-rating_"+ e.target.getAttribute('data-tab'))
+                    if(validationMessage) validationMessage.remove()
+
+
+                }
+
                 setRelatedTabToComplete(e.target);
             } else {
                 setRelatedTabToIncomplete(e.target);
@@ -94,14 +121,15 @@ document.querySelectorAll("[data-to-disable]")
 
                 crud.field(principleId + '_rating').disable();
                 crud.field(principleId + '_rating_comment').disable();
-                crud.field(principleId + '_scoreTags').disable();
+                crud.field('scoreTags' + principleId).disable();
 
                 setRelatedTabToComplete(crud.field(principleId + '_rating').input)
 
             } else {
                 crud.field(principleId + '_rating').enable();
                 crud.field(principleId + '_rating_comment').enable();
-                crud.field(principleId + '_scoreTags').enable();
+                crud.field('scoreTags' + principleId).enable();
+
 
                 if (crud.field(principleId + '_rating').value === "") {
                     setRelatedTabToIncomplete(crud.field(principleId + '_rating').input)
