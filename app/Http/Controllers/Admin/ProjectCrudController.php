@@ -194,8 +194,11 @@ class ProjectCrudController extends CrudController
                 ->type('section-title')
                 ->view_namespace('stats4sd.laravel-backpack-section-title::fields')
                 ->title($principle->name)
-                ->content("<h5>Spectrum Definition</h5>
-                            <table class='table table - striped'>
+                ->content("<table class='table table - striped'>
+                                <tr>
+                                    <th>Score</th>
+                                    <th>Definition</th>
+                                </tr>
                                 <tr>
                                     <td>2</td>
                                     <td>{$principle->rating_two}</td>
@@ -207,10 +210,6 @@ class ProjectCrudController extends CrudController
                                 <tr>
                                     <td>0</td>
                                     <td>{$principle->rating_zero}</td>
-                                </tr>
-                                <tr>
-                                    <th>Score</th>
-                                    <th>Definition</th>
                                 </tr>
                                 {$ratingZeroDefintionRow}
                             </table>");
