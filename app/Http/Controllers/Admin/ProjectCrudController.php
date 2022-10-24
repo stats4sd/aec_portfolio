@@ -334,7 +334,7 @@ class ProjectCrudController extends CrudController
             CRUD::field('redline_value_' . $redline->id)
                 ->label('Present?')
                 ->default($redline->pivot->value)
-                ->type('select_from_array')
+                ->type('radio')
                 ->attributes([
                     'data-required' => '1',
                 ])
