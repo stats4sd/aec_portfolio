@@ -4,7 +4,11 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
+<<<<<<< Updated upstream
     "content-hash": "bcd9cf4f7d4f5fb6a594687f8e3d4068",
+=======
+    "content-hash": "85af59ba1bcb0e29a08982b442ddb9ea",
+>>>>>>> Stashed changes
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -235,6 +239,7 @@
         },
         {
             "name": "backpack/pro",
+<<<<<<< Updated upstream
             "version": "1.3.0",
             "source": {
                 "type": "git",
@@ -246,6 +251,19 @@
                 "url": "https://repo.backpackforlaravel.com/dist/backpack/pro/backpack-pro-f8c62ac7a680aa5183c60c63de31f0856ab2acd2-zip-0b1dac.zip",
                 "reference": "f8c62ac7a680aa5183c60c63de31f0856ab2acd2",
                 "shasum": "2c9c0b3959b0b8844733434374e9d64bd0e6a1b7"
+=======
+            "version": "1.2.8",
+            "source": {
+                "type": "git",
+                "url": "git@github.com:Laravel-Backpack/PRO.git",
+                "reference": "40087e0d29a80abe442a8bf801a6353b3203153f"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://repo.backpackforlaravel.com/dist/backpack/pro/backpack-pro-40087e0d29a80abe442a8bf801a6353b3203153f-zip-550b21.zip",
+                "reference": "40087e0d29a80abe442a8bf801a6353b3203153f",
+                "shasum": "c80d9f289f6d9d625abc1943c59c7da99ce0259c"
+>>>>>>> Stashed changes
             },
             "require": {
                 "backpack/crud": "^5.4.0"
@@ -297,10 +315,17 @@
                 "Pro"
             ],
             "support": {
+<<<<<<< Updated upstream
                 "source": "https://github.com/Laravel-Backpack/PRO/tree/1.3.0",
                 "issues": "https://github.com/Laravel-Backpack/PRO/issues"
             },
             "time": "2022-10-14T13:46:18+00:00"
+=======
+                "source": "https://github.com/Laravel-Backpack/PRO/tree/1.2.8",
+                "issues": "https://github.com/Laravel-Backpack/PRO/issues"
+            },
+            "time": "2022-09-08T07:36:19+00:00"
+>>>>>>> Stashed changes
         },
         {
             "name": "brick/math",

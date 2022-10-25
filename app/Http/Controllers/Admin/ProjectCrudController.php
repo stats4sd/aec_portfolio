@@ -248,16 +248,12 @@ class ProjectCrudController extends CrudController
             CRUD::field('scoreTags' . $principle->id)
                 ->tab($principle->name)
                 ->label('Presence of Examples/Indicators for ' . $principle->name)
-                ->type('relationship')
-                ->inline_create([
-                    'entity' => 'score-tag',
-                    'modal_route' => route('score-tag-inline-create', ['principleId' => $principle->id]),
-                    'add_button_label' => 'Add new example',
-                ])
-                ->default($principle->principleProjects()->where('project_id', $entry->id)->first()?->scoreTags->pluck('id')->toArray() ?? [])
-                ->wrapper([
-                    'class' => ' form-group col-md-12 full-width-choices',
-                ]);
+                ->type('checklist_filtered')
+                ->number_of_columns(1)
+                ->model(ScoreTag::class)
+                ->options(function($query) use ($principle) {
+                                return $query->where('principle_id', $principle->id)->get()->pluck('name', 'id')->toArray();
+                });
         }
 
         CRUD::field('complete_title')
