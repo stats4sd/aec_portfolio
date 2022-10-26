@@ -201,10 +201,9 @@ class Project extends Model
 
     // Custom relationships to load customScoreTags filtered by each of the 13 principles
     // hard-coded principles, so careful if we change our definition of AE!
-    public function customScoreTags1()
+    public function getCustomScoreTags1Attribute()
     {
-        return $this->hasManyThrough(CustomScoreTag::class, PrincipleProject::class, 'project_id')
-            ->where('principle_id', 1);
+        return $this->principleProjects->where('principle_id', 1)->first()->customScoreTags;
     }
 
     public function customScoreTags2()
