@@ -105,6 +105,10 @@ class Project extends Model
         return $this->belongsTo(Organisation::class);
     }
 
+    public function customScoreTags()
+    {
+        return $this->hasMany(CustomScoreTag::class);
+    }
 
     // Custom relationships to load scoreTags filtered by each of the 13 principles
     // hard-coded principles, so careful if we change our definition of AE!

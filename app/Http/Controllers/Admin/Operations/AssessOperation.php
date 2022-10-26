@@ -82,6 +82,9 @@ trait AssessOperation
     {
         $project = $this->crud->getEntry($request->input('id'));
 
+        // delete all custom score tags for the project
+        $project->customScoreTags()->delete();
+
         // validate fields
         $rules = [];
 
@@ -120,7 +123,7 @@ trait AssessOperation
                 $sync = collect($sync)->combine($syncPivot);
                  $principleProject->scoreTags()->sync($sync->toArray());
             }
-            
+
             $custom_score_tags = json_decode($request->input("customScoreTags" . $principle->id), true);
 
             if ($custom_score_tags) {

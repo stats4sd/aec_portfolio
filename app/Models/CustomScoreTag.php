@@ -22,4 +22,9 @@ class CustomScoreTag extends Model
     {
         return $this->belongsTo(Principle::class);
     }
+
+    public function project()
+    {
+        return $this->belongsTo(Project::class);
+    }
 }
