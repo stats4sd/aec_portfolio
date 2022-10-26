@@ -258,13 +258,12 @@ class ProjectCrudController extends CrudController
 
             CRUD::field('customScoreTags' . $principle->id)
                 ->tab($principle->name)
-                ->label('Add New Example/Indicator for '. $principle->name)
-                ->type('relationship')
-                ->subfields([
-                    ['name'=>'name', 'label'=>'Enter a brief description of the example or indicator'],
-                    ['name'=>'description', 'label'=>'(optional) Enter a longer description for this example or indicator']
-                ])
-                ->pivotSelect(['wrapper' => ['class' => 'd-none']]);
+                ->label('New Example/Indicator for '. $principle->name)
+                ->type('table')
+                ->columns([
+                    'name'=>'Name',
+                    'description'=>'Description (optional)'],
+                );
         }
 
         CRUD::field('complete_title')

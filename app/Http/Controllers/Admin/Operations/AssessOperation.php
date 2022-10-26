@@ -121,10 +121,16 @@ trait AssessOperation
                  $principleProject->scoreTags()->sync($sync->toArray());
             }
             
-            $custom_score_tags = $request->input("customScoreTags" . $principle->id);
-            dump($custom_score_tags);
-            $principleProject->customScoreTags()->createMany($custom_score_tags);
+            $custom_score_tags = json_decode($request->input("customScoreTags" . $principle->id), true);
 
+            if ($custom_score_tags) {
+
+                for ($i = 0, $iMax = count($custom_score_tags); $i < $iMax; $i++) {
+                    $custom_score_tags[$i]['project_id'] = $project->id;
+                }
+
+                $principleProject->customScoreTags()->createMany($custom_score_tags);
+            }
 
         }
 

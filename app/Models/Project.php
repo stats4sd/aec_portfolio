@@ -74,7 +74,7 @@ class Project extends Model
 
     public function principleProjects()
     {
-        return $this->belongsTo(PrincipleProject::class);
+        return $this->hasMany(PrincipleProject::class);
     }
 
     public function getOverallScoreAttribute()
@@ -203,79 +203,67 @@ class Project extends Model
     // hard-coded principles, so careful if we change our definition of AE!
     public function getCustomScoreTags1Attribute()
     {
-        return $this->principleProjects->where('principle_id', 1)->first()->customScoreTags;
+        return $this->principleProjects()->where('principle_id', 1)->first()->customScoreTags->toArray();
     }
 
-    public function customScoreTags2()
+    public function getCustomScoreTags2Attribute()
     {
-        return $this->hasManyThrough(CustomScoreTag::class, PrincipleProject::class, 'project_id')
-            ->where('principle_id', 2);
+        return $this->principleProjects()->where('principle_id', 2)->first()->customScoreTags->toArray();
     }
 
-    public function customScoreTags3()
+    public function getCustomScoreTags3Attribute()
     {
-        return $this->hasManyThrough(CustomScoreTag::class, PrincipleProject::class, 'project_id')
-            ->where('principle_id', 3);
+        return $this->principleProjects()->where('principle_id', 3)->first()->customScoreTags->toArray();
     }
 
-    public function customScoreTags4()
+    public function getCustomScoreTags4Attribute()
     {
-        return $this->hasManyThrough(CustomScoreTag::class, PrincipleProject::class, 'project_id')
-            ->where('principle_id', 4);
+        return $this->principleProjects()->where('principle_id', 4)->first()->customScoreTags->toArray();
     }
 
-    public function customScoreTags5()
+    public function getCustomScoreTags5Attribute()
     {
-        return $this->hasManyThrough(CustomScoreTag::class, PrincipleProject::class, 'project_id')
-            ->where('principle_id', 5);
+        return $this->principleProjects()->where('principle_id', 5)->first()->customScoreTags->toArray();
     }
 
-    public function customScoreTags6()
+    public function getCustomScoreTags6Attribute()
     {
-        return $this->hasManyThrough(CustomScoreTag::class, PrincipleProject::class, 'project_id')
-            ->where('principle_id', 6);
+        return $this->principleProjects()->where('principle_id', 6)->first()->customScoreTags->toArray();
     }
 
-    public function customScoreTags7()
+    public function getCustomScoreTags7Attribute()
     {
-        return $this->hasManyThrough(CustomScoreTag::class, PrincipleProject::class, 'project_id')
-            ->where('principle_id', 7);
+        return $this->principleProjects()->where('principle_id', 7)->first()->customScoreTags->toArray();
     }
 
-    public function customScoreTags8()
+    public function getCustomScoreTags8Attribute()
     {
-        return $this->hasManyThrough(CustomScoreTag::class, PrincipleProject::class, 'project_id')
-            ->where('principle_id', 8);
+        return $this->principleProjects()->where('principle_id', 8)->first()->customScoreTags->toArray();
     }
 
-    public function customScoreTags9()
+    public function getCustomScoreTags9Attribute()
     {
-        return $this->hasManyThrough(CustomScoreTag::class, PrincipleProject::class, 'project_id')
-            ->where('principle_id', 9);
+        return $this->principleProjects()->where('principle_id', 9)->first()->customScoreTags->toArray();
     }
 
-    public function customScoreTags10()
+    public function getCustomScoreTags10Attribute()
     {
-        return $this->hasManyThrough(CustomScoreTag::class, PrincipleProject::class, 'project_id')
-            ->where('principle_id', 10);
+        return $this->principleProjects()->where('principle_id', 10)->first()->customScoreTags->toArray();
     }
 
-    public function customScoreTags11()
+    public function getCustomScoreTags11Attribute()
     {
-        return $this->hasManyThrough(CustomScoreTag::class, PrincipleProject::class, 'project_id')
-            ->where('principle_id', 11);
+        return $this->principleProjects()->where('principle_id', 11)->first()->customScoreTags->toArray();
     }
 
-    public function customScoreTags12()
+    public function getCustomScoreTags12Attribute()
     {
-        return $this->hasManyThrough(CustomScoreTag::class, PrincipleProject::class, 'project_id')
-            ->where('principle_id', 12);
+        return $this->principleProjects()->where('principle_id', 12)->first()->customScoreTags->toArray();
     }
 
-    public function customScoreTags13()
+    public function getCustomScoreTags13Attribute()
     {
-        return $this->hasManyThrough(CustomScoreTag::class, PrincipleProject::class, 'project_id')
-            ->where('principle_id', 13);
+        return $this->principleProjects()->where('principle_id', 13)->first()->customScoreTags->toArray();
     }
 
 }
