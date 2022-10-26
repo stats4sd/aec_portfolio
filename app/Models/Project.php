@@ -199,5 +199,84 @@ class Project extends Model
             ->where('principle_id', 13);
     }
 
+    // Custom relationships to load customScoreTags filtered by each of the 13 principles
+    // hard-coded principles, so careful if we change our definition of AE!
+    public function customScoreTags1()
+    {
+        return $this->hasManyThrough(CustomScoreTag::class, PrincipleProject::class, 'project_id')
+            ->where('principle_id', 1);
+    }
+
+    public function customScoreTags2()
+    {
+        return $this->hasManyThrough(CustomScoreTag::class, PrincipleProject::class, 'project_id')
+            ->where('principle_id', 2);
+    }
+
+    public function customScoreTags3()
+    {
+        return $this->hasManyThrough(CustomScoreTag::class, PrincipleProject::class, 'project_id')
+            ->where('principle_id', 3);
+    }
+
+    public function customScoreTags4()
+    {
+        return $this->hasManyThrough(CustomScoreTag::class, PrincipleProject::class, 'project_id')
+            ->where('principle_id', 4);
+    }
+
+    public function customScoreTags5()
+    {
+        return $this->hasManyThrough(CustomScoreTag::class, PrincipleProject::class, 'project_id')
+            ->where('principle_id', 5);
+    }
+
+    public function customScoreTags6()
+    {
+        return $this->hasManyThrough(CustomScoreTag::class, PrincipleProject::class, 'project_id')
+            ->where('principle_id', 6);
+    }
+
+    public function customScoreTags7()
+    {
+        return $this->hasManyThrough(CustomScoreTag::class, PrincipleProject::class, 'project_id')
+            ->where('principle_id', 7);
+    }
+
+    public function customScoreTags8()
+    {
+        return $this->hasManyThrough(CustomScoreTag::class, PrincipleProject::class, 'project_id')
+            ->where('principle_id', 8);
+    }
+
+    public function customScoreTags9()
+    {
+        return $this->hasManyThrough(CustomScoreTag::class, PrincipleProject::class, 'project_id')
+            ->where('principle_id', 9);
+    }
+
+    public function customScoreTags10()
+    {
+        return $this->hasManyThrough(CustomScoreTag::class, PrincipleProject::class, 'project_id')
+            ->where('principle_id', 10);
+    }
+
+    public function customScoreTags11()
+    {
+        return $this->hasManyThrough(CustomScoreTag::class, PrincipleProject::class, 'project_id')
+            ->where('principle_id', 11);
+    }
+
+    public function customScoreTags12()
+    {
+        return $this->hasManyThrough(CustomScoreTag::class, PrincipleProject::class, 'project_id')
+            ->where('principle_id', 12);
+    }
+
+    public function customScoreTags13()
+    {
+        return $this->hasManyThrough(CustomScoreTag::class, PrincipleProject::class, 'project_id')
+            ->where('principle_id', 13);
+    }
 
 }

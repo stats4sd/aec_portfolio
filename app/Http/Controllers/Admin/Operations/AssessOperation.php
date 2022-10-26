@@ -108,7 +108,7 @@ trait AssessOperation
 
             $principleProject = PrincipleProject::where('project_id', $project->id)->where('principle_id', $principleId)->first();
 
-            $sync = $request->input("scoreTags" . $principle->id);
+            $sync = json_decode($request->input("scoreTags" . $principle->id));
             $syncPivot = [];
 
             if ($sync) {
@@ -120,8 +120,10 @@ trait AssessOperation
                 $sync = collect($sync)->combine($syncPivot);
                  $principleProject->scoreTags()->sync($sync->toArray());
             }
-
-            ///dump($sync);
+            
+            $custom_score_tags = $request->input("customScoreTags" . $principle->id);
+            dump($custom_score_tags);
+            $principleProject->customScoreTags()->createMany($custom_score_tags);
 
 
         }

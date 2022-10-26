@@ -2,26 +2,27 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Enums\AssessmentStatus;
-use App\Http\Controllers\Admin\Operations\AssessOperation;
-use App\Http\Controllers\Admin\Operations\RedlineOperation;
-use App\Http\Controllers\Admin\Traits\UsesSaveAndNextAction;
-use App\Http\Requests\ProjectRequest;
-use App\Imports\ProjectImport;
-use App\Models\Organisation;
-use App\Models\Principle;
 use App\Models\RedLine;
 use App\Models\ScoreTag;
-use Backpack\CRUD\app\Http\Controllers\CrudController;
-use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
-use Backpack\CRUD\app\Library\Widget;
-use Backpack\Pro\Http\Controllers\Operations\FetchOperation;
-use Illuminate\Support\Facades\Auth;
+use App\Models\CustomScoreTag;
+use App\Models\Principle;
 use Illuminate\Support\Str;
-use App\Http\Controllers\Admin\Operations\ImportOperation;
-use Maatwebsite\Excel\Facades\Excel;
+use App\Models\Organisation;
+use App\Imports\ProjectImport;
+use App\Enums\AssessmentStatus;
 use Prologue\Alerts\Facades\Alert;
+use Illuminate\Support\Facades\Auth;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Http\Requests\ProjectRequest;
+use Backpack\CRUD\app\Library\Widget;
 use function mysql_xdevapi\getSession;
+use Backpack\CRUD\app\Http\Controllers\CrudController;
+use App\Http\Controllers\Admin\Operations\AssessOperation;
+use App\Http\Controllers\Admin\Operations\ImportOperation;
+use App\Http\Controllers\Admin\Operations\RedlineOperation;
+use App\Http\Controllers\Admin\Traits\UsesSaveAndNextAction;
+use Backpack\Pro\Http\Controllers\Operations\FetchOperation;
+use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
 
 /**
  * Class ProjectCrudController
@@ -254,6 +255,16 @@ class ProjectCrudController extends CrudController
                 ->options(function($query) use ($principle) {
                                 return $query->where('principle_id', $principle->id)->get()->pluck('name', 'id')->toArray();
                 });
+
+            CRUD::field('customScoreTags' . $principle->id)
+                ->tab($principle->name)
+                ->label('Add New Example/Indicator for '. $principle->name)
+                ->type('relationship')
+                ->subfields([
+                    ['name'=>'name', 'label'=>'Enter a brief description of the example or indicator'],
+                    ['name'=>'description', 'label'=>'(optional) Enter a longer description for this example or indicator']
+                ])
+                ->pivotSelect(['wrapper' => ['class' => 'd-none']]);
         }
 
         CRUD::field('complete_title')
@@ -428,120 +439,120 @@ class ProjectCrudController extends CrudController
         return redirect(url($this->crud->route));
     }
 
-    public function fetchScoreTags1()
+    public function fetchCustomScoreTags1()
     {
         return $this->fetch([
-            'model' => ScoreTag::class,
+            'model' => CustomScoreTag::class,
             'query' => function ($model) {
                 return $model->where('principle_id', 1);
             }
         ]);
     }
 
-    public function fetchScoreTags2()
+    public function fetchCustomScoreTags2()
     {
         return $this->fetch([
-            'model' => ScoreTag::class,
+            'model' => CustomScoreTag::class,
             'query' => function ($model) {
                 return $model->where('principle_id', 2);
             }
         ]);
     }
 
-    public function fetchScoreTags3()
+    public function fetchCustomScoreTags3()
     {
         return $this->fetch([
-            'model' => ScoreTag::class,
+            'model' => CustomScoreTag::class,
             'query' => function ($model) {
                 return $model->where('principle_id', 3);
             }
         ]);
     }
 
-    public function fetchScoreTags4()
+    public function fetchCustomScoreTags4()
     {
         return $this->fetch([
-            'model' => ScoreTag::class,
+            'model' => CustomScoreTag::class,
             'query' => function ($model) {
                 return $model->where('principle_id', 4);
             }
         ]);
     }
 
-    public function fetchScoreTags5()
+    public function fetchCustomScoreTags5()
     {
         return $this->fetch([
-            'model' => ScoreTag::class,
+            'model' => CustomScoreTag::class,
             'query' => function ($model) {
                 return $model->where('principle_id', 5);
             }
         ]);
     }
 
-    public function fetchScoreTags6()
+    public function fetchCustomScoreTags6()
     {
         return $this->fetch([
-            'model' => ScoreTag::class,
+            'model' => CustomScoreTag::class,
             'query' => function ($model) {
                 return $model->where('principle_id', 6);
             }
         ]);
     }
 
-    public function fetchScoreTags7()
+    public function fetchCustomScoreTags7()
     {
         return $this->fetch([
-            'model' => ScoreTag::class,
+            'model' => CustomScoreTag::class,
             'query' => function ($model) {
                 return $model->where('principle_id', 7);
             }
         ]);
     }
 
-    public function fetchScoreTags8()
+    public function fetchCustomScoreTags8()
     {
         return $this->fetch([
-            'model' => ScoreTag::class,
+            'model' => CustomScoreTag::class,
             'query' => function ($model) {
                 return $model->where('principle_id', 8);
             }
         ]);
     }
 
-    public function fetchScoreTags9()
+    public function fetchCustomScoreTags9()
     {
         return $this->fetch([
-            'model' => ScoreTag::class,
+            'model' => CustomScoreTag::class,
             'query' => function ($model) {
                 return $model->where('principle_id', 9);
             }
         ]);
     }
 
-    public function fetchScoreTags10()
+    public function fetchCustomScoreTags10()
     {
         return $this->fetch([
-            'model' => ScoreTag::class,
+            'model' => CustomScoreTag::class,
             'query' => function ($model) {
                 return $model->where('principle_id', 10);
             }
         ]);
     }
 
-    public function fetchScoreTags11()
+    public function fetchCustomScoreTags11()
     {
         return $this->fetch([
-            'model' => ScoreTag::class,
+            'model' => CustomScoreTag::class,
             'query' => function ($model) {
                 return $model->where('principle_id', 11);
             }
         ]);
     }
 
-    public function fetchScoreTags12()
+    public function fetchCustomScoreTags12()
     {
         return $this->fetch([
-            'model' => ScoreTag::class,
+            'model' => CustomScoreTag::class,
             'query' => function ($model) {
                 return $model->where('principle_id', 12);
             }
@@ -549,10 +560,10 @@ class ProjectCrudController extends CrudController
     }
 
 
-    public function fetchScoreTags13()
+    public function fetchCustomScoreTags13()
     {
         return $this->fetch([
-            'model' => ScoreTag::class,
+            'model' => CustomScoreTag::class,
             'query' => function ($model) {
                 return $model->where('principle_id', 13);
             }

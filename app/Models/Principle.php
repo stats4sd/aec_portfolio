@@ -42,4 +42,9 @@ class Principle extends Model
     {
         return $this->hasMany(ScoreTag::class);
     }
+
+    public function customScoreTags()
+    {
+        return $this->hasMany(CustomScoreTag::class);
+    }
 }

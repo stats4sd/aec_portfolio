@@ -17,4 +17,9 @@ class PrincipleProject extends Model
     {
         return $this->belongsToMany(ScoreTag::class);
     }
+
+    public function customScoreTags()
+    {
+        return $this->hasMany(CustomScoreTag::class);
+    }
 }
