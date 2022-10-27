@@ -8,6 +8,7 @@ use App\Models\PrincipleProject;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\ValidationException;
 
 trait AssessOperation
 {
@@ -129,12 +130,19 @@ trait AssessOperation
             if ($custom_score_tags) {
 
                 for ($i = 0, $iMax = count($custom_score_tags); $i < $iMax; $i++) {
-                    if(empty($custom_score_tags[$i])){
+                    
+                    if (empty($custom_score_tags[$i])){
                         unset($custom_score_tags[$i]);
                     }
-                    else {
-                    $custom_score_tags[$i]['project_id'] = $project->id;
+
+                    elseif (!array_key_exists('name', $custom_score_tags[$i])) {
+                        throw ValidationException::withMessages(['customScoreTags' . $principle->id => 'New examples/indicators must have a name']);
                     }
+
+                    else {
+                        $custom_score_tags[$i]['project_id'] = $project->id;
+                    }
+                    
                 }
 
                 $principleProject->customScoreTags()->createMany($custom_score_tags);
