@@ -129,7 +129,12 @@ trait AssessOperation
             if ($custom_score_tags) {
 
                 for ($i = 0, $iMax = count($custom_score_tags); $i < $iMax; $i++) {
+                    if(empty($custom_score_tags[$i])){
+                        unset($custom_score_tags[$i]);
+                    }
+                    else {
                     $custom_score_tags[$i]['project_id'] = $project->id;
+                    }
                 }
 
                 $principleProject->customScoreTags()->createMany($custom_score_tags);
