@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Rules\UniqueProjectCode;
 use Illuminate\Foundation\Http\FormRequest;
 
 class ProjectRequest extends FormRequest
@@ -26,7 +27,7 @@ class ProjectRequest extends FormRequest
     {
         return [
             'name' => 'required|string',
-            'code' => 'required|string|unique:projects,code',
+            'code' => ['required', 'string', new UniqueProjectCode],
             'description' => 'nullable|string',
             'budget' => 'required|integer',
         ];
