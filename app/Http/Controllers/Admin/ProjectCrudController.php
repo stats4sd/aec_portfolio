@@ -151,7 +151,8 @@ class ProjectCrudController extends CrudController
     protected function setupUpdateOperation()
     {
         $this->setupCreateOperation();
-        CRUD::modifyField('code', ['hint'=>'']);
+        CRUD::modifyField('code', ['hint'=>'', 'validationRules'=>'required', 'validationMessages'=>['required'=>'The code field is required']]);
+        $this->crud->setValidation();
     }
 
     public function setupAssessOperation()
