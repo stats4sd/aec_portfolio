@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
 
 class Project extends Model
 {
@@ -23,6 +24,21 @@ class Project extends Model
 
     protected static function booted()
     {
+        static::creating(function($project) {
+            if (is_null($project->code)){
+                $org_project_number = Project::where('organisation_id', $project->organisation_id)->count()+1;
+                
+                $org_name = $project->organisation->name;
+                $org_name_words = explode(' ', $org_name);
+                $org_initials = "";
+                foreach($org_name_words as $word){
+                    $org_initials = $org_initials . $word[0];
+                }
+
+                $project->code = Str::upper($org_initials) . $org_project_number;
+            }
+        });
+
         static::created(function ($project) {
             $project->redLines()->sync(RedLine::all()->pluck('id')->toArray());
 
