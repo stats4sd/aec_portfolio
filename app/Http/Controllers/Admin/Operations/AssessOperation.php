@@ -8,6 +8,7 @@ use App\Models\PrincipleProject;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\ValidationException;
 
 trait AssessOperation
 {
@@ -82,6 +83,9 @@ trait AssessOperation
     {
         $project = $this->crud->getEntry($request->input('id'));
 
+        // delete all custom score tags for the project
+        $project->customScoreTags()->delete();
+
         // validate fields
         $rules = [];
 
@@ -108,7 +112,7 @@ trait AssessOperation
 
             $principleProject = PrincipleProject::where('project_id', $project->id)->where('principle_id', $principleId)->first();
 
-            $sync = $request->input("scoreTags" . $principle->id);
+            $sync = json_decode($request->input("scoreTags" . $principle->id));
             $syncPivot = [];
 
             if ($sync) {
@@ -121,8 +125,28 @@ trait AssessOperation
                  $principleProject->scoreTags()->sync($sync->toArray());
             }
 
-            ///dump($sync);
+            $custom_score_tags = json_decode($request->input("customScoreTags" . $principle->id), true);
 
+            if ($custom_score_tags) {
+
+                for ($i = 0, $iMax = count($custom_score_tags); $i < $iMax; $i++) {
+                    
+                    if (empty($custom_score_tags[$i])){
+                        unset($custom_score_tags[$i]);
+                    }
+
+                    elseif (!array_key_exists('name', $custom_score_tags[$i])) {
+                        throw ValidationException::withMessages(['customScoreTags' . $principle->id => 'New examples/indicators must have a name']);
+                    }
+
+                    else {
+                        $custom_score_tags[$i]['project_id'] = $project->id;
+                    }
+                    
+                }
+
+                $principleProject->customScoreTags()->createMany($custom_score_tags);
+            }
 
         }
 

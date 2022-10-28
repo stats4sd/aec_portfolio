@@ -80,20 +80,20 @@ document.querySelectorAll("[data-update-tab='1']")
             if (e.target.value) {
 
                 // validate value =< 2
-                if(e.target.value > 2  || e.target.value < 0) {
+                if (e.target.value > 2 || e.target.value < 0) {
                     console.log('invalid');
                     e.target.classList.add('is-invalid')
 
                     let validationMessage = document.createElement("p");
-                    validationMessage.setAttribute("id", "custom-validation-text-rating_"+ e.target.getAttribute('data-tab'))
+                    validationMessage.setAttribute("id", "custom-validation-text-rating_" + e.target.getAttribute('data-tab'))
                     validationMessage.innerHTML = '<p class="invalid-feedback d-block">Ratings must be between 0 and 2</p>'
 
                     e.target.after(validationMessage)
                 } else {
                     console.log('VALID');
                     e.target.classList.remove('is-invalid')
-                    let validationMessage = document.getElementById("custom-validation-text-rating_"+ e.target.getAttribute('data-tab'))
-                    if(validationMessage) validationMessage.remove()
+                    let validationMessage = document.getElementById("custom-validation-text-rating_" + e.target.getAttribute('data-tab'))
+                    if (validationMessage) validationMessage.remove()
 
 
                 }
@@ -114,47 +114,27 @@ document.querySelectorAll("[data-update-tab='1']")
 
 document.querySelectorAll("[data-to-disable]")
     .forEach(el => {
+        console.log('data-to-disable', el);
         el.addEventListener('change', e => {
             let principleId = e.target.getAttribute('data-to-disable');
-
-            if (e.target.checked) {
-
-                crud.field(principleId + '_rating').disable();
-                crud.field(principleId + '_rating_comment').disable();
-                crud.field('scoreTags' + principleId).disable();
-
-                setRelatedTabToComplete(crud.field(principleId + '_rating').input)
-
-            } else {
-                crud.field(principleId + '_rating').enable();
-                crud.field(principleId + '_rating_comment').enable();
-                crud.field('scoreTags' + principleId).enable();
-
-
-                if (crud.field(principleId + '_rating').value === "") {
-                    setRelatedTabToIncomplete(crud.field(principleId + '_rating').input)
-                }
-            }
-
+            toggleFieldEnabled(principleId, e.target.checked)
             updateCount()
         })
 
-        //set initial state
+//set initial state
         if (el.checked) {
             let principleId = el.getAttribute('data-to-disable');
 
-            crud.field(principleId + '_rating').disable();
-            crud.field(principleId + '_rating_comment').disable();
-            crud.field(principleId + '_scoreTags').disable();
+            // hack to fix issue where checklist and table fields are disabled before they are fully initialised:
+            setTimeout(() =>toggleFieldEnabled(principleId, true), 500)
 
-            setRelatedTabToComplete(crud.field(principleId + '_rating').input)
         }
     })
 
 document.querySelector('[data-check-complete]').addEventListener('change', e => {
 
     let tab = document.querySelector('[tab_name="confirm-assessment"]')
-    if(e.target.checked) {
+    if (e.target.checked) {
         setTabAsComplete(tab)
     } else {
         setTabAsIncomplete(tab)
@@ -162,8 +142,35 @@ document.querySelector('[data-check-complete]').addEventListener('change', e => 
 })
 
 let tabComplete = document.querySelector('[tab_name="confirm-assessment"]')
-if(document.querySelector('[data-check-complete]').checked) {
+if (document.querySelector('[data-check-complete]').checked) {
     setTabAsComplete(tabComplete)
 } else {
     setTabAsIncomplete(tabComplete)
+}
+
+function toggleFieldEnabled(principleId, shouldDisable) {
+
+    console.log('principleId', principleId);
+    console.log('should disable', shouldDisable);
+
+    if (shouldDisable) {
+        crud.field(principleId + '_rating').disable();
+        crud.field(principleId + '_rating_comment').disable();
+
+        crud.field('scoreTags' + principleId).disable();
+        crud.field('customScoreTags' + principleId).disable();
+
+        setRelatedTabToComplete(crud.field(principleId + '_rating').input)
+
+    } else {
+
+        crud.field(principleId + '_rating').enable();
+        crud.field(principleId + '_rating_comment').enable();
+        crud.field('scoreTags' + principleId).enable();
+        crud.field('customScoreTags' + principleId).enable();
+
+        if (crud.field(principleId + '_rating').value === "") {
+            setRelatedTabToIncomplete(crud.field(principleId + '_rating').input)
+        }
+    }
 }

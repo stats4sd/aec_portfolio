@@ -89,10 +89,4 @@ class ScoreTagCrudController extends CrudController
         $this->setupCreateOperation();
     }
 
-    public function setupInlineCreateOperation()
-    {
-
-        CRUD::field('name')->label('Enter a brief description of the evidence or indicator.');
-        CRUD::field('description')->label('(optional) Enter a longer description for this evidence or indicator');
-    }
 }

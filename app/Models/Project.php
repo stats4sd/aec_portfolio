@@ -90,7 +90,7 @@ class Project extends Model
 
     public function principleProjects()
     {
-        return $this->belongsTo(PrincipleProject::class);
+        return $this->hasMany(PrincipleProject::class);
     }
 
     public function getOverallScoreAttribute()
@@ -121,6 +121,10 @@ class Project extends Model
         return $this->belongsTo(Organisation::class);
     }
 
+    public function customScoreTags()
+    {
+        return $this->hasMany(CustomScoreTag::class);
+    }
 
     // Custom relationships to load scoreTags filtered by each of the 13 principles
     // hard-coded principles, so careful if we change our definition of AE!
@@ -215,5 +219,71 @@ class Project extends Model
             ->where('principle_id', 13);
     }
 
+    // Custom relationships to load customScoreTags filtered by each of the 13 principles
+    // hard-coded principles, so careful if we change our definition of AE!
+    public function getCustomScoreTags1Attribute()
+    {
+        return $this->principleProjects()->where('principle_id', 1)->first()->customScoreTags->toArray();
+    }
+
+    public function getCustomScoreTags2Attribute()
+    {
+        return $this->principleProjects()->where('principle_id', 2)->first()->customScoreTags->toArray();
+    }
+
+    public function getCustomScoreTags3Attribute()
+    {
+        return $this->principleProjects()->where('principle_id', 3)->first()->customScoreTags->toArray();
+    }
+
+    public function getCustomScoreTags4Attribute()
+    {
+        return $this->principleProjects()->where('principle_id', 4)->first()->customScoreTags->toArray();
+    }
+
+    public function getCustomScoreTags5Attribute()
+    {
+        return $this->principleProjects()->where('principle_id', 5)->first()->customScoreTags->toArray();
+    }
+
+    public function getCustomScoreTags6Attribute()
+    {
+        return $this->principleProjects()->where('principle_id', 6)->first()->customScoreTags->toArray();
+    }
+
+    public function getCustomScoreTags7Attribute()
+    {
+        return $this->principleProjects()->where('principle_id', 7)->first()->customScoreTags->toArray();
+    }
+
+    public function getCustomScoreTags8Attribute()
+    {
+        return $this->principleProjects()->where('principle_id', 8)->first()->customScoreTags->toArray();
+    }
+
+    public function getCustomScoreTags9Attribute()
+    {
+        return $this->principleProjects()->where('principle_id', 9)->first()->customScoreTags->toArray();
+    }
+
+    public function getCustomScoreTags10Attribute()
+    {
+        return $this->principleProjects()->where('principle_id', 10)->first()->customScoreTags->toArray();
+    }
+
+    public function getCustomScoreTags11Attribute()
+    {
+        return $this->principleProjects()->where('principle_id', 11)->first()->customScoreTags->toArray();
+    }
+
+    public function getCustomScoreTags12Attribute()
+    {
+        return $this->principleProjects()->where('principle_id', 12)->first()->customScoreTags->toArray();
+    }
+
+    public function getCustomScoreTags13Attribute()
+    {
+        return $this->principleProjects()->where('principle_id', 13)->first()->customScoreTags->toArray();
+    }
 
 }
