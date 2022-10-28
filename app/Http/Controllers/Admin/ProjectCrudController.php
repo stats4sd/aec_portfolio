@@ -125,7 +125,7 @@ class ProjectCrudController extends CrudController
         CRUD::setValidation(ProjectRequest::class);
 
         CRUD::field('title')->type('section-title')
-            ->content('Enter the key project details below. The code should uniquely identify the project within your portfolio')
+            ->content('Enter the key project details below.')
             ->view_namespace('stats4sd.laravel-backpack-section-title::fields');
 
         if (Auth::user()?->hasRole('admin') || Auth::user()?->organisations()->count() > 1)
@@ -136,7 +136,7 @@ class ProjectCrudController extends CrudController
             CRUD::field('organisation_title')->type('section-title')->view_namespace('stats4sd.laravel-backpack-section-title::fields')->content('Creating a Project for <b>' . $organisation->name . '</b>');
         }
         CRUD::field('name');
-        CRUD::field('code');
+        CRUD::field('code')->hint('The code should uniquely identify the project within your organisation\'s porfolio. Leave blank for an auto-generated code.');
         CRUD::field('description');
         CRUD::field('budget')->prefix('USD');
 
@@ -151,6 +151,8 @@ class ProjectCrudController extends CrudController
     protected function setupUpdateOperation()
     {
         $this->setupCreateOperation();
+        CRUD::modifyField('code', ['hint'=>'', 'validationRules'=>'required', 'validationMessages'=>['required'=>'The code field is required']]);
+        $this->crud->setValidation();
     }
 
     public function setupAssessOperation()
