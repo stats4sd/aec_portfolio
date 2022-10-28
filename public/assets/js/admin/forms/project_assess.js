@@ -76,32 +76,56 @@ crud.field('assessment_incomplete').show();
 document.querySelectorAll("[data-update-tab='1']")
 
     .forEach((el) => {
+
+        el.addEventListener('keydown', checkEnter)
         el.addEventListener('change', (e) => {
-            if (e.target.value) {
 
-                // validate value =< 2
-                if (e.target.value > 2 || e.target.value < 0) {
-                    console.log('invalid');
-                    e.target.classList.add('is-invalid')
-
-                    let validationMessage = document.createElement("p");
-                    validationMessage.setAttribute("id", "custom-validation-text-rating_" + e.target.getAttribute('data-tab'))
-                    validationMessage.innerHTML = '<p class="invalid-feedback d-block">Ratings must be between 0 and 2</p>'
-
-                    e.target.after(validationMessage)
-                } else {
-                    console.log('VALID');
-                    e.target.classList.remove('is-invalid')
-                    let validationMessage = document.getElementById("custom-validation-text-rating_" + e.target.getAttribute('data-tab'))
-                    if (validationMessage) validationMessage.remove()
-
-
-                }
-
-                setRelatedTabToComplete(e.target);
-            } else {
+            if (!e.target.value) {
                 setRelatedTabToIncomplete(e.target);
+                return;
             }
+
+            if (isNaN(Number(e.target.value))) {
+                e.target.classList.add('is-invalid')
+                let validationMessage = document.getElementById("custom-validation-text-rating_" + e.target.getAttribute('data-tab'))
+                if (validationMessage) validationMessage.remove()
+
+                validationMessage = document.createElement("p");
+                validationMessage.setAttribute("id", "custom-validation-text-rating_" + e.target.getAttribute('data-tab'))
+                validationMessage.innerHTML = '<p class="invalid-feedback d-block">Ratings must be a number between 0 and 2</p>'
+                e.target.after(validationMessage)
+
+                setRelatedTabToIncomplete(e.target);
+                updateCount()
+
+                return;
+            }
+
+            // validate value =< 2
+            if (e.target.value > 2 || e.target.value < 0) {
+                console.log('invalid');
+                e.target.classList.add('is-invalid')
+                let validationMessage = document.getElementById("custom-validation-text-rating_" + e.target.getAttribute('data-tab'))
+                if (validationMessage) validationMessage.remove()
+                validationMessage = document.createElement("p");
+                validationMessage.setAttribute("id", "custom-validation-text-rating_" + e.target.getAttribute('data-tab'))
+                validationMessage.innerHTML = '<p class="invalid-feedback d-block">Ratings must be between 0 and 2</p>'
+
+                e.target.after(validationMessage)
+                setRelatedTabToIncomplete(e.target);
+                updateCount()
+                return;
+            }
+
+
+            console.log('VALID');
+            e.target.classList.remove('is-invalid')
+            let validationMessage = document.getElementById("custom-validation-text-rating_" + e.target.getAttribute('data-tab'))
+            if (validationMessage) validationMessage.remove()
+
+
+            setRelatedTabToComplete(e.target);
+
             updateCount()
         })
 
@@ -126,7 +150,7 @@ document.querySelectorAll("[data-to-disable]")
             let principleId = el.getAttribute('data-to-disable');
 
             // hack to fix issue where checklist and table fields are disabled before they are fully initialised:
-            setTimeout(() =>toggleFieldEnabled(principleId, true), 500)
+            setTimeout(() => toggleFieldEnabled(principleId, true), 500)
 
         }
     })
@@ -174,3 +198,11 @@ function toggleFieldEnabled(principleId, shouldDisable) {
         }
     }
 }
+
+function checkEnter(e) {
+    var key = e.charCode || e.keyCode || 0;
+    if (key == 13) {
+        e.preventDefault();
+    }
+}
+
