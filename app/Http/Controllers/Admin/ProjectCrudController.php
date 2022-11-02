@@ -6,6 +6,7 @@ use App\Models\RedLine;
 use App\Models\ScoreTag;
 use App\Models\CustomScoreTag;
 use App\Models\Principle;
+use Backpack\CRUD\app\Http\Controllers\Operations\ShowOperation;
 use Illuminate\Support\Str;
 use App\Models\Organisation;
 use App\Imports\ProjectImport;
@@ -43,6 +44,7 @@ class ProjectCrudController extends CrudController
     use AssessOperation;
     use FetchOperation;
     use UsesSaveAndNextAction;
+    use ShowOperation;
 
     /**
      * Configure the CrudPanel object. Apply settings to all operations.
@@ -57,6 +59,8 @@ class ProjectCrudController extends CrudController
 
         CRUD::set('import.importer', ProjectImport::class);
         CRUD::set('import.template-path', 'AE Marker - Project Import Template.xlsx');
+
+        CRUD::setShowView('projects.show');
 
     }
 
@@ -381,6 +385,8 @@ class ProjectCrudController extends CrudController
             ]);
 
     }
+
+
 
 
     public function fetchScoreTag()
