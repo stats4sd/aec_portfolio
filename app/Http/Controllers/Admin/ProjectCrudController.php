@@ -39,12 +39,12 @@ class ProjectCrudController extends CrudController
 
     //use \Backpack\CRUD\app\Http\Controllers\Operations\ShowOperation;
 
+    use ShowOperation;
     use ImportOperation;
-    use RedlineOperation;
     use AssessOperation;
+    use RedlineOperation;
     use FetchOperation;
     use UsesSaveAndNextAction;
-    use ShowOperation;
 
     /**
      * Configure the CrudPanel object. Apply settings to all operations.

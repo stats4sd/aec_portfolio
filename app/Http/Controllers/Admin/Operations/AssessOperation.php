@@ -46,7 +46,7 @@ trait AssessOperation
         });
 
         $this->crud->operation('list', function () {
-            $this->crud->addButton('line', 'assess', 'view', 'crud::buttons.assess')->before('update');
+            $this->crud->addButton('line', 'assess', 'view', 'crud::buttons.assess')->makeFirst();
         });
 
         $this->crud->setupDefaultSaveActions();
@@ -130,7 +130,7 @@ trait AssessOperation
             if ($custom_score_tags) {
 
                 for ($i = 0, $iMax = count($custom_score_tags); $i < $iMax; $i++) {
-                    
+
                     if (empty($custom_score_tags[$i])){
                         unset($custom_score_tags[$i]);
                     }
@@ -142,7 +142,7 @@ trait AssessOperation
                     else {
                         $custom_score_tags[$i]['project_id'] = $project->id;
                     }
-                    
+
                 }
 
                 $principleProject->customScoreTags()->createMany($custom_score_tags);

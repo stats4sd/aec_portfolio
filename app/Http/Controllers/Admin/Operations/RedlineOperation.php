@@ -48,7 +48,7 @@ trait RedlineOperation
 
         $this->crud->operation('list', function () {
             // $this->crud->addButton('top', 'assess', 'view', 'crud::buttons.assess');
-            $this->crud->addButton('line', 'redline', 'view', 'crud::buttons.redline')->before('update');
+            $this->crud->addButton('line', 'redline', 'view', 'crud::buttons.redline')->makeFirst();
         });
 
         $this->crud->setupDefaultSaveActions();
