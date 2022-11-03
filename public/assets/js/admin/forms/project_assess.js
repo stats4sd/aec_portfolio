@@ -145,7 +145,7 @@ document.querySelectorAll("[data-to-disable]")
             updateCount()
         })
 
-//set initial state
+        //set initial state
         if (el.checked) {
             let principleId = el.getAttribute('data-to-disable');
 
