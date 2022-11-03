@@ -140,7 +140,7 @@ class Project extends Model
 
                 $total = $nonNaPrinciples->sum(fn($pr) => $pr->pivot->rating);
 
-                return $total / $totalPossible * 100;
+                return round($total / $totalPossible * 100, 1);
 
             }
 
