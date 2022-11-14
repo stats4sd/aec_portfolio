@@ -48,9 +48,9 @@ class OrganisationExport implements FromCollection, WithHeadings, WithStrictNull
             }
 
             foreach(Principle::all() as $principle) {
-                $principleProject = $project->principleProjects->firstWhere('id', $principle->id);
-                $export[] = $principleProject->rating ?? 'na';
-                $export[] = $principleProject->rating_comment ?? '-';
+                $principleProject = $project->principleProjects->firstWhere('principle_id', $principle->id);
+                $projectExport[] = $principleProject->rating == -99 ? 'na'  : $principleProject->rating;
+                $projectExport[] = $principleProject->rating_comment ?? '-';
             }
 
             $export[] = $projectExport;
