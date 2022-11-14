@@ -48,10 +48,9 @@ class OrganisationCrudController extends CrudController
      */
     protected function setupListOperation()
     {
-
         CRUD::setResponsiveTable(false);
         CRUD::column('name');
-        CRUD::column('projects_count')->type('relationship_count');
+        CRUD::column('projects')->type('relationship_count');
 
     }
 

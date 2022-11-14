@@ -39,7 +39,7 @@ Route::group([
     Route::put('organisation/{organisation}/members/{user}', [OrganisationMemberController::class, 'update'])->name('organisationmembers.update');
     Route::delete('organisation/{organisation}/members/{user}', [OrganisationMemberController::class, 'destroy'])->name('organisationmembers.destroy');
 
-    Route::get('organisation/{organisation}/portfolio', [OrganisationController::class, 'portfolio']);
+    Route::get('organisation/{organisation}/portfolio', [OrganisationController::class, 'portfolio'])->name('organisation.portfolio');
     Route::get('organisation/{organisation}/export', [OrganisationController::class, 'export'])->name('organisation.export');
 
     Route::get('dashboard', function () {

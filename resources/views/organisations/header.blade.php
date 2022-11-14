@@ -41,5 +41,10 @@
             </div>
         </div>
     </div>
-    <a href="{{ route('organisation.export', ['organisation' => $organisation]) }}" class="btn btn-primary"> Export Organisation Project Data</a>
+        <div class="btn-group">
+            <a href="{{ route('organisation.portfolio', ['organisation' => $organisation]) }}" class="btn btn-info">
+                Review Portfolio</a>
+            <a href="{{ route('organisation.export', ['organisation' => $organisation]) }}" class="btn btn-primary">
+                Export Organisation Project Data</a>
+        </div>
 </div>
