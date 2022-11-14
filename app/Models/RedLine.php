@@ -29,4 +29,10 @@ class RedLine extends Model
                 'value'
             ]);
     }
+
+    public function failingProjects()
+    {
+        return $this->belongsToMany(Project::class)
+            ->wherePivot('value', 1);
+    }
 }

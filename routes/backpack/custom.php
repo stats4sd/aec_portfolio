@@ -13,6 +13,7 @@ use App\Http\Controllers\Admin\RedLineCrudController;
 use App\Http\Controllers\Admin\RoleInviteCrudController;
 use App\Http\Controllers\Admin\ScoreTagCrudController;
 use App\Http\Controllers\Admin\UserCrudController;
+use App\Http\Controllers\OrganisationController;
 use App\Http\Controllers\OrganisationMemberController;
 
 Route::group([
@@ -38,21 +39,22 @@ Route::group([
     Route::put('organisation/{organisation}/members/{user}', [OrganisationMemberController::class, 'update'])->name('organisationmembers.update');
     Route::delete('organisation/{organisation}/members/{user}', [OrganisationMemberController::class, 'destroy'])->name('organisationmembers.destroy');
 
-    Route::get('dashboard', function() {
-        if(Auth::user()->organisations()->count() > 1 || Auth::user()->hasRole('admin')) {
+    Route::get('organisation/{organisation}/portfolio', [OrganisationController::class, 'portfolio']);
+    Route::get('organisation/{organisation}/export', [OrganisationController::class, 'export'])->name('organisation.export');
+
+    Route::get('dashboard', function () {
+        if (Auth::user()->organisations()->count() > 1 || Auth::user()->hasRole('admin')) {
             return redirect(backpack_url('organisation'));
         }
 
-        if(Auth::user()->organisations()->count() === 1) {
-            return redirect(backpack_url('organisation/'.Auth::user()->organisations->first()->id.'/show'));
+        if (Auth::user()->organisations()->count() === 1) {
+            return redirect(backpack_url('organisation/' . Auth::user()->organisations->first()->id . '/show'));
         }
-
-
 
         abort(403, "It looks like you are not a member of any organisation, and are not a site admin. If you think this is incorrect, please contact support@stats4sd.org");
     })->name('backpack.dashboard');
 
+    Route::get('/', [Backpack\CRUD\app\Http\Controllers\AdminController::class, 'redirect'])->name('backpack');
 
-    Route::get('/', [  Backpack\CRUD\app\Http\Controllers\AdminController::class, 'redirect'])->name('backpack');
 
 }); // this should be the absolute last line of this file

@@ -1,4 +1,6 @@
 {
     "/js/app.js": "/js/app.js",
+    "/js/radarChart.js": "/js/radarChart.js",
+    "/js/comparisonCharts.js": "/js/comparisonCharts.js",
     "/css/app.css": "/css/app.css"
 }

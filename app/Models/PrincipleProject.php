@@ -13,6 +13,11 @@ class PrincipleProject extends Model
     public $primaryKey = 'id';
     public $table = 'principle_project';
 
+    public function principle()
+    {
+        return $this->belongsTo(Principle::class);
+    }
+
     public function scoreTags()
     {
         return $this->belongsToMany(ScoreTag::class);

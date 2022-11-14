@@ -82,9 +82,7 @@ trait RedlineOperation
     public function postRedlineForm(Request $request)
     {
 
-        // validate - if the redlines are complete, all entries must have a value:
 
-        // TODO: Make this work!
         if($request->has('redlines_compelete') && $request->redlines_complete === 1) {
             foreach(RedLine::all() as $redline) {
                 if($request->has('redline_value_' . $redline->id)) {
@@ -110,10 +108,16 @@ trait RedlineOperation
         $project->redlines()->sync($updates);
 
         // if the main assessment is already in progress, only update the status if the redlines are 'no longer' complete:
-        if (collect(AssessmentStatus::InProgress, AssessmentStatus::Complete)->contains($project->assment_status)) {
+        if (collect(AssessmentStatus::InProgress, AssessmentStatus::Complete)->contains($project->assessment_status)) {
             $project->assessment_status = !$request->redlines_complete ? AssessmentStatus::RedlinesIncomplete : $project->assessment_status;
         } else {
-            $project->assessment_status = $request->redlines_complete ? AssessmentStatus::RedlinesComplete : AssessmentStatus::RedlinesIncomplete;
+            // if a redline fails, the assessment is complete!
+            if($project->failingRedlines()->count() > 0) {
+                $project->assessment_status = AssessmentStatus::Complete;
+            } else {
+                $project->assessment_status = $request->redlines_complete ? AssessmentStatus::RedlinesComplete : AssessmentStatus::RedlinesIncomplete;
+
+            }
         }
 
         $project->save();
