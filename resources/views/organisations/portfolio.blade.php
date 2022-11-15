@@ -266,7 +266,7 @@
                 <div class="col-md-6 col-12">
                     <div class="card">
                         <div class="card-header">
-                            <h4 class="card-title"><b>Your portfolio</b>, principle by principle</h4>
+                            <h4 class="card-title"><b>Your portfolio</b></h4>
                         </div>
                         <div class="card-body">
                             <div id="yourPortfolio" style="height: 500px"></div>
@@ -276,12 +276,10 @@
                 <div class="col-md-6 col-12">
                     <div class="card">
                         <div class="card-header">
-                            <h4 class="card-title"><b>All projects in the platform</b>, principle by principle</h4>
+                            <h4 class="card-title"><b>All projects in the platform</b></h4>
                         </div>
                         <div class="card-body">
                             <div id="allPortfolio" style="height: 500px"></div>
-
-
                         </div>
                     </div>
                 </div>
@@ -292,7 +290,7 @@
                 <div class="col-md-6 col-12">
                     <div class="card">
                         <div class="card-header">
-                            <h4 class="card-title"><b>Your portfolio</b>, principle by principle</h4>
+                            <h4 class="card-title"><b>Your portfolio</b>
                         </div>
                         <div class="card-body">
                             <table class="table table-borderless">
@@ -313,7 +311,7 @@
                 <div class="col-md-6 col-12">
                     <div class="card">
                         <div class="card-header">
-                            <h4 class="card-title"><b>All projects in the platform</b>, principle by principle</h4>
+                            <h4 class="card-title"><b>All projects in the platform</b></h4>
                         </div>
                         <div class="card-body">
                             <table class="table table-borderless">
