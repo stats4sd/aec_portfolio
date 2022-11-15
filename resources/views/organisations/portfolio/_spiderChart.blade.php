@@ -6,6 +6,8 @@
     </div>
     <div class="card-body">
         <div id="radarChart"></div>
-        <small>Calculation of average excludes non-applicable principles</small>
+        <small>Calculation of average excludes non-applicable principles<br/>
+            Only includes projects that passed the redlines.
+        </small>
     </div>
 </div>

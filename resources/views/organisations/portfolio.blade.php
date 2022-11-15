@@ -270,6 +270,7 @@
                         </div>
                         <div class="card-body">
                             <div id="yourPortfolio" style="height: 500px"></div>
+                            <small>Only includes projects that passed the redlines</small>
                         </div>
                     </div>
                 </div>
@@ -280,6 +281,7 @@
                         </div>
                         <div class="card-body">
                             <div id="allPortfolio" style="height: 500px"></div>
+                            <small>Only includes projects that passed the redlines</small>
                         </div>
                     </div>
                 </div>
@@ -305,6 +307,7 @@
                                     </tr>
                                 @endforeach
                             </table>
+                            <small>Only includes projects that passed the redlines</small>
                         </div>
                     </div>
                 </div>
@@ -327,6 +330,7 @@
                                     </tr>
                                 @endforeach
                             </table>
+                            <small>Only includes projects that passed the redlines</small>
                         </div>
                     </div>
                 </div>
