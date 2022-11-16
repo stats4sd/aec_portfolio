@@ -216,12 +216,22 @@
         </li>
         <li class="nav-item" role="presentation">
             <button class="nav-link" id="tab-2" data-toggle="tab" data-target="#tab2Content" type="button">
-                Comparisions - Charts
+                Principles - Score Distribution
             </button>
         </li>
         <li class="nav-item" role="presentation">
             <button class="nav-link" id="tab-3" data-toggle="tab" data-target="#tab3Content" type="button">
-                Comparisions - Data
+                Principles - Average Scroes
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="tab-4" data-toggle="tab" data-target="#tab4Content" type="button">
+                Redlines
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="tab-5" data-toggle="tab" data-target="#tab5Content" type="button">
+                Non-Applicable Principles
             </button>
         </li>
     </ul>
@@ -230,34 +240,9 @@
             <div class="row">
                 <div class="col-md-6 col-12">
                     @include('organisations.portfolio._keyIndicators')
-                    @include('organisations.portfolio._redlines')
                 </div>
                 <div class="col-md-6 col-12">
                     @include('organisations.portfolio._spiderChart')
-                    <div class="card mt-3">
-                        <div class="card-header">
-                            <h4 class="card-title">Non Applicable Principles</h4>
-                        </div>
-                        <div class="card-body">
-                            <table class="table table-borderless">
-                                <tr>
-                                    <th>Redline</th>
-                                    <th>% Projects that marked a principle as Not Applicable</th>
-                                </tr>
-                                @foreach($principles as $principle)
-                                    <tr>
-                                        <td>{{ $principle->name }}</td>
-                                        <td>{{ $naPrinciples[$principle->name] > 0 ? ($naPrinciples[$principle->name] / $passedProjects->count()) * 100 : 0}}
-                                            %
-                                        </td>
-                                    </tr>
-
-                                @endforeach
-                            </table>
-                            <small>Only Includes projects that passed all redlines</small>
-
-                        </div>
-                    </div>
                 </div>
             </div>
         </div>
@@ -335,6 +320,12 @@
                     </div>
                 </div>
             </div>
+        </div>
+        <div class="tab-pane" id="tab4Content">
+            @include('organisations.portfolio._redlines')
+        </div>
+        <div class="tab-pane" id="tab5Content">
+            @include('organisations.portfolio.nonApplicablePrinciples')
         </div>
     </div>
 
