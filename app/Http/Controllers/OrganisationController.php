@@ -72,7 +72,8 @@ class OrganisationController extends Controller
             })->get();
 
         // comparative
-        $allRatings = Project::where('assessment_status', "=", AssessmentStatus::Complete)
+        $allRatings = Project::withoutGlobalScope('organisation')
+        ->where('assessment_status', "=", AssessmentStatus::Complete)
             ->with('principleProjects.principle')
             ->get()
             ->map(function ($project) {
