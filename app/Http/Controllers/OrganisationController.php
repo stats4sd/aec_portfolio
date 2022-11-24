@@ -132,6 +132,8 @@ class OrganisationController extends Controller
 
         }
 
+        // TEMP HACK
+        $currency = $organisation->projects->first()->currency;
 
 
 
@@ -152,6 +154,7 @@ class OrganisationController extends Controller
             'allPortfolio' => $allPortfolio,
             'naPrinciples' => $naPrinciples,
             'passedProjects' => $passedProjects,
+            'currency' => $currency,
         ]);
     }
 

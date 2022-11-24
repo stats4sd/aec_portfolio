@@ -14,13 +14,13 @@
             </tr>
             <tr>
                 <th class="text-right mr-4">Total Budget for the period</th>
-                <td>{{  number_format($totalBudget)}} USD</td>
+                <td>{{ $currency }} {{  number_format($totalBudget)}}</td>
             </tr>
             <tr>
                 <th class="text-right mr-4">Agroecology Directed Budget<span
                             class="text-primary">*</span>
                 </th>
-                <td>{{ number_format($agroecologyBudget) }} USD</td>
+                <td>{{ $currency }} {{ number_format($agroecologyBudget) }}</td>
             </tr>
         </table>
         <span class="text-sm-left font-xs"><span class="text-primary">*</span> <span

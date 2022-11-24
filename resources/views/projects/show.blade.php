@@ -9,8 +9,8 @@
         <h1>Project Review Page</h1>
         <h2>{{ $entry->organisation->name }} - {{ $entry->name }}</h2>
 
-        <div class="row mt-3">
-            <div class="col-12 col-md-6 col-lg-6">
+        <div class="row mt-3 mb-4">
+            <div class="col-12 col-md-6 col-lg-6 pt-4 mt-4 d-flex align-items-center">
 
                 <table class="table table-borderless">
                     <tr>
@@ -19,7 +19,7 @@
                     </tr>
                     <tr>
                         <td class="text-right pr-4 mr-2">Budget:</td>
-                        <td>USD {{ $entry->budget }}</td>
+                        <td>{{ $entry->currency }} {{ $entry->budget }}</td>
                     </tr>
                     <tr>
                         <td class="text-right pr-4 mr-2">Status:</td>
@@ -47,6 +47,11 @@
                 </table>
             </div>
 
+            <div class="col-12 col-md-6">
+                <div id="radarChart"></div>
+            </div>
+        </div>
+        <div class="row">
             <div class="col-12">
                 <table class="table table-borderless table-responsive">
                     <tr>
@@ -180,4 +185,44 @@
 
 @section('after_scripts')
     <script src="{{ mix('js/app.js') }}"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js" charset="utf-8"></script>
+
+    <script src="{{asset('js/radarChart.js')}}"></script>
+    <script>
+
+        /* Radar chart design created by Nadieh Bremer - VisualCinnamon.com */
+
+        //////////////////////////////////////////////////////////////
+        //////////////////////// Set-Up //////////////////////////////
+        //////////////////////////////////////////////////////////////
+
+        var margin = {top: 100, right: 100, bottom: 100, left: 100},
+            width = document.getElementById('radarChart').offsetWidth - margin.right - margin.left
+        height = Math.min(width, window.innerHeight - margin.top - margin.bottom - 20);
+
+        console.log('witdh', width);
+        //////////////////////////////////////////////////////////////
+        ////////////////////////// Data //////////////////////////////
+        //////////////////////////////////////////////////////////////
+
+        var data = [{!! $spiderData->values()->toJson() !!}];
+        //////////////////////////////////////////////////////////////
+        //////////////////// Draw the Chart //////////////////////////
+        //////////////////////////////////////////////////////////////
+
+        var color = d3.scale.ordinal()
+            .range(["#EDC951", "#CC333F", "#00A0B0"]);
+
+        var radarChartOptions = {
+            w: width,
+            h: height,
+            margin: margin,
+            maxValue: 2,
+            levels: 4,
+            roundStrokes: true,
+            color: color
+        };
+
+        window.spiderChart("#radarChart", data, radarChartOptions);
+    </script>
 @endsection
