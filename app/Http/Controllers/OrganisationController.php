@@ -72,7 +72,8 @@ class OrganisationController extends Controller
             })->get();
 
         // comparative
-        $allRatings = Project::where('assessment_status', "=", AssessmentStatus::Complete)
+        $allRatings = Project::withoutGlobalScope('organisation')
+        ->where('assessment_status', "=", AssessmentStatus::Complete)
             ->with('principleProjects.principle')
             ->get()
             ->map(function ($project) {
@@ -131,6 +132,8 @@ class OrganisationController extends Controller
 
         }
 
+        // TEMP HACK
+        $currency = $organisation->projects->first()->currency;
 
 
 
@@ -151,6 +154,7 @@ class OrganisationController extends Controller
             'allPortfolio' => $allPortfolio,
             'naPrinciples' => $naPrinciples,
             'passedProjects' => $passedProjects,
+            'currency' => $currency,
         ]);
     }
 
