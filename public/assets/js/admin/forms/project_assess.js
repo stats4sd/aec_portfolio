@@ -1,4 +1,3 @@
-
 // when a principle rating is added; mark that tab as green / complete:
 
 function setTabAsComplete(tab) {
@@ -78,6 +77,11 @@ document.querySelectorAll("[data-update-tab='1']")
 
             if (!e.target.value) {
                 setRelatedTabToIncomplete(e.target);
+
+                e.target.classList.remove('is-invalid')
+                let validationMessage = document.getElementById("custom-validation-text-rating_" + e.target.getAttribute('data-tab'))
+                if (validationMessage) validationMessage.remove()
+
                 return;
             }
 
@@ -173,9 +177,14 @@ function toggleFieldEnabled(principleId, shouldDisable) {
     console.log('principleId', principleId);
     console.log('should disable', shouldDisable);
 
-    if (shouldDisable)
-    {
+    if (shouldDisable) {
+        crud.field(principleId + '_rating').input.value = '';
         crud.field(principleId + '_rating').disable();
+
+        crud.field(principleId + '_rating').input.classList.remove('is-invalid')
+        let validationMessage = document.getElementById("custom-validation-text-rating_" + crud.field(principleId + '_rating').input.getAttribute('data-tab'))
+        if (validationMessage) validationMessage.remove()
+
         //crud.field(principleId + '_rating_comment').disable();
 
         crud.field('scoreTags' + principleId).disable();
