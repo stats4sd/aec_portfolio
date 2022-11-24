@@ -173,9 +173,10 @@ function toggleFieldEnabled(principleId, shouldDisable) {
     console.log('principleId', principleId);
     console.log('should disable', shouldDisable);
 
-    if (shouldDisable) {
+    if (shouldDisable)
+    {
         crud.field(principleId + '_rating').disable();
-        crud.field(principleId + '_rating_comment').disable();
+        //crud.field(principleId + '_rating_comment').disable();
 
         crud.field('scoreTags' + principleId).disable();
         crud.field('customScoreTags' + principleId).disable();
@@ -185,7 +186,7 @@ function toggleFieldEnabled(principleId, shouldDisable) {
     } else {
 
         crud.field(principleId + '_rating').enable();
-        crud.field(principleId + '_rating_comment').enable();
+        //crud.field(principleId + '_rating_comment').enable();
         crud.field('scoreTags' + principleId).enable();
         crud.field('customScoreTags' + principleId).enable();
 

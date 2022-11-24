@@ -260,6 +260,7 @@ class ProjectCrudController extends CrudController
             CRUD::field($principle->id . '_rating_comment')
                 ->tab($principle->name)
                 ->label('Comment for ' . $principle->name)
+                ->hint('Please add a comment, even if the principle is not applicable to this project.')
                 ->type('textarea')
                 ->default($principle->pivot->rating_comment);
 
