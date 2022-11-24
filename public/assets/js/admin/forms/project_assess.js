@@ -1,7 +1,3 @@
-function validateScore(el) {
-
-}
-
 
 // when a principle rating is added; mark that tab as green / complete:
 

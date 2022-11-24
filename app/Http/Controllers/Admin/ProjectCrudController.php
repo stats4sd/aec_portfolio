@@ -92,7 +92,11 @@ class ProjectCrudController extends CrudController
         CRUD::column('organisation')->type('relationship');
         CRUD::column('name');
         CRUD::column('code');
-        CRUD::column('budget')->type('number')->prefix('USD')->decimals(2)->thousands_sep(',');
+        CRUD::column('budget')->type('closure')->function(function($entry) {
+
+            $value = number_format($entry->budget, 2, '.', ',');
+            return "{$entry->currency} {$value}";
+        });
         CRUD::column('assessment_status')->type('closure')->function(function ($entry) {
             return $entry->assessment_status?->value;
         });
@@ -143,7 +147,14 @@ class ProjectCrudController extends CrudController
         CRUD::field('name');
         CRUD::field('code')->hint('The code should uniquely identify the project within your organisation\'s porfolio. Leave blank for an auto-generated code.');
         CRUD::field('description');
-        CRUD::field('budget')->prefix('USD');
+
+        CRUD::field('currency')
+            ->wrapper(['class' => 'form-group col-sm-3 required'])
+        ->attributes(['class' => 'form-control text-right'])
+            ->hint('Enter the 3-digit code for the currency, e.g. "EUR", or "USD"');
+        CRUD::field('budget')
+            ->wrapper(['class' => 'form-group col-sm-9 required'])
+        ->hint('Enter the overall budget for the project');
 
     }
 
@@ -315,7 +326,7 @@ class ProjectCrudController extends CrudController
     public function setupRedlineOperation()
     {
 
-        Widget::add()->type('script')->content('assets/js/admin/forms/redlines.js');
+        Widget::add()->type('script')->content('assets/js/admin/forms/project_redlines.js');
 
 
         CRUD::setHeading('');
@@ -349,7 +360,8 @@ class ProjectCrudController extends CrudController
                     'data-required' => '1',
                 ])
                 ->wrapper([
-                    'class' => 'col-md-6'
+                    'class' => 'col-md-6',
+                    'data-required-wrapper' => '1',
                 ])
                 ->options([
                     1 => 'Yes',
@@ -383,7 +395,6 @@ class ProjectCrudController extends CrudController
             ->attributes([
                 'disabled' => 'disabled',
             ]);
-
     }
 
 
