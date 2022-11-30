@@ -7,7 +7,7 @@
             @can('edit', $organisation)
                 <div>
                     <a href="{{ route('organisation.edit', $organisation->id) }}" class="btn btn-primary">Edit
-                        Organisation</a>
+                        Institution</a>
                 </div>
             @endcan
         </div>
@@ -45,6 +45,6 @@
             <a href="{{ route('organisation.portfolio', ['organisation' => $organisation]) }}" class="btn btn-info">
                 Review Portfolio</a>
             <a href="{{ route('organisation.export', ['organisation' => $organisation]) }}" class="btn btn-primary">
-                Export Organisation Project Data</a>
+                Export Institution Project Data</a>
         </div>
 </div>

@@ -27,7 +27,7 @@
                     class="text-secondary">This is calculated as the overall portfolio score times the total budget</span></span>
         <div class="text-right mt-2">
             <a href="{{ route('organisation.export', ['organisation' => $organisation]) }}"
-               class="btn btn-sm btn-primary"> Export Organisation Project Data</a>
+               class="btn btn-sm btn-primary"> Export Institution Project Data</a>
 
         </div>
 

@@ -10,7 +10,7 @@
 
 <div class="card">
     <div class="card-header">
-        Edit Access to Team {{ $organisation->name }}
+        Edit Access to the institution: {{ $organisation->name }}
     </div>
     <div class="card-body">
     <form method="POST" action="{{ route('organisationmembers.update', [$organisation, $user])}}">
@@ -39,7 +39,7 @@
             </div>
             <div class="form-group row required">
                 <label for="select-users" class="col-md-6 col-form-label text-md-right">
-                    Assign access level for organisation {{ $organisation->name }}
+                    Assign access level for institution {{ $organisation->name }}
                 </label>
                 <div class="col-md-6">
                     <select

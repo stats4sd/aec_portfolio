@@ -35,7 +35,7 @@ class OrganisationCrudController extends CrudController
     {
         CRUD::setModel(\App\Models\Organisation::class);
         CRUD::setRoute(config('backpack.base.route_prefix') . '/organisation');
-        CRUD::setEntityNameStrings('organisation', 'organisations');
+        CRUD::setEntityNameStrings('institution', 'institutions');
 
         CRUD::denyAccess('delete');
     }
@@ -65,7 +65,7 @@ class OrganisationCrudController extends CrudController
 
         $this->authorize('create', Organisation::class);
 
-        CRUD::field('name')->label('Enter the Organisation name');
+        CRUD::field('name')->label('Enter the Institution name');
     }
 
     /**

@@ -1,9 +1,9 @@
 <!-- This file is used to store sidebar items, starting with Backpack\Base 0.9.0 -->
 
 @if(Auth::user()->organisations()->count() > 1 || Auth::user()->hasRole('admin'))
-    <li class="nav-item"><a class="nav-link" href="{{ backpack_url('dashboard') }}"><i class="la la-home nav-icon"></i> Organisations</a></li>
+    <li class="nav-item"><a class="nav-link" href="{{ backpack_url('dashboard') }}"><i class="la la-home nav-icon"></i> Institutions</a></li>
 @elseif(Auth::user()->organisations()->count() === 1)
-    <li class="nav-item"><a class="nav-link" href="{{ backpack_url('organisation/'.Auth::user()->organisations->first()?->id).'/show' }}"><i class="la la-home nav-icon"></i> Organisation: {{ Auth::user()->organisations->first()->name }}</a></li>
+    <li class="nav-item"><a class="nav-link" href="{{ backpack_url('organisation/'.Auth::user()->organisations->first()?->id).'/show' }}"><i class="la la-home nav-icon"></i> Institutions: {{ Auth::user()->organisations->first()->name }}</a></li>
     <li class="nav-item"><a class="nav-link" href="{{ backpack_url('organisation/'.Auth::user()->organisations->first()?->id).'/portfolio' }}"><i class="la la-chart-bar nav-icon"></i> Review Portfolio</a></li>
 @endif
 <hr/>

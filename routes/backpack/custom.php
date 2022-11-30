@@ -51,7 +51,7 @@ Route::group([
             return redirect(backpack_url('organisation/' . Auth::user()->organisations->first()->id . '/show'));
         }
 
-        abort(403, "It looks like you are not a member of any organisation, and are not a site admin. If you think this is incorrect, please contact support@stats4sd.org");
+        abort(403, "It looks like you are not a member of any institution, and are not a site admin. If you think this is incorrect, please contact support@stats4sd.org");
     })->name('backpack.dashboard');
 
     Route::get('/', [Backpack\CRUD\app\Http\Controllers\AdminController::class, 'redirect'])->name('backpack');

@@ -32,7 +32,7 @@ class InviteMember extends Mailable
     public function build()
     {
         return $this->from(config('mail.from.address'))
-        ->subject(config('app.name'). ': Invitation To Join Organisation ' . $this->invite->organisation->name)
+        ->subject(config('app.name'). ': Invitation To Join Institution ' . $this->invite->organisation->name)
         ->markdown('emails.invite');
     }
 }

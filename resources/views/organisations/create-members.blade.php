@@ -27,7 +27,7 @@
 
             <div class="form-group row required">
                 <label for="select-users" class="col-md-4 col-form-label text-md-right">
-                    Add existing platform users to the organisation
+                    Add existing platform users to the institution
                 </label>
                 <div class="col-md-8">
                     <select
@@ -54,7 +54,7 @@
 
             <hr/>
             <h5>Invite New Users</h5>
-            <p>If you cannot find the users on the platform, you can send them an email invitation to join the platform (and this organisation).</p>
+            <p>If you cannot find the users on the platform, you can send them an email invitation to join the platform (and this institution).</p>
             <div class="form-group row required">
                 <label for="description" class="col-md-4 col-form-label text-md-right">
                     Enter the email addresses to send invites to. You can add as many email addresses as you need.

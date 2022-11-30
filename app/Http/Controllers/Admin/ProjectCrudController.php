@@ -117,7 +117,7 @@ class ProjectCrudController extends CrudController
                 ',
             ]);
 
-        CRUD::column('organisation')->type('relationship');
+        CRUD::column('organisation')->type('relationship')->label('Institution');
         CRUD::column('name');
         CRUD::column('code');
         CRUD::column('budget')->type('closure')->function(function($entry) {
@@ -142,7 +142,7 @@ class ProjectCrudController extends CrudController
 
             CRUD::filter('organisation_id')
                 ->type('select2')
-                ->label('Filter by Organisation')
+                ->label('Filter by Institution')
                 ->options(Organisation::all()->pluck('name', 'id')->toArray())
                 ->active(function ($value) {
                     $this->crud->query->where('organisation_id', $value);
@@ -166,14 +166,14 @@ class ProjectCrudController extends CrudController
             ->view_namespace('stats4sd.laravel-backpack-section-title::fields');
 
         if (Auth::user()?->hasRole('admin') || Auth::user()?->organisations()->count() > 1)
-            CRUD::field('organisation_id')->type('relationship');
+            CRUD::field('organisation_id')->type('relationship')->label('Institution');
         else {
             $organisation = Auth::user()?->organisations()->first();
             CRUD::field('organisation_id')->type('hidden')->value($organisation->id);
             CRUD::field('organisation_title')->type('section-title')->view_namespace('stats4sd.laravel-backpack-section-title::fields')->content('Creating a Project for <b>' . $organisation->name . '</b>');
         }
         CRUD::field('name');
-        CRUD::field('code')->hint('The code should uniquely identify the project within your organisation\'s porfolio. Leave blank for an auto-generated code.');
+        CRUD::field('code')->hint('The code should uniquely identify the project within your institution\'s porfolio. Leave blank for an auto-generated code.');
         CRUD::field('description');
 
         CRUD::field('currency')
@@ -447,6 +447,7 @@ class ProjectCrudController extends CrudController
 
         $this->crud->addField([
             'name' => 'organisation',
+            'label' => 'Institution',
             'type' => 'relationship',
             'validationRules' => 'required',
         ]);

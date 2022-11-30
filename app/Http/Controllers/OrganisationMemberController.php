@@ -88,11 +88,11 @@ class OrganisationMemberController extends Controller
         $admins = $organisation->admins()->get();
         // if the $user is a $organisation admin AND is the ONLY organisation admin... prevent
         if ($admins->contains($user) && $admins->count() == 1) {
-            \Alert::add('error', 'User not removed - you must keep at least one organisation admin to manage your organisation')->flash();
+            \Alert::add('error', 'User not removed - you must keep at least one institution admin to manage your institution')->flash();
         } else {
             $organisation->users()->detach($user->id);
             //ShareFormsWithExistingOrganisationMembers::dispatch($organisation);
-            \Alert::add('success', 'User ' . $user->name . ' successfully removed from the organisation')->flash();
+            \Alert::add('success', 'User ' . $user->name . ' successfully removed from the institution')->flash();
         }
 
         return redirect()->route('organisation.show', [$organisation, 'members']);

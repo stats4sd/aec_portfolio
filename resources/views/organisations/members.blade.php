@@ -1,7 +1,7 @@
 <div class="row pt-4 pl-4">
     <div class="card col-12">
         <div class="card-header">
-        <h2>Organisation Members</h2>
+        <h2>Institution Members</h2>
         </div>
 
         <div class="card-body">
