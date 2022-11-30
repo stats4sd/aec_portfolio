@@ -12,6 +12,7 @@ use App\Models\Team;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
+use Prologue\Alerts\Facades\Alert;
 
 class OrganisationController extends Controller
 {
@@ -27,6 +28,13 @@ class OrganisationController extends Controller
 
     public function portfolio(Organisation $organisation)
     {
+        // hotfix for no projects
+        if($organisation->projects()->count() === 0) {
+            Alert::add('info', 'This institution has no projects. Please add at least one project before reviewing the portfolio page')->flash();
+            return back();
+        }
+
+
         // get data for spider chart
         $principles = Principle::select(['name', 'id'])->get();
 
