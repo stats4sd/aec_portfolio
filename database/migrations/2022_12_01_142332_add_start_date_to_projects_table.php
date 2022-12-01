@@ -16,7 +16,6 @@ return new class extends Migration
         Schema::table('projects', function (Blueprint $table) {
             $table->date('start_date')->nullable();
             $table->date('end_date')->nullable();
-            $table->boolean('proposal')->default(false);
         });
     }
 
@@ -29,7 +28,7 @@ return new class extends Migration
     {
         Schema::table('projects', function (Blueprint $table) {
             $table->dropColumn('start_date');
-            $table->dropColumn('proposal');
+            $table->dropColumn('end_date');
         });
     }
 };
