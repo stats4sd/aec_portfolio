@@ -23,6 +23,11 @@ class ProjectImport implements ToCollection, WithHeadingRow, WithCalculatedFormu
     public function collection(Collection $collection)
     {
 
+        // skip the first entry (containing the Excel instructions)
+        if($collection['code'] === "enter a unique code for the project") {
+            return;
+        }
+
         $project = Project::create([
             'code' => $collection['code'],
             'name' => $collection['name'],
@@ -32,16 +37,6 @@ class ProjectImport implements ToCollection, WithHeadingRow, WithCalculatedFormu
             'end_date' => $collection['end_date'],
             'organisation_id' => $this->organisation->id ?? null,
         ]);
-
-        $collection->keys()->filter(function($key) {
-            return Str::startsWith($key, 'country_');
-        })->each(function($key) {
-            $key
-        })
-
-        // country keys
-        $project->countries()->sync
-
 
 
     }

@@ -58,6 +58,11 @@ class Project extends Model
         });
     }
 
+    public function countries()
+    {
+        return $this->belongsToMany(Country::class);
+    }
+
     public function redLines()
     {
         return $this->belongsToMany(RedLine::class)

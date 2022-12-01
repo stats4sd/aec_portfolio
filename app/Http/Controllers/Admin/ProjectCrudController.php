@@ -77,11 +77,11 @@ class ProjectCrudController extends CrudController
         }
 
         $this->data['crud'] = $this->crud;
-        $this->data['title'] = $this->crud->getTitle() ?? trans('backpack::crud.preview').' '.$this->crud->entity_name;
+        $this->data['title'] = $this->crud->getTitle() ?? trans('backpack::crud.preview') . ' ' . $this->crud->entity_name;
 
 
         // #### ADD SPIDER CHART DATA ###
-        $this->data['spiderData'] = $this->data['entry']->principleProjects->map(function($principleProject) {
+        $this->data['spiderData'] = $this->data['entry']->principleProjects->map(function ($principleProject) {
             return [
                 'axis' => $principleProject->principle->name,
                 'value' => $principleProject->rating,
@@ -120,7 +120,7 @@ class ProjectCrudController extends CrudController
         CRUD::column('organisation')->type('relationship')->label('Institution');
         CRUD::column('name');
         CRUD::column('code');
-        CRUD::column('budget')->type('closure')->function(function($entry) {
+        CRUD::column('budget')->type('closure')->function(function ($entry) {
 
             $value = number_format($entry->budget, 2, '.', ',');
             return "{$entry->currency} {$value}";
@@ -174,15 +174,29 @@ class ProjectCrudController extends CrudController
         }
         CRUD::field('name');
         CRUD::field('code')->hint('The code should uniquely identify the project within your institution\'s porfolio. Leave blank for an auto-generated code.');
-        CRUD::field('description');
+        CRUD::field('description')->hint('This is optional, but will help to provide context for the AE assessment');
 
         CRUD::field('currency')
             ->wrapper(['class' => 'form-group col-sm-3 required'])
-        ->attributes(['class' => 'form-control text-right'])
+            ->attributes(['class' => 'form-control text-right'])
             ->hint('Enter the 3-digit code for the currency, e.g. "EUR", or "USD"');
         CRUD::field('budget')
             ->wrapper(['class' => 'form-group col-sm-9 required'])
-        ->hint('Enter the overall budget for the project');
+            ->hint('Enter the overall budget for the project');
+
+        CRUD::field('optional-items')->type('section-title')
+            ->title('Optional Details')
+            ->content('The following items are optional. If you add them for your projects, then in the future it may be possible to do more in-depth analysis of your portfolio to present to you at the institution level. Only enter this information if you think it is useful to include.')
+            ->view_namespace('stats4sd.laravel-backpack-section-title::fields');
+
+
+        CRUD::field('start_date')->type('date_picker')->label('Enter the start date for the project.');
+        CRUD::field('end_date')->type('date_picker')->label('Enter the end date for the project.');
+
+
+        CRUD::field('countries')->type('relationship')
+            ->label('Select the country / countries that this project works in.')
+            ->hint('Start typing to filter the results.');
 
     }
 
@@ -195,7 +209,7 @@ class ProjectCrudController extends CrudController
     protected function setupUpdateOperation()
     {
         $this->setupCreateOperation();
-        CRUD::modifyField('code', ['hint'=>'', 'validationRules'=>'required', 'validationMessages'=>['required'=>'The code field is required']]);
+        CRUD::modifyField('code', ['hint' => '', 'validationRules' => 'required', 'validationMessages' => ['required' => 'The code field is required']]);
         $this->crud->setValidation();
     }
 
@@ -298,17 +312,17 @@ class ProjectCrudController extends CrudController
                 ->type('checklist_filtered')
                 ->number_of_columns(1)
                 ->model(ScoreTag::class)
-                ->options(function($query) use ($principle) {
-                                return $query->where('principle_id', $principle->id)->get()->pluck('name', 'id')->toArray();
+                ->options(function ($query) use ($principle) {
+                    return $query->where('principle_id', $principle->id)->get()->pluck('name', 'id')->toArray();
                 });
 
             CRUD::field('customScoreTags' . $principle->id)
                 ->tab($principle->name)
-                ->label('New Example/Indicator for '. $principle->name)
+                ->label('New Example/Indicator for ' . $principle->name)
                 ->type('table')
                 ->columns([
-                    'name'=>'Name',
-                    'description'=>'Description (optional)'],
+                    'name' => 'Name',
+                    'description' => 'Description (optional)'],
                 );
         }
 
@@ -425,8 +439,6 @@ class ProjectCrudController extends CrudController
                 'disabled' => 'disabled',
             ]);
     }
-
-
 
 
     public function fetchScoreTag()
