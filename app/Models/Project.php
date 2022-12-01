@@ -20,6 +20,8 @@ class Project extends Model
 
     protected $casts = [
         'assessment_status' => AssessmentStatus::class,
+        'start_date' => 'date',
+        'end_date' => 'date',
     ];
 
     protected static function booted()
@@ -56,6 +58,11 @@ class Project extends Model
             }
             $builder->whereIn('organisation_id', Auth::user()->organisations->pluck('id')->toArray());
         });
+    }
+
+    public function countries()
+    {
+        return $this->belongsToMany(Country::class);
     }
 
     public function redLines()

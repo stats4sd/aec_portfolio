@@ -22,6 +22,18 @@
                         <td>{{ $entry->currency }} {{ $entry->budget }}</td>
                     </tr>
                     <tr>
+                        <td class="text-right pr-4 mr-2">Start Date:</td>
+                        <td>{{ $entry->start_date->toDateString() }}</td>
+                    </tr>
+                    <tr>
+                        <td class="text-right pr-4 mr-2">End Date:</td>
+                        <td>{{ $entry->end_date->toDateString() }}</td>
+                    </tr>
+                    <tr>
+                        <td class="text-right pr-4 mr-2">Country/ies:</td>
+                        <td>{{ $entry->countries->pluck('name')->join(', ') }}</td>
+                    </tr>
+                    <tr>
                         <td class="text-right pr-4 mr-2">Status:</td>
                         <td>{{ $entry->assessment_status }}</td>
                     </tr>
