@@ -31,10 +31,10 @@ class ProjectImport implements ToCollection, WithHeadingRow, WithCalculatedFormu
         $project = Project::create([
             'code' => $collection['code'],
             'name' => $collection['name'],
-            'description' => $collection['description'],
+            'description' => $collection['description'] ?? null,
             'budget' => $collection['budget'],
-            'start_date' => $collection['start_date'],
-            'end_date' => $collection['end_date'],
+            'start_date' => $collection['start_date'] ?? null,
+            'end_date' => $collection['end_date'] ?? null,
             'organisation_id' => $this->organisation->id ?? null,
         ]);
 
