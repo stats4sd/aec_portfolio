@@ -33,7 +33,9 @@ class ProjectRequest extends FormRequest
             'currency' => 'required|max:3',
             'start_date' => 'nullable',
             'end_date' => 'nullable|after:start_date',
+            'global' => 'nullable',
             'countries' => 'nullable',
+            'regions' => 'nullable'
         ];
     }
 

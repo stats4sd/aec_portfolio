@@ -197,6 +197,8 @@ class ProjectCrudController extends CrudController
         CRUD::field('countries')->type('relationship')
             ->label('Select the country / countries that this project works in.')
             ->hint('Start typing to filter the results.');
+        CRUD::field('regions')->type('textarea')
+            ->label('Optionally, add the specific regions within each country where the project works.');
 
     }
 
