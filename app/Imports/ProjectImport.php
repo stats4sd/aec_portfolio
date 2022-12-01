@@ -5,6 +5,7 @@ namespace App\Imports;
 use App\Models\Organisation;
 use App\Models\Project;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 use Maatwebsite\Excel\Concerns\ToCollection;
@@ -12,8 +13,9 @@ use Maatwebsite\Excel\Concerns\ToModel;
 use Maatwebsite\Excel\Concerns\WithCalculatedFormulas;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use Maatwebsite\Excel\Concerns\WithUpserts;
+use PhpOffice\PhpSpreadsheet\Shared\Date;
 
-class ProjectImport implements ToCollection, WithHeadingRow, WithCalculatedFormulas
+class ProjectImport implements ToCollection, WithHeadingRow
 {
 
     public function __construct(public Organisation $organisation)
@@ -23,20 +25,35 @@ class ProjectImport implements ToCollection, WithHeadingRow, WithCalculatedFormu
     public function collection(Collection $collection)
     {
 
-        // skip the first entry (containing the Excel instructions)
-        if($collection['code'] === "enter a unique code for the project") {
-            return;
-        }
+        foreach ($collection as $row) {
 
-        $project = Project::create([
-            'code' => $collection['code'],
-            'name' => $collection['name'],
-            'description' => $collection['description'] ?? null,
-            'budget' => $collection['budget'],
-            'start_date' => $collection['start_date'] ?? null,
-            'end_date' => $collection['end_date'] ?? null,
-            'organisation_id' => $this->organisation->id ?? null,
-        ]);
+            if ($row['code'] === 'enter a unique code for the project' || $row['code'] === 'example') {
+                continue;
+            }
+
+            $startDate = null;
+            $endDate = null;
+
+            if ($row['start_date']) {
+                $startDate = Date::excelToDateTimeObject($row['start_date']);
+            }
+
+            if ($row['end_date']) {
+                $endDate = Date::excelToDateTimeObject($row['end_date']);
+            }
+
+
+            $project = Project::create([
+                'code' => $row['code'],
+                'name' => $row['name'],
+                'description' => $row['description'] ?? null,
+                'currency' => $row['currency'],
+                'budget' => $row['budget'],
+                'start_date' => $startDate,
+                'end_date' => $endDate,
+                'organisation_id' => $this->organisation->id ?? null,
+            ]);
+        }
 
 
     }

@@ -20,6 +20,8 @@ class Project extends Model
 
     protected $casts = [
         'assessment_status' => AssessmentStatus::class,
+        'start_date' => 'date',
+        'end_date' => 'date',
     ];
 
     protected static function booted()
