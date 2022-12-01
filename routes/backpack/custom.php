@@ -6,6 +6,7 @@
 // This route file is loaded automatically by Backpack\Base.
 // Routes you generate using Backpack\Generators will be placed here.
 
+use App\Http\Controllers\Admin\CountryCrudController;
 use App\Http\Controllers\Admin\OrganisationCrudController;
 use App\Http\Controllers\Admin\PrincipleCrudController;
 use App\Http\Controllers\Admin\ProjectCrudController;
@@ -57,4 +58,5 @@ Route::group([
     Route::get('/', [Backpack\CRUD\app\Http\Controllers\AdminController::class, 'redirect'])->name('backpack');
 
 
+    Route::crud('country', CountryCrudController::class);
 }); // this should be the absolute last line of this file
