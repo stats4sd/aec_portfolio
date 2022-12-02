@@ -31,8 +31,9 @@ class ProjectRequest extends FormRequest
             'description' => 'nullable|string',
             'budget' => 'required|integer',
             'currency' => 'required|max:3',
-            'start_date' => 'nullable',
+            'start_date' => 'required',
             'end_date' => 'nullable|after:start_date',
+            'global_reach' => 'required',
             'countries' => 'nullable',
             'regions' => 'nullable'
         ];

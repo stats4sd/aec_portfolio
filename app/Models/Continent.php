@@ -5,7 +5,7 @@ namespace App\Models;
 use Backpack\CRUD\app\Models\Traits\CrudTrait;
 use Illuminate\Database\Eloquent\Model;
 
-class Country extends Model
+class Continent extends Model
 {
     use CrudTrait;
 
@@ -15,18 +15,23 @@ class Country extends Model
     |--------------------------------------------------------------------------
     */
 
-    protected $table = 'countries';
-    public $keyType = 'string';
+    protected $table = 'continents';
     protected $guarded = [];
+    public $keyType = 'string';
+
+    public function regions()
+    {
+        return $this->hasMany(Region::class);
+    }
+
+    public function countries()
+    {
+        return $this->hasManyThrough(Country::class, Region::class);
+    }
 
     public function projects()
     {
         return $this->belongsToMany(Project::class);
-    }
-
-    public function region()
-    {
-        return $this->belongsTo(Region::class);
     }
 
 }

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Enums\GeographicalReach;
 use App\Models\RedLine;
 use App\Models\ScoreTag;
 use App\Models\CustomScoreTag;
@@ -184,20 +185,24 @@ class ProjectCrudController extends CrudController
             ->wrapper(['class' => 'form-group col-sm-9 required'])
             ->hint('Enter the overall budget for the project');
 
-        CRUD::field('optional-items')->type('section-title')
-            ->title('Optional Details')
-            ->content('The following items are optional. If you add them for your projects, then in the future it may be possible to do more in-depth analysis of your portfolio to present to you at the institution level. Only enter this information if you think it is useful to include.')
-            ->view_namespace('stats4sd.laravel-backpack-section-title::fields');
-
-
         CRUD::field('start_date')->type('date_picker')->label('Enter the start date for the project.');
-        CRUD::field('end_date')->type('date_picker')->label('Enter the end date for the project.');
+        CRUD::field('end_date')->type('date_picker')->label('Enter the end date for the project.')
+        ->hint('This is optional');
 
+        CRUD::field('geo-title')
+            ->type('section-title')
+            ->view_namespace('stats4sd.laravel-backpack-section-title::fields')
+            ->title('Geographical Reach')
+            ->content('The next questions are about where the project operates. The first question is required to understand the scope of the project. You may also choose to add more information below about where your project works. This is not required but, if completed, it will allow you to explore your institutional profile by geographical area. You can choose which level is useful for your institutional analysis.');
+
+        CRUD::field('geographical_reach')
+            ->type('select2_from_array')
+            ->options(['global' => 'Global Level', 'multi-country' => 'Multi Country Level', 'country' => 'Country Level']);
 
         CRUD::field('countries')->type('relationship')
             ->label('Select the country / countries that this project works in.')
             ->hint('Start typing to filter the results.');
-        CRUD::field('regions')->type('textarea')
+        CRUD::field('subregions')->type('textarea')
             ->label('Optionally, add the specific regions within each country where the project works.');
 
     }
