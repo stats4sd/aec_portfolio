@@ -25,14 +25,22 @@
                         <td class="text-right pr-4 mr-2">Start Date:</td>
                         <td>{{ $entry->start_date->toDateString() }}</td>
                     </tr>
+                    @if($entry->end_date)
                     <tr>
                         <td class="text-right pr-4 mr-2">End Date:</td>
                         <td>{{ $entry->end_date->toDateString() }}</td>
                     </tr>
+                    @endif
                     <tr>
                         <td class="text-right pr-4 mr-2">Country/ies:</td>
                         <td>{{ $entry->countries->pluck('name')->join(', ') }}</td>
                     </tr>
+                    @if($entry->regions)
+                        <tr>
+                            <td class="text-right pr-4 mr-2">Region(s):</td>
+                            <td>{{ $entry->regions }}</td>
+                        </tr>
+                    @endif
                     <tr>
                         <td class="text-right pr-4 mr-2">Status:</td>
                         <td>{{ $entry->assessment_status }}</td>
@@ -197,7 +205,7 @@
 
 @section('after_scripts')
     <script src="{{ mix('js/app.js') }}"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js" charset="utf-8"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js" charset="utf-8"></script>
 
     <script src="{{asset('js/radarChart.js')}}"></script>
     <script>

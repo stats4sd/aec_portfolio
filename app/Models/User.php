@@ -44,4 +44,9 @@ class User extends Authenticatable
         return $this->belongsToMany(Organisation::class, 'organisation_members')
             ->withPivot('role');
     }
+
+    public function isAdmin()
+    {
+        return $this->hasAnyRole('admin');
+    }
 }
