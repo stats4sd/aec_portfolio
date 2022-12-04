@@ -33,9 +33,11 @@ class ProjectRequest extends FormRequest
             'currency' => 'required|max:3',
             'start_date' => 'required',
             'end_date' => 'nullable|after:start_date',
-            'global_reach' => 'required',
+            'geographic_reach' => 'required',
+            'continents' => 'nullable',
+            'regions' => 'nullable',
             'countries' => 'nullable',
-            'regions' => 'nullable'
+            'sub_regions' => 'nullable'
         ];
     }
 
