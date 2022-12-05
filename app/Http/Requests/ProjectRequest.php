@@ -26,15 +26,19 @@ class ProjectRequest extends FormRequest
     public function rules()
     {
         return [
+            'organisation_id' => 'required',
             'name' => 'required|string',
             'code' => ['nullable', 'string', new UniqueProjectCode],
             'description' => 'nullable|string',
             'budget' => 'required|integer',
             'currency' => 'required|max:3',
-            'start_date' => 'nullable',
+            'start_date' => 'required',
             'end_date' => 'nullable|after:start_date',
+            'geographic_reach' => 'required',
+            'continents' => 'nullable',
+            'regions' => 'nullable',
             'countries' => 'nullable',
-            'regions' => 'nullable'
+            'sub_regions' => 'nullable'
         ];
     }
 

@@ -32,13 +32,31 @@
                     </tr>
                     @endif
                     <tr>
+                        <td class="text-right pr-4 mr-2">Geographic Reach:</td>
+                        <td>{{ $entry->geographic_reach }}</td>
+                    </tr>
+                    @if($entry->continents)
+                        <tr>
+                        <td class="text-right pr-4 mr-2">Continent/s:</td>
+                        <td>{{ $entry->continents->pluck('name')->join(', ') }}</td>
+                    </tr>
+                    @endif
+                    @if($entry->regions)
+                        <tr>
+                        <td class="text-right pr-4 mr-2">Region/s:</td>
+                        <td>{{ $entry->regions->pluck('name')->join(', ') }}</td>
+                    </tr>
+                    @endif
+                    @if($entry->countries)
+                    <tr>
                         <td class="text-right pr-4 mr-2">Country/ies:</td>
                         <td>{{ $entry->countries->pluck('name')->join(', ') }}</td>
                     </tr>
-                    @if($entry->regions)
+                    @endif
+                    @if($entry->sub_regions)
                         <tr>
-                            <td class="text-right pr-4 mr-2">Region(s):</td>
-                            <td>{{ $entry->regions }}</td>
+                            <td class="text-right pr-4 mr-2">Sub-country Region(s):</td>
+                            <td>{{ $entry->sub_regions }}</td>
                         </tr>
                     @endif
                     <tr>

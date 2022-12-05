@@ -2,16 +2,16 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Http\Requests\CountryRequest;
+use App\Http\Requests\RegionRequest;
 use Backpack\CRUD\app\Http\Controllers\CrudController;
 use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
 
 /**
- * Class CountryCrudController
+ * Class RegionCrudController
  * @package App\Http\Controllers\Admin
  * @property-read \Backpack\CRUD\app\Library\CrudPanel\CrudPanel $crud
  */
-class CountryCrudController extends CrudController
+class RegionCrudController extends CrudController
 {
     use \Backpack\CRUD\app\Http\Controllers\Operations\ListOperation;
 
@@ -22,9 +22,9 @@ class CountryCrudController extends CrudController
      */
     public function setup()
     {
-        CRUD::setModel(\App\Models\Country::class);
-        CRUD::setRoute(config('backpack.base.route_prefix') . '/country');
-        CRUD::setEntityNameStrings('country', 'countries');
+        CRUD::setModel(\App\Models\Region::class);
+        CRUD::setRoute(config('backpack.base.route_prefix') . '/region');
+        CRUD::setEntityNameStrings('region', 'regions');
     }
 
     /**
@@ -35,12 +35,11 @@ class CountryCrudController extends CrudController
      */
     protected function setupListOperation()
     {
-        CRUD::column('continent.id')->label('Continent ID');
-        CRUD::column('continent.name')->label('Continent');
-        CRUD::column('region_id');
-        CRUD::column('region')->type('relationship')->attribute('name')->key('region');
+        CRUD::column('continent_id');
+        CRUD::column('continent')->type('relationship')->attribute('name');
         CRUD::column('id');
         CRUD::column('name');
+
     }
 
     /**

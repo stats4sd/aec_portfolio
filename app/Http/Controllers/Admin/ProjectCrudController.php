@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Enums\GeographicalReach;
+use App\Models\Country;
 use App\Models\RedLine;
+use App\Models\Region;
 use App\Models\ScoreTag;
 use App\Models\CustomScoreTag;
 use App\Models\Principle;
@@ -11,6 +14,7 @@ use Illuminate\Support\Str;
 use App\Models\Organisation;
 use App\Imports\ProjectImport;
 use App\Enums\AssessmentStatus;
+use phpDocumentor\Reflection\Types\True_;
 use Prologue\Alerts\Facades\Alert;
 use Illuminate\Support\Facades\Auth;
 use Maatwebsite\Excel\Facades\Excel;
@@ -184,20 +188,46 @@ class ProjectCrudController extends CrudController
             ->wrapper(['class' => 'form-group col-sm-9 required'])
             ->hint('Enter the overall budget for the project');
 
-        CRUD::field('optional-items')->type('section-title')
-            ->title('Optional Details')
-            ->content('The following items are optional. If you add them for your projects, then in the future it may be possible to do more in-depth analysis of your portfolio to present to you at the institution level. Only enter this information if you think it is useful to include.')
-            ->view_namespace('stats4sd.laravel-backpack-section-title::fields');
-
-
         CRUD::field('start_date')->type('date_picker')->label('Enter the start date for the project.');
-        CRUD::field('end_date')->type('date_picker')->label('Enter the end date for the project.');
+        CRUD::field('end_date')->type('date_picker')->label('Enter the end date for the project.')
+            ->hint('This is optional');
 
+        CRUD::field('geo-title')
+            ->type('section-title')
+            ->view_namespace('stats4sd.laravel-backpack-section-title::fields')
+            ->title('Geographical Reach')
+            ->content('The next questions are about where the project operates. The first question is required to understand the scope of the project. You may also choose to add more information below about where your project works. This is not required but, if completed, it will allow you to explore your institutional profile by geographical area. You can choose which level is useful for your institutional analysis.');
+
+
+        CRUD::field('geographic_reach')
+            ->type('select2_from_array')
+            ->options([
+                'global' => 'Global Level',
+                'multi-country' => 'Multi Country Level',
+                'country' => 'Country Level'
+            ]);
+
+        CRUD::field('continents')->type('relationship')
+            ->label('Select the continent / continents that this project works in.')
+            ->allows_null(true);
+
+        CRUD::field('regions')->type('relationship')
+            ->label('Select the regions that this project works in')
+            ->hint('Using the UN geo-scheme standard 49 list of regions/sub-regions (more information <a href="https://www.eea.europa.eu/data-and-maps/data/external/un-geoscheme-standard-m49">here</a>)')
+            ->ajax(true)
+            ->minimum_input_length(0)
+            ->dependencies(['continents'])
+            ->allows_null(true);
 
         CRUD::field('countries')->type('relationship')
             ->label('Select the country / countries that this project works in.')
-            ->hint('Start typing to filter the results.');
-        CRUD::field('regions')->type('textarea')
+            ->hint('Start typing to filter the results.')
+            ->ajax(true)
+            ->minimum_input_length(0)
+            ->dependencies(['continents,regions'])
+            ->allows_null(true);;
+
+        CRUD::field('sub_regions')->type('textarea')
             ->label('Optionally, add the specific regions within each country where the project works.');
 
     }
@@ -628,6 +658,63 @@ class ProjectCrudController extends CrudController
             'model' => CustomScoreTag::class,
             'query' => function ($model) {
                 return $model->where('principle_id', 13);
+            }
+        ]);
+    }
+
+    public function fetchRegions()
+    {
+        $continents = collect(request()->input('form'))
+            ->filter(fn($item) => $item['name'] === 'continents[]')
+            ->pluck('value')
+            ->toArray();
+
+
+        if (!$continents) {
+            return $this->fetch(Region::class);
+        }
+
+        return $this->fetch([
+            'model' => Region::class,
+            'query' => function ($model) use ($continents) {
+                return $model->whereIn('continent_id', $continents);
+            }
+        ]);
+    }
+
+    public function fetchCountries()
+    {
+        $continents = collect(request()->input('form'))
+            ->filter(fn($item) => $item['name'] === 'continents[]')
+            ->pluck('value')
+            ->toArray();
+
+        $regions = collect(request()->input('form'))
+            ->filter(fn($item) => $item['name'] === 'regions[]')
+            ->pluck('value')
+            ->toArray();
+
+
+        if (!$regions && !$continents) {
+            return $this->fetch(Country::class);
+        }
+
+        if (!$regions) {
+            return $this->fetch([
+                'model' => Country::class,
+                'query' => function ($model) use ($continents) {
+                    return $model->whereHas('region', function ($query) use ($continents) {
+                        $query->whereIn('continent_id', $continents);
+                    });
+                }
+            ]);
+        }
+
+
+        return $this->fetch([
+            'model' => Country::class,
+            'query' => function ($model) use ($regions) {
+                return $model->whereIn('region_id', $regions);
             }
         ]);
     }

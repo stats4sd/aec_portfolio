@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\AssessmentStatus;
+use App\Enums\GeographicalReach;
 use App\Http\Controllers\Admin\Operations\RedlineOperation;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -58,6 +59,16 @@ class Project extends Model
             }
             $builder->whereIn('organisation_id', Auth::user()->organisations->pluck('id')->toArray());
         });
+    }
+
+    public function continents()
+    {
+        return $this->belongsToMany(Continent::class);
+    }
+
+    public function regions()
+    {
+        return $this->belongsToMany(Region::class);
     }
 
     public function countries()

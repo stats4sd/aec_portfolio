@@ -33,3 +33,8 @@
         border-right: grey;
     }
 }
+
+form .form-group.required > label:not(:empty):not(.form-check-label)::after {
+  color: red;
+  content: " *";
+}
