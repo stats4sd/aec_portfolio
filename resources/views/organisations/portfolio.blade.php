@@ -59,7 +59,7 @@
 
         // principle comparison
         @foreach($yourPortfolio as $key => $values)
-        let principle_{!! \Illuminate\Support\Str::slug($key, "_") !!} = {{ $values->toJson() }}
+        let principle_{!! \Illuminate\Support\Str::slug($key, "_") !!} = {!! $values->toJson() !!}
             @endforeach
 
             let
@@ -133,7 +133,7 @@
 
         // ALL Projects comparison
         @foreach($allPortfolio as $key => $values)
-        let all_principle_{!! \Illuminate\Support\Str::slug($key, "_") !!} = {{ $values->toJson() }}
+        let all_principle_{!! \Illuminate\Support\Str::slug($key, "_") !!} = {!! $values->toJson() !!}
             @endforeach
 
             let
