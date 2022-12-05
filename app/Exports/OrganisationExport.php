@@ -36,21 +36,28 @@ class OrganisationExport implements FromCollection, WithHeadings, WithStrictNull
                 'name' => $project->name,
                 'description' => $project->description,
                 'budget' => $project->budget,
+                'start_date' => $project->start_date,
+                'end_date' => $project->end_date,
+                'geographic_reach' => $project->geographic_reach,
+                'continents' => $project->continents->pluck('name')->join(', '),
+                'regions' => $project->regions->pluck('name')->join(', '),
+                'countries' => $project->countries->pluck('name')->join(', '),
+                'sub_regions' => $project->sub_regions,
                 'status' => $project->assessment_status->value,
             ]);
 
             foreach (RedLine::select('name', 'id')->get() as $redline) {
                 $value = $project->redLines->firstWhere('id', $redline->id)->pivot->value;
-                if($value === -99) {
+                if ($value === -99) {
                     $value = "na";
                 }
                 $projectExport[$redline->name] = $value;
             }
 
-            foreach(Principle::all() as $principle) {
+            foreach (Principle::all() as $principle) {
                 $principleProject = $project->principleProjects->firstWhere('principle_id', $principle->id);
-                $projectExport[] = $principleProject->rating == -99 ? 'na'  : $principleProject->rating;
-                $projectExport[] = $principleProject->rating_comment ?? '-';
+                $projectExport[] = $principleProject?->rating == -99 ? 'na' : $principleProject?->rating;
+                $projectExport[] = $principleProject?->rating_comment ?? '-';
             }
 
             $export[] = $projectExport;
@@ -66,6 +73,13 @@ class OrganisationExport implements FromCollection, WithHeadings, WithStrictNull
             'name',
             'description',
             'budget',
+            'start_date',
+            'end_date',
+            'geographic_reach',
+            'continents',
+            'regions',
+            'countries',
+            'sub_regions',
             'status'
         ];
 
@@ -73,7 +87,7 @@ class OrganisationExport implements FromCollection, WithHeadings, WithStrictNull
             $headings[] = "Redline\n" . $redline->name;
         }
 
-        foreach(Principle::all() as $principle) {
+        foreach (Principle::all() as $principle) {
             $headings[] = "Principle\n" . $principle->name . ' ( Rating )';
             $headings[] = "Principle\n" . $principle->name . ' ( Comment )';
         }
@@ -88,8 +102,6 @@ class OrganisationExport implements FromCollection, WithHeadings, WithStrictNull
         $bold = ['font' => ['bold' => true]];
         return [
             1 => $bold,
-            'G' => $wrap,
-            'H' => $wrap,
             'I' => $wrap,
             'J' => $wrap,
             'K' => $wrap,
@@ -114,6 +126,26 @@ class OrganisationExport implements FromCollection, WithHeadings, WithStrictNull
             'AD' => $wrap,
             'AE' => $wrap,
             'AF' => $wrap,
+            'AG' => $wrap,
+            'AH' => $wrap,
+            'AI' => $wrap,
+            'AJ' => $wrap,
+            'AK' => $wrap,
+            'AL' => $wrap,
+            'AM' => $wrap,
+            'AN' => $wrap,
+            'AO' => $wrap,
+            'AP' => $wrap,
+            'AQ' => $wrap,
+            'AR' => $wrap,
+            'AS' => $wrap,
+            'AT' => $wrap,
+            'AU' => $wrap,
+            'AV' => $wrap,
+            'AW' => $wrap,
+            'AX' => $wrap,
+            'AY' => $wrap,
+            'AZ' => $wrap,
         ];
     }
 

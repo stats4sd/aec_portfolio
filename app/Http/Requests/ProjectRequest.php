@@ -26,6 +26,7 @@ class ProjectRequest extends FormRequest
     public function rules()
     {
         return [
+            'organisation_id' => 'required',
             'name' => 'required|string',
             'code' => ['nullable', 'string', new UniqueProjectCode],
             'description' => 'nullable|string',

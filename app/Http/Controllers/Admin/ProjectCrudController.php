@@ -170,7 +170,7 @@ class ProjectCrudController extends CrudController
             ->view_namespace('stats4sd.laravel-backpack-section-title::fields');
 
         if (Auth::user()?->hasRole('admin') || Auth::user()?->organisations()->count() > 1)
-            CRUD::field('organisation')->type('relationship')->label('Institution');
+            CRUD::field('organisation_id')->type('relationship')->label('Institution');
         else {
             $organisation = Auth::user()?->organisations()->first();
             CRUD::field('organisation_id')->type('hidden')->value($organisation->id);
@@ -205,8 +205,7 @@ class ProjectCrudController extends CrudController
                 'global' => 'Global Level',
                 'multi-country' => 'Multi Country Level',
                 'country' => 'Country Level'
-            ])
-            ->hint('required');
+            ]);
 
         CRUD::field('continents')->type('relationship')
             ->label('Select the continent / continents that this project works in.')
