@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.2.269">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Exploration of AE Coalition Analysis</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1.6em;
+  vertical-align: middle;
+}
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+
+<script src="initial ideas_files/libs/clipboard/clipboard.min.js"></script>
+<script src="initial ideas_files/libs/quarto-html/quarto.js"></script>
+<script src="initial ideas_files/libs/quarto-html/popper.min.js"></script>
+<script src="initial ideas_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="initial ideas_files/libs/quarto-html/anchor.min.js"></script>
+<link href="initial ideas_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="initial ideas_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="initial ideas_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="initial ideas_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="initial ideas_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+
+
+</head>
+
+<body class="fullcontent">
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Exploration of AE Coalition Analysis</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+</header>
+
+<section id="quarto" class="level2">
+<h2 class="anchored" data-anchor-id="quarto">Quarto</h2>
+<p>Attempting to see if I can read in the dump file directly? Seems like it theoretically should be possible to parse this within R but can’t quite seem to crack it. Will leave this here for now in case I ever feel inspired to try</p>
+<pre><code>
+library(readr)
+
+file&lt;-readr::read_file("aec-testing.dump")
+</code></pre>
+<p>Read in the relevant tables for this analysis. I think just these four are needed for now - probably more if some more advanced filtering starts to get used for the comparator options.</p>
+<p>Select all projects, all principles and all orgs. Only select ratings which have been filled in.</p>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>&lt;MySQLDriver&gt;
+  Max connections:   16 
+  Cur connections:   0 
+  Total connections: 0 
+  Default records per fetch: 500 </code></pre>
+</div>
+</div>
+<p>Merge data and tidy names and remove obsolete duplicated columns for creation and updation</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">inner_join</span>(principle_project,projects,<span class="at">by=</span><span class="fu">c</span>(<span class="st">"project_id"</span><span class="ot">=</span><span class="st">"id"</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">inner_join</span>(principles,<span class="at">by=</span><span class="fu">c</span>(<span class="st">"principle_id"</span><span class="ot">=</span><span class="st">"id"</span>))<span class="sc">%&gt;%</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">inner_join</span>(organisations,<span class="at">by=</span><span class="fu">c</span>(<span class="st">"organisation_id"</span><span class="ot">=</span><span class="st">"id"</span>))<span class="sc">%&gt;%</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="fu">rename</span>(<span class="st">"principle_name"</span><span class="ot">=</span>name.y,</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>       <span class="st">"project_name"</span><span class="ot">=</span>name.x,</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>        <span class="st">"organisation_name"</span><span class="ot">=</span>name) <span class="sc">%&gt;%</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="fu">select</span>(<span class="sc">-</span><span class="fu">contains</span>(<span class="st">"created"</span>),<span class="sc">-</span><span class="fu">contains</span>(<span class="st">"updated"</span>))<span class="ot">-&gt;</span>combo_data</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>combo_data <span class="sc">%&gt;%</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="fu">is.na</span>(rating)<span class="sc">==</span>F) <span class="sc">%&gt;%</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(organisation_id,organisation_name,principle_id,principle_name) <span class="sc">%&gt;%</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">summarise</span>(<span class="at">mean_rating=</span><span class="fu">mean</span>(rating),<span class="at">sd_rating=</span><span class="fu">sd</span>(rating),<span class="at">n=</span><span class="fu">n</span>()) <span class="sc">%&gt;%</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">ungroup</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">group_by</span>(principle_name) <span class="sc">%&gt;%</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">rank0=</span><span class="fu">rank</span>(mean_rating,<span class="at">ties.method =</span><span class="st">"max"</span> ),<span class="at">rank=</span><span class="fu">rank</span>(mean_rating<span class="sc">*-</span><span class="dv">1</span>,<span class="at">ties.method =</span><span class="st">"max"</span> ),</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>           <span class="at">from=</span><span class="fu">max</span>(rank),<span class="at">percentile=</span>rank0<span class="sc">/</span><span class="fu">max</span>(rank))<span class="ot">-&gt;</span>org_level_summary</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>combo_data <span class="sc">%&gt;%</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">filter</span>(<span class="fu">is.na</span>(rating)<span class="sc">==</span>F) <span class="sc">%&gt;%</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(principle_id,principle_name) <span class="sc">%&gt;%</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">summarise</span>(<span class="at">mean_rating=</span><span class="fu">mean</span>(rating),<span class="at">sd_rating=</span><span class="fu">sd</span>(rating),<span class="at">n=</span><span class="fu">n</span>()) <span class="sc">%&gt;%</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">ungroup</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>      <span class="fu">mutate</span>(<span class="at">principle_name=</span><span class="fu">reorder</span>(principle_name,mean_rating,mean))<span class="ot">-&gt;</span>overall_summary</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>org_level_summary<span class="ot">&lt;-</span>org_level_summary <span class="sc">%&gt;%</span></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">principle_name=</span><span class="fu">factor</span>(principle_name,<span class="at">levels=</span><span class="fu">levels</span>(overall_summary<span class="sc">$</span>principle_name)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="option-a" class="level2">
+<h2 class="anchored" data-anchor-id="option-a">Option A</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>overall_summary <span class="sc">%&gt;%</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">y=</span>principle_name,<span class="at">x=</span>mean_rating,</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>             <span class="at">xmax=</span>mean_rating<span class="fl">+1.96</span><span class="sc">*</span>(sd_rating<span class="sc">/</span><span class="fu">sqrt</span>(n)),</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>             <span class="at">xmin=</span>mean_rating<span class="fl">-1.96</span><span class="sc">*</span>(sd_rating<span class="sc">/</span><span class="fu">sqrt</span>(n)),</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>             ),</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>         )<span class="sc">+</span></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>()<span class="sc">+</span></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_errorbar</span>(<span class="at">alpha=</span><span class="fl">0.5</span>)<span class="sc">+</span></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">size=</span>n,<span class="at">col=</span>principle_name),<span class="at">data=</span>  <span class="fu">filter</span>(org_level_summary,organisation_id<span class="sc">==</span><span class="dv">5</span>),<span class="at">alpha=</span><span class="fl">0.6</span>,<span class="at">show.legend=</span><span class="cn">FALSE</span>)<span class="sc">+</span></span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">limits=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">2</span>))<span class="sc">+</span></span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_light</span>()<span class="sc">+</span></span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="st">""</span>)<span class="sc">+</span></span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">"Mean Rating + 95% Confidence Interval for all Projects"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="initial-ideas_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</section>
+<section id="option-b" class="level2">
+<h2 class="anchored" data-anchor-id="option-b">Option B</h2>
+<p>(Unsurprisingly someone had written this function already and posted on stack overflow…)</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>just_nums <span class="ot">&lt;-</span> <span class="cf">function</span>(n){</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  suff <span class="ot">&lt;-</span> <span class="fu">case_when</span>(n <span class="sc">%in%</span> <span class="fu">c</span>(<span class="dv">11</span>,<span class="dv">12</span>,<span class="dv">13</span>) <span class="sc">~</span> <span class="st">"th"</span>,</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>                    n <span class="sc">%%</span> <span class="dv">10</span> <span class="sc">==</span> <span class="dv">1</span> <span class="sc">~</span> <span class="st">'st'</span>,</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>                    n <span class="sc">%%</span> <span class="dv">10</span> <span class="sc">==</span> <span class="dv">2</span> <span class="sc">~</span> <span class="st">'nd'</span>,</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>                    n <span class="sc">%%</span> <span class="dv">10</span> <span class="sc">==</span> <span class="dv">3</span> <span class="sc">~</span><span class="st">'rd'</span>,</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>                    <span class="cn">TRUE</span> <span class="sc">~</span> <span class="st">"th"</span>)</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">paste0</span>(n, suff)</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>In terms of recreating this plot outside of R I think the key trick is to have the density plots of the organisation (or portfolio) level averages with the y axis free to vary so they are not actually on a common y axis. Y axis is not really useful to include anyway so not a huge loss. These are effectively half violin plots - you could make them violins if you wanted but in the style it is being presented I think the density plot is probably the better option.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>org_level_summary <span class="sc">%&gt;%</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>mean_rating))<span class="sc">+</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_density</span>(<span class="at">linewidth=</span><span class="dv">1</span>,<span class="fu">aes</span>(<span class="at">fill=</span>principle_name),<span class="at">alpha=</span><span class="fl">0.2</span>,<span class="at">show.legend=</span><span class="cn">FALSE</span>)<span class="sc">+</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span>principle_name,<span class="at">ncol=</span><span class="dv">3</span>,<span class="at">scales=</span><span class="st">"free"</span>)<span class="sc">+</span></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_vline</span>(<span class="fu">aes</span>(<span class="at">xintercept=</span><span class="fu">ifelse</span>(organisation_id<span class="sc">==</span><span class="dv">5</span>,mean_rating,<span class="sc">-</span><span class="dv">1</span>)),<span class="at">col=</span><span class="st">"red"</span>,<span class="at">size=</span><span class="dv">1</span>)<span class="sc">+</span></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="fu">aes</span>(<span class="at">x=</span>mean_rating,<span class="at">y=</span><span class="dv">0</span>,<span class="at">hjust=</span><span class="fu">ifelse</span>(mean_rating<span class="sc">&gt;</span><span class="fl">1.5</span>,<span class="dv">1</span>,<span class="fu">ifelse</span>(mean_rating<span class="sc">&lt;</span><span class="fl">0.5</span>,<span class="dv">0</span>,<span class="fl">0.5</span>)),</span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>           <span class="at">label=</span><span class="fu">paste0</span>(<span class="fu">just_nums</span>(<span class="fu">round</span>(percentile<span class="sc">*</span><span class="dv">100</span>)),<span class="st">" percentile"</span>)),</span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>           <span class="at">data=</span><span class="fu">filter</span>(org_level_summary,organisation_id<span class="sc">==</span><span class="dv">5</span>),<span class="at">size=</span><span class="fl">2.5</span>,<span class="at">vjust=</span><span class="dv">1</span>,<span class="at">fontface=</span><span class="dv">2</span>,<span class="at">col=</span><span class="st">"gray20"</span>)<span class="sc">+</span></span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_void</span>()<span class="sc">+</span></span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">panel.spacing.y =</span> <span class="fu">unit</span>(<span class="dv">1</span>,<span class="st">"cm"</span>),<span class="at">strip.text =</span> <span class="fu">element_text</span>(<span class="at">face=</span><span class="dv">2</span>,<span class="at">size=</span><span class="dv">11</span>),<span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">size=</span><span class="dv">10</span>))<span class="sc">+</span></span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">breaks=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">2</span>),<span class="at">labels=</span><span class="fu">c</span>(<span class="st">"0"</span>,<span class="st">"2"</span>),<span class="at">limits=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">2</span>))<span class="sc">+</span></span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">limits=</span><span class="fu">c</span>(<span class="sc">-</span><span class="fl">0.2</span>,<span class="cn">NA</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="initial-ideas_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid" width="960"></p>
+</div>
+</div>
+</section>
+<section id="option-c---make-a-boring-table" class="level2">
+<h2 class="anchored" data-anchor-id="option-c---make-a-boring-table">Option C - Make a boring table</h2>
+<p>Convert the means into % out of the maximum possible score and include some descriptive cut-offs to try to help interpretation Could also go traffic light shading to make it more visually interesting and cut down on unnecessary</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>org_level_summary <span class="sc">%&gt;%</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(organisation_id<span class="sc">==</span><span class="dv">5</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">full_join</span>(overall_summary,<span class="at">by=</span><span class="st">"principle_name"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">arrange</span>(<span class="fu">desc</span>(mean_rating.x)) <span class="sc">%&gt;%</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">AbsoluteRating=</span><span class="fu">ifelse</span>(mean_rating.x<span class="sc">&gt;</span><span class="fl">1.5</span>,<span class="st">"High"</span>,<span class="fu">ifelse</span>(mean_rating.x<span class="sc">&lt;</span><span class="fl">0.5</span>,<span class="st">"Low"</span>,<span class="st">"Medium"</span>)),</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>         <span class="at">MeanScore=</span>scales<span class="sc">::</span><span class="fu">percent</span>(<span class="fu">round</span>(mean_rating.x<span class="sc">/</span><span class="dv">2</span>,<span class="dv">2</span>)),</span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">RelativeRating=</span><span class="fu">ifelse</span>(percentile<span class="sc">&gt;</span><span class="fl">0.66</span>,<span class="st">"Above Average"</span>,<span class="fu">ifelse</span>(percentile<span class="sc">&lt;</span><span class="fl">0.33</span>,<span class="st">"Below Average"</span>,<span class="st">"Average"</span>)),</span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>         <span class="at">Percentile=</span>scales<span class="sc">::</span><span class="fu">percent</span>(percentile)) <span class="sc">%&gt;%</span></span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(principle_name,AbsoluteRating<span class="sc">:</span>Percentile) <span class="sc">%&gt;%</span></span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<table class="table table-sm table-striped">
+<colgroup>
+<col style="width: 41%">
+<col style="width: 17%">
+<col style="width: 11%">
+<col style="width: 17%">
+<col style="width: 12%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">principle_name</th>
+<th style="text-align: left;">AbsoluteRating</th>
+<th style="text-align: left;">MeanScore</th>
+<th style="text-align: left;">RelativeRating</th>
+<th style="text-align: left;">Percentile</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Animal Health</td>
+<td style="text-align: left;">High</td>
+<td style="text-align: left;">100%</td>
+<td style="text-align: left;">Above Average</td>
+<td style="text-align: left;">100%</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Land &amp; Natural resources governance</td>
+<td style="text-align: left;">High</td>
+<td style="text-align: left;">88%</td>
+<td style="text-align: left;">Average</td>
+<td style="text-align: left;">60%</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Participation</td>
+<td style="text-align: left;">High</td>
+<td style="text-align: left;">85%</td>
+<td style="text-align: left;">Average</td>
+<td style="text-align: left;">60%</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Fairness</td>
+<td style="text-align: left;">High</td>
+<td style="text-align: left;">78%</td>
+<td style="text-align: left;">Above Average</td>
+<td style="text-align: left;">80%</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Recycling</td>
+<td style="text-align: left;">High</td>
+<td style="text-align: left;">76%</td>
+<td style="text-align: left;">Average</td>
+<td style="text-align: left;">60%</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Soil Health</td>
+<td style="text-align: left;">Medium</td>
+<td style="text-align: left;">75%</td>
+<td style="text-align: left;">Average</td>
+<td style="text-align: left;">60%</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Biodiversity</td>
+<td style="text-align: left;">Medium</td>
+<td style="text-align: left;">75%</td>
+<td style="text-align: left;">Average</td>
+<td style="text-align: left;">40%</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Synergy</td>
+<td style="text-align: left;">Medium</td>
+<td style="text-align: left;">75%</td>
+<td style="text-align: left;">Above Average</td>
+<td style="text-align: left;">80%</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Co-creation of knowledge</td>
+<td style="text-align: left;">Medium</td>
+<td style="text-align: left;">70%</td>
+<td style="text-align: left;">Above Average</td>
+<td style="text-align: left;">80%</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Economic diversification</td>
+<td style="text-align: left;">Medium</td>
+<td style="text-align: left;">67%</td>
+<td style="text-align: left;">Average</td>
+<td style="text-align: left;">60%</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Social values &amp; diets</td>
+<td style="text-align: left;">Medium</td>
+<td style="text-align: left;">60%</td>
+<td style="text-align: left;">Average</td>
+<td style="text-align: left;">40%</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Input reduction</td>
+<td style="text-align: left;">Medium</td>
+<td style="text-align: left;">50%</td>
+<td style="text-align: left;">Average</td>
+<td style="text-align: left;">50%</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Connectivity</td>
+<td style="text-align: left;">Medium</td>
+<td style="text-align: left;">38%</td>
+<td style="text-align: left;">Average</td>
+<td style="text-align: left;">40%</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</section>
+<section id="option-d" class="level2">
+<h2 class="anchored" data-anchor-id="option-d">Option D</h2>
+<p>Another thought I had here as a way of summarizing all the information from within a portfolio, and also a way of easily identifying data not recorded (intentionally or otherwise - gray is explicit NA, white is data not entered.)</p>
+<p>Principles going along the top since this will always be fixed and easier to have dynamic height rather than dynamic width</p>
+<p>Traffic light colour scheme with red fixed at 0 and green fixed at 2 so colour interpretations should always be consistent</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>combo_data <span class="sc">%&gt;%</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(organisation_id<span class="sc">==</span><span class="dv">5</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(principle_name,project_name,rating) <span class="sc">%&gt;%</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">source=</span><span class="st">"Projects in Portfolio"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rbind</span>((</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>  org_level_summary <span class="sc">%&gt;%</span></span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(organisation_id<span class="sc">==</span><span class="dv">5</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">select</span>(principle_name,<span class="at">rating=</span>mean_rating) <span class="sc">%&gt;%</span>  </span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">source=</span><span class="st">" "</span>,<span class="at">project_name=</span><span class="st">"Portfolio Average"</span>) </span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>  )) <span class="sc">%&gt;%</span></span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>   <span class="fu">rbind</span>((</span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>  overall_summary <span class="sc">%&gt;%</span></span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a>    <span class="fu">select</span>(principle_name,<span class="at">rating=</span>mean_rating) <span class="sc">%&gt;%</span>  </span>
+<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">source=</span><span class="st">""</span>,<span class="at">project_name=</span><span class="st">"Average of Comparable Projects"</span>) </span>
+<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a>  )) <span class="sc">%&gt;%</span> </span>
+<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">project_name=</span><span class="fu">factor</span>(project_name,<span class="at">levels=</span><span class="fu">rev</span>(<span class="fu">sort</span>(<span class="fu">unique</span>(project_name))))) <span class="sc">%&gt;%</span></span>
+<span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">principle_name=</span><span class="fu">factor</span>(<span class="fu">str_wrap</span>(principle_name,<span class="dv">25</span>),<span class="at">levels=</span><span class="fu">str_wrap</span>(overall_summary<span class="sc">$</span>principle_name,<span class="dv">25</span>))) <span class="sc">%&gt;%</span></span>
+<span id="cb10-18"><a href="#cb10-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>principle_name,<span class="at">y=</span>project_name,<span class="at">fill=</span>rating))<span class="sc">+</span></span>
+<span id="cb10-19"><a href="#cb10-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_tile</span>(<span class="at">col=</span><span class="st">"black"</span>,<span class="at">show.legend =</span> <span class="cn">FALSE</span>)<span class="sc">+</span></span>
+<span id="cb10-20"><a href="#cb10-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_grid</span>(source<span class="sc">~</span>.,<span class="at">scales=</span><span class="st">"free_y"</span>, <span class="at">space =</span> <span class="st">"free_y"</span>,<span class="at">as.table =</span> <span class="cn">FALSE</span> )<span class="sc">+</span></span>
+<span id="cb10-21"><a href="#cb10-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()<span class="sc">+</span></span>
+<span id="cb10-22"><a href="#cb10-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">angle=</span><span class="dv">90</span>,<span class="at">hjust =</span> <span class="dv">0</span>,<span class="at">size =</span> <span class="dv">9</span>,<span class="at">face=</span><span class="dv">2</span>),<span class="at">strip.text =</span> <span class="fu">element_text</span>(<span class="at">size=</span><span class="dv">13</span>,<span class="at">face=</span><span class="dv">2</span>),</span>
+<span id="cb10-23"><a href="#cb10-23" aria-hidden="true" tabindex="-1"></a>        <span class="at">axis.text.y =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">10</span>,<span class="at">face=</span><span class="dv">3</span>),</span>
+<span id="cb10-24"><a href="#cb10-24" aria-hidden="true" tabindex="-1"></a>        <span class="at">panel.grid.minor =</span> <span class="fu">element_blank</span>(),<span class="at">panel.grid.major =</span> <span class="fu">element_blank</span>(),<span class="at">panel.border =</span> <span class="fu">element_rect</span>(<span class="at">size=</span><span class="fl">0.25</span>,<span class="at">colour =</span> <span class="st">"black"</span>,<span class="at">fill=</span><span class="cn">NA</span>))<span class="sc">+</span></span>
+<span id="cb10-25"><a href="#cb10-25" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_discrete</span>(<span class="at">position=</span><span class="st">"top"</span>)<span class="sc">+</span></span>
+<span id="cb10-26"><a href="#cb10-26" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">""</span>)<span class="sc">+</span><span class="fu">ylab</span>(<span class="st">""</span>)<span class="sc">+</span></span>
+<span id="cb10-27"><a href="#cb10-27" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_fermenter</span>(<span class="at">palette=</span><span class="st">"RdYlGn"</span>,<span class="at">direction =</span> <span class="dv">1</span>,<span class="at">na.value =</span> <span class="st">"gray"</span>,<span class="at">limits=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">2</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="initial-ideas_files/figure-html/unnamed-chunk-9-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>
