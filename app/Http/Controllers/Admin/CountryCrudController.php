@@ -37,9 +37,9 @@ class CountryCrudController extends CrudController
     {
         CRUD::column('continent.id')->label('Continent ID');
         CRUD::column('continent.name')->label('Continent');
-        CRUD::column('region_id');
+        CRUD::column('region.id')->label('Region ID');
         CRUD::column('region')->type('relationship')->attribute('name')->key('region');
-        CRUD::column('id');
+        CRUD::column('id')->label('Country ID');
         CRUD::column('name');
     }
 

@@ -35,9 +35,10 @@ class RegionCrudController extends CrudController
      */
     protected function setupListOperation()
     {
-        CRUD::column('continent_id');
+        // CRUD::column('continent_id');
+        CRUD::column('continent.id')->label('Continent ID');
         CRUD::column('continent')->type('relationship')->attribute('name');
-        CRUD::column('id');
+        CRUD::column('id')->label('Region ID');
         CRUD::column('name');
 
     }
@@ -50,8 +51,6 @@ class RegionCrudController extends CrudController
      */
     protected function setupCreateOperation()
     {
-
-
         /**
          * Fields can be defined using the fluent syntax or array syntax:
          * - CRUD::field('price')->type('number');
