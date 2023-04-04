@@ -54,7 +54,7 @@ class Project extends Model
                 return;
             }
 
-            if (Auth::user()->hasRole('admin')) {
+            if (Auth::user()->hasRole('Site Admin')) {
                 return;
             }
             $builder->whereIn('organisation_id', Auth::user()->organisations->pluck('id')->toArray());

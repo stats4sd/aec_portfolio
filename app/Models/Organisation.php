@@ -30,7 +30,7 @@ protected static function booted()
                 return;
             }
 
-            if(Auth::user()->hasRole('admin')) {
+            if(Auth::user()->hasRole('Site Admin')) {
                 return;
             }
 
@@ -53,7 +53,7 @@ protected static function booted()
 
     public function admins()
     {
-        return $this->belongsToMany(User::class, 'organisation_members')->withPivot('role')->wherePivot('role', '=', 'admin');
+        return $this->belongsToMany(User::class, 'organisation_members')->withPivot('role')->wherePivot('role', '=', 'Site Admin');
     }
 
     public function editors()

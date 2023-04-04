@@ -23,8 +23,7 @@ class CountryCrudController extends CrudController
      */
     public function setup()
     {
-        // TODO: to be revised with a comprehensive roles and permissions configuration
-        if ( !auth()->user()->hasRole('admin') ) {
+        if ( !auth()->user()->hasRole('Site Admin') ) {
             throw new AccessDeniedHttpException('This page is only available to site admin');
         }
 

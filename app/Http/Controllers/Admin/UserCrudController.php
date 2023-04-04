@@ -25,7 +25,7 @@ class UserCrudController extends CrudController
 
         $this->crud->denyAccess('create');
 
-        if (!Auth::user()->hasRole('admin')) {
+        if (!Auth::user()->hasRole('Site Admin')) {
             $this->crud->denyAccess(['list', 'edit']);
         }
     }

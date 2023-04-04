@@ -34,7 +34,7 @@ class ProjectPolicy
 
         // any member of an organisation can view a project
 
-        return $project->organisation->users->contains($user) || $user->hasAnyRole('admin');
+        return $project->organisation->users->contains($user) || $user->hasAnyRole('Site Admin');
     }
 
     /**
@@ -47,7 +47,7 @@ class ProjectPolicy
     {
         return $user->organisations->some(function ($org) use ($user) {
                 return $org->admins->contains($user) || $org->editors->contains($user);
-                }) || $user->hasAnyRole('admin');
+                }) || $user->hasAnyRole('Site Admin');
     }
 
     /**
@@ -59,7 +59,7 @@ class ProjectPolicy
      */
     public function update(User $user, Project $project)
     {
-        return $project->organisation->admins->contains($user) || $project->organisation->editors->contains($user) || $user->hasAnyRole('admin');
+        return $project->organisation->admins->contains($user) || $project->organisation->editors->contains($user) || $user->hasAnyRole('Site Admin');
     }
 
     /**
@@ -71,7 +71,7 @@ class ProjectPolicy
      */
     public function delete(User $user, Project $project)
     {
-        return $project->organisation->admins->contains($user) || $project->organisation->editors->contains($user) || $user->hasAnyRole('admin');
+        return $project->organisation->admins->contains($user) || $project->organisation->editors->contains($user) || $user->hasAnyRole('Site Admin');
     }
 
     /**
@@ -83,7 +83,7 @@ class ProjectPolicy
      */
     public function restore(User $user, Project $project)
     {
-        return $project->organisation->admins->contains($user) || $user->hasAnyRole('admin');
+        return $project->organisation->admins->contains($user) || $user->hasAnyRole('Site Admin');
     }
 
     /**
@@ -95,7 +95,7 @@ class ProjectPolicy
      */
     public function forceDelete(User $user, Project $project)
     {
-        return $user->hasAnyRole('admin');
+        return $user->hasAnyRole('Site Admin');
     }
 
     public function organisationUpdate(User $user, Project $project)

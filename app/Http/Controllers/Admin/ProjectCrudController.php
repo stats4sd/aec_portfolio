@@ -142,7 +142,7 @@ class ProjectCrudController extends CrudController
                 $this->crud->query->where('assessment_status', $value);
             });
 
-        if (Auth::user()->hasRole('admin')) {
+        if (Auth::user()->hasRole('Site Admin')) {
 
             CRUD::filter('organisation_id')
                 ->type('select2')
@@ -169,7 +169,7 @@ class ProjectCrudController extends CrudController
             ->content('Enter the key project details below.')
             ->view_namespace('stats4sd.laravel-backpack-section-title::fields');
 
-        if (Auth::user()?->hasRole('admin') || Auth::user()?->organisations()->count() > 1)
+        if (Auth::user()?->hasRole('Site Admin') || Auth::user()?->organisations()->count() > 1)
             CRUD::field('organisation_id')->type('relationship')->label('Institution');
         else {
             $organisation = Auth::user()?->organisations()->first();

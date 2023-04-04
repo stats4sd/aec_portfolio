@@ -23,7 +23,7 @@ class ContinentCrudController extends CrudController
      */
     public function setup()
     {
-        if ( !auth()->user()->hasRole('admin') ) {
+        if ( !auth()->user()->hasRole('Site Admin') ) {
             throw new AccessDeniedHttpException('This page is only available to site admin');
         }
 

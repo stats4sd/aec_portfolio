@@ -1,6 +1,6 @@
 <!-- This file is used to store sidebar items, starting with Backpack\Base 0.9.0 -->
 
-@if(Auth::user()->organisations()->count() > 1 || Auth::user()->hasRole('admin'))
+@if(Auth::user()->organisations()->count() > 1 || Auth::user()->hasRole('Site Admin'))
     <li class="nav-item"><a class="nav-link" href="{{ backpack_url('dashboard') }}"><i class="la la-home nav-icon"></i> Institutions</a></li>
 @elseif(Auth::user()->organisations()->count() === 1)
     <li class="nav-item"><a class="nav-link" href="{{ backpack_url('organisation/'.Auth::user()->organisations->first()?->id).'/show' }}"><i class="la la-home nav-icon"></i> Institutions: {{ Auth::user()->organisations->first()->name }}</a></li>
@@ -11,7 +11,7 @@
 <li class='nav-item'><a class='nav-link' href='{{ backpack_url('project') }}'><i class='nav-icon la la-question'></i> Projects</a></li>
 
 
-@if(Auth::user()->hasRole('admin'))
+@if(Auth::user()->hasRole('Site Admin'))
 
     <li class='nav-item'><a class='nav-link' href='{{ backpack_url('red-line') }}'><i class='nav-icon la la-question'></i> Red lines</a></li>
     <li class="nav-item"><a class="nav-link" href="{{ backpack_url('principle') }}"><i class="nav-icon la la-question"></i> Principles</a></li>

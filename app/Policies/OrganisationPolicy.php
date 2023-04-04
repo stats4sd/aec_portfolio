@@ -19,7 +19,7 @@ class OrganisationPolicy
      */
     public function viewAny(User $user)
     {
-        return ($user->hasAnyRole('admin')) ? Response::allow()
+        return ($user->hasAnyRole('Site Admin')) ? Response::allow()
         : Response::deny('Sorry, you do not have permissions to view details of all organisations.');;
     }
 
@@ -32,7 +32,7 @@ class OrganisationPolicy
      */
     public function view(User $user, Organisation $organisation)
     {
-        return $organisation->users->contains($user) || $user->hasAnyRole('admin', 'methods group');
+        return $organisation->users->contains($user) || $user->hasAnyRole('Site Admin', 'methods group');
     }
 
     /**
@@ -43,7 +43,7 @@ class OrganisationPolicy
      */
     public function create(User $user)
     {
-        return $user->hasAnyRole('admin');
+        return $user->hasAnyRole('Site Admin');
     }
 
     /**
@@ -55,7 +55,7 @@ class OrganisationPolicy
      */
     public function update(User $user, Organisation $organisation)
     {
-        return $organisation->admins->contains($user) || $user->hasAnyRole('admin');
+        return $organisation->admins->contains($user) || $user->hasAnyRole('Site Admin');
     }
 
     /**
@@ -67,7 +67,7 @@ class OrganisationPolicy
      */
     public function delete(User $user, Organisation $organisation)
     {
-        return $user->hasRole('admin');
+        return $user->hasRole('Site Admin');
     }
 
     /**
@@ -79,7 +79,7 @@ class OrganisationPolicy
      */
     public function restore(User $user, Organisation $organisation)
     {
-        return $organisation->admins->contains($user) || $user->hasAnyRole('admin');
+        return $organisation->admins->contains($user) || $user->hasAnyRole('Site Admin');
     }
 
     /**
@@ -91,7 +91,7 @@ class OrganisationPolicy
      */
     public function forceDelete(User $user, Organisation $organisation)
     {
-        return $user->hasAnyRole('admin');
+        return $user->hasAnyRole('Site Admin');
     }
 
     public function organisationUpdate(User $user, Organisation $organisation)
