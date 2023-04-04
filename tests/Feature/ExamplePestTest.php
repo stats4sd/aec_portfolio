@@ -1,5 +1,18 @@
 <?php
 
+use App\Models\User;
+
+beforeAll(function () {
+    // Prepare something once before any of this file's tests run...
+
+    // Question: how to create a site admin user...?
+    $siteAdmin = User::factory()->create();
+
+});
+
+
+// ***** EXAMPLE TEST CASES BEGIN
+
 test('example', function () {
     expect(true)->toBeTrue();
 });
@@ -8,6 +21,10 @@ test('example', function () {
 test('todo')->todo();
 
 test('this will be skipped because is has no function, but is not explictly marked as a todo');
+
+// ***** EXAMPLE TEST CASES END
+
+
 
 
 // CRUD panels - Continents, Regions, Countries, Users, Admin User Invites CRUD panels are accessible by site admin only
