@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Requests\ContinentRequest;
 use Backpack\CRUD\app\Http\Controllers\CrudController;
 use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 /**
  * Class ContinentCrudController
@@ -22,6 +23,10 @@ class ContinentCrudController extends CrudController
      */
     public function setup()
     {
+        if ( !auth()->user()->hasRole('admin') ) {
+            throw new AccessDeniedHttpException('This page is only available to site admin');
+        }
+
         CRUD::setModel(\App\Models\Continent::class);
         CRUD::setRoute(config('backpack.base.route_prefix') . '/continent');
         CRUD::setEntityNameStrings('continent', 'continents');

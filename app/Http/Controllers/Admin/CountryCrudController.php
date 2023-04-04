@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Requests\CountryRequest;
 use Backpack\CRUD\app\Http\Controllers\CrudController;
 use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 /**
  * Class CountryCrudController
@@ -22,6 +23,11 @@ class CountryCrudController extends CrudController
      */
     public function setup()
     {
+        // TODO: to be revised with a comprehensive roles and permissions configuration
+        if ( !auth()->user()->hasRole('admin') ) {
+            throw new AccessDeniedHttpException('This page is only available to site admin');
+        }
+
         CRUD::setModel(\App\Models\Country::class);
         CRUD::setRoute(config('backpack.base.route_prefix') . '/country');
         CRUD::setEntityNameStrings('country', 'countries');
