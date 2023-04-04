@@ -2,7 +2,7 @@
 
 @section('content')
 
-    <a href="{{backpack_url('project')}}" class="btn btn-link">Back to projects list</a>
+    <a href="{{backpack_url('initiative')}}" class="btn btn-link">Back to initiatives list</a>
 
     <div class="container mt-4">
 

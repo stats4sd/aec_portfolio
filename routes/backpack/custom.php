@@ -27,7 +27,7 @@ Route::group([
     ),
 
 ], function () { // custom admin routes
-    Route::crud('project', ProjectCrudController::class);
+    Route::crud('initiative', ProjectCrudController::class);
     Route::crud('red-line', RedLineCrudController::class);
     Route::crud('principle', PrincipleCrudController::class);
     Route::crud('score-tag', ScoreTagCrudController::class);

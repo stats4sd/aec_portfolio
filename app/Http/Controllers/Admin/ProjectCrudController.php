@@ -57,7 +57,7 @@ class ProjectCrudController extends CrudController
     {
         CRUD::setModel(\App\Models\Project::class);
         CRUD::setRoute(config('backpack.base.route_prefix') . '/project');
-        CRUD::setEntityNameStrings('project', 'projects');
+        CRUD::setEntityNameStrings('initiative', 'initiatives');
 
         CRUD::set('import.importer', ProjectImport::class);
         CRUD::set('import.template-path', 'AE Marker - Project Import Template.xlsx');
