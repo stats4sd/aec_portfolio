@@ -46,6 +46,11 @@ protected static function booted()
         return $this->hasMany(Project::class);
     }
 
+    public function portfolios()
+    {
+        return $this->hasMany(Portfolio::class);
+    }
+
     public function users()
     {
         return $this->belongsToMany(User::class, 'organisation_members')->withPivot('role');

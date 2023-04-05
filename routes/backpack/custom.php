@@ -9,6 +9,7 @@
 use App\Http\Controllers\Admin\ContinentCrudController;
 use App\Http\Controllers\Admin\CountryCrudController;
 use App\Http\Controllers\Admin\OrganisationCrudController;
+use App\Http\Controllers\Admin\PortfolioCrudController;
 use App\Http\Controllers\Admin\PrincipleCrudController;
 use App\Http\Controllers\Admin\ProjectCrudController;
 use App\Http\Controllers\Admin\RedLineCrudController;
@@ -27,14 +28,21 @@ Route::group([
     ),
 
 ], function () { // custom admin routes
-    Route::crud('initiative', ProjectCrudController::class);
+    
+    Route::crud('organisation', OrganisationCrudController::class);
+    Route::crud('portfolio', PortfolioCrudController::class);
+    Route::crud('project', ProjectCrudController::class);
+
     Route::crud('red-line', RedLineCrudController::class);
     Route::crud('principle', PrincipleCrudController::class);
     Route::crud('score-tag', ScoreTagCrudController::class);
-    Route::crud('organisation', OrganisationCrudController::class);
+
     Route::crud('user', UserCrudController::class);
     Route::crud('role-invite', RoleInviteCrudController::class);
 
+    Route::crud('country', CountryCrudController::class);
+    Route::crud('continent', ContinentCrudController::class);
+    Route::crud('region', RegionCrudController::class);
 
     Route::get('organisation/{organisation}/members/create', [OrganisationMemberController::class, 'create'])->name('organisationmembers.create');
     Route::post('organisation/{organisation}/members', [OrganisationMemberController::class, 'store'])->name('organisationmembers.store');
@@ -58,8 +66,5 @@ Route::group([
     })->name('backpack.dashboard');
 
     Route::get('/', [Backpack\CRUD\app\Http\Controllers\AdminController::class, 'redirect'])->name('backpack');
-
-    Route::crud('country', CountryCrudController::class);
-    Route::crud('continent', ContinentCrudController::class);
-    Route::crud('region', RegionCrudController::class);
+    
 }); // this should be the absolute last line of this file

@@ -173,6 +173,12 @@ class Project extends Model
         }
 
         public
+        function portfolio()
+        {
+            return $this->belongsTo(Portfolio::class);
+        }
+
+        public
         function customScoreTags()
         {
             return $this->hasMany(CustomScoreTag::class);

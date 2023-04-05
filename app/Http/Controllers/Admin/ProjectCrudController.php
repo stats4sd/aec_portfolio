@@ -2,31 +2,33 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Enums\GeographicalReach;
+use App\Models\Region;
 use App\Models\Country;
 use App\Models\RedLine;
-use App\Models\Region;
 use App\Models\ScoreTag;
-use App\Models\CustomScoreTag;
+use App\Models\Portfolio;
 use App\Models\Principle;
-use Backpack\CRUD\app\Http\Controllers\Operations\ShowOperation;
 use Illuminate\Support\Str;
 use App\Models\Organisation;
 use App\Imports\ProjectImport;
+use App\Models\CustomScoreTag;
 use App\Enums\AssessmentStatus;
-use phpDocumentor\Reflection\Types\True_;
+use App\Enums\GeographicalReach;
+use App\Models\OrganisationMember;
 use Prologue\Alerts\Facades\Alert;
 use Illuminate\Support\Facades\Auth;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Http\Requests\ProjectRequest;
 use Backpack\CRUD\app\Library\Widget;
 use function mysql_xdevapi\getSession;
+use phpDocumentor\Reflection\Types\True_;
 use Backpack\CRUD\app\Http\Controllers\CrudController;
 use App\Http\Controllers\Admin\Operations\AssessOperation;
 use App\Http\Controllers\Admin\Operations\ImportOperation;
 use App\Http\Controllers\Admin\Operations\RedlineOperation;
 use App\Http\Controllers\Admin\Traits\UsesSaveAndNextAction;
 use Backpack\Pro\Http\Controllers\Operations\FetchOperation;
+use Backpack\CRUD\app\Http\Controllers\Operations\ShowOperation;
 use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
 
 /**
@@ -122,6 +124,7 @@ class ProjectCrudController extends CrudController
             ]);
 
         CRUD::column('organisation')->type('relationship')->label('Institution');
+        CRUD::column('portfolio')->type('relationship')->label('Portfolio');
         CRUD::column('name');
         CRUD::column('code');
         CRUD::column('budget')->type('closure')->function(function ($entry) {
@@ -143,7 +146,6 @@ class ProjectCrudController extends CrudController
             });
 
         if (Auth::user()->hasRole('Site Admin')) {
-
             CRUD::filter('organisation_id')
                 ->type('select2')
                 ->label('Filter by Institution')
@@ -152,6 +154,18 @@ class ProjectCrudController extends CrudController
                     $this->crud->query->where('organisation_id', $value);
                 });
         }
+
+        // find the organisations that user belongs to
+        $userOrganisationIds = OrganisationMember::select('organisation_id')->where('user_id', Auth::user()->id)->get();
+
+        CRUD::filter('portfolio_id')
+            ->type('select2')
+            ->label('Filter by Portfolio')
+            // ->options(collect(AssessmentStatus::cases())->pluck('value', 'value')->toArray())
+            ->options(Portfolio::whereIn('organisation_id', $userOrganisationIds)->pluck('name', 'id')->toArray())
+            ->active(function ($value) {
+                $this->crud->query->where('portfolio_id', $value);
+            });
 
     }
 
@@ -176,6 +190,11 @@ class ProjectCrudController extends CrudController
             CRUD::field('organisation_id')->type('hidden')->value($organisation->id);
             CRUD::field('organisation_title')->type('section-title')->view_namespace('stats4sd.laravel-backpack-section-title::fields')->content('Creating a Project for <b>' . $organisation->name . '</b>');
         }
+
+        // add portfolio selection box
+        // TODO: update options according to selected organisation
+        CRUD::field('portfolio_id')->type('relationship')->label('Portfolio');
+
         CRUD::field('name');
         CRUD::field('code')->hint('The code should uniquely identify the project within your institution\'s porfolio. Leave blank for an auto-generated code.');
         CRUD::field('description')->hint('This is optional, but will help to provide context for the AE assessment');

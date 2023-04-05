@@ -9,7 +9,7 @@
 <hr/>
 
 <li class='nav-item'><a class='nav-link' href='{{ backpack_url('portfolio') }}'><i class='nav-icon la la-object-group'></i> Portfolios</a></li>
-<li class='nav-item'><a class='nav-link' href='{{ backpack_url('initiative') }}'><i class='nav-icon la la-project-diagram'></i> Initiatives</a></li>
+<li class='nav-item'><a class='nav-link' href='{{ backpack_url('project') }}'><i class='nav-icon la la-project-diagram'></i> Initiatives</a></li>
 <hr/>
 
 @if(Auth::user()->hasRole('Site Admin'))
@@ -27,5 +27,3 @@
     <li class="nav-item"><a class="nav-link" href="{{ backpack_url('region') }}"><i class="nav-icon la la-arrows-alt"></i> Regions</a></li>
     <li class="nav-item"><a class="nav-link" href="{{ backpack_url('country') }}"><i class="nav-icon la la-flag"></i> Countries</a></li>
 @endif
-
-
