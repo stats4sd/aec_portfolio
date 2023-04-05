@@ -2,7 +2,7 @@
 
 use App\Models\User;
 
-beforeAll(function () {
+beforeEach(function () {
     // Prepare something once before any of this file's tests run...
 
     // Question: how to create a site admin user...?
@@ -50,5 +50,3 @@ test('Score tags CRUD panel is accessible by site admin, site manager and instit
 
 
 // TBC: CRUD panels - Institutions, Projects CRUD panels are accessible by all users
-
-
