@@ -145,9 +145,8 @@ class ProjectCrudController extends CrudController
                 $this->crud->query->where('assessment_status', $value);
             });
 
-            
-        if (Auth::user()->hasRole('Site Admin')) {
 
+        if (Auth::user()->hasRole('Site Admin')) {
             // institution filter with all institutions
             CRUD::filter('organisation_id')
                 ->type('select2')
@@ -157,15 +156,29 @@ class ProjectCrudController extends CrudController
                     $this->crud->query->where('organisation_id', $value);
                 });
 
-            // portfolio filter with all portfolios
-            // TODO: show portfolios that belong to the selected institution
-            CRUD::filter('portfolio_id')
+            $selectedOrgnisationId = request()->get('organisation_id');
+
+            // no organisation is selected, show all portfolios in portfolio filter
+            if ($selectedOrgnisationId == null) {
+                CRUD::filter('portfolio_id')
                 ->type('select2')
                 ->label('Filter by Portfolio')
                 ->options(Portfolio::all()->pluck('name', 'id')->toArray())
                 ->active(function ($value) {
                     $this->crud->query->where('portfolio_id', $value);
                 });
+
+            // one organisation is selected, show portfolios belong to the selected organisation in portfolio filter
+            // Question: it works only after reloading the page... Is there any way to take effect without reloading this page?
+            } else {
+                CRUD::filter('portfolio_id')
+                ->type('select2')
+                ->label('Filter by Portfolio')
+                ->options(Portfolio::where('organisation_id', $selectedOrgnisationId)->pluck('name', 'id')->toArray())
+                ->active(function ($value) {
+                    $this->crud->query->where('portfolio_id', $value);
+                });
+            }
 
         } else {
 

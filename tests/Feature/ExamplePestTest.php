@@ -1,52 +1,65 @@
 <?php
 
 use App\Models\User;
+use function Pest\Laravel\{actingAs};
+use Database\Seeders\DatabaseSeeder;
+
 
 beforeEach(function () {
     // Prepare something once before any of this file's tests run...
+});
 
-    // Question: how to create a site admin user...?
+
+test('Site admin can access Continents, Regions, Countries, Users, Admin User Invites CRUD panels', function () {
     $siteAdmin = User::factory()->create();
+    $siteAdmin->assignRole(['Site Admin']);
 
+    actingAs($siteAdmin)->get('/admin/continent')->assertStatus(200);
+    actingAs($siteAdmin)->get('/admin/region')->assertStatus(200);
+    actingAs($siteAdmin)->get('/admin/country')->assertStatus(200);
+    actingAs($siteAdmin)->get('/admin/user')->assertStatus(200);
+    actingAs($siteAdmin)->get('/admin/role-invite')->assertStatus(200);
 });
 
 
-// ***** EXAMPLE TEST CASES BEGIN
+test('Site manager, institutional admin, institutional assessor, institutional member cannot access Continents, Regions, Countries, Users, Admin User Invites CRUD panels', function () {
+    $siteManager = User::factory()->create();
+    $siteManager->assignRole(['Site Manager']);
 
-test('example', function () {
-    expect(true)->toBeTrue();
+    $institutionalAdmin = User::factory()->create();
+    $institutionalAdmin->assignRole(['Institutional Admin']);
+
+    $institutionalAssessor = User::factory()->create();
+    $institutionalAssessor->assignRole(['Institutional Assessor']);
+
+    $institutionalMember = User::factory()->create();
+    $institutionalMember->assignRole(['Institutional Member']);
+
+    actingAs($siteManager)->get('/admin/continent')->assertStatus(403);
+    actingAs($siteManager)->get('/admin/region')->assertStatus(403);
+    actingAs($siteManager)->get('/admin/country')->assertStatus(403);
+    actingAs($siteManager)->get('/admin/user')->assertStatus(403);
+    actingAs($siteManager)->get('/admin/role-invite')->assertStatus(403);
+
+    actingAs($institutionalAdmin)->get('/admin/continent')->assertStatus(403);
+    actingAs($institutionalAdmin)->get('/admin/region')->assertStatus(403);
+    actingAs($institutionalAdmin)->get('/admin/country')->assertStatus(403);
+    actingAs($institutionalAdmin)->get('/admin/user')->assertStatus(403);
+    actingAs($institutionalAdmin)->get('/admin/role-invite')->assertStatus(403);
+
+    actingAs($institutionalAssessor)->get('/admin/continent')->assertStatus(403);
+    actingAs($institutionalAssessor)->get('/admin/region')->assertStatus(403);
+    actingAs($institutionalAssessor)->get('/admin/country')->assertStatus(403);
+    actingAs($institutionalAssessor)->get('/admin/user')->assertStatus(403);
+    actingAs($institutionalAssessor)->get('/admin/role-invite')->assertStatus(403);
+
+    actingAs($institutionalMember)->get('/admin/continent')->assertStatus(403);
+    actingAs($institutionalMember)->get('/admin/region')->assertStatus(403);
+    actingAs($institutionalMember)->get('/admin/country')->assertStatus(403);
+    actingAs($institutionalMember)->get('/admin/user')->assertStatus(403);
+    actingAs($institutionalMember)->get('/admin/role-invite')->assertStatus(403);
 });
 
 
-test('todo')->todo();
-
-test('this will be skipped because is has no function, but is not explictly marked as a todo');
-
-// ***** EXAMPLE TEST CASES END
 
 
-
-
-// CRUD panels - Continents, Regions, Countries, Users, Admin User Invites CRUD panels are accessible by site admin only
-test('Continents CRUD panel is accessible by site admin only')->todo();
-
-test('Regions CRUD panel is accessible by site admin only')->todo();
-
-test('Countries CRUD panel is accessible by site admin only')->todo();
-
-test('Users CRUD panel is accessible by site admin only')->todo();
-
-test('Admin User Invites CRUD panel is accessible by site admin only')->todo();
-
-
-// CRUD panels - Red lines, Principles CRUD panels are accessible by site admin and site manager only
-test('Red lines CRUD panel is accessible by site admin and site manager only')->todo();
-
-test('Principles CRUD panel is accessible by site admin and site manager only')->todo();
-
-
-// CRUD panels - Red lines, Principles CRUD panels are accessible by site admin, site manager and institutional admin only
-test('Score tags CRUD panel is accessible by site admin, site manager and institutional admin only')->todo();
-
-
-// TBC: CRUD panels - Institutions, Projects CRUD panels are accessible by all users

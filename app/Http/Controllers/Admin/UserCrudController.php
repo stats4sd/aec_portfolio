@@ -9,6 +9,7 @@ use Backpack\CRUD\app\Http\Controllers\CrudController;
 use Backpack\CRUD\app\Http\Controllers\Operations\ShowOperation;
 use Backpack\PermissionManager\app\Http\Requests\UserStoreCrudRequest as StoreRequest;
 use Backpack\PermissionManager\app\Http\Requests\UserUpdateCrudRequest as UpdateRequest;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 class UserCrudController extends CrudController
 {
@@ -19,6 +20,10 @@ class UserCrudController extends CrudController
 
     public function setup()
     {
+        if ( !auth()->user()->can('view users') ) {
+            throw new AccessDeniedHttpException('Access denied. You do not have permission to access this page');
+        }
+
         $this->crud->setModel(config('backpack.permissionmanager.models.user'));
         $this->crud->setEntityNameStrings(trans('backpack::permissionmanager.user'), trans('backpack::permissionmanager.users'));
         $this->crud->setRoute(backpack_url('user'));

@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Http\Requests\RoleInviteRequest;
 use Backpack\CRUD\app\Http\Controllers\CrudController;
 use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 /**
  * Class RoleInviteCrudController
@@ -28,6 +29,10 @@ class RoleInviteCrudController extends CrudController
      */
     public function setup()
     {
+        if ( !auth()->user()->can('view admin user invites') ) {
+            throw new AccessDeniedHttpException('Access denied. You do not have permission to access this page');
+        }
+
         CRUD::setModel(\App\Models\RoleInvite::class);
         CRUD::setRoute(config('backpack.base.route_prefix') . '/role-invite');
         CRUD::setEntityNameStrings('role invite', 'role invites');

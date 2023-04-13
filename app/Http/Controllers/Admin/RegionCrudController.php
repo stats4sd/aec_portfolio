@@ -23,8 +23,8 @@ class RegionCrudController extends CrudController
      */
     public function setup()
     {
-        if ( !auth()->user()->hasRole('Site Admin') ) {
-            throw new AccessDeniedHttpException('This page is only available to site admin');
+        if ( !auth()->user()->can('view regions') ) {
+            throw new AccessDeniedHttpException('Access denied. You do not have permission to access this page');
         }
 
         CRUD::setModel(\App\Models\Region::class);
