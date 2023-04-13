@@ -10,7 +10,7 @@ beforeEach(function () {
 });
 
 
-test('Site admin can access Continents, Regions, Countries, Users, Admin User Invites CRUD panels', function () {
+test('Site admin CAN access Continents, Regions, Countries, Users, Admin User Invites CRUD panels', function () {
     $siteAdmin = User::factory()->create();
     $siteAdmin->assignRole(['Site Admin']);
 
@@ -22,7 +22,7 @@ test('Site admin can access Continents, Regions, Countries, Users, Admin User In
 });
 
 
-test('Site manager, institutional admin, institutional assessor, institutional member cannot access Continents, Regions, Countries, Users, Admin User Invites CRUD panels', function () {
+test('Site manager, institutional admin, institutional assessor, institutional member CANNOT access Continents, Regions, Countries, Users, Admin User Invites CRUD panels', function () {
     $siteManager = User::factory()->create();
     $siteManager->assignRole(['Site Manager']);
 
@@ -61,7 +61,7 @@ test('Site manager, institutional admin, institutional assessor, institutional m
 });
 
 
-test('Site admin, site manager can access Red Lines, Principles, Score Tags CRUD panels', function () {
+test('Site admin, site manager CAN access Red Lines, Principles, Score Tags CRUD panels', function () {
     $siteAdmin = User::factory()->create();
     $siteAdmin->assignRole(['Site Admin']);
 
@@ -78,7 +78,7 @@ test('Site admin, site manager can access Red Lines, Principles, Score Tags CRUD
 });
 
 
-test('Institutional admin, institutional assessor, institutional member cannot access Red Lines, Principles, Score Tags CRUD panels', function () {
+test('Institutional admin, institutional assessor, institutional member CANNOT access Red Lines, Principles, Score Tags CRUD panels', function () {
     $institutionalAdmin = User::factory()->create();
     $institutionalAdmin->assignRole(['Institutional Admin']);
 
@@ -102,4 +102,68 @@ test('Institutional admin, institutional assessor, institutional member cannot a
 });
 
 
+test('Site admin, site manager CAN access Institutions CRUD panel', function () {
+    $siteAdmin = User::factory()->create();
+    $siteAdmin->assignRole(['Site Admin']);
 
+    $siteManager = User::factory()->create();
+    $siteManager->assignRole(['Site Manager']);
+
+    actingAs($siteAdmin)->get('/admin/organisation')->assertStatus(200);
+
+    actingAs($siteManager)->get('/admin/organisation')->assertStatus(200);
+});
+
+
+test('Institutional admin, institutional assessor, institutional member CANNOT access Institutions CRUD panel', function () {
+    $institutionalAdmin = User::factory()->create();
+    $institutionalAdmin->assignRole(['Institutional Admin']);
+
+    $institutionalAssessor = User::factory()->create();
+    $institutionalAssessor->assignRole(['Institutional Assessor']);
+
+    $institutionalMember = User::factory()->create();
+    $institutionalMember->assignRole(['Institutional Member']);
+
+    actingAs($institutionalAdmin)->get('/admin/organisation')->assertStatus(403);
+
+    actingAs($institutionalAssessor)->get('/admin/organisation')->assertStatus(403);
+
+    actingAs($institutionalMember)->get('/admin/organisation')->assertStatus(403);
+});
+
+
+test('Site admin, institutional admin, institutional assessor CAN access Portfolios, Projects CRUD panel', function () {
+    $siteAdmin = User::factory()->create();
+    $siteAdmin->assignRole(['Site Admin']);
+
+    $institutionalAdmin = User::factory()->create();
+    $institutionalAdmin->assignRole(['Institutional Admin']);
+
+    $institutionalAssessor = User::factory()->create();
+    $institutionalAssessor->assignRole(['Institutional Assessor']);
+
+    actingAs($siteAdmin)->get('/admin/portfolio')->assertStatus(200);
+    actingAs($siteAdmin)->get('/admin/project')->assertStatus(200);
+
+    actingAs($institutionalAdmin)->get('/admin/portfolio')->assertStatus(200);
+    actingAs($institutionalAdmin)->get('/admin/project')->assertStatus(200);
+
+    actingAs($institutionalAssessor)->get('/admin/portfolio')->assertStatus(200);
+    actingAs($institutionalAssessor)->get('/admin/project')->assertStatus(200);
+});
+
+
+test('Site manager, institutional admin, institutional assessor, institutional member CANNOT access Portfolios, Projects CRUD panel', function () {
+    $siteManager = User::factory()->create();
+    $siteManager->assignRole(['Site Manager']);
+
+    $institutionalMember = User::factory()->create();
+    $institutionalMember->assignRole(['Institutional Member']);
+
+    actingAs($siteManager)->get('/admin/portfolio')->assertStatus(403);
+    actingAs($siteManager)->get('/admin/project')->assertStatus(403);
+
+    actingAs($institutionalMember)->get('/admin/portfolio')->assertStatus(403);
+    actingAs($institutionalMember)->get('/admin/project')->assertStatus(403);
+});

@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Http\Requests\PortfolioRequest;
 use Backpack\CRUD\app\Http\Controllers\CrudController;
 use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 /**
  * Class PortfolioCrudController
@@ -28,6 +29,10 @@ class PortfolioCrudController extends CrudController
      */
     public function setup()
     {
+        if ( !auth()->user()->can('view portfolios') ) {
+            throw new AccessDeniedHttpException('Access denied. You do not have permission to access this page');
+        }
+
         CRUD::setModel(\App\Models\Portfolio::class);
         CRUD::setRoute(config('backpack.base.route_prefix') . '/portfolio');
         CRUD::setEntityNameStrings('portfolio', 'portfolios');
