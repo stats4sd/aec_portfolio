@@ -7,6 +7,7 @@ use App\Imports\PrincipleImport;
 use Backpack\CRUD\app\Http\Controllers\CrudController;
 use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
 use Stats4sd\FileUtil\Http\Controllers\Operations\ImportOperation;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 /**
  * Class PrincipleCrudController
@@ -30,6 +31,10 @@ class PrincipleCrudController extends CrudController
      */
     public function setup()
     {
+        if ( !auth()->user()->can('view principles') ) {
+            throw new AccessDeniedHttpException('Access denied. You do not have permission to access this page');
+        }
+
         CRUD::setModel(\App\Models\Principle::class);
         CRUD::setRoute(config('backpack.base.route_prefix') . '/principle');
         CRUD::setEntityNameStrings('principle', 'principles');

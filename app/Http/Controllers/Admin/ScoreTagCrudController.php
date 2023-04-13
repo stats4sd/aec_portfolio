@@ -7,6 +7,7 @@ use App\Http\Requests\ScoreTagRequest;
 use Backpack\CRUD\app\Http\Controllers\CrudController;
 use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
 use Backpack\Pro\Http\Controllers\Operations\InlineCreateOperation;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 /**
  * Class ScoreTagCrudController
@@ -30,6 +31,10 @@ class ScoreTagCrudController extends CrudController
      */
     public function setup()
     {
+        if ( !auth()->user()->can('view score tags') ) {
+            throw new AccessDeniedHttpException('Access denied. You do not have permission to access this page');
+        }
+
         CRUD::setModel(\App\Models\ScoreTag::class);
         CRUD::setRoute(config('backpack.base.route_prefix') . '/score-tag');
         CRUD::setEntityNameStrings('score tag', 'score tags');

@@ -7,6 +7,7 @@ use App\Imports\RedLineImport;
 use Backpack\CRUD\app\Http\Controllers\CrudController;
 use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
 use Stats4sd\FileUtil\Http\Controllers\Operations\ImportOperation;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 /**
  * Class RedLineCrudController
@@ -30,11 +31,15 @@ class RedLineCrudController extends CrudController
      */
     public function setup()
     {
+        if ( !auth()->user()->can('view red lines') ) {
+            throw new AccessDeniedHttpException('Access denied. You do not have permission to access this page');
+        }
+
         CRUD::setModel(\App\Models\RedLine::class);
         CRUD::setRoute(config('backpack.base.route_prefix') . '/red-line');
         CRUD::setEntityNameStrings('red line', 'red lines');
 
-            CRUD::set('import.importer', RedLineImport::class);
+        CRUD::set('import.importer', RedLineImport::class);
     }
 
     /**
