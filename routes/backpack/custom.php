@@ -53,6 +53,8 @@ Route::group([
     Route::get('organisation/{organisation}/portfolio', [OrganisationController::class, 'portfolio'])->name('organisation.portfolio');
     Route::get('organisation/{organisation}/export', [OrganisationController::class, 'export'])->name('organisation.export');
 
+    // Um... instead of redirecting user to another page, should we have a dashboard page showing basic details for all kinds of user?
+
     Route::get('dashboard', function () {
         if (Auth::user()->organisations()->count() > 1 || Auth::user()->hasRole('Site Admin')) {
             return redirect(backpack_url('organisation'));
