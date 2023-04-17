@@ -10,8 +10,7 @@ beforeEach(function () {
 
 
 test('1. Site admin CAN see all menu items', function () {
-    $siteAdmin = User::factory()->create();
-    $siteAdmin->assignRole(['Site Admin']);
+    $siteAdmin = $this->setupSiteAdminUser();
 
     actingAs($siteAdmin)->get('/admin/principle')->assertSee("/admin/continent");
     actingAs($siteAdmin)->get('/admin/principle')->assertSee("/admin/region");
@@ -37,8 +36,7 @@ test('1. Site admin CAN see all menu items', function () {
 
 
 test('2. Site manager CAN see Red lines, Principles, Score tags, Institutions', function () {
-    $siteManager = User::factory()->create();
-    $siteManager->assignRole(['Site Manager']);
+    $siteManager = $this->setupSiteManagerUser();
    
     actingAs($siteManager)->get('/admin/principle')->assertSee("/admin/red-line");
     actingAs($siteManager)->get('/admin/principle')->assertSee("/admin/principle");
@@ -65,8 +63,7 @@ test('2. Site manager CAN see Red lines, Principles, Score tags, Institutions', 
 
 
 test('3. Institutional admin CAN see Institutions, Portfolios, Projects, Institution dashboard, Portfolio dashboard, Initiative dashboard', function () {
-    $institutionalAdmin = User::factory()->create();
-    $institutionalAdmin->assignRole(['Institutional Admin']);
+    $institutionalAdmin = $this->setupInstitutionalAdminUser();
 
     actingAs($institutionalAdmin)->get('/admin/portfolio')->assertSee("/admin/portfolio");
     actingAs($institutionalAdmin)->get('/admin/portfolio')->assertSee("/admin/project");
@@ -89,8 +86,7 @@ test('3. Institutional admin CAN see Institutions, Portfolios, Projects, Institu
 
 
 test('4. Institutional assessor CAN see Portfolios, Projects, Institution dashboard, Portfolio dashboard, Initiative dashboard', function () {
-    $institutionalAssessor = User::factory()->create();
-    $institutionalAssessor->assignRole(['Institutional Assessor']);
+    $institutionalAssessor = $this->setupInstitutionalAssessorUser();
 
     actingAs($institutionalAssessor)->get('/admin/portfolio')->assertSee("/admin/portfolio");
     actingAs($institutionalAssessor)->get('/admin/portfolio')->assertSee("/admin/project");
@@ -113,8 +109,7 @@ test('4. Institutional assessor CAN see Portfolios, Projects, Institution dashbo
 
 
 test('5. Institutional member CAN see Institution dashboard, Portfolio dashboard, Initiative dashboard', function () {
-    $institutionalMember = User::factory()->create();
-    $institutionalMember->assignRole(['Institutional Member']);
+    $institutionalMember = $this->setupInstitutionalMemberUser();
 
     actingAs($institutionalMember)->get('/admin/organisation')->assertSee("admin/new_dashboard?level=institution");
     actingAs($institutionalMember)->get('/admin/organisation')->assertSee("admin/new_dashboard?level=portfolio");

@@ -10,8 +10,7 @@ beforeEach(function () {
 
 
 test('1. Site admin CAN access Continents, Regions, Countries, Users, Admin User Invites CRUD panels', function () {
-    $siteAdmin = User::factory()->create();
-    $siteAdmin->assignRole(['Site Admin']);
+    $siteAdmin = $this->setupSiteAdminUser();
 
     actingAs($siteAdmin)->get('/admin/continent')->assertStatus(200);
     actingAs($siteAdmin)->get('/admin/region')->assertStatus(200);
@@ -22,17 +21,10 @@ test('1. Site admin CAN access Continents, Regions, Countries, Users, Admin User
 
 
 test('2. Site manager, institutional admin, institutional assessor, institutional member CANNOT access Continents, Regions, Countries, Users, Admin User Invites CRUD panels', function () {
-    $siteManager = User::factory()->create();
-    $siteManager->assignRole(['Site Manager']);
-
-    $institutionalAdmin = User::factory()->create();
-    $institutionalAdmin->assignRole(['Institutional Admin']);
-
-    $institutionalAssessor = User::factory()->create();
-    $institutionalAssessor->assignRole(['Institutional Assessor']);
-
-    $institutionalMember = User::factory()->create();
-    $institutionalMember->assignRole(['Institutional Member']);
+    $siteManager = $this->setupSiteManagerUser();
+    $institutionalAdmin = $this->setupInstitutionalAdminUser();
+    $institutionalAssessor = $this->setupInstitutionalAssessorUser();
+    $institutionalMember = $this->setupInstitutionalMemberUser();
 
     actingAs($siteManager)->get('/admin/continent')->assertStatus(403);
     actingAs($siteManager)->get('/admin/region')->assertStatus(403);
@@ -61,11 +53,8 @@ test('2. Site manager, institutional admin, institutional assessor, institutiona
 
 
 test('3. Site admin, site manager CAN access Red Lines, Principles, Score Tags CRUD panels', function () {
-    $siteAdmin = User::factory()->create();
-    $siteAdmin->assignRole(['Site Admin']);
-
-    $siteManager = User::factory()->create();
-    $siteManager->assignRole(['Site Manager']);
+    $siteAdmin = $this->setupSiteAdminUser();
+    $siteManager = $this->setupSiteManagerUser();
 
     actingAs($siteAdmin)->get('/admin/red-line')->assertStatus(200);
     actingAs($siteAdmin)->get('/admin/principle')->assertStatus(200);
@@ -78,14 +67,9 @@ test('3. Site admin, site manager CAN access Red Lines, Principles, Score Tags C
 
 
 test('4. Institutional admin, institutional assessor, institutional member CANNOT access Red Lines, Principles, Score Tags CRUD panels', function () {
-    $institutionalAdmin = User::factory()->create();
-    $institutionalAdmin->assignRole(['Institutional Admin']);
-
-    $institutionalAssessor = User::factory()->create();
-    $institutionalAssessor->assignRole(['Institutional Assessor']);
-
-    $institutionalMember = User::factory()->create();
-    $institutionalMember->assignRole(['Institutional Member']);
+    $institutionalAdmin = $this->setupInstitutionalAdminUser();
+    $institutionalAssessor = $this->setupInstitutionalAssessorUser();
+    $institutionalMember = $this->setupInstitutionalMemberUser();
 
     actingAs($institutionalAdmin)->get('/admin/red-line')->assertStatus(403);
     actingAs($institutionalAdmin)->get('/admin/principle')->assertStatus(403);
@@ -102,11 +86,8 @@ test('4. Institutional admin, institutional assessor, institutional member CANNO
 
 
 test('5. Site admin, site manager CAN access Institutions CRUD panel', function () {
-    $siteAdmin = User::factory()->create();
-    $siteAdmin->assignRole(['Site Admin']);
-
-    $siteManager = User::factory()->create();
-    $siteManager->assignRole(['Site Manager']);
+    $siteAdmin = $this->setupSiteAdminUser();
+    $siteManager = $this->setupSiteManagerUser();
 
     actingAs($siteAdmin)->get('/admin/organisation')->assertStatus(200);
 
@@ -115,14 +96,9 @@ test('5. Site admin, site manager CAN access Institutions CRUD panel', function 
 
 
 test('6. Institutional admin, institutional assessor, institutional member CANNOT access Institutions CRUD panel', function () {
-    $institutionalAdmin = User::factory()->create();
-    $institutionalAdmin->assignRole(['Institutional Admin']);
-
-    $institutionalAssessor = User::factory()->create();
-    $institutionalAssessor->assignRole(['Institutional Assessor']);
-
-    $institutionalMember = User::factory()->create();
-    $institutionalMember->assignRole(['Institutional Member']);
+    $institutionalAdmin = $this->setupInstitutionalAdminUser();
+    $institutionalAssessor = $this->setupInstitutionalAssessorUser();
+    $institutionalMember = $this->setupInstitutionalMemberUser();
 
     actingAs($institutionalAdmin)->get('/admin/organisation')->assertStatus(403);
 
@@ -133,14 +109,9 @@ test('6. Institutional admin, institutional assessor, institutional member CANNO
 
 
 test('7. Site admin, institutional admin, institutional assessor CAN access Portfolios, Projects CRUD panel', function () {
-    $siteAdmin = User::factory()->create();
-    $siteAdmin->assignRole(['Site Admin']);
-
-    $institutionalAdmin = User::factory()->create();
-    $institutionalAdmin->assignRole(['Institutional Admin']);
-
-    $institutionalAssessor = User::factory()->create();
-    $institutionalAssessor->assignRole(['Institutional Assessor']);
+    $siteAdmin = $this->setupSiteAdminUser();
+    $institutionalAdmin = $this->setupInstitutionalAdminUser();
+    $institutionalAssessor = $this->setupInstitutionalAssessorUser();
 
     actingAs($siteAdmin)->get('/admin/portfolio')->assertStatus(200);
     actingAs($siteAdmin)->get('/admin/project')->assertStatus(200);
@@ -154,11 +125,8 @@ test('7. Site admin, institutional admin, institutional assessor CAN access Port
 
 
 test('8. Site manager, institutional admin, institutional assessor, institutional member CANNOT access Portfolios, Projects CRUD panel', function () {
-    $siteManager = User::factory()->create();
-    $siteManager->assignRole(['Site Manager']);
-
-    $institutionalMember = User::factory()->create();
-    $institutionalMember->assignRole(['Institutional Member']);
+    $siteManager = $this->setupSiteManagerUser();
+    $institutionalMember = $this->setupInstitutionalMemberUser();
 
     actingAs($siteManager)->get('/admin/portfolio')->assertStatus(403);
     actingAs($siteManager)->get('/admin/project')->assertStatus(403);
