@@ -3,6 +3,7 @@
 namespace Tests;
 
 use App\Models\User;
+use Database\Seeders\ContinentSeeder;
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
 
 abstract class TestCase extends BaseTestCase
@@ -47,6 +48,11 @@ abstract class TestCase extends BaseTestCase
         $user->assignRole(['Institutional Member']);
 
         return $user;
+    }
+
+    public function seedLocations()
+    {    
+        $this->seed(ContinentSeeder::class);
     }
 
 }
