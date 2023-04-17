@@ -105,13 +105,13 @@ E.g., Centralise instituion selection to a single feature instead of distributin
 
 
 @if(Auth::user()->can('view institution-level dashboard'))
-    <li class="nav-item"><a class="nav-link" href="{{ backpack_url('new_dashboard?level=institution') }}"><i class="nav-icon la la-tachometer-alt"></i> Institution Dashboard</a></li>
+    <li class="nav-item"><a class="nav-link" href="{{ backpack_url('new_dashboard?level=institution') }}"><i class="nav-icon la la-tachometer-alt"></i> Institution dashboard</a></li>
 @endif
 
 @if(Auth::user()->can('view portfolio-level dashboard'))
-    <li class="nav-item"><a class="nav-link" href="{{ backpack_url('new_dashboard?level=portfolio') }}"><i class="nav-icon la la-tachometer-alt"></i> Portfolio Dashboard</a></li>
+    <li class="nav-item"><a class="nav-link" href="{{ backpack_url('new_dashboard?level=portfolio') }}"><i class="nav-icon la la-tachometer-alt"></i> Portfolio dashboard</a></li>
 @endif
 
 @if(Auth::user()->can('view project-level dashboard'))
-    <li class="nav-item"><a class="nav-link" href="{{ backpack_url('new_dashboard?level=project') }}"><i class="nav-icon la la-tachometer-alt"></i> Initiative Dashboard</a></li>
+    <li class="nav-item"><a class="nav-link" href="{{ backpack_url('new_dashboard?level=project') }}"><i class="nav-icon la la-tachometer-alt"></i> Initiative dashboard</a></li>
 @endif

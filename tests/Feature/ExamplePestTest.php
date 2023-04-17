@@ -200,6 +200,10 @@ test('--- 2.1 Site admin CAN see all menu items', function () {
     actingAs($siteAdmin)->get('/admin/organisation')->assertSee("Institutions");
     actingAs($siteAdmin)->get('/admin/organisation')->assertSee("Portfolios");
     actingAs($siteAdmin)->get('/admin/organisation')->assertSee("Initiatives");
+
+    actingAs($siteAdmin)->get('/admin/organisation')->assertSee("Institution dashboard");
+    actingAs($siteAdmin)->get('/admin/organisation')->assertSee("Portfolio dashboard");
+    actingAs($siteAdmin)->get('/admin/organisation')->assertSee("Initiative dashboard");
 });
 
 
@@ -226,3 +230,39 @@ test('--- 2.2 Site manager CAN see Red lines, Principles, Score tags, Institutio
     // actingAs($siteManager)->get('/admin/organisation')->assertSee("Initiatives");
 });
 
+
+test('--- 2.3 Institutional admin CAN see Institutions, Portfolios, Projects, Institution dashboard, Portfolio dashboard, Initiative dashboard', function () {
+    $institutionalAdmin = User::factory()->create();
+    $institutionalAdmin->assignRole(['Institutional Admin']);
+
+    //actingAs($siteManager)->get('/admin/organisation')->assertSee("???");
+    actingAs($institutionalAdmin)->get('/admin/organisation')->assertSee("Portfolios");
+    actingAs($institutionalAdmin)->get('/admin/organisation')->assertSee("Initiatives");
+
+    actingAs($institutionalAdmin)->get('/admin/organisation')->assertSee("Institution dashboard");
+    actingAs($institutionalAdmin)->get('/admin/organisation')->assertSee("Portfolio dashboard");
+    actingAs($institutionalAdmin)->get('/admin/organisation')->assertSee("Initiative dashboard");
+});
+
+
+test('--- 2.4 Institutional assessor CAN see Portfolios, Projects, Institution dashboard, Portfolio dashboard, Initiative dashboard', function () {
+    $institutionalAssessor = User::factory()->create();
+    $institutionalAssessor->assignRole(['Institutional Assessor']);
+
+    actingAs($institutionalAssessor)->get('/admin/portfolio')->assertSee("Portfolios");
+    actingAs($institutionalAssessor)->get('/admin/portfolio')->assertSee("Initiatives");
+
+    actingAs($institutionalAssessor)->get('/admin/portfolio')->assertSee("Institution dashboard");
+    actingAs($institutionalAssessor)->get('/admin/portfolio')->assertSee("Portfolio dashboard");
+    actingAs($institutionalAssessor)->get('/admin/portfolio')->assertSee("Initiative dashboard");
+});
+
+
+test('--- 2.5 Institutional member CAN see Institution dashboard, Portfolio dashboard, Initiative dashboard', function () {
+    $institutionalMember = User::factory()->create();
+    $institutionalMember->assignRole(['Institutional Member']);
+
+    actingAs($institutionalMember)->get('/admin/organisation')->assertSee("Institution dashboard");
+    actingAs($institutionalMember)->get('/admin/organisation')->assertSee("Portfolio dashboard");
+    actingAs($institutionalMember)->get('/admin/organisation')->assertSee("Initiative dashboard");
+});
