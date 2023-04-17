@@ -16,6 +16,7 @@ Testing summary:
 2. Check whether different menu items appear for different roles properly
 */
 
+
 test('1. Check whether different roles can access different CRUD panels properly')->todo();
 
 test('--- 1.1 Site admin CAN access Continents, Regions, Countries, Users, Admin User Invites CRUD panels', function () {
@@ -186,24 +187,24 @@ test('--- 2.1 Site admin CAN see all menu items', function () {
     $siteAdmin = User::factory()->create();
     $siteAdmin->assignRole(['Site Admin']);
 
-    actingAs($siteAdmin)->get('/admin/organisation')->assertSee("Continents");
-    actingAs($siteAdmin)->get('/admin/organisation')->assertSee("Regions");
-    actingAs($siteAdmin)->get('/admin/organisation')->assertSee("Countries");
+    actingAs($siteAdmin)->get('/admin/principle')->assertSee("Continents");
+    actingAs($siteAdmin)->get('/admin/principle')->assertSee("Regions");
+    actingAs($siteAdmin)->get('/admin/principle')->assertSee("Countries");
 
-    actingAs($siteAdmin)->get('/admin/organisation')->assertSee("Users");
-    actingAs($siteAdmin)->get('/admin/organisation')->assertSee("Admin User Invites");
+    actingAs($siteAdmin)->get('/admin/principle')->assertSee("Users");
+    actingAs($siteAdmin)->get('/admin/principle')->assertSee("Admin User Invites");
 
-    actingAs($siteAdmin)->get('/admin/organisation')->assertSee("Red lines");
-    actingAs($siteAdmin)->get('/admin/organisation')->assertSee("Principles");
-    actingAs($siteAdmin)->get('/admin/organisation')->assertSee("Score tags");
+    actingAs($siteAdmin)->get('/admin/principle')->assertSee("Red lines");
+    actingAs($siteAdmin)->get('/admin/principle')->assertSee("Principles");
+    actingAs($siteAdmin)->get('/admin/principle')->assertSee("Score tags");
 
-    actingAs($siteAdmin)->get('/admin/organisation')->assertSee("Institutions");
-    actingAs($siteAdmin)->get('/admin/organisation')->assertSee("Portfolios");
-    actingAs($siteAdmin)->get('/admin/organisation')->assertSee("Initiatives");
+    actingAs($siteAdmin)->get('/admin/principle')->assertSee("Institutions");
+    actingAs($siteAdmin)->get('/admin/principle')->assertSee("Portfolios");
+    actingAs($siteAdmin)->get('/admin/principle')->assertSee("Initiatives");
 
-    actingAs($siteAdmin)->get('/admin/organisation')->assertSee("Institution dashboard");
-    actingAs($siteAdmin)->get('/admin/organisation')->assertSee("Portfolio dashboard");
-    actingAs($siteAdmin)->get('/admin/organisation')->assertSee("Initiative dashboard");
+    actingAs($siteAdmin)->get('/admin/principle')->assertSee("Institution dashboard");
+    actingAs($siteAdmin)->get('/admin/principle')->assertSee("Portfolio dashboard");
+    actingAs($siteAdmin)->get('/admin/principle')->assertSee("Initiative dashboard");
 });
 
 
@@ -211,23 +212,26 @@ test('--- 2.2 Site manager CAN see Red lines, Principles, Score tags, Institutio
     $siteManager = User::factory()->create();
     $siteManager->assignRole(['Site Manager']);
    
-    actingAs($siteManager)->get('/admin/organisation')->assertSee("Red lines");
-    actingAs($siteManager)->get('/admin/organisation')->assertSee("Principles");
-    actingAs($siteManager)->get('/admin/organisation')->assertSee("Score tags");
+    actingAs($siteManager)->get('/admin/principle')->assertSee("Red lines");
+    actingAs($siteManager)->get('/admin/principle')->assertSee("Principles");
+    actingAs($siteManager)->get('/admin/principle')->assertSee("Score tags");
 
     // TODO: Institutions menu item not showed yet, to be revised after deciding how to select an institution
     // actingAs($siteManager)->get('/admin/organisation')->assertSee("Institutions");
 
-    // Question: How to check sidebar menu does not contain a keyword? e.g. Continents?
-    // actingAs($siteManager)->get('/admin/organisation')->assertSee("Continents");
-    // actingAs($siteManager)->get('/admin/organisation')->assertSee("Regions");
-    // actingAs($siteManager)->get('/admin/organisation')->assertSee("Countries");
+    actingAs($siteManager)->get('/admin/principle')->assertDontSee("Continents");
+    actingAs($siteManager)->get('/admin/principle')->assertDontSee("Regions");
+    actingAs($siteManager)->get('/admin/principle')->assertDontSee("Countries");
 
-    // actingAs($siteManager)->get('/admin/organisation')->assertSee("Users");
-    // actingAs($siteManager)->get('/admin/organisation')->assertSee("Admin User Invites");
+    actingAs($siteManager)->get('/admin/principle')->assertDontSee("Users");
+    actingAs($siteManager)->get('/admin/principle')->assertDontSee("Admin User Invites");
 
-    // actingAs($siteManager)->get('/admin/organisation')->assertSee("Portfolios");
-    // actingAs($siteManager)->get('/admin/organisation')->assertSee("Initiatives");
+    actingAs($siteManager)->get('/admin/principle')->assertDontSee("Portfolios");
+    actingAs($siteManager)->get('/admin/principle')->assertDontSee("Initiatives");
+
+    actingAs($siteManager)->get('/admin/principle')->assertDontSee("Institution dashboard");
+    actingAs($siteManager)->get('/admin/principle')->assertDontSee("Portfolio dashboard");
+    actingAs($siteManager)->get('/admin/principle')->assertDontSee("Initiative dashboard");
 });
 
 
@@ -235,13 +239,23 @@ test('--- 2.3 Institutional admin CAN see Institutions, Portfolios, Projects, In
     $institutionalAdmin = User::factory()->create();
     $institutionalAdmin->assignRole(['Institutional Admin']);
 
-    //actingAs($siteManager)->get('/admin/organisation')->assertSee("???");
-    actingAs($institutionalAdmin)->get('/admin/organisation')->assertSee("Portfolios");
-    actingAs($institutionalAdmin)->get('/admin/organisation')->assertSee("Initiatives");
+    actingAs($institutionalAdmin)->get('/admin/portfolio')->assertSee("Portfolios");
+    actingAs($institutionalAdmin)->get('/admin/portfolio')->assertSee("Initiatives");
 
-    actingAs($institutionalAdmin)->get('/admin/organisation')->assertSee("Institution dashboard");
-    actingAs($institutionalAdmin)->get('/admin/organisation')->assertSee("Portfolio dashboard");
-    actingAs($institutionalAdmin)->get('/admin/organisation')->assertSee("Initiative dashboard");
+    actingAs($institutionalAdmin)->get('/admin/portfolio')->assertSee("Institution dashboard");
+    actingAs($institutionalAdmin)->get('/admin/portfolio')->assertSee("Portfolio dashboard");
+    actingAs($institutionalAdmin)->get('/admin/portfolio')->assertSee("Initiative dashboard");
+
+    actingAs($institutionalAdmin)->get('/admin/portfolio')->assertDontSee("Red lines");
+    actingAs($institutionalAdmin)->get('/admin/portfolio')->assertDontSee("Principles");
+    actingAs($institutionalAdmin)->get('/admin/portfolio')->assertDontSee("Score tags");
+
+    actingAs($institutionalAdmin)->get('/admin/portfolio')->assertDontSee("Continents");
+    actingAs($institutionalAdmin)->get('/admin/portfolio')->assertDontSee("Regions");
+    actingAs($institutionalAdmin)->get('/admin/portfolio')->assertDontSee("Countries");
+
+    actingAs($institutionalAdmin)->get('/admin/portfolio')->assertDontSee("Users");
+    actingAs($institutionalAdmin)->get('/admin/portfolio')->assertDontSee("Admin User Invites");
 });
 
 
@@ -255,6 +269,17 @@ test('--- 2.4 Institutional assessor CAN see Portfolios, Projects, Institution d
     actingAs($institutionalAssessor)->get('/admin/portfolio')->assertSee("Institution dashboard");
     actingAs($institutionalAssessor)->get('/admin/portfolio')->assertSee("Portfolio dashboard");
     actingAs($institutionalAssessor)->get('/admin/portfolio')->assertSee("Initiative dashboard");
+
+    actingAs($institutionalAssessor)->get('/admin/portfolio')->assertDontSee("Red lines");
+    actingAs($institutionalAssessor)->get('/admin/portfolio')->assertDontSee("Principles");
+    actingAs($institutionalAssessor)->get('/admin/portfolio')->assertDontSee("Score tags");
+
+    actingAs($institutionalAssessor)->get('/admin/portfolio')->assertDontSee("Continents");
+    actingAs($institutionalAssessor)->get('/admin/portfolio')->assertDontSee("Regions");
+    actingAs($institutionalAssessor)->get('/admin/portfolio')->assertDontSee("Countries");
+
+    actingAs($institutionalAssessor)->get('/admin/portfolio')->assertDontSee("Users");
+    actingAs($institutionalAssessor)->get('/admin/portfolio')->assertDontSee("Admin User Invites");
 });
 
 
@@ -265,4 +290,18 @@ test('--- 2.5 Institutional member CAN see Institution dashboard, Portfolio dash
     actingAs($institutionalMember)->get('/admin/organisation')->assertSee("Institution dashboard");
     actingAs($institutionalMember)->get('/admin/organisation')->assertSee("Portfolio dashboard");
     actingAs($institutionalMember)->get('/admin/organisation')->assertSee("Initiative dashboard");
+
+    actingAs($institutionalMember)->get('/admin/organisation')->assertDontSee("Portfolios");
+    actingAs($institutionalMember)->get('/admin/organisation')->assertDontSee("Initiatives");
+
+    actingAs($institutionalMember)->get('/admin/organisation')->assertDontSee("Red lines");
+    actingAs($institutionalMember)->get('/admin/organisation')->assertDontSee("Principles");
+    actingAs($institutionalMember)->get('/admin/organisation')->assertDontSee("Score tags");
+
+    actingAs($institutionalMember)->get('/admin/organisation')->assertDontSee("Continents");
+    actingAs($institutionalMember)->get('/admin/organisation')->assertDontSee("Regions");
+    actingAs($institutionalMember)->get('/admin/organisation')->assertDontSee("Countries");
+
+    actingAs($institutionalMember)->get('/admin/organisation')->assertDontSee("Users");
+    actingAs($institutionalMember)->get('/admin/organisation')->assertDontSee("Admin User Invites");
 });
