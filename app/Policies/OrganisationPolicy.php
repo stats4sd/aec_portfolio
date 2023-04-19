@@ -19,7 +19,11 @@ class OrganisationPolicy
      */
     public function viewAny(User $user)
     {
-        return ($user->hasAnyRole('Site Admin')) ? Response::allow()
+        // return ($user->hasAnyRole('Site Admin')) ? Response::allow()
+        // : Response::deny('Sorry, you do not have permissions to view details of all organisations.');;
+
+        // only user with proper permission can view all organisations
+        return ($user->hasAnyPermission('view institutions')) ? Response::allow()
         : Response::deny('Sorry, you do not have permissions to view details of all organisations.');;
     }
 
@@ -32,7 +36,10 @@ class OrganisationPolicy
      */
     public function view(User $user, Organisation $organisation)
     {
-        return $organisation->users->contains($user) || $user->hasAnyRole('Site Admin', 'methods group');
+        // return $organisation->users->contains($user) || $user->hasAnyRole('Site Admin', 'methods group');
+
+        // only user with proper permission can view organisation model in CRUD panel
+        return $user->hasAnyPermission('view institutions');
     }
 
     /**
@@ -43,7 +50,10 @@ class OrganisationPolicy
      */
     public function create(User $user)
     {
-        return $user->hasAnyRole('Site Admin');
+        // return $user->hasAnyRole('Site Admin');
+
+        // only user with proper permission can create organisation
+        return $user->hasAnyPermission('maintain institutions');
     }
 
     /**
@@ -55,7 +65,10 @@ class OrganisationPolicy
      */
     public function update(User $user, Organisation $organisation)
     {
-        return $organisation->admins->contains($user) || $user->hasAnyRole('Site Admin');
+        // return $organisation->admins->contains($user) || $user->hasAnyRole('Site Admin');
+
+        // only user with proper permission can update organisation
+        return $user->hasAnyPermission('maintain institutions');
     }
 
     /**
@@ -67,7 +80,10 @@ class OrganisationPolicy
      */
     public function delete(User $user, Organisation $organisation)
     {
-        return $user->hasRole('Site Admin');
+        // return $user->hasRole('Site Admin');
+
+        // only user with proper permission can delete organisation
+        return $user->hasAnyPermission('maintain institutions');
     }
 
     /**
@@ -79,7 +95,10 @@ class OrganisationPolicy
      */
     public function restore(User $user, Organisation $organisation)
     {
-        return $organisation->admins->contains($user) || $user->hasAnyRole('Site Admin');
+        // return $organisation->admins->contains($user) || $user->hasAnyRole('Site Admin');
+
+        // only user with proper permission can restore organisation
+        return $user->hasAnyPermission('maintain institutions');
     }
 
     /**
@@ -91,11 +110,17 @@ class OrganisationPolicy
      */
     public function forceDelete(User $user, Organisation $organisation)
     {
-        return $user->hasAnyRole('Site Admin');
+        // return $user->hasAnyRole('Site Admin');
+
+        // only user with proper permission can force delete organisation
+        return $user->hasAnyPermission('maintain institutions');
     }
 
     public function organisationUpdate(User $user, Organisation $organisation)
     {
-        return $organisation->users->contains($user);
+        // return $organisation->users->contains($user);
+
+        // Question: not quite sure what is the difference between update() and organisationUpdate()...
+        return $user->hasAnyPermission('maintain institutions');
     }
 }

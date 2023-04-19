@@ -19,7 +19,10 @@ class ProjectPolicy
      */
     public function viewAny(User $user)
     {
-        return true; // project list is filtered by default, so this is ok.
+        // return true; // project list is filtered by default, so this is ok.
+
+        // only user with proper permission can view any project
+        return $user->hasAnyPermission('view projects');
     }
 
     /**
@@ -31,10 +34,11 @@ class ProjectPolicy
      */
     public function view(User $user, Project $project)
     {
-
         // any member of an organisation can view a project
+        // return $project->organisation->users->contains($user) || $user->hasAnyRole('Site Admin');
 
-        return $project->organisation->users->contains($user) || $user->hasAnyRole('Site Admin');
+        // only user with proper permission can view a project
+        return $user->hasAnyPermission('view projects');
     }
 
     /**
@@ -45,9 +49,12 @@ class ProjectPolicy
      */
     public function create(User $user)
     {
-        return $user->organisations->some(function ($org) use ($user) {
-                return $org->admins->contains($user) || $org->editors->contains($user);
-                }) || $user->hasAnyRole('Site Admin');
+        // return $user->organisations->some(function ($org) use ($user) {
+        //         return $org->admins->contains($user) || $org->editors->contains($user);
+        //         }) || $user->hasAnyRole('Site Admin');
+
+        // only user with proper permission can create a project
+        return $user->hasAnyPermission('maintain projects');
     }
 
     /**
@@ -59,7 +66,10 @@ class ProjectPolicy
      */
     public function update(User $user, Project $project)
     {
-        return $project->organisation->admins->contains($user) || $project->organisation->editors->contains($user) || $user->hasAnyRole('Site Admin');
+        // return $project->organisation->admins->contains($user) || $project->organisation->editors->contains($user) || $user->hasAnyRole('Site Admin');
+
+        // only user with proper permission can update a project
+        return $user->hasAnyPermission('maintain projects');
     }
 
     /**
@@ -71,7 +81,10 @@ class ProjectPolicy
      */
     public function delete(User $user, Project $project)
     {
-        return $project->organisation->admins->contains($user) || $project->organisation->editors->contains($user) || $user->hasAnyRole('Site Admin');
+        // return $project->organisation->admins->contains($user) || $project->organisation->editors->contains($user) || $user->hasAnyRole('Site Admin');
+
+        // only user with proper permission can delete a project
+        return $user->hasAnyPermission('maintain projects');
     }
 
     /**
@@ -83,7 +96,10 @@ class ProjectPolicy
      */
     public function restore(User $user, Project $project)
     {
-        return $project->organisation->admins->contains($user) || $user->hasAnyRole('Site Admin');
+        // return $project->organisation->admins->contains($user) || $user->hasAnyRole('Site Admin');
+
+        // only user with proper permission can restore a project
+        return $user->hasAnyPermission('maintain projects');
     }
 
     /**
@@ -95,11 +111,18 @@ class ProjectPolicy
      */
     public function forceDelete(User $user, Project $project)
     {
-        return $user->hasAnyRole('Site Admin');
+        // return $user->hasAnyRole('Site Admin');
+
+        // only user with proper permission can force delete a project
+        return $user->hasAnyPermission('maintain projects');
     }
 
     public function organisationUpdate(User $user, Project $project)
     {
-        return $project->organisation->admins->contains($user);
+        // return $project->organisation->admins->contains($user);
+
+        // Question: not quite sure what is the difference between update() and organisationUpdate()...
+        // Wait... this class is ProjectPolicy, should it be projectUpdate() instead?
+        return $user->hasAnyPermission('maintain projects');
     }
 }
