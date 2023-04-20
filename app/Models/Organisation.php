@@ -23,14 +23,17 @@ class Organisation extends Model
 
 protected static function booted()
     {
-
         static::addGlobalScope('owned', function(Builder $builder) {
 
             if(!Auth::check()) {
                 return;
             }
 
-            if(Auth::user()->hasRole('Site Admin')) {
+            // if(Auth::user()->hasRole('Site Admin')) {
+            //     return;
+            // }
+
+            if(Auth::user()->hasAnyPermission('view institutions')) {
                 return;
             }
 

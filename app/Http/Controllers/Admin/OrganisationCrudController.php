@@ -56,7 +56,6 @@ class OrganisationCrudController extends CrudController
         CRUD::setResponsiveTable(false);
         CRUD::column('name');
         CRUD::column('projects')->type('relationship_count');
-
     }
 
     /**
@@ -67,7 +66,6 @@ class OrganisationCrudController extends CrudController
      */
     protected function setupCreateOperation()
     {
-
         $this->authorize('create', Organisation::class);
 
         CRUD::field('name')->label('Enter the Institution name');
