@@ -198,6 +198,7 @@ class PrincipleCrudPageTest extends TestCase
         // but it is failed when submitting data via form post to /admin/principle.
         // Not sure why column "number" in prinicpleData01 is missing in INSERT SQL
 
+        // TODO
         Principle::create($this->principleData01);
 
         // Check the store endpoint works
@@ -217,6 +218,7 @@ class PrincipleCrudPageTest extends TestCase
             ->assertStatus(200)
             ->assertSee('Add principle');
 
+        // TODO
         Principle::create($this->principleData02);
 
         // Check the store endpoint works
@@ -317,7 +319,7 @@ class PrincipleCrudPageTest extends TestCase
      * DELETE OPERATION
      * @test
      */
-    public function it_tries_to_delete_an_existing_red_line_with_different_users(): void
+    public function it_tries_to_delete_an_existing_entry_with_different_users(): void
     {
         Principle::truncate();
 

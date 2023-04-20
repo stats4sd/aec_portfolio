@@ -185,7 +185,7 @@ class ScoreTagCrudPageTest extends TestCase
             ->assertStatus(200)
             ->assertSee('Add score tag');
 
-
+        // TODO
         ScoreTag::create($this->scoreTagData01);
 
         // Check the store endpoint works
@@ -205,6 +205,7 @@ class ScoreTagCrudPageTest extends TestCase
             ->assertStatus(200)
             ->assertSee('Add score tag');
 
+        // TODO
         ScoreTag::create($this->scoreTagData02);
 
         // Check the store endpoint works
@@ -305,7 +306,7 @@ class ScoreTagCrudPageTest extends TestCase
      * DELETE OPERATION
      * @test
      */
-    public function it_tries_to_delete_an_existing_red_line_with_different_users(): void
+    public function it_tries_to_delete_an_existing_entry_with_different_users(): void
     {
         ScoreTag::truncate();
 

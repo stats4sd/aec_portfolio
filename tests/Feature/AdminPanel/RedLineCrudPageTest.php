@@ -298,7 +298,7 @@ class RedLineCrudPageTest extends TestCase
      * DELETE OPERATION
      * @test
      */
-    public function it_tries_to_delete_an_existing_red_line_with_different_users(): void
+    public function it_tries_to_delete_an_existing_entry_with_different_users(): void
     {
         RedLine::truncate();
 
