@@ -72,7 +72,7 @@
         </button>
       </div>
       <div class="modal-body">
-        Are you sure you wish to remove {{ $user->name }} from {{ $organisation->name }} After removing, they will no longer have access to any organisation data or forms on Kobotoolbox.
+        Are you sure you wish to remove {{ $user->name }} from {{ $organisation->name }}?<br/><br/>After removing, {{ $user->name }} will no longer have access to any data on this data platform.
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
