@@ -60,15 +60,24 @@ class RoleSeeder extends Seeder
         Permission::create(['name' => 'download project-level data', 'guard_name' => 'web']);
 
         Permission::create(['name' => 'download dashboard summary data', 'guard_name' => 'web']);
-        Permission::create(['name' => 'create new custom score tags', 'guard_name' => 'web']);
+        // Permission::create(['name' => 'create new custom score tags', 'guard_name' => 'web']);
         Permission::create(['name' => 'request to remove everything for institution', 'guard_name' => 'web']);
         Permission::create(['name' => 'view portfolios', 'guard_name' => 'web']);
         Permission::create(['name' => 'maintain portfolios', 'guard_name' => 'web']);
-
         Permission::create(['name' => 'view projects', 'guard_name' => 'web']);
+
         Permission::create(['name' => 'maintain projects', 'guard_name' => 'web']);
         Permission::create(['name' => 'review redlines', 'guard_name' => 'web']);
         Permission::create(['name' => 'assess project', 'guard_name' => 'web']);
+        Permission::create(['name' => 'show institution name and role', 'guard_name' => 'web']);
+        Permission::create(['name' => 'request to remove all personal data from an institution', 'guard_name' => 'web']);
+
+        Permission::create(['name' => 'request to leave an institution', 'guard_name' => 'web']);
+        Permission::create(['name' => 'select institution', 'guard_name' => 'web']);
+        Permission::create(['name' => 'auto set default institution', 'guard_name' => 'web']);
+        Permission::create(['name' => 'view custom principles', 'guard_name' => 'web']);
+        Permission::create(['name' => 'maintain custom principles', 'guard_name' => 'web']);
+
 
 
         // roles_has_permissions
@@ -102,6 +111,7 @@ class RoleSeeder extends Seeder
             [ 'role_id' => 1, 'permission_id' => 24, ],
             [ 'role_id' => 1, 'permission_id' => 25, ],
             [ 'role_id' => 1, 'permission_id' => 26, ],
+            // [ 'role_id' => 1, 'permission_id' => 27, ],
             [ 'role_id' => 1, 'permission_id' => 27, ],
             [ 'role_id' => 1, 'permission_id' => 28, ],
             [ 'role_id' => 1, 'permission_id' => 29, ],
@@ -109,7 +119,9 @@ class RoleSeeder extends Seeder
             [ 'role_id' => 1, 'permission_id' => 31, ],
             [ 'role_id' => 1, 'permission_id' => 32, ],
             [ 'role_id' => 1, 'permission_id' => 33, ],
-            [ 'role_id' => 1, 'permission_id' => 34, ],
+            [ 'role_id' => 1, 'permission_id' => 37, ],
+            [ 'role_id' => 1, 'permission_id' => 39, ],
+            [ 'role_id' => 1, 'permission_id' => 40, ],
         ]);
         
         // site manager
@@ -124,6 +136,9 @@ class RoleSeeder extends Seeder
             [ 'role_id' => 2, 'permission_id' => 15, ],
             [ 'role_id' => 2, 'permission_id' => 16, ],
             [ 'role_id' => 2, 'permission_id' => 17, ],
+            [ 'role_id' => 2, 'permission_id' => 37, ],
+            [ 'role_id' => 2, 'permission_id' => 39, ],
+            [ 'role_id' => 2, 'permission_id' => 40, ],
         ]);
 
         // institutional admin
@@ -138,6 +153,7 @@ class RoleSeeder extends Seeder
             [ 'role_id' => 3, 'permission_id' => 24, ],
             [ 'role_id' => 3, 'permission_id' => 25, ],
             [ 'role_id' => 3, 'permission_id' => 26, ],
+            // [ 'role_id' => 3, 'permission_id' => 27, ],
             [ 'role_id' => 3, 'permission_id' => 27, ],
             [ 'role_id' => 3, 'permission_id' => 28, ],
             [ 'role_id' => 3, 'permission_id' => 29, ],
@@ -146,6 +162,11 @@ class RoleSeeder extends Seeder
             [ 'role_id' => 3, 'permission_id' => 32, ],
             [ 'role_id' => 3, 'permission_id' => 33, ],
             [ 'role_id' => 3, 'permission_id' => 34, ],
+            [ 'role_id' => 3, 'permission_id' => 35, ],
+            [ 'role_id' => 3, 'permission_id' => 36, ],
+            [ 'role_id' => 3, 'permission_id' => 38, ],
+            [ 'role_id' => 3, 'permission_id' => 39, ],
+            [ 'role_id' => 3, 'permission_id' => 40, ],
         ]);
 
         // institutional assessor
@@ -154,13 +175,20 @@ class RoleSeeder extends Seeder
             [ 'role_id' => 4, 'permission_id' => 21, ],
             [ 'role_id' => 4, 'permission_id' => 22, ],
             [ 'role_id' => 4, 'permission_id' => 26, ],
+            // [ 'role_id' => 4, 'permission_id' => 27, ],
             [ 'role_id' => 4, 'permission_id' => 27, ],
+            [ 'role_id' => 4, 'permission_id' => 28, ],
             [ 'role_id' => 4, 'permission_id' => 29, ],
             [ 'role_id' => 4, 'permission_id' => 30, ],
             [ 'role_id' => 4, 'permission_id' => 31, ],
             [ 'role_id' => 4, 'permission_id' => 32, ],
             [ 'role_id' => 4, 'permission_id' => 33, ],
             [ 'role_id' => 4, 'permission_id' => 34, ],
+            [ 'role_id' => 4, 'permission_id' => 35, ],
+            [ 'role_id' => 4, 'permission_id' => 36, ],
+            [ 'role_id' => 4, 'permission_id' => 38, ],
+            [ 'role_id' => 4, 'permission_id' => 39, ],
+            [ 'role_id' => 4, 'permission_id' => 40, ],
         ]);
         
         // institutional member
@@ -169,6 +197,12 @@ class RoleSeeder extends Seeder
             [ 'role_id' => 5, 'permission_id' => 21, ],
             [ 'role_id' => 5, 'permission_id' => 22, ],
             [ 'role_id' => 5, 'permission_id' => 26, ],
+            [ 'role_id' => 5, 'permission_id' => 34, ],
+            [ 'role_id' => 5, 'permission_id' => 35, ],
+            [ 'role_id' => 5, 'permission_id' => 36, ],
+            [ 'role_id' => 5, 'permission_id' => 38, ],
+            [ 'role_id' => 5, 'permission_id' => 39, ],
+            [ 'role_id' => 5, 'permission_id' => 40, ],
         ]);
 
     }
