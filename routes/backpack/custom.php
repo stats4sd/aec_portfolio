@@ -52,6 +52,8 @@ Route::group([
 
     Route::get('new-dashboard', [NewDashboardController::class, 'show']);
 
+    Route::get('organisation-members', [OrganisationMemberController::class, 'show']);
+
     Route::get('organisation/{organisation}/members/create', [OrganisationMemberController::class, 'create'])->name('organisationmembers.create');
     Route::post('organisation/{organisation}/members', [OrganisationMemberController::class, 'store'])->name('organisationmembers.store');
     Route::get('organisation/{organisation}/members/{user}/edit', [OrganisationMemberController::class, 'edit'])->name('organisationmembers.edit');

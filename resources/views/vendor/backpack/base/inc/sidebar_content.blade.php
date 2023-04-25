@@ -59,11 +59,7 @@ E.g., Centralise instituion selection to a single feature instead of distributin
 @if(Auth::user()->can('invite institutional members') || 
     Auth::user()->can('update role of institutional members') || 
     Auth::user()->can('maintain institutional members'))
-    <!-- TODO: change to use the selected organisation ID, hardcode as 2 temporary -->
-    <!--
-    <li class="nav-item"><a class="nav-link" href="{{ backpack_url('organisation/'.Auth::user()->organisations->first()?->id).'/show' }}"><i class="la la-home nav-icon"></i> Institutions Users</a></li>
-    -->
-    <li class="nav-item"><a class="nav-link" href="{{ backpack_url('organisation/2').'/show' }}"><i class="la la-user-friends nav-icon"></i> Institution Members</a></li>
+    <li class="nav-item"><a class="nav-link" href="{{ backpack_url('organisation-members') }}"><i class="la la-user-friends nav-icon"></i> Institution Members</a></li>
     <hr/>
 @endif
 

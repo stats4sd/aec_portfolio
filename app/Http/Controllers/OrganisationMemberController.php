@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Organisation;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Session;
 use Illuminate\Database\Eloquent\Builder;
 use App\Http\Requests\OrganisationMemberStoreRequest;
 use App\Http\Requests\OrganisationMemberUpdateRequest;
@@ -96,5 +97,17 @@ class OrganisationMemberController extends Controller
         }
 
         return redirect()->route('organisation.show', [$organisation, 'members']);
+    }
+
+    // redirect to organisation members page of the selected organisation
+    public function show() {
+        if (!Session::exists('selectedOrganisation')) {
+            return redirect(backpack_url('select_organisation'));
+
+        } else {
+            $selectedOrganisation = Session::get('selectedOrganisation');
+
+            return redirect('admin/organisation/' . $selectedOrganisation->id . '/show');
+        }
     }
 }
