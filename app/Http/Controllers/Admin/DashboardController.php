@@ -29,7 +29,7 @@ class DashboardController extends Controller
     {
 
         // user can select institution, redirect to select institution page
-        if (Auth::user()->hasAnyPermission("select institution")) {
+        if (Auth::user()->can("select institution")) {
             logger("select institution - YES");
             return redirect(backpack_url('select_organisation'));
         } else {
@@ -38,7 +38,7 @@ class DashboardController extends Controller
 
         // user cannot select institution, user belongs to one institution only.
         // TODO: there is no role_has_permission record for permission 38, but it is strange that hasAnyPermission() returns true...
-        if (Auth::user()->hasAnyPermission("auto set default institution")) {
+        if (Auth::user()->can("auto set default institution")) {
             logger("auto set default institution - YES");
 
             // get institution Id, then simulate the user has selected an institution.

@@ -105,9 +105,9 @@ class OrganisationMemberController extends Controller
             return redirect(backpack_url('select_organisation'));
 
         } else {
-            $selectedOrganisation = Session::get('selectedOrganisation');
+            $selectedOrganisationId = Session::get('selectedOrganisationId');
 
-            return redirect('admin/organisation/' . $selectedOrganisation->id . '/show');
+            return redirect('admin/organisation/' . $selectedOrganisationId . '/show');
         }
     }
 }
