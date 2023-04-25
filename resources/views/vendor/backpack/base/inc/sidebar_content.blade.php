@@ -45,11 +45,17 @@ E.g., Centralise instituion selection to a single feature instead of distributin
 
 
 
-@if(Auth::user()->can('view institutions'))
-    <li class="nav-item"><a class="nav-link" href="{{ backpack_url('organisation') }}"><i class="la la-home nav-icon"></i> Institutions</a></li>
-    <hr/>
+@if(Auth::user()->can('select institution'))
+    <li class="nav-item"><a class="nav-link" href="{{ backpack_url('select_organisation') }}"><i class="la la-home nav-icon"></i> Select Institution</a></li>
 @endif
 
+
+@if(Auth::user()->can('view institutions'))
+    <li class="nav-item"><a class="nav-link" href="{{ backpack_url('organisation') }}"><i class="la la-home nav-icon"></i> Institutions</a></li>
+@endif
+
+
+<!-- TODO: this page requires a full review on Policy and permisssions -->
 @if(Auth::user()->can('invite institutional members') || 
     Auth::user()->can('update role of institutional members') || 
     Auth::user()->can('maintain institutional members'))
@@ -60,8 +66,6 @@ E.g., Centralise instituion selection to a single feature instead of distributin
     <li class="nav-item"><a class="nav-link" href="{{ backpack_url('organisation/2').'/show' }}"><i class="la la-user-friends nav-icon"></i> Institution Members</a></li>
     <hr/>
 @endif
-
-
 
 
 
@@ -130,13 +134,13 @@ E.g., Centralise instituion selection to a single feature instead of distributin
 
 
 @if(Auth::user()->can('view institution-level dashboard'))
-    <li class="nav-item"><a class="nav-link" href="{{ backpack_url('new_dashboard?level=institution') }}"><i class="nav-icon la la-tachometer-alt"></i> Institution Dashboard</a></li>
+    <li class="nav-item"><a class="nav-link" href="{{ backpack_url('new-dashboard?level=institution') }}"><i class="nav-icon la la-tachometer-alt"></i> Institution Dashboard</a></li>
 @endif
 
 @if(Auth::user()->can('view portfolio-level dashboard'))
-    <li class="nav-item"><a class="nav-link" href="{{ backpack_url('new_dashboard?level=portfolio') }}"><i class="nav-icon la la-tachometer-alt"></i> Portfolio Dashboard</a></li>
+    <li class="nav-item"><a class="nav-link" href="{{ backpack_url('new-dashboard?level=portfolio') }}"><i class="nav-icon la la-tachometer-alt"></i> Portfolio Dashboard</a></li>
 @endif
 
 @if(Auth::user()->can('view project-level dashboard'))
-    <li class="nav-item"><a class="nav-link" href="{{ backpack_url('new_dashboard?level=project') }}"><i class="nav-icon la la-tachometer-alt"></i> Initiative Dashboard</a></li>
+    <li class="nav-item"><a class="nav-link" href="{{ backpack_url('new-dashboard?level=project') }}"><i class="nav-icon la la-tachometer-alt"></i> Initiative Dashboard</a></li>
 @endif

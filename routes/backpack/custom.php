@@ -17,6 +17,9 @@ use App\Http\Controllers\Admin\RegionCrudController;
 use App\Http\Controllers\Admin\RoleInviteCrudController;
 use App\Http\Controllers\Admin\ScoreTagCrudController;
 use App\Http\Controllers\Admin\UserCrudController;
+use App\Http\Controllers\Admin\SelectOrganisationController;
+use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\NewDashboardController;
 use App\Http\Controllers\OrganisationController;
 use App\Http\Controllers\OrganisationMemberController;
 
@@ -44,6 +47,11 @@ Route::group([
     Route::crud('continent', ContinentCrudController::class);
     Route::crud('region', RegionCrudController::class);
 
+    Route::get('select_organisation', [SelectOrganisationController::class, 'show']);
+    Route::get('selected_organisation', [SelectOrganisationController::class, 'selected']);
+
+    Route::get('new-dashboard', [NewDashboardController::class, 'show']);
+
     Route::get('organisation/{organisation}/members/create', [OrganisationMemberController::class, 'create'])->name('organisationmembers.create');
     Route::post('organisation/{organisation}/members', [OrganisationMemberController::class, 'store'])->name('organisationmembers.store');
     Route::get('organisation/{organisation}/members/{user}/edit', [OrganisationMemberController::class, 'edit'])->name('organisationmembers.edit');
@@ -52,20 +60,8 @@ Route::group([
 
     Route::get('organisation/{organisation}/portfolio', [OrganisationController::class, 'portfolio'])->name('organisation.portfolio');
     Route::get('organisation/{organisation}/export', [OrganisationController::class, 'export'])->name('organisation.export');
-
-    // Um... instead of redirecting user to another page, should we have a dashboard page showing basic details for all kinds of user?
-
-    Route::get('dashboard', function () {
-        if (Auth::user()->organisations()->count() > 1 || Auth::user()->hasRole('Site Admin')) {
-            return redirect(backpack_url('organisation'));
-        }
-
-        if (Auth::user()->organisations()->count() === 1) {
-            return redirect(backpack_url('organisation/' . Auth::user()->organisations->first()->id . '/show'));
-        }
-
-        abort(403, "It looks like you are not a member of any institution, and are not a site admin. If you think this is incorrect, please contact support@stats4sd.org");
-    })->name('backpack.dashboard');
+    
+    Route::get('dashboard', [DashboardController::class, 'check'])->name('backpack.dashboard');
 
     Route::get('/', [Backpack\CRUD\app\Http\Controllers\AdminController::class, 'redirect'])->name('backpack');
     
