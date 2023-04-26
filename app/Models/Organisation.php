@@ -33,7 +33,7 @@ protected static function booted()
             //     return;
             // }
 
-            if(Auth::user()->hasAnyPermission('view institutions')) {
+            if(Auth::user()->can('view institutions')) {
                 return;
             }
 

@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Http\Requests\CountryRequest;
+use App\Models\Country;
 use Backpack\CRUD\app\Http\Controllers\CrudController;
 use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
-use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 /**
  * Class CountryCrudController
@@ -23,10 +23,6 @@ class CountryCrudController extends CrudController
      */
     public function setup()
     {
-        if ( !auth()->user()->can('view countries') ) {
-            throw new AccessDeniedHttpException('Access denied. You do not have permission to access this page');
-        }
-
         CRUD::setModel(\App\Models\Country::class);
         CRUD::setRoute(config('backpack.base.route_prefix') . '/country');
         CRUD::setEntityNameStrings('country', 'countries');
@@ -40,6 +36,8 @@ class CountryCrudController extends CrudController
      */
     protected function setupListOperation()
     {
+        $this->authorize('viewAny', Country::class);
+
         CRUD::column('continent.id')->label('Continent ID');
         CRUD::column('continent.name')->label('Continent');
         CRUD::column('region.id')->label('Region ID');
@@ -48,31 +46,4 @@ class CountryCrudController extends CrudController
         CRUD::column('name');
     }
 
-    /**
-     * Define what happens when the Create operation is loaded.
-     *
-     * @see https://backpackforlaravel.com/docs/crud-operation-create
-     * @return void
-     */
-    protected function setupCreateOperation()
-    {
-
-
-        /**
-         * Fields can be defined using the fluent syntax or array syntax:
-         * - CRUD::field('price')->type('number');
-         * - CRUD::addField(['name' => 'price', 'type' => 'number']));
-         */
-    }
-
-    /**
-     * Define what happens when the Update operation is loaded.
-     *
-     * @see https://backpackforlaravel.com/docs/crud-operation-update
-     * @return void
-     */
-    protected function setupUpdateOperation()
-    {
-        $this->setupCreateOperation();
-    }
 }
