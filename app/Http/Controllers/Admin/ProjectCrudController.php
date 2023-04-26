@@ -21,6 +21,7 @@ use Maatwebsite\Excel\Facades\Excel;
 use App\Http\Requests\ProjectRequest;
 use Backpack\CRUD\app\Library\Widget;
 use function mysql_xdevapi\getSession;
+use Illuminate\Support\Facades\Session;
 use phpDocumentor\Reflection\Types\True_;
 use Backpack\CRUD\app\Http\Controllers\CrudController;
 use App\Http\Controllers\Admin\Operations\AssessOperation;
@@ -30,6 +31,7 @@ use App\Http\Controllers\Admin\Traits\UsesSaveAndNextAction;
 use Backpack\Pro\Http\Controllers\Operations\FetchOperation;
 use Backpack\CRUD\app\Http\Controllers\Operations\ShowOperation;
 use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 /**
@@ -60,6 +62,10 @@ class ProjectCrudController extends CrudController
     {
         if ( !auth()->user()->can('view projects') ) {
             throw new AccessDeniedHttpException('Access denied. You do not have permission to access this page');
+        }
+
+        if ( !Session::exists('selectedOrganisationId') ) {
+            throw new BadRequestHttpException('Please select an institution first');
         }
 
         CRUD::setModel(\App\Models\Project::class);
@@ -150,72 +156,8 @@ class ProjectCrudController extends CrudController
                 $this->crud->query->where('assessment_status', $value);
             });
 
-
-        if (Auth::user()->hasRole('Site Admin')) {
-            // institution filter with all institutions
-            CRUD::filter('organisation_id')
-                ->type('select2')
-                ->label('Filter by Institution')
-                ->options(Organisation::all()->pluck('name', 'id')->toArray())
-                ->active(function ($value) {
-                    $this->crud->query->where('organisation_id', $value);
-                });
-
-            $selectedOrgnisationId = request()->get('organisation_id');
-
-            // no organisation is selected, show all portfolios in portfolio filter
-            if ($selectedOrgnisationId == null) {
-                CRUD::filter('portfolio_id')
-                ->type('select2')
-                ->label('Filter by Portfolio')
-                ->options(Portfolio::all()->pluck('name', 'id')->toArray())
-                ->active(function ($value) {
-                    $this->crud->query->where('portfolio_id', $value);
-                });
-
-            // one organisation is selected, show portfolios belong to the selected organisation in portfolio filter
-            // Question: it works only after reloading the page... Is there any way to take effect without reloading this page?
-            } else {
-                CRUD::filter('portfolio_id')
-                ->type('select2')
-                ->label('Filter by Portfolio')
-                ->options(Portfolio::where('organisation_id', $selectedOrgnisationId)->pluck('name', 'id')->toArray())
-                ->active(function ($value) {
-                    $this->crud->query->where('portfolio_id', $value);
-                });
-            }
-
-        } else {
-
-            // find the organisations that user belongs to
-            $userOrganisationIds = OrganisationMember::select('organisation_id')->where('user_id', Auth::user()->id)->get();
-
-            // show institution filter if user belong to more than one institution
-            if (count($userOrganisationIds) > 1) {
-                // institution filter with all institutions
-                CRUD::filter('organisation_id')
-                    ->type('select2')
-                    ->label('Filter by Institution')
-                    ->options(Organisation::whereIn('id', $userOrganisationIds)->pluck('name', 'id')->toArray())
-                    ->active(function ($value) {
-                        $this->crud->query->where('organisation_id', $value);
-                    });
-            }
-
-            // portfolio filter with portfolios that belong to user's institutions
-            // TODO: show portfolios that belong to the selected institution
-            if (count($userOrganisationIds) >= 1) {
-                CRUD::filter('portfolio_id')
-                    ->type('select2')
-                    ->label('Filter by Portfolio')
-                    ->options(Portfolio::whereIn('organisation_id', $userOrganisationIds)->pluck('name', 'id')->toArray())
-                    ->active(function ($value) {
-                        $this->crud->query->where('portfolio_id', $value);
-                    });
-            }
-
-        }
-
+        $selectedOrganisationId = Session::get('selectedOrganisationId');
+        $this->crud->addClause('where', 'organisation_id', $selectedOrganisationId);
     }
 
     /**
@@ -232,22 +174,21 @@ class ProjectCrudController extends CrudController
             ->content('Enter the key project details below.')
             ->view_namespace('stats4sd.laravel-backpack-section-title::fields');
 
-        if (Auth::user()?->hasRole('Site Admin') || Auth::user()?->organisations()->count() > 1) {
-            CRUD::field('organisation_id')->type('relationship')->label('Institution');
+        $selectedOrganisationId = Session::get('selectedOrganisationId');
+        CRUD::field('organisation_id')->type('hidden')->value($selectedOrganisationId);
 
-            // add portfolio selection box
-            // Question: how to show portfolios for the selected institution?
-            CRUD::field('portfolio_id')->type('relationship')->label('Portfolio');
-
-        } else {
-            $organisation = Auth::user()?->organisations()->first();
-            CRUD::field('organisation_id')->type('hidden')->value($organisation->id);
-            CRUD::field('organisation_title')->type('section-title')->view_namespace('stats4sd.laravel-backpack-section-title::fields')->content('Creating a Project for <b>' . $organisation->name . '</b>');
-
-            // TODO: add portfolio selection box
-            // Question: how to show portfolios for the only one institution that user belongs to
-            CRUD::field('portfolio_id')->type('relationship')->label('Portfolio');
-        }
+        $this->crud->addFields([
+            [
+                'name' => 'portfolio_id',
+                'type' => 'select',
+                'label' => 'Portfolio',
+                'model'     => "App\Models\PortFolio", 
+                'attribute' => 'name',
+                'options'   => (function ($query) {
+                    return $query->where('organisation_id', Session::get('selectedOrganisationId'))->orderBy('name', 'ASC')->get();
+                }), 
+            ],
+        ]);
 
         CRUD::field('name');
         CRUD::field('code')->hint('The code should uniquely identify the project within your institution\'s porfolio. Leave blank for an auto-generated code.');
