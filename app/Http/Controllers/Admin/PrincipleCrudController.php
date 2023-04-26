@@ -2,12 +2,13 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Models\Principle;
 use App\Http\Requests\PrincipleRequest;
 use App\Imports\PrincipleImport;
 use Backpack\CRUD\app\Http\Controllers\CrudController;
 use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Stats4sd\FileUtil\Http\Controllers\Operations\ImportOperation;
-use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 /**
  * Class PrincipleCrudController
@@ -19,10 +20,12 @@ class PrincipleCrudController extends CrudController
     use \Backpack\CRUD\app\Http\Controllers\Operations\ListOperation;
     use \Backpack\CRUD\app\Http\Controllers\Operations\CreateOperation;
     use \Backpack\CRUD\app\Http\Controllers\Operations\UpdateOperation;
-    use \Backpack\CRUD\app\Http\Controllers\Operations\DeleteOperation;
-    use \Backpack\CRUD\app\Http\Controllers\Operations\ShowOperation;
+    use \Backpack\CRUD\app\Http\Controllers\Operations\DeleteOperation { destroy as traitDestroy; }
+    use \Backpack\CRUD\app\Http\Controllers\Operations\ShowOperation { show as traitShow; }
 
     use ImportOperation;
+
+    use AuthorizesRequests;
 
     /**
      * Configure the CrudPanel object. Apply settings to all operations.
@@ -31,10 +34,6 @@ class PrincipleCrudController extends CrudController
      */
     public function setup()
     {
-        if ( !auth()->user()->can('view principles') ) {
-            throw new AccessDeniedHttpException('Access denied. You do not have permission to access this page');
-        }
-
         CRUD::setModel(\App\Models\Principle::class);
         CRUD::setRoute(config('backpack.base.route_prefix') . '/principle');
         CRUD::setEntityNameStrings('principle', 'principles');
@@ -50,14 +49,14 @@ class PrincipleCrudController extends CrudController
      */
     protected function setupListOperation()
     {
+        $this->authorize('viewAny', Principle::class);
+
         CRUD::column('name');
         CRUD::column('can_be_na');
 
         CRUD::enableDetailsRow();
         CRUD::setDetailsRowView('details.principle');
-
     }
-
 
     /**
      * Define what happens when the Create operation is loaded.
@@ -67,6 +66,8 @@ class PrincipleCrudController extends CrudController
      */
     protected function setupCreateOperation()
     {
+        $this->authorize('create', Principle::class);
+
         CRUD::setValidation(PrincipleRequest::class);
 
         CRUD::field('name');
@@ -75,12 +76,6 @@ class PrincipleCrudController extends CrudController
         CRUD::field('rating_zero');
         CRUD::field('rating_na');
         CRUD::field('can_be_na');
-
-        /**
-         * Fields can be defined using the fluent syntax or array syntax:
-         * - CRUD::field('price')->type('number');
-         * - CRUD::addField(['name' => 'price', 'type' => 'number']));
-         */
     }
 
     /**
@@ -91,6 +86,33 @@ class PrincipleCrudController extends CrudController
      */
     protected function setupUpdateOperation()
     {
+        $this->authorize('update', CRUD::getCurrentEntry());
+
         $this->setupCreateOperation();
     }
+
+    /**
+     * Define what happens when the Delete operation is loaded.
+     */
+    public function destroy($id)
+    {
+        $this->authorize('delete', Principle::find($id));
+
+        $this->crud->hasAccessOrFail('delete');
+    
+        return $this->crud->delete($id);
+    }
+
+    /**
+     * Define what happens when the Show operation is loaded.
+     */
+    public function show($id)
+    {
+        $this->authorize('view', Principle::find($id));
+
+        $content = $this->traitShow($id);
+
+        return $content;
+    }
+
 }
