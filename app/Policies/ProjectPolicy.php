@@ -5,124 +5,79 @@ namespace App\Policies;
 use App\Models\Project;
 use App\Models\User;
 use Illuminate\Auth\Access\Response;
-use Illuminate\Auth\Access\HandlesAuthorization;
 
 class ProjectPolicy
 {
-    use HandlesAuthorization;
-
     /**
      * Determine whether the user can view any models.
-     *
-     * @param \App\Models\User $user
-     * @return mixed
      */
-    public function viewAny(User $user)
+    public function viewAny(User $user): bool
     {
-        // return true; // project list is filtered by default, so this is ok.
-
-        // only user with proper permission can view any project
-        return $user->hasAnyPermission('view projects');
+        return ($user->can('view projects'));
     }
 
     /**
      * Determine whether the user can view the model.
-     *
-     * @param \App\Models\User $user
-     * @param \App\Models\Project $project
-     * @return mixed
      */
-    public function view(User $user, Project $project)
+    public function view(User $user, Project $project): bool
     {
-        // any member of an organisation can view a project
-        // return $project->organisation->users->contains($user) || $user->hasAnyRole('Site Admin');
-
-        // only user with proper permission can view a project
-        return $user->hasAnyPermission('view projects');
+        return ($user->can('view projects'));
     }
 
     /**
      * Determine whether the user can create models.
-     *
-     * @param \App\Models\User $user
-     * @return mixed
      */
-    public function create(User $user)
+    public function create(User $user): bool
     {
-        // return $user->organisations->some(function ($org) use ($user) {
-        //         return $org->admins->contains($user) || $org->editors->contains($user);
-        //         }) || $user->hasAnyRole('Site Admin');
-
-        // only user with proper permission can create a project
-        return $user->hasAnyPermission('maintain projects');
+        return ($user->can('maintain projects'));
     }
 
     /**
      * Determine whether the user can update the model.
-     *
-     * @param \App\Models\User $user
-     * @param \App\Models\Project $project
-     * @return mixed
      */
-    public function update(User $user, Project $project)
+    public function update(User $user, Project $project): bool
     {
-        // return $project->organisation->admins->contains($user) || $project->organisation->editors->contains($user) || $user->hasAnyRole('Site Admin');
-
-        // only user with proper permission can update a project
-        return $user->hasAnyPermission('maintain projects');
+        return ($user->can('maintain projects'));
     }
 
     /**
      * Determine whether the user can delete the model.
-     *
-     * @param \App\Models\User $user
-     * @param \App\Models\Project $project
-     * @return mixed
      */
-    public function delete(User $user, Project $project)
+    public function delete(User $user, Project $project): bool
     {
-        // return $project->organisation->admins->contains($user) || $project->organisation->editors->contains($user) || $user->hasAnyRole('Site Admin');
-
-        // only user with proper permission can delete a project
-        return $user->hasAnyPermission('maintain projects');
+        return ($user->can('maintain projects'));
     }
 
     /**
      * Determine whether the user can restore the model.
-     *
-     * @param \App\Models\User $user
-     * @param \App\Models\Project $project
-     * @return mixed
      */
-    public function restore(User $user, Project $project)
+    public function restore(User $user, Project $project): bool
     {
-        // return $project->organisation->admins->contains($user) || $user->hasAnyRole('Site Admin');
-
-        // only user with proper permission can restore a project
-        return $user->hasAnyPermission('maintain projects');
+        return ($user->can('maintain projects'));
     }
 
     /**
      * Determine whether the user can permanently delete the model.
-     *
-     * @param \App\Models\User $user
-     * @param \App\Models\Project $project
-     * @return mixed
      */
-    public function forceDelete(User $user, Project $project)
+    public function forceDelete(User $user, Project $project): bool
     {
-        // return $user->hasAnyRole('Site Admin');
-
-        // only user with proper permission can force delete a project
-        return $user->hasAnyPermission('maintain projects');
+        return ($user->can('maintain projects'));
     }
 
-    public function organisationUpdate(User $user, Project $project)
+    /**
+     * Determine whether the user can review redlines the model.
+     */
+    public function reviewRedlines(User $user, Project $project): bool
     {
-        // return $project->organisation->admins->contains($user);
-
-        // Question: not quite sure what is the difference between update() and organisationUpdate()...
-        // Wait... this class is ProjectPolicy, should it be projectUpdate() instead?
-        return $user->hasAnyPermission('maintain projects');
+        return ($user->can('review redlines'));
     }
+
+    /**
+     * Determine whether the user can assess project the model.
+     */
+    public function assessProject(User $user, Project $project): bool
+    {
+        return ($user->can('assess project'));
+    }
+
 }

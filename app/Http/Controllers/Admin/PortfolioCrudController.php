@@ -2,14 +2,12 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Models\Organisation;
-use App\Models\OrganisationMember;
-use Illuminate\Support\Facades\Auth;
+use App\Models\Portfolio;
 use App\Http\Requests\PortfolioRequest;
-use Illuminate\Support\Facades\Session;
 use Backpack\CRUD\app\Http\Controllers\CrudController;
 use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
-use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Illuminate\Support\Facades\Session;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 /**
@@ -22,7 +20,10 @@ class PortfolioCrudController extends CrudController
     use \Backpack\CRUD\app\Http\Controllers\Operations\ListOperation;
     use \Backpack\CRUD\app\Http\Controllers\Operations\CreateOperation;
     use \Backpack\CRUD\app\Http\Controllers\Operations\UpdateOperation;
-    use \Backpack\CRUD\app\Http\Controllers\Operations\DeleteOperation;
+    use \Backpack\CRUD\app\Http\Controllers\Operations\DeleteOperation { destroy as traitDestroy; }
+    use \Backpack\CRUD\app\Http\Controllers\Operations\ShowOperation { show as traitShow; }
+
+    use AuthorizesRequests;
 
     /**
      * Configure the CrudPanel object. Apply settings to all operations.
@@ -31,10 +32,6 @@ class PortfolioCrudController extends CrudController
      */
     public function setup()
     {
-        if ( !auth()->user()->can('view portfolios') ) {
-            throw new AccessDeniedHttpException('Access denied. You do not have permission to access this page');
-        }
-
         if ( !Session::exists('selectedOrganisationId') ) {
             throw new BadRequestHttpException('Please select an institution first');
         }
@@ -53,13 +50,14 @@ class PortfolioCrudController extends CrudController
      */
     protected function setupListOperation()
     {
+        $this->authorize('viewAny', Portfolio::class);
+
         CRUD::column('organisation_id');
         CRUD::column('name');
 
         $selectedOrganisationId = Session::get('selectedOrganisationId');
         $this->crud->addClause('where', 'organisation_id', $selectedOrganisationId);
     }
-
 
     /**
      * Define what happens when the Create operation is loaded.
@@ -69,6 +67,8 @@ class PortfolioCrudController extends CrudController
      */
     protected function setupCreateOperation()
     {
+        $this->authorize('create', Portfolio::class);
+
         CRUD::setValidation(PortfolioRequest::class);
 
         $selectedOrganisationId = Session::get('selectedOrganisationId');
@@ -77,7 +77,6 @@ class PortfolioCrudController extends CrudController
         CRUD::field('name');
     }
 
-    
     /**
      * Define what happens when the Update operation is loaded.
      * 
@@ -86,6 +85,33 @@ class PortfolioCrudController extends CrudController
      */
     protected function setupUpdateOperation()
     {
+        $this->authorize('update', CRUD::getCurrentEntry());
+
         $this->setupCreateOperation();
     }
+
+    /**
+     * Define what happens when the Delete operation is loaded.
+     */
+    public function destroy($id)
+    {
+        $this->authorize('delete', Portfolio::find($id));
+
+        $this->crud->hasAccessOrFail('delete');
+    
+        return $this->crud->delete($id);
+    }
+
+    /**
+     * Define what happens when the Show operation is loaded.
+     */
+    public function show($id)
+    {
+        $this->authorize('view', Portfolio::find($id));
+
+        $content = $this->traitShow($id);
+
+        return $content;
+    }
+
 }

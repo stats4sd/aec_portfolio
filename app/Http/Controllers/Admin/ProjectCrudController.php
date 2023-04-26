@@ -2,37 +2,36 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Models\Region;
 use App\Models\Country;
+use App\Models\CustomScoreTag;
+use App\Models\Organisation;
+use App\Models\OrganisationMember;
 use App\Models\RedLine;
+use App\Models\Region;
 use App\Models\ScoreTag;
 use App\Models\Portfolio;
 use App\Models\Principle;
-use Illuminate\Support\Str;
-use App\Models\Organisation;
+use App\Models\Project;
 use App\Imports\ProjectImport;
-use App\Models\CustomScoreTag;
+use App\Http\Requests\ProjectRequest;
 use App\Enums\AssessmentStatus;
 use App\Enums\GeographicalReach;
-use App\Models\OrganisationMember;
-use Prologue\Alerts\Facades\Alert;
-use Illuminate\Support\Facades\Auth;
-use Maatwebsite\Excel\Facades\Excel;
-use App\Http\Requests\ProjectRequest;
-use Backpack\CRUD\app\Library\Widget;
-use function mysql_xdevapi\getSession;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Session;
+use Maatwebsite\Excel\Facades\Excel;
+use Prologue\Alerts\Facades\Alert;
+use function mysql_xdevapi\getSession;
 use phpDocumentor\Reflection\Types\True_;
-use Backpack\CRUD\app\Http\Controllers\CrudController;
 use App\Http\Controllers\Admin\Operations\AssessOperation;
 use App\Http\Controllers\Admin\Operations\ImportOperation;
 use App\Http\Controllers\Admin\Operations\RedlineOperation;
 use App\Http\Controllers\Admin\Traits\UsesSaveAndNextAction;
 use Backpack\Pro\Http\Controllers\Operations\FetchOperation;
-use Backpack\CRUD\app\Http\Controllers\Operations\ShowOperation;
+use Backpack\CRUD\app\Http\Controllers\CrudController;
+use Backpack\CRUD\app\Library\Widget;
 use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
-use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 /**
  * Class ProjectCrudController
@@ -44,9 +43,11 @@ class ProjectCrudController extends CrudController
     use \Backpack\CRUD\app\Http\Controllers\Operations\ListOperation;
     use \Backpack\CRUD\app\Http\Controllers\Operations\CreateOperation;
     use \Backpack\CRUD\app\Http\Controllers\Operations\UpdateOperation;
-    use \Backpack\CRUD\app\Http\Controllers\Operations\DeleteOperation;
+    use \Backpack\CRUD\app\Http\Controllers\Operations\DeleteOperation { destroy as traitDestroy; }
+    use \Backpack\CRUD\app\Http\Controllers\Operations\ShowOperation;
 
-    use ShowOperation;
+    use AuthorizesRequests;
+
     use ImportOperation;
     use AssessOperation;
     use RedlineOperation;
@@ -60,10 +61,6 @@ class ProjectCrudController extends CrudController
      */
     public function setup()
     {
-        if ( !auth()->user()->can('view projects') ) {
-            throw new AccessDeniedHttpException('Access denied. You do not have permission to access this page');
-        }
-
         if ( !Session::exists('selectedOrganisationId') ) {
             throw new BadRequestHttpException('Please select an institution first');
         }
@@ -81,6 +78,8 @@ class ProjectCrudController extends CrudController
 
     public function show($id)
     {
+        $this->authorize('view', Project::find($id));
+
         $this->crud->hasAccessOrFail('show');
 
         // get entry ID from Request (makes sure its the last ID for nested resources)
@@ -117,6 +116,8 @@ class ProjectCrudController extends CrudController
      */
     protected function setupListOperation()
     {
+        $this->authorize('viewAny', Project::class);
+
         CRUD::setPersistentTable(false);
         CRUD::setResponsiveTable(false);
         Widget::add()
@@ -168,6 +169,8 @@ class ProjectCrudController extends CrudController
      */
     protected function setupCreateOperation()
     {
+        $this->authorize('create', Project::class);
+
         CRUD::setValidation(ProjectRequest::class);
 
         CRUD::field('title')->type('section-title')
@@ -254,6 +257,8 @@ class ProjectCrudController extends CrudController
      */
     protected function setupUpdateOperation()
     {
+        $this->authorize('update', CRUD::getCurrentEntry());
+
         $this->setupCreateOperation();
         CRUD::modifyField('code', ['hint' => '', 'validationRules' => 'required', 'validationMessages' => ['required' => 'The code field is required']]);
         $this->crud->setValidation();
@@ -261,6 +266,8 @@ class ProjectCrudController extends CrudController
 
     public function setupAssessOperation()
     {
+        $this->authorize('assessProject', CRUD::getCurrentEntry());
+
         Widget::add()->type('script')->content('assets/js/admin/forms/project_assess.js');
 
         CRUD::field('section-title')
@@ -414,6 +421,7 @@ class ProjectCrudController extends CrudController
 
     public function setupRedlineOperation()
     {
+        $this->authorize('reviewRedlines', CRUD::getCurrentEntry());
 
         Widget::add()->type('script')->content('assets/js/admin/forms/project_redlines.js');
 
@@ -484,6 +492,18 @@ class ProjectCrudController extends CrudController
             ->attributes([
                 'disabled' => 'disabled',
             ]);
+    }
+
+    /**
+     * Define what happens when the Delete operation is loaded.
+     */
+    public function destroy($id)
+    {
+        $this->authorize('delete', Project::find($id));
+
+        $this->crud->hasAccessOrFail('delete');
+    
+        return $this->crud->delete($id);
     }
 
 
