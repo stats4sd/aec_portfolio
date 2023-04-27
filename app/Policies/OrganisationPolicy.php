@@ -21,7 +21,7 @@ class OrganisationPolicy
      */
     public function view(User $user, Organisation $organisation): bool
     {
-        return ($user->can('view institutions'));
+        return ($user->can('view institutions') || $user->can('view institutional members'));
     }
 
     /**
