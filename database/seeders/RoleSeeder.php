@@ -48,8 +48,8 @@ class RoleSeeder extends Seeder
         Permission::create(['name' => 'view institutions', 'guard_name' => 'web']);
 
         Permission::create(['name' => 'maintain institutions', 'guard_name' => 'web']);
+        Permission::create(['name' => 'view institutional members', 'guard_name' => 'web']);
         Permission::create(['name' => 'invite institutional members', 'guard_name' => 'web']);
-        Permission::create(['name' => 'update role of institutional members', 'guard_name' => 'web']);
         Permission::create(['name' => 'maintain institutional members', 'guard_name' => 'web']);
         Permission::create(['name' => 'view institution-level dashboard', 'guard_name' => 'web']);
 

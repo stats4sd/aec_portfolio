@@ -32,7 +32,10 @@ class SelectOrganisationController extends Controller
         Session::put('selectedOrganisation', $selectedOrganisation);
 
         // redirect to institution-level dashboard
-        return view('organisations.new-dashboard', ['organisation' => $selectedOrganisation]);
+        return view('generic-dashboard.new-dashboard', [
+            'organisation' => $selectedOrganisation,
+            'level' => 'institution',
+        ]);
     }
 
 }

@@ -13,49 +13,50 @@
                         <th scope="col">Name</th>
                         <th scope="col">Email</th>
                         <th scope="col">Access Type</th>
-                        @can('update', $organisation)
+                        @if(Auth::user()->can('maintain institutional members'))
                             <th scope="col">Actions</th>
-                        @endcan
+                        @endif
                     </tr>
                 </thead>
                 <tbody>
+                    @if(Auth::user()->can('view institutional members'))
                         @foreach($organisation->users as $user)
                         <tr>
                             <td>
-                                    <img src="{{ $user->avatar_url }}" alt="{{ $user->name }} avatar" height="50px">
-
+                                <img src="{{ $user->avatar_url }}" alt="{{ $user->name }} avatar" height="50px">
                             </td>
                             <td>
-
-                                    {{ $user->name }}
-
+                                {{ $user->name }}
                             </td>
                             <td>{{ $user->email }}</td>
-                            <td>{{  $user->pivot->role }}</td>
-                            @can('update', $organisation)
+                            <td>{{ $user->pivot->role }}</td>
+                            @if(Auth::user()->can('maintain institutional members'))
                                 <td>
                                     <a href="{{ route('organisationmembers.edit', [$organisation, $user]) }}" class="btn btn-dark btn-sm" name="edit_member{{ $user->id }}" onclick="">EDIT</a>
                                     <button class="btn btn-dark btn-sm remove-button" data-user="{{ $user->id }}" data-toggle="modal" data-target="#removeUserModal{{ $user->id }}">REMOVE</button>
                                 </td>
-                            @endcan
+                            @endif
                         </tr>
                         @endforeach
-
+                    @endif
                 </tbody>
             </table>
             <hr/>
-            <h4>Pending Invites</h4>
-            <ul class="list-group">
-                @foreach($organisation->invites as $invite)
-                    <li class="list-group-item list-group-flush d-flex">
-                        <div class="w-50">{{ $invite->email }}</div>
-                        <div class="w-25">Invited on {{ $invite->invite_day }}</div>
-                    </li>
-                @endforeach
-            </ul>
-            @can('update', $organisation)
+
+            @if(Auth::user()->can('invite institutional members'))
+                <h4>Pending Invites</h4>
+                <ul class="list-group">
+                    @foreach($organisation->invites as $invite)
+                        <li class="list-group-item list-group-flush d-flex">
+                            <div class="w-50">{{ $invite->email }}</div>
+                            <div class="w-25">Invited on {{ $invite->invite_day }}</div>
+                        </li>
+                    @endforeach
+                </ul>
+
                 <a class="btn btn-dark btn-sm mt-5" href="{{ route('organisationmembers.create', $organisation) }}">INVITE MEMBERS</a>
-            @endcan
+            @endif
+
         </div>
     </div>
 </div>

@@ -16,6 +16,8 @@ class CountryCrudController extends CrudController
 {
     use \Backpack\CRUD\app\Http\Controllers\Operations\ListOperation;
 
+    use AuthorizesRequests;
+
     /**
      * Configure the CrudPanel object. Apply settings to all operations.
      *

@@ -19,7 +19,7 @@ use App\Http\Controllers\Admin\ScoreTagCrudController;
 use App\Http\Controllers\Admin\UserCrudController;
 use App\Http\Controllers\Admin\SelectOrganisationController;
 use App\Http\Controllers\Admin\DashboardController;
-use App\Http\Controllers\Admin\NewDashboardController;
+use App\Http\Controllers\Admin\GenericDashboardController;
 use App\Http\Controllers\OrganisationController;
 use App\Http\Controllers\OrganisationMemberController;
 
@@ -50,7 +50,7 @@ Route::group([
     Route::get('select_organisation', [SelectOrganisationController::class, 'show']);
     Route::get('selected_organisation', [SelectOrganisationController::class, 'selected']);
 
-    Route::get('new-dashboard', [NewDashboardController::class, 'show']);
+    Route::get('generic-dashboard', [GenericDashboardController::class, 'show']);
 
     Route::get('organisation-members', [OrganisationMemberController::class, 'show']);
 

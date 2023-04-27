@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Organisation;
 use App\Models\User;
+use App\Models\OrganisationMember;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Database\Eloquent\Builder;
@@ -14,6 +15,8 @@ class OrganisationMemberController extends Controller
 {
     public function create(Organisation $organisation)
     {
+        $this->authorize('create', OrganisationMember::class);
+
         $users = User::whereDoesntHave('organisations', function (Builder $query) use ($organisation) {
             $query->where('organisations.id', '=', $organisation->id);
         })->get();
@@ -30,10 +33,9 @@ class OrganisationMemberController extends Controller
      * @param Organisation $organisation
      * @return void
      */
-
     public function store(OrganisationMemberStoreRequest $request, Organisation $organisation)
     {
-        $this->authorize('update', $organisation);
+        $this->authorize('create', OrganisationMember::class);
 
         $data = $request->validated();
 
@@ -48,8 +50,10 @@ class OrganisationMemberController extends Controller
         return redirect()->route('organisation.show', ['id' => $organisation->id]);
     }
 
+
     public function edit(Organisation $organisation, User $user)
     {
+        $this->authorize('update', OrganisationMember::class);
 
         //use the relationship to get the pivot attributes for user
         $user = $organisation->users->find($user->id);
@@ -65,15 +69,17 @@ class OrganisationMemberController extends Controller
      * @param Organisation $organisation
      * @param User $user
      */
-
     public function update(OrganisationMemberUpdateRequest $request, Organisation $organisation, User $user)
     {
+        $this->authorize('update', OrganisationMember::class);
+
         $data = $request->validated();
 
         $organisation->users()->syncWithoutDetaching([$user->id => ['role' => $data['role']]]);
 
         return redirect()->route('organisation.show', ['id' => $organisation->id]);
     }
+
 
     /**
      * Remove a user from the organisation.
@@ -84,7 +90,7 @@ class OrganisationMemberController extends Controller
      */
     public function destroy(Organisation $organisation, User $user)
     {
-        $this->authorize('update', $organisation);
+        $this->authorize('delete', OrganisationMember::class);
 
         $admins = $organisation->admins()->get();
         // if the $user is a $organisation admin AND is the ONLY organisation admin... prevent
@@ -99,8 +105,11 @@ class OrganisationMemberController extends Controller
         return redirect()->route('organisation.show', [$organisation, 'members']);
     }
 
+
     // redirect to organisation members page of the selected organisation
     public function show() {
+        $this->authorize('viewAny', OrganisationMember::class);
+
         if (!Session::exists('selectedOrganisation')) {
             return redirect(backpack_url('select_organisation'));
 
