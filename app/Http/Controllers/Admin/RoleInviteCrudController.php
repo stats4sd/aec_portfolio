@@ -2,12 +2,13 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Models\RoleInvite;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Requests\RoleInviteRequest;
 use Backpack\CRUD\app\Http\Controllers\CrudController;
 use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
-use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 /**
  * Class RoleInviteCrudController
@@ -18,9 +19,15 @@ class RoleInviteCrudController extends CrudController
 {
     use \Backpack\CRUD\app\Http\Controllers\Operations\ListOperation;
     use \Backpack\CRUD\app\Http\Controllers\Operations\CreateOperation;
-    use \Backpack\CRUD\app\Http\Controllers\Operations\UpdateOperation;
-    use \Backpack\CRUD\app\Http\Controllers\Operations\DeleteOperation;
-    use \Backpack\CRUD\app\Http\Controllers\Operations\ShowOperation;
+
+    // email address and role cannot be updated after sending invitation, nothing can be edited,
+    // better disable Edit feature to avoid possible confusion
+    // use \Backpack\CRUD\app\Http\Controllers\Operations\UpdateOperation;
+
+    use \Backpack\CRUD\app\Http\Controllers\Operations\DeleteOperation { destroy as traitDestroy; }
+    use \Backpack\CRUD\app\Http\Controllers\Operations\ShowOperation { show as traitShow; }
+
+    use AuthorizesRequests;
 
     /**
      * Configure the CrudPanel object. Apply settings to all operations.
@@ -29,10 +36,6 @@ class RoleInviteCrudController extends CrudController
      */
     public function setup()
     {
-        if ( !auth()->user()->can('view admin user invites') ) {
-            throw new AccessDeniedHttpException('Access denied. You do not have permission to access this page');
-        }
-
         CRUD::setModel(\App\Models\RoleInvite::class);
         CRUD::setRoute(config('backpack.base.route_prefix') . '/role-invite');
         CRUD::setEntityNameStrings('role invite', 'role invites');
@@ -46,6 +49,8 @@ class RoleInviteCrudController extends CrudController
      */
     protected function setupListOperation()
     {
+        $this->authorize('viewAny', RoleInvite::class);
+
         CRUD::column('email')->label('Sent to');
         CRUD::column('role')->type('relationship')->label('Role invited to');
         CRUD::column('inviter')->type('relationship')->label('Invited by');
@@ -61,6 +66,8 @@ class RoleInviteCrudController extends CrudController
      */
     protected function setupCreateOperation()
     {
+        $this->authorize('create', RoleInvite::class);
+
         CRUD::setValidation(RoleInviteRequest::class);
 
         CRUD::field('email');
@@ -70,13 +77,27 @@ class RoleInviteCrudController extends CrudController
     }
 
     /**
-     * Define what happens when the Update operation is loaded.
-     *
-     * @see https://backpackforlaravel.com/docs/crud-operation-update
-     * @return void
+     * Define what happens when the Show operation is loaded.
      */
-    protected function setupUpdateOperation()
+    public function show($id)
     {
-        $this->setupCreateOperation();
+        $this->authorize('view', RoleInvite::find($id));
+
+        $content = $this->traitShow($id);
+
+        return $content;
     }
+
+    /**
+     * Define what happens when the Delete operation is loaded.
+     */
+    public function destroy($id)
+    {
+        $this->authorize('delete', RoleInvite::find($id));
+
+        $this->crud->hasAccessOrFail('delete');
+    
+        return $this->crud->delete($id);
+    }
+
 }

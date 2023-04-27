@@ -3,40 +3,36 @@
 namespace App\Http\Controllers\Admin;
 
 use Widget;
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Backpack\CRUD\app\Http\Controllers\CrudController;
-use Backpack\CRUD\app\Http\Controllers\Operations\ShowOperation;
+use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
 use Backpack\PermissionManager\app\Http\Requests\UserStoreCrudRequest as StoreRequest;
 use Backpack\PermissionManager\app\Http\Requests\UserUpdateCrudRequest as UpdateRequest;
-use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class UserCrudController extends CrudController
 {
     use \Backpack\CRUD\app\Http\Controllers\Operations\ListOperation;
     use \Backpack\CRUD\app\Http\Controllers\Operations\UpdateOperation { update as traitUpdate; }
-    use \Backpack\CRUD\app\Http\Controllers\Operations\DeleteOperation;
-    //use ShowOperation;
+    use \Backpack\CRUD\app\Http\Controllers\Operations\DeleteOperation { destroy as traitDestroy; }
+
+    use AuthorizesRequests;
 
     public function setup()
     {
-        if ( !auth()->user()->can('view users') ) {
-            throw new AccessDeniedHttpException('Access denied. You do not have permission to access this page');
-        }
-
         $this->crud->setModel(config('backpack.permissionmanager.models.user'));
         $this->crud->setEntityNameStrings(trans('backpack::permissionmanager.user'), trans('backpack::permissionmanager.users'));
         $this->crud->setRoute(backpack_url('user'));
 
         $this->crud->denyAccess('create');
-
-        if (!Auth::user()->hasRole('Site Admin')) {
-            $this->crud->denyAccess(['list', 'edit']);
-        }
     }
 
     public function setupListOperation()
     {
+        $this->authorize('viewAny', User::class);
+
         Widget::add()
         ->to('before_content')
         ->type('card')
@@ -110,12 +106,29 @@ class UserCrudController extends CrudController
 
     public function show()
     {
-        return view('users.show', ['user' => $this->crud->getCurrentEntry()]);
+        $user = $this->crud->getCurrentEntry();
+
+        $this->authorize('view', $user);
+
+        return view('users.show', ['user' => $user]);
     }
 
+    /**
+     * Define what happens when the Delete operation is loaded.
+     */
+    public function destroy($id)
+    {
+        $this->authorize('delete', User::find($id));
 
+        $this->crud->hasAccessOrFail('delete');
+    
+        return $this->crud->delete($id);
+    }
+ 
     public function setupUpdateOperation()
     {
+        $this->authorize('update', CRUD::getCurrentEntry());
+
         $this->addUserFields();
         $this->crud->setValidation(UpdateRequest::class);
     }
@@ -127,6 +140,8 @@ class UserCrudController extends CrudController
      */
     public function update()
     {
+        $this->authorize('update', CRUD::getCurrentEntry());
+
         $this->crud->setRequest($this->crud->validateRequest());
         $this->crud->setRequest($this->handlePasswordInput($this->crud->getRequest()));
         $this->crud->unsetValidation(); // validation has already been run

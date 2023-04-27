@@ -36,7 +36,7 @@ class RoleSeeder extends Seeder
         Permission::create(['name' => 'maintain users', 'guard_name' => 'web']);
 
         Permission::create(['name' => 'view admin user invites', 'guard_name' => 'web']);
-        Permission::create(['name' => 'send admin user invites', 'guard_name' => 'web']);
+        Permission::create(['name' => 'maintain admin user invites', 'guard_name' => 'web']);
         Permission::create(['name' => 'view red lines', 'guard_name' => 'web']);
         Permission::create(['name' => 'maintain red lines', 'guard_name' => 'web']);
         Permission::create(['name' => 'view principles', 'guard_name' => 'web']);
