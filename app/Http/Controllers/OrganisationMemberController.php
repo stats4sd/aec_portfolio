@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Session;
 use Illuminate\Database\Eloquent\Builder;
 use App\Http\Requests\OrganisationMemberStoreRequest;
 use App\Http\Requests\OrganisationMemberUpdateRequest;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 class OrganisationMemberController extends Controller
 {
@@ -119,7 +120,7 @@ class OrganisationMemberController extends Controller
         $this->authorize('viewAny', OrganisationMember::class);
 
         if (!Session::exists('selectedOrganisation')) {
-            return redirect(backpack_url('select_organisation'));
+            throw new BadRequestHttpException('Please select an institution first');
 
         } else {
             $selectedOrganisationId = Session::get('selectedOrganisationId');
