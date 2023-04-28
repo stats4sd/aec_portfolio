@@ -12,7 +12,7 @@
                         <th scope="col">Avatar</th>
                         <th scope="col">Name</th>
                         <th scope="col">Email</th>
-                        <th scope="col">Access Type</th>
+                        <th scope="col">Role</th>
                         @if(Auth::user()->can('maintain institutional members'))
                             <th scope="col">Actions</th>
                         @endif
@@ -29,7 +29,7 @@
                                 {{ $user->name }}
                             </td>
                             <td>{{ $user->email }}</td>
-                            <td>{{ $user->pivot->role }}</td>
+                            <td>{{ $user->roles->pluck('name')->join(', ') }}</td>
                             @if(Auth::user()->can('maintain institutional members'))
                                 <td>
                                     <a href="{{ route('organisationmembers.edit', [$organisation, $user]) }}" class="btn btn-dark btn-sm" name="edit_member{{ $user->id }}" onclick="">EDIT</a>
