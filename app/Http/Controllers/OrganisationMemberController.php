@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Organisation;
+
 use App\Models\User;
-use App\Models\OrganisationMember;
+use App\Models\Organisation;
 use Illuminate\Http\Request;
+use App\Models\OrganisationMember;
+use Spatie\Permission\Models\Role;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Database\Eloquent\Builder;
 use App\Http\Requests\OrganisationMemberStoreRequest;
@@ -21,7 +23,13 @@ class OrganisationMemberController extends Controller
             $query->where('organisations.id', '=', $organisation->id);
         })->get();
 
-        return view('organisations.create-members', ['organisation' => $organisation, 'users' => $users]);
+        $institutionalRoles = Role::where('name', 'like', 'Institutional%')->orderBy('name', 'ASC')->get();
+
+        return view('organisations.create-members', [
+            'organisation' => $organisation, 
+            'users' => $users,
+            'institutionalRoles' => $institutionalRoles,
+        ]);
     }
 
 
@@ -44,7 +52,7 @@ class OrganisationMemberController extends Controller
         }
 
         if (isset($data['emails']) && count(array_filter($data['emails'])) > 0) {
-            $organisation->sendInvites($data['emails']);
+            $organisation->sendInvites($data['emails'], $data['role_id']);
         }
 
         return redirect()->route('organisation.show', ['id' => $organisation->id]);

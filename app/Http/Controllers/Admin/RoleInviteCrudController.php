@@ -72,7 +72,7 @@ class RoleInviteCrudController extends CrudController
 
         CRUD::field('email');
 
-        // Role selection box, show Site Admin, Site Manager only
+        // Role selection box showS Site Admin, Site Manager only
         // Invitation for institutional admin, assessor, member will be sent in Institution Members page
         $this->crud->addFields([
             [
