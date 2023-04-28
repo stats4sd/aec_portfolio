@@ -71,7 +71,20 @@ class RoleInviteCrudController extends CrudController
         CRUD::setValidation(RoleInviteRequest::class);
 
         CRUD::field('email');
-        CRUD::field('role_id')->type('relationship');
+
+        // Role selection box, show Site Admin, Site Manager only
+        // Invitation for institutional admin, assessor, member will be sent in Institution Members page
+        $this->crud->addFields([
+            [
+                'name' => 'role_id',
+                'type' => 'select',
+                'label' => 'Role',
+                'options'   => (function ($query) {
+                    return $query->where('name', 'like', 'Site%')->orderBy('name', 'ASC')->get();
+                }), 
+            ],
+        ]);
+
         CRUD::field('inviter_id')->type('hidden')->default(Auth::user()->id);
         CRUD::field('token')->type('hidden')->default(Str::random(24));
     }
