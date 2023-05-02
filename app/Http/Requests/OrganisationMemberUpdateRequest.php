@@ -28,7 +28,9 @@ class OrganisationMemberUpdateRequest extends FormRequest
     public function rules()
     {
         return [
-            'role' => ['string'],
+            // 'role' => ['string'],
+            'old_system_role' => ['string'],
+            'new_system_role' => ['string'],
         ];
     }
 

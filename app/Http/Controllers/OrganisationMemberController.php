@@ -67,7 +67,13 @@ class OrganisationMemberController extends Controller
         //use the relationship to get the pivot attributes for user
         $user = $organisation->users->find($user->id);
 
-        return view('organisations.edit-members', ['organisation' => $organisation, 'user' => $user]);
+        $institutionalRoles = Role::where('name', 'like', 'Institutional%')->orderBy('name', 'ASC')->get();
+
+        return view('organisations.edit-members', [
+            'organisation' => $organisation, 
+            'user' => $user,
+            'institutionalRoles' => $institutionalRoles,
+        ]);
     }
 
 
@@ -84,7 +90,11 @@ class OrganisationMemberController extends Controller
 
         $data = $request->validated();
 
-        $organisation->users()->syncWithoutDetaching([$user->id => ['role' => $data['role']]]);
+        // remove old role
+        $user->removeRole($data['old_system_role']);
+
+        // add new role
+        $user->assignRole($data['new_system_role']);
 
         return redirect()->route('organisation.show', ['id' => $organisation->id]);
     }
