@@ -42,6 +42,12 @@ class Project extends Model
             }
         });
 
+        // TODO: create new assessment record
+
+        // TODO: copy red line records for new assessment
+
+        // TODO: copy principles records for new assessment
+
         static::created(function ($project) {
             $project->redLines()->sync(RedLine::all()->pluck('id')->toArray());
 
@@ -74,6 +80,11 @@ class Project extends Model
     public function countries()
     {
         return $this->belongsToMany(Country::class);
+    }
+
+    public function assessments()
+    {
+        return $this->hasMany(Assessment::class);
     }
 
     public function redLines()
