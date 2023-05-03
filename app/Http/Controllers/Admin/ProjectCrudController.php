@@ -192,7 +192,7 @@ class ProjectCrudController extends CrudController
 
         // DONE - TODO: get overall score from assessment instead of project
         // CRUD::column('overall_score')->type('number')->decimals(1)->suffix('%');
-        CRUD::column('overall_score')->type('closure')->function(function ($entry) {
+        CRUD::column('score')->type('closure')->label('Overall score')->function(function ($entry) {
             return $entry->assessments->last()->overall_score;
         });
 
@@ -339,7 +339,9 @@ class ProjectCrudController extends CrudController
         // cannot use relationship with repeatable because we need to filter the scoretags...
         $entry = CRUD::getCurrentEntry();
 
-        foreach ($entry->principles as $principle) {
+        // TODO: get principles via latest assessment instead of project
+        // foreach ($entry->principles as $principle) {
+        foreach ($entry->assessments->last()->principles as $principle) {
             $ratingZeroDefintionRow = '<span class="text-secondary">This principle cannot be marked as not applicable</span>';
             if ($principle->can_be_na) {
                 $ratingZeroDefintionRow = "
@@ -449,7 +451,9 @@ class ProjectCrudController extends CrudController
             ->attributes([
                 'data-check-complete' => '1',
             ])
-            ->default($entry->assessment_status === AssessmentStatus::Complete);
+            // TODO: get assessment status via latest assessment instead of project
+            // ->default($entry->assessment_status === AssessmentStatus::Complete);
+            ->default($entry->assessments->last()->assessment_status === AssessmentStatus::Complete);
 
 
         CRUD::field('assessment_incomplete')
@@ -489,8 +493,10 @@ class ProjectCrudController extends CrudController
                     These are the Red Line elements, which are counter-productive or harmful to the values and principles of agroecology. If any one of these is present in the project being rated, then the Agroecology Overall Score is 0.
                           ');
 
+        // DONE - TODO: get red lines via latest assessment instead of project
         // We cannot use the relationship with subfields field here, because we do not want the user to be able to unassign any redlines from the project.
-        foreach ($entry->redLines as $redline) {
+        // foreach ($entry->redLines as $redline) {
+        foreach ($entry->assessments->last()->redLines as $redline) {
             CRUD::field('redline_title_' . $redline->id)
                 ->wrapper([
                     'class' => 'col-md-6'

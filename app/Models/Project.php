@@ -17,7 +17,9 @@ class Project extends Model
     use HasFactory;
 
     protected $guarded = ['id'];
-    protected $appends = ['overall_score'];
+
+    // TODO: this is no longer necessary as OrganisationController now check for passed project by referring to project latest assessment
+    // protected $appends = ['overall_score'];
 
     protected $casts = [
         'assessment_status' => AssessmentStatus::class,
@@ -92,6 +94,8 @@ class Project extends Model
         return $this->hasMany(Assessment::class);
     }
 
+
+    
     public function redLines()
     {
         return $this->belongsToMany(RedLine::class)
@@ -162,7 +166,7 @@ class Project extends Model
         public
         function getOverallScoreAttribute()
         {
-            // logger("Project.getOverallScoreAttribute()");
+            logger("Project.getOverallScoreAttribute()");
  
             if ($this->failingRedlines()->count() > 0) {
                 return 0;
@@ -184,6 +188,8 @@ class Project extends Model
 
             return null;
         }
+        
+
 
         public
         function organisation()
