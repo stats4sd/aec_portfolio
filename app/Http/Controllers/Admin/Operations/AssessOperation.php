@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers\Admin\Operations;
 
-use App\Enums\AssessmentStatus;
+use Carbon\Carbon;
 use App\Models\Principle;
-use App\Models\PrincipleProject;
 use Illuminate\Http\Request;
+use App\Enums\AssessmentStatus;
+use App\Models\PrincipleProject;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
@@ -60,14 +61,14 @@ trait AssessOperation
      */
     public function assess($id)
     {
-        logger("AssessOperation.assess()");
+        // logger("AssessOperation.assess()");
 
         $this->crud->hasAccessOrFail('assess');
         // $this->crud->setOperation('Assess');
 
         $id = $this->crud->getCurrentEntryId() ?? $id;
 
-        dump($id);
+        // dump($id);
 
         // TODO: it is setting the project record to "entry", corresponind project_red_line records will be showed
         // Question: how to change to set the latest assessment record to "entry", get corresponding project_red_line records via assessment_id?
@@ -88,7 +89,7 @@ trait AssessOperation
 
     public function postAssessForm(Request $request)
     {
-        logger("AssessOperation.postAssessForm()");
+        // logger("AssessOperation.postAssessForm()");
 
         $project = $this->crud->getEntry($request->input('id'));
 
@@ -184,7 +185,13 @@ trait AssessOperation
         // $project->assessment_status = $request->assessment_complete ? AssessmentStatus::Complete : AssessmentStatus::InProgress;
         // $project->save();
 
-        $latestAssessment->assessment_status = $request->assessment_complete ? AssessmentStatus::Complete : AssessmentStatus::InProgress;
+        if ($request->assessment_complete) {
+            $latestAssessment->assessment_status = AssessmentStatus::Complete;
+            $latestAssessment->completed_at = Carbon::now()->format('Y-m-d');
+        } else {
+            $latestAssessment->assessment_status = AssessmentStatus::InProgress;
+        }
+        
         $latestAssessment->save();
 
 
