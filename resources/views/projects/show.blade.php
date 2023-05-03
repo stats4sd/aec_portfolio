@@ -63,6 +63,10 @@
                         <td class="text-right pr-4 mr-2">Status:</td>
                         <td>{{ $entry->assessment_status }}</td>
                     </tr>
+
+                    <!-- TODO: get ratings total, overall score from latest assessment instead of project -->
+                    <!-- As the show view will be used to past assessments and latest assessment, we need to pass in assessment ID -->
+                    <!-- Question: how to get and pass latest assessment ID into the URL of show view...? -->
                     <tr>
                         <td class="text-right pr-4 mr-2">Ratings Total:</td>
                         @if($entry->assessment_status === \App\Enums\AssessmentStatus::Complete)
@@ -99,6 +103,8 @@
                         <th>Shared Examples/Indicators</th>
                         <th>Custom Examples/Indicators</th>
                     </tr>
+
+                    <!-- TODO: get principle projects from assessment instead of project -->
 
                     @php
                         $principleProjects = $entry->principleProjects;
