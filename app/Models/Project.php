@@ -52,6 +52,7 @@ class Project extends Model
             $project->principles()->sync(Principle::all()->pluck('id')->toArray());
         });
 
+        // TODO: change table name and column name to see whether assessment_id will have value
         // static::created(function ($project) {
         //     $assessment = Assessment::create(['project_id' => $project->id]);
         //     $assessment->redLines()->sync(RedLine::all()->pluck('id')->toArray());
@@ -161,7 +162,7 @@ class Project extends Model
         public
         function getOverallScoreAttribute()
         {
-            logger("Project.getOverallScoreAttribute()");
+            // logger("Project.getOverallScoreAttribute()");
  
             if ($this->failingRedlines()->count() > 0) {
                 return 0;

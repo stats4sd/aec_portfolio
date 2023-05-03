@@ -468,7 +468,7 @@ class ProjectCrudController extends CrudController
 
     public function setupRedlineOperation()
     {
-        dump("ProjectCrudController.setupRedlineOperation()");
+        // dump("ProjectCrudController.setupRedlineOperation()");
 
         $this->authorize('reviewRedlines', CRUD::getCurrentEntry());
 

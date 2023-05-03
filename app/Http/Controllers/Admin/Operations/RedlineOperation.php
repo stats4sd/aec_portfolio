@@ -22,7 +22,7 @@ trait RedlineOperation
      */
     protected function setupRedlineRoutes($segment, $routeName, $controller)
     {
-        logger("RedlineOperation.setupRedlineRoutes()");
+        // logger("RedlineOperation.setupRedlineRoutes()");
 
         Route::get($segment . '/{id}/redline', [
             'as' => $routeName . '.redline',
@@ -42,7 +42,7 @@ trait RedlineOperation
      */
     protected function setupRedlineDefaults()
     {
-        logger("RedlineOperation.setupRedlineDefaults()");
+        // logger("RedlineOperation.setupRedlineDefaults()");
 
         $this->crud->allowAccess('redline');
 
@@ -66,13 +66,13 @@ trait RedlineOperation
      */
     public function redline($id)
     {
-        logger("RedlineOperation.redline()");
+        // logger("RedlineOperation.redline()");
 
         $this->crud->hasAccessOrFail('redline');
 
         $id = $this->crud->getCurrentEntryId() ?? $id;
 
-        dump($id);
+        // dump($id);
 
         // TODO: it is setting the project record to "entry", corresponind project_red_line records will be showed
         // Question: how to change to set the latest assessment record to "entry", get corresponding project_red_line records via assessment_id?
@@ -92,7 +92,7 @@ trait RedlineOperation
 
     public function postRedlineForm(Request $request)
     {
-        logger("RedlineOperation.postRedlineForm()");
+        // logger("RedlineOperation.postRedlineForm()");
 
         if($request->has('redlines_compelete') && $request->redlines_complete === 1) {
             foreach(RedLine::all() as $redline) {
