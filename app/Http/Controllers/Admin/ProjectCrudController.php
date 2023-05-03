@@ -97,12 +97,22 @@ class ProjectCrudController extends CrudController
 
 
         // #### ADD SPIDER CHART DATA ###
-        $this->data['spiderData'] = $this->data['entry']->principleProjects->map(function ($principleProject) {
+
+        // DONE - TODO: get data from latest assessment instead of project
+        // $this->data['spiderData'] = $this->data['entry']->principleProjects->map(function ($principleProject) {
+        //     return [
+        //         'axis' => $principleProject->principle->name,
+        //         'value' => $principleProject->rating,
+        //     ];
+        // });
+
+        $this->data['spiderData'] = $this->data['entry']->assessments->last()->principleProjects->map(function ($principleProject) {
             return [
                 'axis' => $principleProject->principle->name,
                 'value' => $principleProject->rating,
             ];
         });
+
 
         // load the view from /resources/views/vendor/backpack/crud/ if it exists, otherwise load the one in the package
         return view($this->crud->getShowView(), $this->data);
@@ -140,7 +150,6 @@ class ProjectCrudController extends CrudController
         CRUD::column('name');
         CRUD::column('code');
         CRUD::column('budget')->type('closure')->function(function ($entry) {
-
             $value = number_format($entry->budget, 2, '.', ',');
             return "{$entry->currency} {$value}";
         });
@@ -171,15 +180,15 @@ class ProjectCrudController extends CrudController
             // dump($entry->overallScore);
             // dump($entry->assessments->last()->overallScore);
 
-            // TODO: get assessment status from latest assessment record
+            // DONE - TODO: get assessment status from latest assessment record
             // return $entry->assessment_status?->value;
             return $entry->assessments->last()->assessment_status?->value;
         });
 
-        // TODO: get overall score from assessment instead of project
+        // DONE - TODO: get overall score from assessment instead of project
         // CRUD::column('overall_score')->type('number')->decimals(1)->suffix('%');
-        CRUD::column('overall_score')->type('number')->decimals(1)->suffix('%')->function(function ($entry) {
-            return $entry->assessments->last()->overall_score();
+        CRUD::column('overall_score')->type('closure')->function(function ($entry) {
+            return $entry->assessments->last()->overall_score;
         });
 
         CRUD::filter('assessment_status')
@@ -454,6 +463,8 @@ class ProjectCrudController extends CrudController
 
     public function setupRedlineOperation()
     {
+        dump("ProjectCrudController.setupRedlineOperation()");
+
         $this->authorize('reviewRedlines', CRUD::getCurrentEntry());
 
         Widget::add()->type('script')->content('assets/js/admin/forms/project_redlines.js');

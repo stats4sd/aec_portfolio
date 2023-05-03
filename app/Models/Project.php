@@ -119,6 +119,7 @@ class Project extends Model
 
     public function principleProjects()
     {
+        dump("Project.principleProjects()");
         return $this->hasMany(PrincipleProject::class);
     }
 
@@ -156,6 +157,8 @@ class Project extends Model
         public
         function getOverallScoreAttribute()
         {
+            logger("Project.getOverallScoreAttribute()");
+ 
             if ($this->failingRedlines()->count() > 0) {
                 return 0;
             }
