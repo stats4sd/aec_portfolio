@@ -145,9 +145,42 @@ class ProjectCrudController extends CrudController
             return "{$entry->currency} {$value}";
         });
         CRUD::column('assessment_status')->type('closure')->function(function ($entry) {
-            return $entry->assessment_status?->value;
+            // dump($entry->redLines);
+            // dump($entry->assessments->last()->redLines);
+
+            // dump($entry->completedRedlines);
+            // dump($entry->assessments->last()->completedRedlines);
+
+            // dump($entry->failingRedlines);
+            // dump($entry->assessments->last()->failingRedlines);
+
+
+            // dump($entry->principles);
+            // dump($entry->assessments->last()->principles);
+
+            // dump($entry->principleProjects);
+            // dump($entry->assessments->last()->principleProjects);
+
+
+            // dump($entry->totalPossible);
+            // dump($entry->assessments->last()->totalPossible);
+
+            // dump($entry->total);
+            // dump($entry->assessments->last()->total);
+
+            // dump($entry->overallScore);
+            // dump($entry->assessments->last()->overallScore);
+
+            // TODO: get assessment status from latest assessment record
+            // return $entry->assessment_status?->value;
+            return $entry->assessments->last()->assessment_status?->value;
         });
-        CRUD::column('overall_score')->type('number')->decimals(1)->suffix('%');
+
+        // TODO: get overall score from assessment instead of project
+        // CRUD::column('overall_score')->type('number')->decimals(1)->suffix('%');
+        CRUD::column('overall_score')->type('number')->decimals(1)->suffix('%')->function(function ($entry) {
+            return $entry->assessments->last()->overall_score();
+        });
 
         CRUD::filter('assessment_status')
             ->type('select2')
