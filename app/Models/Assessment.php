@@ -6,6 +6,7 @@ use App\Enums\AssessmentStatus;
 use Illuminate\Database\Eloquent\Model;
 use Backpack\CRUD\app\Models\Traits\CrudTrait;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Assessment extends Model
 {
@@ -25,7 +26,7 @@ class Assessment extends Model
         return $this->belongsTo(Project::class);
     }
 
-    
+
     public function redLines()
     {
         dump("Assessment.redLines()");
@@ -52,7 +53,7 @@ class Assessment extends Model
         return $this->belongsToMany(RedLine::class, 'project_red_line', 'assessment_id')->wherePivot('value', 1);
     }
 
-    
+
     public function principles()
     {
         dump("Assessment.principles()");
@@ -129,6 +130,18 @@ class Assessment extends Model
         }
 
         return null;
+    }
+
+
+    // Custom Assessment Criteria
+    public function assessmentCriteria(): BelongsToMany
+    {
+        return $this->belongsToMany(AssessmentCriteria::class, 'criteria_assessment')
+            ->withPivot([
+                'rating',
+                'rating_comment',
+                'is_na'
+            ]);
     }
 
 }

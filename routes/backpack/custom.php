@@ -6,6 +6,7 @@
 // This route file is loaded automatically by Backpack\Base.
 // Routes you generate using Backpack\Generators will be placed here.
 
+use App\Http\Controllers\Admin\AssessmentCriteriaCrudController;
 use App\Http\Controllers\Admin\ContinentCrudController;
 use App\Http\Controllers\Admin\CountryCrudController;
 use App\Http\Controllers\Admin\OrganisationCrudController;
@@ -31,7 +32,7 @@ Route::group([
     ),
 
 ], function () { // custom admin routes
-    
+
     Route::crud('organisation', OrganisationCrudController::class);
     Route::crud('portfolio', PortfolioCrudController::class);
     Route::crud('project', ProjectCrudController::class);
@@ -62,9 +63,10 @@ Route::group([
 
     Route::get('organisation/{organisation}/portfolio', [OrganisationController::class, 'portfolio'])->name('organisation.portfolio');
     Route::get('organisation/{organisation}/export', [OrganisationController::class, 'export'])->name('organisation.export');
-    
+
     Route::get('dashboard', [DashboardController::class, 'check'])->name('backpack.dashboard');
 
     Route::get('/', [Backpack\CRUD\app\Http\Controllers\AdminController::class, 'redirect'])->name('backpack');
-    
+
+    Route::crud('assessment-criteria', AssessmentCriteriaCrudController::class);
 }); // this should be the absolute last line of this file

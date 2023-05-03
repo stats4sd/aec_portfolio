@@ -5,6 +5,7 @@ namespace App\Models;
 use Backpack\CRUD\app\Models\Traits\CrudTrait;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
@@ -76,6 +77,11 @@ protected static function booted()
         return $this->belongsTo(User::class, 'creator_id');
     }
 
+    public function assessmentCriteria(): HasMany
+    {
+        return $this->hasMany(AssessmentCriteria::class);
+    }
+
 
     public function invites()
     {
@@ -95,7 +101,7 @@ protected static function booted()
             // create role_invites record with same token from corresponding invites record
             // P.S. tried to do the same by RoleInvite::create() but another invitation email with role will be sent
             // To avoid sending the additional invitation email regarding role, insert a role_invites record via DB facade directly
-            DB::insert('insert into role_invites (email, role_id, inviter_id, token, created_at, updated_at) values (?, ?, ?, ?, NOW(), NOW())', 
+            DB::insert('insert into role_invites (email, role_id, inviter_id, token, created_at, updated_at) values (?, ?, ?, ?, NOW(), NOW())',
                        [$email, $roleId, auth()->user()->id, $invite->token]);
         }
     }
