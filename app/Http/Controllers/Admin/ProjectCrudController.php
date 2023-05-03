@@ -180,6 +180,11 @@ class ProjectCrudController extends CrudController
             // dump($entry->overallScore);
             // dump($entry->assessments->last()->overallScore);
 
+
+            // dump($entry->customScoreTags());
+            // dump($entry->assessments->last()->customScoreTags());
+
+
             // DONE - TODO: get assessment status from latest assessment record
             // return $entry->assessment_status?->value;
             return $entry->assessments->last()->assessment_status?->value;

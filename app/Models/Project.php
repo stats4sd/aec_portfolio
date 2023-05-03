@@ -43,9 +43,7 @@ class Project extends Model
         });
 
         // TODO: create new assessment record
-
         // TODO: copy red line records for new assessment
-
         // TODO: copy principles records for new assessment
 
         static::created(function ($project) {
@@ -53,6 +51,12 @@ class Project extends Model
 
             $project->principles()->sync(Principle::all()->pluck('id')->toArray());
         });
+
+        // static::created(function ($project) {
+        //     $assessment = Assessment::create(['project_id' => $project->id]);
+        //     $assessment->redLines()->sync(RedLine::all()->pluck('id')->toArray());
+        //     $assessment->principles()->sync(Principle::all()->pluck('id')->toArray());
+        // });
 
         static::addGlobalScope('organisation', function (Builder $builder) {
 
@@ -119,7 +123,7 @@ class Project extends Model
 
     public function principleProjects()
     {
-        dump("Project.principleProjects()");
+        // dump("Project.principleProjects()");
         return $this->hasMany(PrincipleProject::class);
     }
 

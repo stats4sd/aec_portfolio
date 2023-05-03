@@ -25,6 +25,10 @@ class Assessment extends Model
         return $this->belongsTo(Project::class);
     }
 
+    public function customScoreTags()
+    {
+        return $this->hasMany(CustomScoreTag::class);
+    }
     
     public function redLines()
     {
@@ -55,7 +59,7 @@ class Assessment extends Model
     
     public function principles()
     {
-        dump("Assessment.principles()");
+        // dump("Assessment.principles()");
 
         return $this->belongsToMany(Principle::class, 'principle_project', 'assessment_id')
             ->withPivot([

@@ -60,13 +60,20 @@ trait AssessOperation
      */
     public function assess($id)
     {
+        logger("AssessOperation.assess()");
+
         $this->crud->hasAccessOrFail('assess');
         // $this->crud->setOperation('Assess');
 
         $id = $this->crud->getCurrentEntryId() ?? $id;
 
+        dump($id);
 
+        // TODO: it is setting the project record to "entry", corresponind project_red_line records will be showed
+        // Question: how to change to set the latest assessment record to "entry", get corresponding project_red_line records via assessment_id?
         $this->data['entry'] = $this->crud->getEntryWithLocale($id);
+        // $this->data['entry'] = $this->crud->getEntryWithLocale($id)->assessments->last();
+
         $this->crud->setOperationSetting('fields', $this->crud->getUpdateFields());
 
         $this->data['crud'] = $this->crud;
@@ -81,10 +88,15 @@ trait AssessOperation
 
     public function postAssessForm(Request $request)
     {
+        logger("AssessOperation.postAssessForm()");
+
         $project = $this->crud->getEntry($request->input('id'));
 
+        // DONE - TODO: delete all custom score tags for latest asseessment
         // delete all custom score tags for the project
-        $project->customScoreTags()->delete();
+        // $project->customScoreTags()->delete();
+        $latestAssessment = $project->assessments->last();
+        $latestAssessment->customScoreTags()->delete();
 
         // validate fields
         $rules = [];
@@ -104,13 +116,23 @@ trait AssessOperation
         foreach (Principle::all() as $principle) {
             $principleId = $principle->id;
 
-            $project->principles()->updateExistingPivot($principleId, [
+            // DONE - TODO: get principles from latest assessment instead of project
+            // $project->principles()->updateExistingPivot($principleId, [
+            //     'rating' => $request->input("${principleId}_rating"),
+            //     'rating_comment' => $request->input("${principleId}_rating_comment"),
+            //     'is_na' => $request->input("${principleId}_is_na") ?? 0,
+            // ]);
+
+            $latestAssessment->principles()->updateExistingPivot($principleId, [
                 'rating' => $request->input("${principleId}_rating"),
                 'rating_comment' => $request->input("${principleId}_rating_comment"),
                 'is_na' => $request->input("${principleId}_is_na") ?? 0,
             ]);
 
-            $principleProject = PrincipleProject::where('project_id', $project->id)->where('principle_id', $principleId)->first();
+
+            // DONE - TODO: get principle_project record by latest assessment instead of project
+            // $principleProject = PrincipleProject::where('project_id', $project->id)->where('principle_id', $principleId)->first();
+            $principleProject = PrincipleProject::where('assessment_id', $latestAssessment->id)->where('principle_id', $principleId)->first();
 
             $sync = json_decode($request->input("scoreTags" . $principle->id));
             $syncPivot = [];
@@ -118,11 +140,16 @@ trait AssessOperation
             if ($sync) {
 
                 for ($i = 0, $iMax = count($sync); $i < $iMax; $i++) {
-                    $syncPivot[] = ['project_id' => $project->id];
+                    // DONE - TODO: store latest assessment ID into custom_score_tags.assessment_id
+                    // $syncPivot[] = ['project_id' => $project->id];
+                    $syncPivot[] = ['project_id' => $project->id, 'assessment_id' => $latestAssessment->id];
+
+                    // TODO: Column principle_project_score_tag.principle_project_id will be changed to principle_project_score_tag.principle_assessmnent_id
+                    // Check whether principle_project_score_tag.principle_assessmnent_id will be filled with value of principle_project_id after changing column name
                 }
 
                 $sync = collect($sync)->combine($syncPivot);
-                 $principleProject->scoreTags()->sync($sync->toArray());
+                $principleProject->scoreTags()->sync($sync->toArray());
             }
 
             $custom_score_tags = json_decode($request->input("customScoreTags" . $principle->id), true);
@@ -141,6 +168,9 @@ trait AssessOperation
 
                     else {
                         $custom_score_tags[$i]['project_id'] = $project->id;
+                        
+                        // DONE - TODO: store latest assessment ID into custom_score_tags.assessment_id
+                        $custom_score_tags[$i]['assessment_id'] = $latestAssessment->id;
                     }
 
                 }
@@ -150,9 +180,13 @@ trait AssessOperation
 
         }
 
+        // DONE - TODO: save assessment_status in assessment table instead of project table
+        // $project->assessment_status = $request->assessment_complete ? AssessmentStatus::Complete : AssessmentStatus::InProgress;
+        // $project->save();
 
-        $project->assessment_status = $request->assessment_complete ? AssessmentStatus::Complete : AssessmentStatus::InProgress;
-        $project->save();
+        $latestAssessment->assessment_status = $request->assessment_complete ? AssessmentStatus::Complete : AssessmentStatus::InProgress;
+        $latestAssessment->save();
+
 
         return $this->crud->performSaveAction();
     }
