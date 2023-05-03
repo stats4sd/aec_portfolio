@@ -24,6 +24,10 @@ return new class extends Migration
             $table->foreignId('assessment_id')->after('project_id');
         });
 
+        Schema::table('custom_score_tags', function (Blueprint $table) {
+            $table->foreignId('assessment_id')->after('project_id');
+        });
+
     }
 
     /**
@@ -41,6 +45,10 @@ return new class extends Migration
 
         Schema::table('principle_project_score_tag', function (Blueprint $table) {
             $table->dropColumn('principle_assessment_id');
+            $table->dropColumn('assessment_id');
+        });
+
+        Schema::table('custom_score_tags', function (Blueprint $table) {
             $table->dropColumn('assessment_id');
         });
 
