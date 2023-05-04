@@ -17,12 +17,18 @@ return new class extends Migration {
             $table->string('name');
             $table->text('description')->nullable();
             $table->string('link')->nullable();
-            $table->integer('number');
             $table->text('rating_two');
             $table->text('rating_one');
             $table->text('rating_zero');
-            $table->text('rating_na');
+            $table->text('rating_na')->nullable();
             $table->boolean('can_be_na')->default(0);
+
+            // for reordering operation
+            $table->integer('parent_id')->default(0)->nullable();
+            $table->integer('lft')->default(0);
+            $table->integer('fgt')->default(0);
+            $table->integer('depth')->default(0);
+
             $table->timestamps();
             $table->softDeletes();
         });

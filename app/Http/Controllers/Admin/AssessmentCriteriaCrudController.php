@@ -5,8 +5,11 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Requests\AssessmentCriteriaRequest;
 use App\Models\AssessmentCriteria;
 use Backpack\CRUD\app\Http\Controllers\CrudController;
+use Backpack\CRUD\app\Http\Controllers\Operations\ReorderOperation;
 use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
+use Backpack\CRUD\app\Library\Widget;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Illuminate\Support\Facades\Session;
 
 /**
  * Class AssessmentCriteriaCrudController
@@ -22,6 +25,7 @@ class AssessmentCriteriaCrudController extends CrudController
     use \Backpack\CRUD\app\Http\Controllers\Operations\ShowOperation;
 
     use AuthorizesRequests;
+    use ReorderOperation;
 
     /**
      * Configure the CrudPanel object. Apply settings to all operations.
@@ -45,6 +49,25 @@ class AssessmentCriteriaCrudController extends CrudController
     {
         // $this->authorize('viewAny', AssessmentCriteria::class);
 
+        CRUD::setPersistentTable(false);
+        CRUD::setResponsiveTable(false);
+        CRUD::enableDetailsRow();
+        CRUD::setDetailsRowView('details.assessment_criteria');
+
+        $this->crud->addClause('where', 'organisation_id', Session::get('selectedOrganisationId'));
+
+
+        Widget::add()
+            ->type('card')
+            ->wrapper([
+                'class' => 'col-md-10'
+            ])
+            ->content([
+                'body' => 'By default, all projects or initiatives from <b>every</b> institution are reviewed against the 13 Principles of Agroecology to get a harmonised approximation of how agro-ecological they are, and enable effective comparison of results. <br/><br/>
+                    Your institution may also wish to assess using additional criteria. For example, you might be especially interested in participatory / co-creation aspects of work that your institution funds, so you could add a "co-creation" item here, with information about how your assessors should review projects. These additional criteria will be presented as an extra step in the assessment process, and the resulting data will be available to your institution to download.
+                ',
+            ]);
+
         CRUD::column('name');
         CRUD::column('can_be_na');
     }
@@ -62,6 +85,7 @@ class AssessmentCriteriaCrudController extends CrudController
 
         CRUD::setValidation(AssessmentCriteriaRequest::class);
 
+        CRUD::field('organisation_id')->type('hidden')->value(Session::get('selectedOrganisationId'));
         CRUD::field('name')
             ->label('Enter the name for the new Assessment Criterium');
         CRUD::field('description')
@@ -79,9 +103,8 @@ class AssessmentCriteriaCrudController extends CrudController
         CRUD::field('rating_one')->label('What does a rating of "1" mean?');
         CRUD::field('rating_zero')->label('What does a rating of "0" mean?');
         CRUD::field('can_be_na')->label('Can this assessment criterium be marked as "na"?')
-        ->hint('If this is no, then every project or initiative must be given a rating for this.');
+            ->hint('If this is no, then every project or initiative must be given a rating for this.');
         CRUD::field('rating_na')->label('What does a rating of "na" mean?');
-
 
 
     }
@@ -95,5 +118,21 @@ class AssessmentCriteriaCrudController extends CrudController
     protected function setupUpdateOperation()
     {
         $this->setupCreateOperation();
+    }
+
+    public function setupReorderOperation()
+    {
+        CRUD::set('reorder.label', 'name');
+        CRUD::set('reorder.max_level', 0);
+
+        Widget::add()
+            ->type('card')
+            ->wrapper([
+                'class' => 'col-md-10'
+            ])
+            ->content([
+                'body' => 'Drag and drop the items below to re-order them. This is the order they will appear to users during the assessment process.
+                ',
+            ]);
     }
 }
