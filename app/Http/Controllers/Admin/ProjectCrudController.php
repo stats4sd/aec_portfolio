@@ -130,18 +130,6 @@ class ProjectCrudController extends CrudController
 
         $this->crud->hasAccessOrFail('show');
 
-        /*
-        // get entry ID from Request (makes sure its the last ID for nested resources)
-        $id = $this->crud->getCurrentEntryId() ?? $id;
-
-        // get the info for that entry (include softDeleted items if the trait is used)
-        if ($this->crud->get('show.softDeletes') && in_array('Illuminate\Database\Eloquent\SoftDeletes', class_uses($this->crud->model))) {
-            $this->data['entry'] = $this->crud->getModel()->withTrashed()->findOrFail($id);
-        } else {
-            $this->data['entry'] = $this->crud->getEntryWithLocale($id);
-        }
-        */
-
         $this->data['entry'] = $project;
         $this->data['assessment'] = $assessment;
 
@@ -152,13 +140,6 @@ class ProjectCrudController extends CrudController
         // #### ADD SPIDER CHART DATA ###
 
         // DONE - TODO: get data from assessment instead of project
-
-        // $this->data['spiderData'] = $this->data['entry']->principleProjects->map(function ($principleProject) {
-        //     return [
-        //         'axis' => $principleProject->principle->name,
-        //         'value' => $principleProject->rating,
-        //     ];
-        // });
 
         $this->data['spiderData'] = $assessment->principleProjects->map(function ($principleProject) {
             return [

@@ -32,10 +32,7 @@ class Assessment extends Model
     
     public function redLines()
     {
-        // dump("Assessment.redLines()");
-
-        return $this->belongsToMany(RedLine::class, 'project_red_line', 'assessment_id')
-        // return $this->belongsToMany(RedLine::class, 'assessment_red_line', 'assessment_id')
+        return $this->belongsToMany(RedLine::class)
             ->withPivot([
                 'value'
             ]);
@@ -43,28 +40,20 @@ class Assessment extends Model
 
     public function completedRedlines()
     {
-        // dump("Assessment.completedRedlines()");
-
-        return $this->belongsToMany(RedLine::class, 'project_red_line', 'assessment_id')
-        // return $this->belongsToMany(RedLine::class, 'assessment_red_line', 'assessment_id')
+        return $this->belongsToMany(RedLine::class)
             ->wherePivot('value', '!=', null);
     }
 
     // relationship to get Failing redlines
     public function failingRedlines()
     {
-        // dump("Assessment.failingRedlines()");
-
-        return $this->belongsToMany(RedLine::class, 'project_red_line', 'assessment_id')->wherePivot('value', 1);
-        // return $this->belongsToMany(RedLine::class, 'assessment_red_line', 'assessment_id')->wherePivot('value', 1);
+        return $this->belongsToMany(RedLine::class)->wherePivot('value', 1);
     }
 
     
     public function principles()
     {
-        // dump("Assessment.principles()");
-
-        return $this->belongsToMany(Principle::class, 'principle_project', 'assessment_id')
+        return $this->belongsToMany(Principle::class, 'principle_assessment', 'assessment_id')
             ->withPivot([
                 'rating',
                 'rating_comment',
@@ -74,15 +63,11 @@ class Assessment extends Model
 
     public function principleProjects()
     {
-        // dump("Assessment.principleProjects()");
-
         return $this->hasMany(PrincipleProject::class);
     }
 
     public function getTotalPossibleAttribute()
     {
-        // dump("Assessment.getTotalPossibleAttribute()");
-
         if ($this->failingRedlines()->count() > 0) {
             return 0;
         }
@@ -99,8 +84,6 @@ class Assessment extends Model
 
     public function getTotalAttribute()
     {
-        // dump("Assessment.getTotalAttribute()");
-
         if ($this->failingRedlines()->count() > 0) {
             return 0;
         }
@@ -117,8 +100,6 @@ class Assessment extends Model
 
     public function getOverallScoreAttribute()
     {
-        // dump("Assessment.getOverallScoreAttribute()");
-
         if ($this->failingRedlines()->count() > 0) {
             return 0;
         }

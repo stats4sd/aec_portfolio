@@ -11,7 +11,7 @@ class PrincipleProject extends Model
 
     public $incrementing = true;
     public $primaryKey = 'id';
-    public $table = 'principle_project';
+    public $table = 'principle_assessment';
 
     public function principle()
     {

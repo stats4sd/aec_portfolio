@@ -44,22 +44,12 @@ class Project extends Model
             }
         });
 
-        // TODO: create new assessment record
-        // TODO: copy red line records for new assessment
-        // TODO: copy principles records for new assessment
-
+        // DONE - TODO: change table name and column name to see whether assessment_id will have value
         static::created(function ($project) {
-            $project->redLines()->sync(RedLine::all()->pluck('id')->toArray());
-
-            $project->principles()->sync(Principle::all()->pluck('id')->toArray());
+            $assessment = Assessment::create(['project_id' => $project->id]);
+            $assessment->redLines()->sync(RedLine::all()->pluck('id')->toArray());
+            $assessment->principles()->sync(Principle::all()->pluck('id')->toArray());
         });
-
-        // TODO: change table name and column name to see whether assessment_id will have value
-        // static::created(function ($project) {
-        //     $assessment = Assessment::create(['project_id' => $project->id]);
-        //     $assessment->redLines()->sync(RedLine::all()->pluck('id')->toArray());
-        //     $assessment->principles()->sync(Principle::all()->pluck('id')->toArray());
-        // });
 
         static::addGlobalScope('organisation', function (Builder $builder) {
 
@@ -95,7 +85,12 @@ class Project extends Model
     }
 
 
-    /*
+
+    // below functions should be called from Assessment model instead of Project model
+    // remove them after confirming they are no longer called
+
+    // ***** START HERE ***** //
+
     public function redLines()
     {
         return $this->belongsToMany(RedLine::class)
@@ -188,7 +183,9 @@ class Project extends Model
 
             return null;
         }
-        */
+
+        // ***** END HERE ***** //
+
 
 
         public
