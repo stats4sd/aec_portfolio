@@ -2,34 +2,35 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Models\Country;
-use App\Models\CustomScoreTag;
-use App\Models\Organisation;
-use App\Models\OrganisationMember;
-use App\Models\RedLine;
 use App\Models\Region;
+use App\Models\Country;
+use App\Models\Project;
+use App\Models\RedLine;
 use App\Models\ScoreTag;
 use App\Models\Portfolio;
 use App\Models\Principle;
-use App\Models\Project;
+use App\Models\Assessment;
+use Illuminate\Support\Str;
+use App\Models\Organisation;
 use App\Imports\ProjectImport;
-use App\Http\Requests\ProjectRequest;
+use App\Models\CustomScoreTag;
 use App\Enums\AssessmentStatus;
 use App\Enums\GeographicalReach;
-use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
-use Illuminate\Support\Str;
-use Illuminate\Support\Facades\Session;
-use Maatwebsite\Excel\Facades\Excel;
+use App\Models\OrganisationMember;
 use Prologue\Alerts\Facades\Alert;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Http\Requests\ProjectRequest;
+use Backpack\CRUD\app\Library\Widget;
 use function mysql_xdevapi\getSession;
+use Illuminate\Support\Facades\Session;
 use phpDocumentor\Reflection\Types\True_;
+use Backpack\CRUD\app\Http\Controllers\CrudController;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use App\Http\Controllers\Admin\Operations\AssessOperation;
 use App\Http\Controllers\Admin\Operations\ImportOperation;
 use App\Http\Controllers\Admin\Operations\RedlineOperation;
 use App\Http\Controllers\Admin\Traits\UsesSaveAndNextAction;
 use Backpack\Pro\Http\Controllers\Operations\FetchOperation;
-use Backpack\CRUD\app\Http\Controllers\CrudController;
-use Backpack\CRUD\app\Library\Widget;
 use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
@@ -118,6 +119,59 @@ class ProjectCrudController extends CrudController
         return view($this->crud->getShowView(), $this->data);
     }
 
+
+    public function showAssessment($id)
+    {
+        $assessment = Assessment::find($id);
+
+        $project = $assessment->project;
+
+        $this->authorize('view', $project);
+
+        $this->crud->hasAccessOrFail('show');
+
+        /*
+        // get entry ID from Request (makes sure its the last ID for nested resources)
+        $id = $this->crud->getCurrentEntryId() ?? $id;
+
+        // get the info for that entry (include softDeleted items if the trait is used)
+        if ($this->crud->get('show.softDeletes') && in_array('Illuminate\Database\Eloquent\SoftDeletes', class_uses($this->crud->model))) {
+            $this->data['entry'] = $this->crud->getModel()->withTrashed()->findOrFail($id);
+        } else {
+            $this->data['entry'] = $this->crud->getEntryWithLocale($id);
+        }
+        */
+
+        $this->data['entry'] = $project;
+        $this->data['assessment'] = $assessment;
+
+        $this->data['crud'] = $this->crud;
+        $this->data['title'] = $this->crud->getTitle() ?? trans('backpack::crud.preview') . ' ' . $this->crud->entity_name;
+
+
+        // #### ADD SPIDER CHART DATA ###
+
+        // DONE - TODO: get data from latest assessment instead of project
+        // $this->data['spiderData'] = $this->data['entry']->principleProjects->map(function ($principleProject) {
+        //     return [
+        //         'axis' => $principleProject->principle->name,
+        //         'value' => $principleProject->rating,
+        //     ];
+        // });
+
+        $this->data['spiderData'] = $this->data['entry']->assessments->last()->principleProjects->map(function ($principleProject) {
+            return [
+                'axis' => $principleProject->principle->name,
+                'value' => $principleProject->rating,
+            ];
+        });
+
+
+        // load the view from /resources/views/vendor/backpack/crud/ if it exists, otherwise load the one in the package
+        return view('assessments.show', $this->data);
+    }
+
+
     /**
      * Define what happens when the List operation is loaded.
      *
@@ -127,6 +181,12 @@ class ProjectCrudController extends CrudController
     protected function setupListOperation()
     {
         $this->authorize('viewAny', Project::class);
+
+        // remove the default Preview button for project
+        $this->crud->removeButton('show');
+
+        // add custom Preview button for assessment
+        $this->crud->addButtonFromView('line', 'preview_latest_assessment', 'preview_latest_assessment', 'start');
 
         CRUD::setPersistentTable(false);
         CRUD::setResponsiveTable(false);

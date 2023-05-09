@@ -36,6 +36,8 @@ Route::group([
     Route::crud('portfolio', PortfolioCrudController::class);
     Route::crud('project', ProjectCrudController::class);
 
+    Route::get('assessment/{assessment}/show', [ProjectCrudController::class, 'showAssessment']);
+
     Route::crud('red-line', RedLineCrudController::class);
     Route::crud('principle', PrincipleCrudController::class);
     Route::crud('score-tag', ScoreTagCrudController::class);
