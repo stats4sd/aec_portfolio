@@ -151,7 +151,8 @@ class ProjectCrudController extends CrudController
 
         // #### ADD SPIDER CHART DATA ###
 
-        // DONE - TODO: get data from latest assessment instead of project
+        // DONE - TODO: get data from assessment instead of project
+
         // $this->data['spiderData'] = $this->data['entry']->principleProjects->map(function ($principleProject) {
         //     return [
         //         'axis' => $principleProject->principle->name,
@@ -159,7 +160,7 @@ class ProjectCrudController extends CrudController
         //     ];
         // });
 
-        $this->data['spiderData'] = $this->data['entry']->assessments->last()->principleProjects->map(function ($principleProject) {
+        $this->data['spiderData'] = $assessment->principleProjects->map(function ($principleProject) {
             return [
                 'axis' => $principleProject->principle->name,
                 'value' => $principleProject->rating,
@@ -190,6 +191,10 @@ class ProjectCrudController extends CrudController
 
         CRUD::setPersistentTable(false);
         CRUD::setResponsiveTable(false);
+
+        CRUD::enableDetailsRow();
+        CRUD::setDetailsRowView('details.project');
+
         Widget::add()
             ->type('card')
             ->wrapper([
