@@ -28,6 +28,13 @@
         <!-- Topbar. Contains the right part -->
         @include(backpack_view('inc.topbar_right_content'))
 
+        <!-- TODO: show My Role link if user is institutional members -->
+        @if ( auth()->user()?->hasRole('Institutional Admin') || auth()->user()?->hasRole('Institutional Assessor') || auth()->user()?->hasRole('Institutional Member') )
+        <li class="nav-item pr-4">
+            <a class="nav-link" href="/admin/my-role">My Role</a>
+        </li>
+        @endif
+
         <li class="nav-item pr-4">
             <a class="nav-link" href="{{ route('backpack.account.info') }}">My Account</a>
         </li>
