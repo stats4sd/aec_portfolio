@@ -187,6 +187,10 @@ class Project extends Model
         // ***** END HERE ***** //
 
 
+        public function getLatestAssessmentStatusAttribute() {
+            return $this->assessments->last()->assessment_status?->value;
+        }
+
 
         public
         function organisation()
