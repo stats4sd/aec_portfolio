@@ -55,6 +55,7 @@ E.g., Centralise instituion selection to a single feature instead of distributin
 @endif
 
 
+
 <!-- TODO: this page requires a full review on Policy and permisssions -->
 @if(Auth::user()->can('invite institutional members') || 
     Auth::user()->can('update role of institutional members') || 
@@ -139,4 +140,15 @@ E.g., Centralise instituion selection to a single feature instead of distributin
 
 @if(Auth::user()->can('view project-level dashboard'))
     <li class="nav-item"><a class="nav-link" href="{{ backpack_url('generic-dashboard?level=initiative') }}"><i class="nav-icon la la-tachometer-alt"></i> Initiative Dashboard</a></li>
+@endif
+
+@if(Auth::user()->can('view institution-level dashboard') || Auth::user()->can('view portfolio-level dashboard') || Auth::user()->can('view project-level dashboard'))
+    <hr/>
+@endif
+
+
+
+@if(Auth::user()->can('maintain institutions'))
+    <li class="nav-item"><a class="nav-link" href="{{ backpack_url('removal-request') }}"><i class="nav-icon la la-trash-alt"></i> Removal Requests</a></li>
+    <hr/>
 @endif

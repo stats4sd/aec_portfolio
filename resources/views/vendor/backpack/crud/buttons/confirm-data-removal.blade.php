@@ -1,0 +1,1 @@
+<a href="{{ url('admin/data-removal/' . $entry->id . '/confirm') }}" class="btn btn-sm btn-link {{ ($entry->status == 'FINAL_CONFIRMED' || $entry->status == 'EVERYTHING_REMOVED' || $entry->status == 'CANCELLED') ? 'disabled' : '' }}" data-toggle="popover"><i class="la la-check"></i> Confirm</a>

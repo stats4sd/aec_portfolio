@@ -21,6 +21,7 @@ use App\Http\Controllers\Admin\SelectOrganisationController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\GenericDashboardController;
 use App\Http\Controllers\Admin\MyRoleController;
+use App\Http\Controllers\Admin\RemovalRequestCrudController;
 use App\Http\Controllers\OrganisationController;
 use App\Http\Controllers\OrganisationMemberController;
 
@@ -76,4 +77,11 @@ Route::group([
     Route::get('my-role/request-to-remove-everything', [MyRoleController::class, 'requestToRemoveEverything']);
     Route::post('my-role/confirm-to-remove-everything', [MyRoleController::class, 'confirmToRemoveEverything']);
     
+    Route::crud('removal-request', RemovalRequestCrudController::class);
+
+    Route::get('data-removal/{removeRequest}/cancel', [RemovalRequestCrudController::class, 'cancel']);
+    Route::get('data-removal/{removeRequest}/remind', [RemovalRequestCrudController::class, 'remind']);
+    Route::get('data-removal/{removeRequest}/confirm', [RemovalRequestCrudController::class, 'confirm']);
+    Route::get('data-removal/{removeRequest}/perform', [RemovalRequestCrudController::class, 'perform']);
+
 }); // this should be the absolute last line of this file

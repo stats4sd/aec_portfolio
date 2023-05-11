@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers\Admin;
 
+use Carbon\Carbon;
 use App\Models\User;
 use Illuminate\Http\Request;
+use App\Models\RemovalRequest;
 use App\Models\OrganisationMember;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
@@ -58,8 +60,6 @@ class MyRoleController extends Controller
 
     public function requestToRemoveEverything(Request $request)
     {
-        logger("MyRoleController.requestToRemoveEverything()");
-
         // get organisation object from session
         $organisation = Session::get('selectedOrganisation');
 
@@ -71,7 +71,25 @@ class MyRoleController extends Controller
 
     public function confirmToRemoveEverything(Request $request)
     {
-        logger("MyRoleController.confirmToRemoveEverything()");
+        // get organisation object from session
+        $organisation = Session::get('selectedOrganisation');
+
+        RemovalRequest::create([
+            'organisation_id' => $organisation->id,
+            'organisation_name' => $organisation->name,
+            'requester_id' => Auth::user()->id,
+            'requester_name' => Auth::user()->name,
+            'requester_email' => Auth::user()->email,
+            'status' => 'REQUESTED',
+            'requested_at' => Carbon::now(),
+        ]);
+
+        // TBC: send email to requester? site admin? site manager?
+
+        // redirect user to request submitted page
+        return view('my-role.request-submitted', [
+            'organisation' => $organisation,
+        ]);
 
     }    
 
