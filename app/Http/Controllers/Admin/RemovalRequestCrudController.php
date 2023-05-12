@@ -43,8 +43,8 @@ class RemovalRequestCrudController extends CrudController
     protected function setupListOperation()
     {
         // add custom buttons
-        $this->crud->addButtonFromView('line', 'cancel-data-removal', 'cancel-data-removal', 'start');
         $this->crud->addButtonFromView('line', 'remind-data-removal', 'remind-data-removal', 'start');
+        $this->crud->addButtonFromView('line', 'cancel-data-removal', 'cancel-data-removal', 'start');
         $this->crud->addButtonFromView('line', 'confirm-data-removal', 'confirm-data-removal', 'start');
         $this->crud->addButtonFromView('line', 'perform-data-removal', 'perform-data-removal', 'start');
 
