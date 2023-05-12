@@ -6,8 +6,13 @@ use Carbon\Carbon;
 use App\Models\Project;
 use App\Models\Assessment;
 use App\Models\RemovalRequest;
+use App\Mail\DataRemovalReminder;
+use App\Mail\DataRemovalCancelled;
+use App\Mail\DataRemovalFinalConfirmed;
+use App\Mail\DataRemovalCompleted;
 use App\Models\OrganisationMember;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 use App\Http\Requests\RemovalRequestRequest;
 use Backpack\CRUD\app\Http\Controllers\CrudController;
 use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
@@ -43,6 +48,10 @@ class RemovalRequestCrudController extends CrudController
     protected function setupListOperation()
     {
         // add custom buttons
+
+        // Although we have a daily schedule job to send data removal reminder email, 
+        // we keep the Remind button here in case we need to resend reminder email to requester.
+        // This is common that people claim they have not received email and ask the sender to re-send...
         $this->crud->addButtonFromView('line', 'remind-data-removal', 'remind-data-removal', 'start');
         $this->crud->addButtonFromView('line', 'cancel-data-removal', 'cancel-data-removal', 'start');
         $this->crud->addButtonFromView('line', 'confirm-data-removal', 'confirm-data-removal', 'start');
@@ -62,7 +71,10 @@ class RemovalRequestCrudController extends CrudController
         $removalRequest->cancelled_at = Carbon::now();
         $removalRequest->save();
 
-        // TBC: send email to requester
+        // send reminder email to requester
+        $toRecipients = [$removalRequest->requester_email, config('mail.data_removal_alert_recipients')];
+
+        Mail::to($toRecipients)->queue(new DataRemovalCancelled($removalRequest));
 
         // refresh CRUD panel
         return back();
@@ -76,7 +88,10 @@ class RemovalRequestCrudController extends CrudController
         $removalRequest->reminded_at = Carbon::now();
         $removalRequest->save();
 
-        // TBC: send reminder email to requester
+        // send reminder email to requester
+        $toRecipients = [$removalRequest->requester_email, config('mail.data_removal_alert_recipients')];
+
+        Mail::to($toRecipients)->queue(new DataRemovalReminder($removalRequest));
 
         // refresh CRUD panel
         return back();
@@ -90,7 +105,10 @@ class RemovalRequestCrudController extends CrudController
         $removalRequest->final_confirmed_at = Carbon::now();
         $removalRequest->save();
 
-        // TBC: send email to requester
+        // send reminder email to requester
+        $toRecipients = [$removalRequest->requester_email, config('mail.data_removal_alert_recipients')];
+
+        Mail::to($toRecipients)->queue(new DataRemovalFinalConfirmed($removalRequest));
 
         // refresh CRUD panel
         return back();
@@ -115,16 +133,16 @@ class RemovalRequestCrudController extends CrudController
         $removalRequest->save();
 
         $organisationId = $removalRequest->organisation_id;
-        logger($organisationId);
+        // logger($organisationId);
 
         $projectIds = Project::select('id')->where('organisation_id', $organisationId)->get()->pluck('id');
-        logger($projectIds);
+        // logger($projectIds);
 
         $assessmentIds = Assessment::select('id')->whereIn('project_id', $projectIds)->get()->pluck('id');
-        logger($assessmentIds);
+        // logger($assessmentIds);
 
         $userIds = OrganisationMember::select('user_id')->where('organisation_id', $organisationId)->get()->pluck('user_id');
-        logger($userIds);
+        // logger($userIds);
 
 
         // run custom SQL directly as we do not have model class for each table
@@ -167,7 +185,10 @@ class RemovalRequestCrudController extends CrudController
 
         DB::statement('DELETE FROM organisations WHERE id = ' . $organisationId);
 
-        // TBC: send email to requester
+        // send reminder email to requester
+        $toRecipients = [$removalRequest->requester_email, config('mail.data_removal_alert_recipients')];
+
+        Mail::to($toRecipients)->queue(new DataRemovalCompleted($removalRequest));
 
         // refresh CRUD panel
         return back();

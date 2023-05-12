@@ -6,9 +6,11 @@ use Carbon\Carbon;
 use App\Models\User;
 use Illuminate\Http\Request;
 use App\Models\RemovalRequest;
+use App\Mail\DataRemovalRequested;
 use App\Models\OrganisationMember;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Session;
 
 class MyRoleController extends Controller
@@ -74,7 +76,7 @@ class MyRoleController extends Controller
         // get organisation object from session
         $organisation = Session::get('selectedOrganisation');
 
-        RemovalRequest::create([
+        $removalRequest = RemovalRequest::create([
             'organisation_id' => $organisation->id,
             'organisation_name' => $organisation->name,
             'requester_id' => Auth::user()->id,
@@ -84,7 +86,10 @@ class MyRoleController extends Controller
             'requested_at' => Carbon::now(),
         ]);
 
-        // TBC: send email to requester? site admin? site manager?
+        // send email to requester and site admin
+        $toRecipients = [$removalRequest->requester_email, config('mail.data_removal_alert_recipients')];
+
+        Mail::to($toRecipients)->queue(new DataRemovalRequested($removalRequest));
 
         // redirect user to request submitted page
         return view('my-role.request-submitted', [
