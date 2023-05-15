@@ -31,18 +31,6 @@ E.g., Centralise instituion selection to a single feature instead of distributin
 <!-- TODO: need to decide how does a user select an institution first -->
 
 <!-- Hide them from main menu, but keep them for reference -->
-@if (1==2)
-
-    @if(Auth::user()->organisations()->count() > 1 || Auth::user()->hasRole('Site Admin'))
-        <li class="nav-item"><a class="nav-link" href="{{ backpack_url('dashboard') }}"><i class="la la-home nav-icon"></i> Institutions</a></li>
-    @elseif(Auth::user()->organisations()->count() === 1)
-        <li class="nav-item"><a class="nav-link" href="{{ backpack_url('organisation/'.Auth::user()->organisations->first()?->id).'/show' }}"><i class="la la-home nav-icon"></i> Institutions: {{ Auth::user()->organisations->first()->name }}</a></li>
-        <li class="nav-item"><a class="nav-link" href="{{ backpack_url('organisation/'.Auth::user()->organisations->first()?->id).'/portfolio' }}"><i class="la la-chart-bar nav-icon"></i> Review Portfolio</a></li>
-    @endif
-    <hr/>
-
-@endif
-
 
 
 @if(Auth::user()->can('select institution'))
@@ -57,9 +45,7 @@ E.g., Centralise instituion selection to a single feature instead of distributin
 
 
 <!-- TODO: this page requires a full review on Policy and permisssions -->
-@if(Auth::user()->can('invite institutional members') || 
-    Auth::user()->can('update role of institutional members') || 
-    Auth::user()->can('maintain institutional members'))
+@if(Auth::user()->canAny(['invite institutional members', 'update role of institutional members', 'maintain institutional members']))
     <li class="nav-item"><a class="nav-link" href="{{ backpack_url('organisation-members') }}"><i class="la la-user-friends nav-icon"></i> Institution Members</a></li>
     <hr/>
 @endif
@@ -74,7 +60,7 @@ E.g., Centralise instituion selection to a single feature instead of distributin
     <li class='nav-item'><a class='nav-link' href='{{ backpack_url('project') }}'><i class='nav-icon la la-project-diagram'></i> Initiatives</a></li>
 @endif
 
-@if(Auth::user()->can('view portfolios') || Auth::user()->can('view projects'))
+@if(Auth::user()->canAny(['view portfolios', 'view projects']))
     <hr/>
 @endif
 
@@ -92,7 +78,7 @@ E.g., Centralise instituion selection to a single feature instead of distributin
     <li class="nav-item"><a class="nav-link" href="{{ backpack_url('score-tag') }}"><i class="nav-icon la la-tag"></i> Score tags</a></li>
 @endif
 
-@if(Auth::user()->can('view red lines') || Auth::user()->can('view principles') || Auth::user()->can('view score tags'))
+@if(Auth::user()->canAny(['view red lines', 'view principles', 'view score tags']))
     <hr/>
 @endif
 
@@ -106,7 +92,7 @@ E.g., Centralise instituion selection to a single feature instead of distributin
     <li class="nav-item"><a class="nav-link" href="{{ backpack_url('role-invite') }}"><i class="nav-icon la la-envelope"></i> Admin User Invites</a></li>
 @endif
 
-@if(Auth::user()->can('view users') || Auth::user()->can('view admin user invites'))
+@if(Auth::user()->canAny(['view users', 'view admin user invites']))
     <hr/>
 @endif
 
@@ -124,7 +110,7 @@ E.g., Centralise instituion selection to a single feature instead of distributin
     <li class="nav-item"><a class="nav-link" href="{{ backpack_url('country') }}"><i class="nav-icon la la-flag"></i> Countries</a></li>
 @endif
 
-@if(Auth::user()->can('view continents') || Auth::user()->can('view regions') || Auth::user()->can('view countries'))
+@if(Auth::user()->canAny(['view continents', 'view regions', 'view countries']))
     <hr/>
 @endif
 
@@ -142,7 +128,7 @@ E.g., Centralise instituion selection to a single feature instead of distributin
     <li class="nav-item"><a class="nav-link" href="{{ backpack_url('generic-dashboard?level=initiative') }}"><i class="nav-icon la la-tachometer-alt"></i> Initiative Dashboard</a></li>
 @endif
 
-@if(Auth::user()->can('view institution-level dashboard') || Auth::user()->can('view portfolio-level dashboard') || Auth::user()->can('view project-level dashboard'))
+@if(Auth::user()->canAny(['view institution-level dashboard', 'view portfolio-level dashboard', 'view project-level dashboard']))
     <hr/>
 @endif
 
