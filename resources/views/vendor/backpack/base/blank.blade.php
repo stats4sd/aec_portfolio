@@ -15,14 +15,6 @@
 
 @section('before_breadcrumbs_widgets')
     @include(backpack_view('inc.widgets'), [ 'widgets' => app('widgets')->where('section', 'before_breadcrumbs')->toArray() ])
-
-    <div class="mx-4 my-3 alert alert-light d-show">
-
-        <div class="mx-auto px-4 text-danger text-lg-center align-self-center">
-            <h5>This is a proof of concept platform </h5>
-            It is intended to be used for testing, review of the process, and for the creation of the technical specifications of the final system.
-        </div>
-    </div>
 @endsection
 
 @section('after_breadcrumbs_widgets')

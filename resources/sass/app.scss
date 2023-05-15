@@ -22,3 +22,17 @@ body {
     background: #F6F6F6;
     font-family: "Hind", sans-serif;
 }
+
+.app-header {
+    height: 100px;
+    flex-basis: 100px;
+}
+
+.navbar-logo {
+    width: 250px;
+    justify-content: left;
+    padding: 0 2.25rem;
+    display: inline-flex;
+    align-items: center;
+    opacity: 1;
+}

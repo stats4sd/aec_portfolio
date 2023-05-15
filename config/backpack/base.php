@@ -24,7 +24,7 @@ return [
     // ----
 
     // Project name. Shown in the window title.
-    'project_name' => 'Backpack Admin Panel',
+    'project_name' => 'AE Portfolio Assessment Tool',
 
     // When clicking on the admin panel's top-left logo/name,
     // where should the user be redirected?
@@ -71,7 +71,7 @@ return [
     // ------
 
     // Menu logo. You can replace this with an <img> tag if you have a logo.
-    'project_logo'   => '<b>Back</b>pack',
+    'project_logo'   => '<img src="/assets/images/logo_sm_with_title.png" width="150px"/>',
 
     // Show / hide breadcrumbs on admin panel pages.
     'breadcrumbs' => true,
@@ -259,7 +259,7 @@ return [
     // and choosing that view_namespace instead of the default one. Backpack will load a file from there
     // if it exists, otherwise it will load it from the default namespace ("backpack::").
 
-    'view_namespace' => 'backpack::',
+    'view_namespace' => 'vendor.aec.',
 
     // EXAMPLE: if you create a new folder in resources/views/vendor/myname/mypackage,
     // your namespace would be the one below. IMPORTANT: in this case the namespace ends with a dot.
