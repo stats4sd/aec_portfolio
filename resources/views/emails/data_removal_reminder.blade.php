@@ -2,9 +2,9 @@
 
 [This email is sent to data removal requester and site administrator]
 
-Dear {{ $removalRequest->requester_name }},
+Dear {{ $removalRequest->requester->name }},
 
-We have received your request to remove everything for institution {{ $removalRequest->organisation_name }} on {{ $removalRequest->requested_at }}.
+We have received your request to remove everything for institution {{ $removalRequest->organisation->name }} on {{ $removalRequest->requested_at }}.
 We are sorry to hear about this. And we understand that this must be a serious decision.
 
 Data removal will completely remove everything of your institution.

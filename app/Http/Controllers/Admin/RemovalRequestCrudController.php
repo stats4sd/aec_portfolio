@@ -57,8 +57,8 @@ class RemovalRequestCrudController extends CrudController
         $this->crud->addButtonFromView('line', 'confirm-data-removal', 'confirm-data-removal', 'start');
         $this->crud->addButtonFromView('line', 'perform-data-removal', 'perform-data-removal', 'start');
 
-        CRUD::column('organisation_name')->label('Organisation');
-        CRUD::column('requester_name')->label('Requester');;
+        CRUD::column('organisation.name')->label('Organisation');
+        CRUD::column('requester.name')->label('Requester');;
         CRUD::column('status');
         CRUD::column('requested_at');
     }
@@ -72,7 +72,7 @@ class RemovalRequestCrudController extends CrudController
         $removalRequest->save();
 
         // send reminder email to requester
-        $toRecipients = [$removalRequest->requester_email, config('mail.data_removal_alert_recipients')];
+        $toRecipients = [$removalRequest->requester->email, config('mail.data_removal_alert_recipients')];
 
         Mail::to($toRecipients)->queue(new DataRemovalCancelled($removalRequest));
 
@@ -89,7 +89,7 @@ class RemovalRequestCrudController extends CrudController
         $removalRequest->save();
 
         // send reminder email to requester
-        $toRecipients = [$removalRequest->requester_email, config('mail.data_removal_alert_recipients')];
+        $toRecipients = [$removalRequest->requester->email, config('mail.data_removal_alert_recipients')];
 
         Mail::to($toRecipients)->queue(new DataRemovalReminder($removalRequest));
 
@@ -106,7 +106,7 @@ class RemovalRequestCrudController extends CrudController
         $removalRequest->save();
 
         // send reminder email to requester
-        $toRecipients = [$removalRequest->requester_email, config('mail.data_removal_alert_recipients')];
+        $toRecipients = [$removalRequest->requester->email, config('mail.data_removal_alert_recipients')];
 
         Mail::to($toRecipients)->queue(new DataRemovalFinalConfirmed($removalRequest));
 
@@ -131,6 +131,12 @@ class RemovalRequestCrudController extends CrudController
         $removalRequest->status = 'EVERYTHING_REMOVED';
         $removalRequest->everything_removed_at = Carbon::now();
         $removalRequest->save();
+
+        // send reminder email to requester
+        $toRecipients = [$removalRequest->requester->email, config('mail.data_removal_alert_recipients')];
+
+        Mail::to($toRecipients)->queue(new DataRemovalCompleted($removalRequest));
+
 
         $organisationId = $removalRequest->organisation_id;
         // logger($organisationId);
@@ -184,11 +190,6 @@ class RemovalRequestCrudController extends CrudController
         }
 
         DB::statement('DELETE FROM organisations WHERE id = ' . $organisationId);
-
-        // send reminder email to requester
-        $toRecipients = [$removalRequest->requester_email, config('mail.data_removal_alert_recipients')];
-
-        Mail::to($toRecipients)->queue(new DataRemovalCompleted($removalRequest));
 
         // refresh CRUD panel
         return back();

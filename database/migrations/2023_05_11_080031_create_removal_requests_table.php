@@ -14,10 +14,7 @@ return new class extends Migration
         Schema::create('removal_requests', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('organisation_id');
-            $table->string('organisation_name');
             $table->unsignedBigInteger('requester_id');
-            $table->string('requester_name');
-            $table->string('requester_email');
             $table->string('status');
             $table->timestamp('requested_at');
             $table->timestamp('cancelled_at')->nullable();

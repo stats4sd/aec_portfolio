@@ -37,6 +37,18 @@ class RemovalRequest extends Model
     |--------------------------------------------------------------------------
     */
 
+    public function organisation()
+    {
+        return $this->belongsTo(Organisation::class);
+    }
+
+
+    public function requester()
+    {
+        return $this->belongsTo(User::class, 'requester_id');
+    }
+
+
     /*
     |--------------------------------------------------------------------------
     | SCOPES

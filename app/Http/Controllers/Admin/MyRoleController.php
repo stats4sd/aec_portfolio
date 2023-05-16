@@ -78,16 +78,13 @@ class MyRoleController extends Controller
 
         $removalRequest = RemovalRequest::create([
             'organisation_id' => $organisation->id,
-            'organisation_name' => $organisation->name,
             'requester_id' => Auth::user()->id,
-            'requester_name' => Auth::user()->name,
-            'requester_email' => Auth::user()->email,
             'status' => 'REQUESTED',
             'requested_at' => Carbon::now(),
         ]);
 
         // send email to requester and site admin
-        $toRecipients = [$removalRequest->requester_email, config('mail.data_removal_alert_recipients')];
+        $toRecipients = [$removalRequest->requester->email, config('mail.data_removal_alert_recipients')];
 
         Mail::to($toRecipients)->queue(new DataRemovalRequested($removalRequest));
 
