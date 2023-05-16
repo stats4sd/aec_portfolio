@@ -5,14 +5,15 @@ namespace App\Http\Controllers\Admin;
 use Carbon\Carbon;
 use App\Models\Project;
 use App\Models\Assessment;
+use App\Models\Organisation;
 use App\Models\RemovalRequest;
 use App\Mail\DataRemovalReminder;
 use App\Mail\DataRemovalCancelled;
-use App\Mail\DataRemovalFinalConfirmed;
 use App\Mail\DataRemovalCompleted;
 use App\Models\OrganisationMember;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
+use App\Mail\DataRemovalFinalConfirmed;
 use App\Http\Requests\RemovalRequestRequest;
 use Backpack\CRUD\app\Http\Controllers\CrudController;
 use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
@@ -137,59 +138,17 @@ class RemovalRequestCrudController extends CrudController
 
         Mail::to($toRecipients)->queue(new DataRemovalCompleted($removalRequest));
 
-
+        
         $organisationId = $removalRequest->organisation_id;
-        // logger($organisationId);
-
-        $projectIds = Project::select('id')->where('organisation_id', $organisationId)->get()->pluck('id');
-        // logger($projectIds);
-
-        $assessmentIds = Assessment::select('id')->whereIn('project_id', $projectIds)->get()->pluck('id');
-        // logger($assessmentIds);
 
         $userIds = OrganisationMember::select('user_id')->where('organisation_id', $organisationId)->get()->pluck('user_id');
-        // logger($userIds);
-
-
-        // run custom SQL directly as we do not have model class for each table
-
-        // TODO: remove assessment related records
-        // related tables: assessment_red_line, principle_assessment, custom_score_tags, principle_project_score_tag, assessments
-        // TBC: table names and column names to be confirmed
-
-        if (count($assessmentIds) != 0) {
-            DB::statement('DELETE FROM assessment_red_line WHERE assessment_id IN ' . $this->getSQLArray($assessmentIds));
-            DB::statement('DELETE FROM principle_assessment WHERE assessment_id IN ' . $this->getSQLArray($assessmentIds));
-            // DB::statement('DELETE FROM custom_score_tags WHERE assessment_id IN ' . $this->getSQLArray($assessmentIds));
-            // DB::statement('DELETE FROM principle_project_score_tag WHERE assessment_id IN ' . $this->getSQLArray($assessmentIds));
-            DB::statement('DELETE FROM assessments WHERE id IN ' . $this->getSQLArray($assessmentIds));
-        }
-
-
-        // TODO: remove custom principles related records (table to be added)
-
-        
-        // TODO: remove project related records
-        // related tables: continent_project, country_project, project_region, portfolios, projects
-        if (count($projectIds) != 0) {
-            DB::statement('DELETE FROM continent_project WHERE project_id IN ' . $this->getSQLArray($projectIds));
-            DB::statement('DELETE FROM country_project WHERE project_id IN ' . $this->getSQLArray($projectIds));
-            DB::statement('DELETE FROM project_region WHERE project_id IN ' . $this->getSQLArray($projectIds));
-        }
-
-        DB::statement('DELETE FROM portfolios WHERE organisation_id = ' . $organisationId);
-        DB::statement('DELETE FROM projects WHERE organisation_id = ' . $organisationId);
-
-
-        // TODO: remove organisation related records
-        // related tables: organisation_members, users, organisations
-        DB::statement('DELETE FROM organisation_members WHERE organisation_id = ' . $organisationId);
 
         if (count($userIds) != 0) {
             DB::statement('DELETE FROM users WHERE id IN ' . $this->getSQLArray($userIds));
         }
 
-        DB::statement('DELETE FROM organisations WHERE id = ' . $organisationId);
+        // delete organisation record, ON DELETE constraint will delete related records in other tables
+        Organisation::destroy($removalRequest->organisation_id);
 
         // refresh CRUD panel
         return back();
