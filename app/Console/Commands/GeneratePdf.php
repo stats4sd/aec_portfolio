@@ -5,7 +5,7 @@ namespace App\Console\Commands;
 use Illuminate\Console\Command;
 use Spatie\Browsershot\Browsershot;
 
-class ResetDatabase extends Command
+class GeneratePdf extends Command
 {
 
     protected $signature = 'generatepdf';
