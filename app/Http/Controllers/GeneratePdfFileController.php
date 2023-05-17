@@ -1,21 +1,17 @@
 <?php
 
-namespace App\Console\Commands;
+namespace App\Http\Controllers;
 
-use Illuminate\Console\Command;
 use Spatie\Browsershot\Browsershot;
 
-class GeneratePdf extends Command
+class GeneratePdfFileController extends Controller
 {
 
-    protected $signature = 'generatepdf';
+    public function generatePdfFile() {
+        logger("GeneratePdfFileController.generatePdfFile()...");
 
-    protected $description = 'Generate PDF';
-
-    public function handle(): int
-    {
-        try{
-            
+        try
+        {
             Browsershot::url('http://aec.test/admin/organisation/2/portfolio')
             ->savePdf('c:\temp\portfolio_01.pdf');
 
@@ -25,16 +21,14 @@ class GeneratePdf extends Command
 
             Browsershot::html('<h1>Hello World</h1>')
             ->savePdf('c:\temp\html_01.pdf');
-
         }
         catch(\Exception $e)
         {
-            $this->info($e->getmessage());
+            logger($e->getmessage());
 
             return false;
         }
 
-        return self::SUCCESS;
     }
 
 }

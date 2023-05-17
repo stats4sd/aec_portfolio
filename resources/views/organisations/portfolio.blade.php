@@ -207,6 +207,11 @@
 
 @section('content')
     <h1 class="mt-4">Portfolio Analysis</h1>
+
+    <form method="GET" action="/admin/generatePdf">
+        <input type="submit" value="Generate PDF">
+    </form>
+
     <h3 class="mt-4">{{ $organisation->name }}</h3>
     <ul class="nav nav-tabs" id="top-tabs" role="tablist">
         <li class="nav-item" role="presentation">
