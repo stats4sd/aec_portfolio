@@ -2,25 +2,34 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Spatie\Browsershot\Browsershot;
 
 class GeneratePdfFileController extends Controller
 {
 
-    public function generatePdfFile() {
-        logger("GeneratePdfFileController.generatePdfFile()...");
+    public function generatePdfFile(Request $request) {
+        // get the URL that sent PDF generation request
+        $url = $request->header('referer');
 
         try
         {
-            Browsershot::url('http://aec.test/admin/organisation/2/portfolio')
-            ->savePdf('c:\temp\portfolio_01.pdf');
+            // visit URL with logged in session, get HTML body content
+            $opts = array('http' => array('header'=> 'Cookie: ' . $_SERVER['HTTP_COOKIE']."\r\n"));
+            $context = stream_context_create($opts);
+            $htmlContent = file_get_contents($url, false, $context);
 
-            Browsershot::url('http://aec.test/admin/organisation/2/portfolio')
-            ->authenticate('dan@stats4sd.org', 'password')
-            ->savePdf('c:\temp\portfolio_02.pdf');
+            // pass HTML body content to Browsershot, output as PDF
+            $pdf = Browsershot::html($htmlContent)->pdf();
 
-            Browsershot::html('<h1>Hello World</h1>')
-            ->savePdf('c:\temp\html_01.pdf');
+            // return PDF file to browser
+            $headers = ['Content-Type' => 'application/pdf'];
+
+            return response()->stream(function () use ($pdf) {
+                echo $pdf;
+            }, Response::HTTP_OK, $headers);
+
         }
         catch(\Exception $e)
         {

@@ -208,7 +208,8 @@
 @section('content')
     <h1 class="mt-4">Portfolio Analysis</h1>
 
-    <form method="GET" action="/admin/generatePdf">
+    <form method="POST" action="/admin/generatePdf">
+        @csrf
         <input type="submit" value="Generate PDF">
     </form>
 

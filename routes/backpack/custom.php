@@ -64,6 +64,6 @@ Route::group([
     Route::crud('continent', ContinentCrudController::class);
     Route::crud('region', RegionCrudController::class);
 
-    Route::get('generatePdf', [GeneratePdfFileController::class, 'generatePdfFile']);
+    Route::post('generatePdf', [GeneratePdfFileController::class, 'generatePdfFile']);
 
 }); // this should be the absolute last line of this file
