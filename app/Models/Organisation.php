@@ -2,12 +2,12 @@
 
 namespace App\Models;
 
-use Backpack\CRUD\app\Models\Traits\CrudTrait;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Builder;
+use Backpack\CRUD\app\Models\Traits\CrudTrait;
 
 class Organisation extends Model
 {
@@ -74,6 +74,11 @@ protected static function booted()
     public function creator()
     {
         return $this->belongsTo(User::class, 'creator_id');
+    }
+
+    public function removalRequests()
+    {
+        return $this->hasMany(RemovalRequest::class);
     }
 
 

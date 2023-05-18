@@ -17,6 +17,7 @@ use App\Models\CustomScoreTag;
 use App\Enums\AssessmentStatus;
 use App\Enums\GeographicalReach;
 use App\Models\OrganisationMember;
+use Illuminate\Support\Facades\DB;
 use Prologue\Alerts\Facades\Alert;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Http\Requests\ProjectRequest;
@@ -138,9 +139,6 @@ class ProjectCrudController extends CrudController
 
 
         // #### ADD SPIDER CHART DATA ###
-
-        // DONE - TODO: get data from assessment instead of project
-
         $this->data['spiderData'] = $assessment->principleProjects->map(function ($principleProject) {
             return [
                 'axis' => $principleProject->principle->name,
@@ -148,8 +146,6 @@ class ProjectCrudController extends CrudController
             ];
         });
 
-
-        // load the view from /resources/views/vendor/backpack/crud/ if it exists, otherwise load the one in the package
         return view('assessments.show', $this->data);
     }
 
@@ -199,55 +195,27 @@ class ProjectCrudController extends CrudController
             $value = number_format($entry->budget, 2, '.', ',');
             return "{$entry->currency} {$value}";
         });
-        CRUD::column('assessment_status')->type('closure')->function(function ($entry) {
-            // dump($entry->redLines);
-            // dump($entry->assessments->last()->redLines);
 
-            // dump($entry->completedRedlines);
-            // dump($entry->assessments->last()->completedRedlines);
+        CRUD::column('latest_assessment_status')->label('Assessment status');
 
-            // dump($entry->failingRedlines);
-            // dump($entry->assessments->last()->failingRedlines);
-
-
-            // dump($entry->principles);
-            // dump($entry->assessments->last()->principles);
-
-            // dump($entry->principleProjects);
-            // dump($entry->assessments->last()->principleProjects);
-
-
-            // dump($entry->totalPossible);
-            // dump($entry->assessments->last()->totalPossible);
-
-            // dump($entry->total);
-            // dump($entry->assessments->last()->total);
-
-            // dump($entry->overallScore);
-            // dump($entry->assessments->last()->overallScore);
-
-
-            // dump($entry->customScoreTags());
-            // dump($entry->assessments->last()->customScoreTags());
-
-
-            // DONE - TODO: get assessment status from latest assessment record
-            // return $entry->assessment_status?->value;
-            return $entry->assessments->last()->assessment_status?->value;
-        });
-
-        // DONE - TODO: get overall score from assessment instead of project
-        // CRUD::column('overall_score')->type('number')->decimals(1)->suffix('%');
         CRUD::column('score')->type('closure')->label('Overall score')->function(function ($entry) {
             return $entry->assessments->last()->overall_score;
         });
 
+        // check against latest assessment status of projects
         CRUD::filter('assessment_status')
             ->type('select2')
             ->label('Filter by Status')
             ->options(collect(AssessmentStatus::cases())->pluck('value', 'value')->toArray())
-            ->active(function ($value) {
-                $this->crud->query->where('assessment_status', $value);
+            ->whenActive(function ($value) {
+                // find each project latest assessment with specified status
+                $assessments = DB::select('select project_id from assessments where assessment_status = ? and id in (select max(id) from assessments group by project_id)', [$value]);
+
+                // get values of a column as an array
+                $projectIds = array_column($assessments, 'project_id');
+
+                // find project with founded project Id list
+                $this->crud->query->whereIn("id", $projectIds);
             });
 
         $selectedOrganisationId = Session::get('selectedOrganisationId');

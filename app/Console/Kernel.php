@@ -26,6 +26,8 @@ class Kernel extends ConsoleKernel
     {
         // from upgrade to Laravel 10 (not sure if this is needed, but doesn't hurt)
         $schedule->command('cache:prune-stale-tags')->hourly();
+
+        $schedule->command('senddataremovalreminderemail')->dailyAt('00:11');
     }
 
     /**
