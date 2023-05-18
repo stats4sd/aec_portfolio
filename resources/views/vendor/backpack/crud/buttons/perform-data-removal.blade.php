@@ -1,0 +1,1 @@
+<a href="{{ url('admin/data-removal/' . $entry->id . '/perform') }}" class="btn btn-sm btn-link {{ ($entry->status == 'FINAL_CONFIRMED') ? '' : 'disabled' }}" data-toggle="popover"><i class="la la-exclamation-triangle"></i> Remove Everything</a>
