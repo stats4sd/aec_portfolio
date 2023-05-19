@@ -100,8 +100,6 @@ class OrganisationController extends Controller
         $allPortfolio = collect([]);
         $naPrinciples = collect([]);
 
-        // DONE - TODO: check project latest assessment instead of project
-        // $passedProjects = $assessedProjects->filter(fn($project) => $project->overall_score > 0);
         $passedProjects = $assessedProjects->filter(fn($project) => $project->assessments->last()->overall_score > 0);
 
         $ratingsForPassedProjects = $passedProjects

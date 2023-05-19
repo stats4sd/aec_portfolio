@@ -43,7 +43,6 @@ class Project extends Model
             }
         });
 
-        // DONE - TODO: change table name and column name to see whether assessment_id will have value
         static::created(function ($project) {
             $assessment = Assessment::create(['project_id' => $project->id]);
             $assessment->redLines()->sync(RedLine::all()->pluck('id')->toArray());
