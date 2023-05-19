@@ -38,6 +38,10 @@ class OrganisationController extends Controller
         // get data for spider chart
         $principles = Principle::select(['name', 'id'])->get();
 
+        // Question: This function is to be used for the current dashboard page with spider chart.
+        // As we will have a Vue component based dashboard. it seems not to be used anymore in future.
+        // Can we leave "assessment_status" code as is in this function?
+
         // overall stats
         $assessedProjects = $organisation
             ->projects

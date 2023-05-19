@@ -22,7 +22,7 @@ class Project extends Model
     // protected $appends = ['overall_score'];
 
     protected $casts = [
-        'assessment_status' => AssessmentStatus::class,
+        // 'assessment_status' => AssessmentStatus::class,
         'start_date' => 'date',
         'end_date' => 'date',
     ];
@@ -90,7 +90,7 @@ class Project extends Model
     // remove them after confirming they are no longer called
 
     // ***** START HERE ***** //
-
+    /*
     public function redLines()
     {
         return $this->belongsToMany(RedLine::class)
@@ -183,7 +183,7 @@ class Project extends Model
 
             return null;
         }
-
+        */
         // ***** END HERE ***** //
 
 
