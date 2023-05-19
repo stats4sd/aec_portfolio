@@ -42,8 +42,6 @@ trait RedlineOperation
      */
     protected function setupRedlineDefaults()
     {
-        // logger("RedlineOperation.setupRedlineDefaults()");
-
         $this->crud->allowAccess('redline');
 
         $this->crud->operation('redline', function () {
@@ -66,18 +64,13 @@ trait RedlineOperation
      */
     public function redline($id)
     {
-        // logger("RedlineOperation.redline()");
-
         $this->crud->hasAccessOrFail('redline');
 
         $id = $this->crud->getCurrentEntryId() ?? $id;
 
-        // dump($id);
-
         // TODO: it is setting the project record to "entry", corresponind project_red_line records will be showed
         // Question: how to change to set the latest assessment record to "entry", get corresponding project_red_line records via assessment_id?
         $this->data['entry'] = $this->crud->getEntryWithLocale($id);
-        // $this->data['entry'] = $this->crud->getEntryWithLocale($id)->assessments->last();
 
         $this->crud->setOperationSetting('fields', $this->crud->getUpdateFields());
 
@@ -92,8 +85,6 @@ trait RedlineOperation
 
     public function postRedlineForm(Request $request)
     {
-        // logger("RedlineOperation.postRedlineForm()");
-
         if($request->has('redlines_compelete') && $request->redlines_complete === 1) {
             foreach(RedLine::all() as $redline) {
                 if($request->has('redline_value_' . $redline->id)) {
@@ -116,25 +107,9 @@ trait RedlineOperation
             }
         }
 
-        // DONE - TODO: sync red line records via the latest assessment record instead of project record
         $project = Project::findOrFail($request->id);
-        // $project->redlines()->sync($updates);
         $latestAssessment = $project->assessments->last();
         $latestAssessment->redlines()->sync($updates);
-
-        // TODO: update assessment status via the latest assessment record instead of project record
-        // if the main assessment is already in progress, only update the status if the redlines are 'no longer' complete:        
-
-        // if (collect(AssessmentStatus::InProgress, AssessmentStatus::Complete)->contains($project->assessment_status)) {
-        //     $project->assessment_status = !$request->redlines_complete ? AssessmentStatus::RedlinesIncomplete : $project->assessment_status;
-        // } else {
-        //     // if a redline fails, the assessment is complete!
-        //     if($project->failingRedlines()->count() > 0) {
-        //         $project->assessment_status = AssessmentStatus::Complete;
-        //     } else {
-        //         $project->assessment_status = $request->redlines_complete ? AssessmentStatus::RedlinesComplete : AssessmentStatus::RedlinesIncomplete;
-        //     }
-        // }
 
         if (collect(AssessmentStatus::InProgress, AssessmentStatus::Complete)->contains($latestAssessment->assessment_status)) {
             $latestAssessment->assessment_status = !$request->redlines_complete ? AssessmentStatus::RedlinesIncomplete : $latestAssessment->assessment_status;
@@ -147,7 +122,6 @@ trait RedlineOperation
             }
         }
 
-        // $project->save();
         $latestAssessment->save();
 
 

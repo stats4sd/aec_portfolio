@@ -99,15 +99,6 @@ class ProjectCrudController extends CrudController
 
 
         // #### ADD SPIDER CHART DATA ###
-
-        // DONE - TODO: get data from latest assessment instead of project
-        // $this->data['spiderData'] = $this->data['entry']->principleProjects->map(function ($principleProject) {
-        //     return [
-        //         'axis' => $principleProject->principle->name,
-        //         'value' => $principleProject->rating,
-        //     ];
-        // });
-
         $this->data['spiderData'] = $this->data['entry']->assessments->last()->principleProjects->map(function ($principleProject) {
             return [
                 'axis' => $principleProject->principle->name,
@@ -353,8 +344,6 @@ class ProjectCrudController extends CrudController
         // cannot use relationship with repeatable because we need to filter the scoretags...
         $entry = CRUD::getCurrentEntry();
 
-        // TODO: get principles via latest assessment instead of project
-        // foreach ($entry->principles as $principle) {
         foreach ($entry->assessments->last()->principles as $principle) {
             $ratingZeroDefintionRow = '<span class="text-secondary">This principle cannot be marked as not applicable</span>';
             if ($principle->can_be_na) {
@@ -465,8 +454,6 @@ class ProjectCrudController extends CrudController
             ->attributes([
                 'data-check-complete' => '1',
             ])
-            // TODO: get assessment status via latest assessment instead of project
-            // ->default($entry->assessment_status === AssessmentStatus::Complete);
             ->default($entry->assessments->last()->assessment_status === AssessmentStatus::Complete);
 
 
@@ -486,8 +473,6 @@ class ProjectCrudController extends CrudController
 
     public function setupRedlineOperation()
     {
-        // dump("ProjectCrudController.setupRedlineOperation()");
-
         $this->authorize('reviewRedlines', CRUD::getCurrentEntry());
 
         Widget::add()->type('script')->content('assets/js/admin/forms/project_redlines.js');
@@ -507,9 +492,7 @@ class ProjectCrudController extends CrudController
                     These are the Red Line elements, which are counter-productive or harmful to the values and principles of agroecology. If any one of these is present in the project being rated, then the Agroecology Overall Score is 0.
                           ');
 
-        // DONE - TODO: get red lines via latest assessment instead of project
         // We cannot use the relationship with subfields field here, because we do not want the user to be able to unassign any redlines from the project.
-        // foreach ($entry->redLines as $redline) {
         foreach ($entry->assessments->last()->redLines as $redline) {
             CRUD::field('redline_title_' . $redline->id)
                 ->wrapper([
