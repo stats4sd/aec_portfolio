@@ -18,6 +18,7 @@ use App\Http\Controllers\Admin\ScoreTagCrudController;
 use App\Http\Controllers\Admin\UserCrudController;
 use App\Http\Controllers\OrganisationController;
 use App\Http\Controllers\OrganisationMemberController;
+use App\Http\Controllers\GeneratePdfFileController;
 
 Route::group([
     'prefix' => config('backpack.base.route_prefix', 'admin'),
@@ -62,4 +63,7 @@ Route::group([
     Route::crud('country', CountryCrudController::class);
     Route::crud('continent', ContinentCrudController::class);
     Route::crud('region', RegionCrudController::class);
+
+    Route::post('generatePdf', [GeneratePdfFileController::class, 'generatePdfFile']);
+
 }); // this should be the absolute last line of this file
