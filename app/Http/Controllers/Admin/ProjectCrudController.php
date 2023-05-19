@@ -157,6 +157,10 @@ class ProjectCrudController extends CrudController
         // add custom Preview button for assessment
         $this->crud->addButtonFromView('line', 'preview_latest_assessment', 'preview_latest_assessment', 'start');
 
+        // add Re-Assess Project button
+        // Question: Um... how to add this button next to Assess Project button...?
+        $this->crud->addButtonFromView('line', 're-assess', 're-assess', 'end');
+
         CRUD::setPersistentTable(false);
         CRUD::setResponsiveTable(false);
 
@@ -544,6 +548,16 @@ class ProjectCrudController extends CrudController
             ->attributes([
                 'disabled' => 'disabled',
             ]);
+    }
+
+    // create related records for a new assessment
+    public function reAssess($id) {
+        $assessment = Assessment::create(['project_id' => $id]);
+        $assessment->redLines()->sync(RedLine::all()->pluck('id')->toArray());
+        $assessment->principles()->sync(Principle::all()->pluck('id')->toArray());
+
+        // refresh CRUD panel
+        return back();
     }
 
     /**

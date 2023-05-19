@@ -37,6 +37,7 @@ Route::group([
     Route::crud('organisation', OrganisationCrudController::class);
     Route::crud('portfolio', PortfolioCrudController::class);
     Route::crud('project', ProjectCrudController::class);
+    Route::get('project/{project}/re-assess', [ProjectCrudController::class, 'reAssess']);
 
     Route::get('assessment/{assessment}/show', [ProjectCrudController::class, 'showAssessment']);
 
