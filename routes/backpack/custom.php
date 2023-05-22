@@ -7,6 +7,7 @@
 // Routes you generate using Backpack\Generators will be placed here.
 
 use App\Http\Controllers\Admin\AssessmentCriteriaCrudController;
+use App\Http\Controllers\Admin\AssessmentCrudController;
 use App\Http\Controllers\Admin\ContinentCrudController;
 use App\Http\Controllers\Admin\CountryCrudController;
 use App\Http\Controllers\Admin\OrganisationCrudController;
@@ -21,8 +22,11 @@ use App\Http\Controllers\Admin\UserCrudController;
 use App\Http\Controllers\Admin\SelectOrganisationController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\GenericDashboardController;
+use App\Http\Controllers\Admin\MyRoleController;
+use App\Http\Controllers\Admin\RemovalRequestCrudController;
 use App\Http\Controllers\OrganisationController;
 use App\Http\Controllers\OrganisationMemberController;
+use App\Http\Controllers\GeneratePdfFileController;
 
 Route::group([
     'prefix' => config('backpack.base.route_prefix', 'admin'),
@@ -36,7 +40,11 @@ Route::group([
     Route::crud('organisation', OrganisationCrudController::class);
     Route::crud('portfolio', PortfolioCrudController::class);
     Route::crud('project', ProjectCrudController::class);
+    Route::get('project/{project}/re-assess', [ProjectCrudController::class, 'reAssess']);
 
+    Route::get('assessment/{assessment}/show', [ProjectCrudController::class, 'showAssessment']);
+
+    Route::crud('assessment', AssessmentCrudController::class);
     Route::crud('red-line', RedLineCrudController::class);
     Route::crud('principle', PrincipleCrudController::class);
     Route::crud('score-tag', ScoreTagCrudController::class);
@@ -69,4 +77,19 @@ Route::group([
     Route::get('/', [Backpack\CRUD\app\Http\Controllers\AdminController::class, 'redirect'])->name('backpack');
 
     Route::crud('assessment-criteria', AssessmentCriteriaCrudController::class);
+    Route::get('my-role', [MyRoleController::class, 'show']);
+    Route::get('my-role/request-to-leave', [MyRoleController::class, 'requestToLeave']);
+    Route::post('my-role/confirm-to-leave', [MyRoleController::class, 'confirmToLeave']);
+    Route::get('my-role/request-to-remove-everything', [MyRoleController::class, 'requestToRemoveEverything']);
+    Route::post('my-role/confirm-to-remove-everything', [MyRoleController::class, 'confirmToRemoveEverything']);
+
+    Route::crud('removal-request', RemovalRequestCrudController::class);
+
+    Route::get('data-removal/{removeRequest}/cancel', [RemovalRequestCrudController::class, 'cancel']);
+    Route::get('data-removal/{removeRequest}/remind', [RemovalRequestCrudController::class, 'remind']);
+    Route::get('data-removal/{removeRequest}/confirm', [RemovalRequestCrudController::class, 'confirm']);
+    Route::get('data-removal/{removeRequest}/perform', [RemovalRequestCrudController::class, 'perform']);
+
+    Route::post('generatePdf', [GeneratePdfFileController::class, 'generatePdfFile']);
+
 }); // this should be the absolute last line of this file

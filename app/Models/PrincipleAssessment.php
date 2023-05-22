@@ -6,12 +6,12 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\Pivot;
 
-class PrincipleProject extends Model
+class PrincipleAssessment extends Model
 {
 
     public $incrementing = true;
     public $primaryKey = 'id';
-    public $table = 'principle_project';
+    public $table = 'principle_assessment';
 
     public function principle()
     {
@@ -20,7 +20,8 @@ class PrincipleProject extends Model
 
     public function scoreTags()
     {
-        return $this->belongsToMany(ScoreTag::class);
+        return $this->belongsToMany(ScoreTag::class)
+            ->withPivot('assessment_id');
     }
 
     public function customScoreTags()
