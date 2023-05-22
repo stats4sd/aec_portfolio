@@ -25,6 +25,7 @@ use App\Http\Controllers\Admin\MyRoleController;
 use App\Http\Controllers\Admin\RemovalRequestCrudController;
 use App\Http\Controllers\OrganisationController;
 use App\Http\Controllers\OrganisationMemberController;
+use App\Http\Controllers\GeneratePdfFileController;
 
 Route::group([
     'prefix' => config('backpack.base.route_prefix', 'admin'),
@@ -86,5 +87,8 @@ Route::group([
     Route::get('data-removal/{removeRequest}/remind', [RemovalRequestCrudController::class, 'remind']);
     Route::get('data-removal/{removeRequest}/confirm', [RemovalRequestCrudController::class, 'confirm']);
     Route::get('data-removal/{removeRequest}/perform', [RemovalRequestCrudController::class, 'perform']);
+
+    Route::post('generatePdf', [GeneratePdfFileController::class, 'generatePdfFile']);
+
 
 }); // this should be the absolute last line of this file
