@@ -43,7 +43,7 @@ class OrganisationExport implements FromCollection, WithHeadings, WithStrictNull
                 'regions' => $project->regions->pluck('name')->join(', '),
                 'countries' => $project->countries->pluck('name')->join(', '),
                 'sub_regions' => $project->sub_regions,
-                'status' => $project->assessment_status->value,
+                'status' => $project->latest_assessment_status->value,
             ]);
 
             foreach (RedLine::select('name', 'id')->get() as $redline) {

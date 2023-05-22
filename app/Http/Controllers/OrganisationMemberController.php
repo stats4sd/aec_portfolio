@@ -2,22 +2,35 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Organisation;
+
 use App\Models\User;
+use App\Models\Organisation;
 use Illuminate\Http\Request;
+use App\Models\OrganisationMember;
+use Spatie\Permission\Models\Role;
+use Illuminate\Support\Facades\Session;
 use Illuminate\Database\Eloquent\Builder;
 use App\Http\Requests\OrganisationMemberStoreRequest;
 use App\Http\Requests\OrganisationMemberUpdateRequest;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 class OrganisationMemberController extends Controller
 {
     public function create(Organisation $organisation)
     {
+        $this->authorize('create', OrganisationMember::class);
+
         $users = User::whereDoesntHave('organisations', function (Builder $query) use ($organisation) {
             $query->where('organisations.id', '=', $organisation->id);
         })->get();
 
-        return view('organisations.create-members', ['organisation' => $organisation, 'users' => $users]);
+        $institutionalRoles = Role::where('name', 'like', 'Institutional%')->orderBy('name', 'ASC')->get();
+
+        return view('organisations.create-members', [
+            'organisation' => $organisation, 
+            'users' => $users,
+            'institutionalRoles' => $institutionalRoles,
+        ]);
     }
 
 
@@ -29,10 +42,9 @@ class OrganisationMemberController extends Controller
      * @param Organisation $organisation
      * @return void
      */
-
     public function store(OrganisationMemberStoreRequest $request, Organisation $organisation)
     {
-        $this->authorize('update', $organisation);
+        $this->authorize('create', OrganisationMember::class);
 
         $data = $request->validated();
 
@@ -41,19 +53,27 @@ class OrganisationMemberController extends Controller
         }
 
         if (isset($data['emails']) && count(array_filter($data['emails'])) > 0) {
-            $organisation->sendInvites($data['emails']);
+            $organisation->sendInvites($data['emails'], $data['role_id']);
         }
 
         return redirect()->route('organisation.show', ['id' => $organisation->id]);
     }
 
+
     public function edit(Organisation $organisation, User $user)
     {
+        $this->authorize('update', OrganisationMember::class);
 
         //use the relationship to get the pivot attributes for user
         $user = $organisation->users->find($user->id);
 
-        return view('organisations.edit-members', ['organisation' => $organisation, 'user' => $user]);
+        $institutionalRoles = Role::where('name', 'like', 'Institutional%')->orderBy('name', 'ASC')->get();
+
+        return view('organisations.edit-members', [
+            'organisation' => $organisation, 
+            'user' => $user,
+            'institutionalRoles' => $institutionalRoles,
+        ]);
     }
 
 
@@ -64,15 +84,21 @@ class OrganisationMemberController extends Controller
      * @param Organisation $organisation
      * @param User $user
      */
-
     public function update(OrganisationMemberUpdateRequest $request, Organisation $organisation, User $user)
     {
+        $this->authorize('update', OrganisationMember::class);
+
         $data = $request->validated();
 
-        $organisation->users()->syncWithoutDetaching([$user->id => ['role' => $data['role']]]);
+        // remove old role
+        $user->removeRole($data['old_system_role']);
+
+        // add new role
+        $user->assignRole($data['new_system_role']);
 
         return redirect()->route('organisation.show', ['id' => $organisation->id]);
     }
+
 
     /**
      * Remove a user from the organisation.
@@ -83,7 +109,7 @@ class OrganisationMemberController extends Controller
      */
     public function destroy(Organisation $organisation, User $user)
     {
-        $this->authorize('update', $organisation);
+        $this->authorize('delete', OrganisationMember::class);
 
         $admins = $organisation->admins()->get();
         // if the $user is a $organisation admin AND is the ONLY organisation admin... prevent
@@ -96,5 +122,20 @@ class OrganisationMemberController extends Controller
         }
 
         return redirect()->route('organisation.show', [$organisation, 'members']);
+    }
+
+
+    // redirect to organisation members page of the selected organisation
+    public function show() {
+        $this->authorize('viewAny', OrganisationMember::class);
+
+        if (!Session::exists('selectedOrganisation')) {
+            throw new BadRequestHttpException('Please select an institution first');
+
+        } else {
+            $selectedOrganisationId = Session::get('selectedOrganisationId');
+
+            return redirect('admin/organisation/' . $selectedOrganisationId . '/show');
+        }
     }
 }

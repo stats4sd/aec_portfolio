@@ -25,6 +25,14 @@
                 </div>
             @endif
 
+            <!-- 
+                Site Admin, Site Manager do not belong to any institution.
+                Institutional admin, assessor, member belong to one institution only.
+                Therefore, one email address (i.e. login ID) belongs to zero or one institution.
+                This is not necessary to add existing user to an institution.
+            -->
+
+            <!--
             <div class="form-group row required">
                 <label for="select-users" class="col-md-4 col-form-label text-md-right">
                     Add existing platform users to the institution
@@ -53,8 +61,13 @@
             </div>
 
             <hr/>
+            -->
+
             <h5>Invite New Users</h5>
+            <!--
             <p>If you cannot find the users on the platform, you can send them an email invitation to join the platform (and this institution).</p>
+            -->
+            <p>You can send people an email invitation to join the platform (and this institution).</p>
             <div class="form-group row required">
                 <label for="description" class="col-md-4 col-form-label text-md-right">
                     Enter the email addresses to send invites to. You can add as many email addresses as you need.
@@ -78,7 +91,23 @@
                         </span>
                     @enderror
                 </div>
+
+                <label for="description" class="col-md-4 col-form-label text-md-right">
+                    Select a role:
+                </label>
+
+                <div class="col-md-8">
+                    <!-- Add role selection box here -->
+                    <!-- The specified role will be applied for all email addresses defined -->
+                    <select name="role_id" id="role_id">
+                    @foreach ($institutionalRoles as $institutionalRole)
+                        <option value="{{ $institutionalRole->id }}">{{ $institutionalRole->name }}</option>
+                    @endforeach
+                    </select>
+                </div>
+
             </div>
+
             <div class="form-group row mb-0">
                 <div class="col-md-10 d-flex justify-content-end">
                     <button type="submit" class="btn btn-primary">

@@ -39,20 +39,21 @@
             </div>
             <div class="form-group row required">
                 <label for="select-users" class="col-md-6 col-form-label text-md-right">
-                    Assign access level for institution {{ $organisation->name }}
+                    Assign role for institution {{ $organisation->name }}
                 </label>
                 <div class="col-md-6">
+                    <input type="hidden" name="old_system_role" value="{{ $user->roles->pluck('name')->join(', ') }}">
                     <select
                         id="access-level"
-                        name="role"
+                        name="new_system_role"
                         class="select2 form-control @error('name') is-invalid @enderror"
                         value="{{ $user->pivot->is_admin }}"
                         >
-                            <option value="admin" {{ !$user->pivot->admin ? 'selected' : '' }}>Team Administrator</option>
-                            <option value="editor" {{ $user->pivot->editor ? 'selected' : '' }}>Editor</option>
-                            <option value="viewer" {{ $user->pivot->viewer ? 'selected' : '' }}>Viewer</option>
-
+                            @foreach ($institutionalRoles as $institutionalRole)
+                            <option value="{{ $institutionalRole->name }}" {{ $user->roles->pluck('id')->join(', ') == $institutionalRole->id ? 'selected' : '' }}>{{ $institutionalRole->name }}</option>
+                            @endforeach
                     </select>
+
                     @error('users')
                         <span class="invalid-feedback" role="alert">
                             <strong>{{ $message }}</strong>

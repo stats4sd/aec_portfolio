@@ -41,10 +41,14 @@
             </div>
         </div>
     </div>
+
+        <!-- Do not show links to dashboard and data extraction in organisation users page -->
+        <!--
         <div class="btn-group">
             <a href="{{ route('organisation.portfolio', ['organisation' => $organisation]) }}" class="btn btn-info">
                 Review Portfolio</a>
             <a href="{{ route('organisation.export', ['organisation' => $organisation]) }}" class="btn btn-primary">
                 Export Institution Project Data</a>
         </div>
+        -->
 </div>

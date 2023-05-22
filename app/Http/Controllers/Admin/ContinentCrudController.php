@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Http\Requests\ContinentRequest;
+use App\Models\Continent;
 use Backpack\CRUD\app\Http\Controllers\CrudController;
 use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 /**
  * Class ContinentCrudController
@@ -14,6 +15,8 @@ use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
 class ContinentCrudController extends CrudController
 {
     use \Backpack\CRUD\app\Http\Controllers\Operations\ListOperation;
+
+    use AuthorizesRequests;
 
     /**
      * Configure the CrudPanel object. Apply settings to all operations.
@@ -35,29 +38,10 @@ class ContinentCrudController extends CrudController
      */
     protected function setupListOperation()
     {
-        CRUD::column('id');
+        $this->authorize('viewAny', Continent::class);
+
+        CRUD::column('id')->label('Continent ID');;
         CRUD::column('name');
     }
 
-    /**
-     * Define what happens when the Create operation is loaded.
-     *
-     * @see https://backpackforlaravel.com/docs/crud-operation-create
-     * @return void
-     */
-    protected function setupCreateOperation()
-    {
-
-    }
-
-    /**
-     * Define what happens when the Update operation is loaded.
-     *
-     * @see https://backpackforlaravel.com/docs/crud-operation-update
-     * @return void
-     */
-    protected function setupUpdateOperation()
-    {
-        $this->setupCreateOperation();
-    }
 }

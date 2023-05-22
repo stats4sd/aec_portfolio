@@ -5,97 +5,62 @@ namespace App\Policies;
 use App\Models\Organisation;
 use App\Models\User;
 use Illuminate\Auth\Access\Response;
-use Illuminate\Auth\Access\HandlesAuthorization;
 
 class OrganisationPolicy
 {
-    use HandlesAuthorization;
-
     /**
      * Determine whether the user can view any models.
-     *
-     * @param  \App\Models\User  $user
-     * @return mixed
      */
-    public function viewAny(User $user)
+    public function viewAny(User $user): bool
     {
-        return ($user->hasAnyRole('admin')) ? Response::allow()
-        : Response::deny('Sorry, you do not have permissions to view details of all organisations.');;
+        return ($user->can('view institutions'));
     }
 
     /**
      * Determine whether the user can view the model.
-     *
-     * @param  \App\Models\User  $user
-     * @param  \App\Models\Organisation  $organisation
-     * @return mixed
      */
-    public function view(User $user, Organisation $organisation)
+    public function view(User $user, Organisation $organisation): bool
     {
-        return $organisation->users->contains($user) || $user->hasAnyRole('admin', 'methods group');
+        return ($user->can('view institutions') || $user->can('view institutional members'));
     }
 
     /**
      * Determine whether the user can create models.
-     *
-     * @param  \App\Models\User  $user
-     * @return mixed
      */
-    public function create(User $user)
+    public function create(User $user): bool
     {
-        return $user->hasAnyRole('admin');
+        return ($user->can('maintain institutions'));
     }
 
     /**
      * Determine whether the user can update the model.
-     *
-     * @param  \App\Models\User  $user
-     * @param  \App\Models\Organisation  $organisation
-     * @return mixed
      */
-    public function update(User $user, Organisation $organisation)
+    public function update(User $user, Organisation $organisation): bool
     {
-        return $organisation->admins->contains($user) || $user->hasAnyRole('admin');
+        return ($user->can('maintain institutions'));
     }
 
     /**
      * Determine whether the user can delete the model.
-     *
-     * @param  \App\Models\User  $user
-     * @param  \App\Models\Organisation  $organisation
-     * @return mixed
      */
-    public function delete(User $user, Organisation $organisation)
+    public function delete(User $user, Organisation $organisation): bool
     {
-        return $user->hasRole('admin');
+        return ($user->can('maintain institutions'));
     }
 
     /**
      * Determine whether the user can restore the model.
-     *
-     * @param  \App\Models\User  $user
-     * @param  \App\Models\Organisation  $organisation
-     * @return mixed
      */
-    public function restore(User $user, Organisation $organisation)
+    public function restore(User $user, Organisation $organisation): bool
     {
-        return $organisation->admins->contains($user) || $user->hasAnyRole('admin');
+        return ($user->can('maintain institutions'));
     }
 
     /**
      * Determine whether the user can permanently delete the model.
-     *
-     * @param  \App\Models\User  $user
-     * @param  \App\Models\Organisation  $organisation
-     * @return mixed
      */
-    public function forceDelete(User $user, Organisation $organisation)
+    public function forceDelete(User $user, Organisation $organisation): bool
     {
-        return $user->hasAnyRole('admin');
-    }
-
-    public function organisationUpdate(User $user, Organisation $organisation)
-    {
-        return $organisation->users->contains($user);
+        return ($user->can('maintain institutions'));
     }
 }
