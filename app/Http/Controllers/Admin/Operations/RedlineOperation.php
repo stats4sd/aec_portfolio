@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin\Operations;
 
 use App\Enums\AssessmentStatus;
+use App\Models\Assessment;
 use App\Models\Principle;
 use App\Models\PrincipleProject;
 use App\Models\Project;
@@ -59,8 +60,6 @@ trait RedlineOperation
 
     /**
      * Show the view for performing the operation.
-     *
-     * @return Response
      */
     public function redline($id)
     {
@@ -68,8 +67,6 @@ trait RedlineOperation
 
         $id = $this->crud->getCurrentEntryId() ?? $id;
 
-        // TODO: it is setting the project record to "entry", corresponind project_red_line records will be showed
-        // Question: how to change to set the latest assessment record to "entry", get corresponding project_red_line records via assessment_id?
         $this->data['entry'] = $this->crud->getEntryWithLocale($id);
 
         $this->crud->setOperationSetting('fields', $this->crud->getUpdateFields());
@@ -107,8 +104,7 @@ trait RedlineOperation
             }
         }
 
-        $project = Project::findOrFail($request->id);
-        $latestAssessment = $project->assessments->last();
+        $latestAssessment = Assessment::findOrFail($request->id);
         $latestAssessment->redlines()->sync($updates);
 
         if (collect(AssessmentStatus::InProgress, AssessmentStatus::Complete)->contains($latestAssessment->assessment_status)) {
@@ -125,6 +121,6 @@ trait RedlineOperation
         $latestAssessment->save();
 
 
-        return redirect($this->crud->route);
+        return redirect(backpack_url('project'));
     }
 }

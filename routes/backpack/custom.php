@@ -6,6 +6,7 @@
 // This route file is loaded automatically by Backpack\Base.
 // Routes you generate using Backpack\Generators will be placed here.
 
+use App\Http\Controllers\Admin\AssessmentCrudController;
 use App\Http\Controllers\Admin\ContinentCrudController;
 use App\Http\Controllers\Admin\CountryCrudController;
 use App\Http\Controllers\Admin\OrganisationCrudController;
@@ -33,7 +34,7 @@ Route::group([
     ),
 
 ], function () { // custom admin routes
-    
+
     Route::crud('organisation', OrganisationCrudController::class);
     Route::crud('portfolio', PortfolioCrudController::class);
     Route::crud('project', ProjectCrudController::class);
@@ -41,6 +42,7 @@ Route::group([
 
     Route::get('assessment/{assessment}/show', [ProjectCrudController::class, 'showAssessment']);
 
+    Route::crud('assessment', AssessmentCrudController::class);
     Route::crud('red-line', RedLineCrudController::class);
     Route::crud('principle', PrincipleCrudController::class);
     Route::crud('score-tag', ScoreTagCrudController::class);
@@ -67,7 +69,7 @@ Route::group([
 
     Route::get('organisation/{organisation}/portfolio', [OrganisationController::class, 'portfolio'])->name('organisation.portfolio');
     Route::get('organisation/{organisation}/export', [OrganisationController::class, 'export'])->name('organisation.export');
-    
+
     Route::get('dashboard', [DashboardController::class, 'check'])->name('backpack.dashboard');
 
     Route::get('/', [Backpack\CRUD\app\Http\Controllers\AdminController::class, 'redirect'])->name('backpack');
@@ -77,7 +79,7 @@ Route::group([
     Route::post('my-role/confirm-to-leave', [MyRoleController::class, 'confirmToLeave']);
     Route::get('my-role/request-to-remove-everything', [MyRoleController::class, 'requestToRemoveEverything']);
     Route::post('my-role/confirm-to-remove-everything', [MyRoleController::class, 'confirmToRemoveEverything']);
-    
+
     Route::crud('removal-request', RemovalRequestCrudController::class);
 
     Route::get('data-removal/{removeRequest}/cancel', [RemovalRequestCrudController::class, 'cancel']);

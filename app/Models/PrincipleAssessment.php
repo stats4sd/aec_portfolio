@@ -20,7 +20,8 @@ class PrincipleAssessment extends Model
 
     public function scoreTags()
     {
-        return $this->belongsToMany(ScoreTag::class);
+        return $this->belongsToMany(ScoreTag::class)
+            ->withPivot('assessment_id');
     }
 
     public function customScoreTags()

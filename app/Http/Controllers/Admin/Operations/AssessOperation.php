@@ -57,7 +57,6 @@ trait AssessOperation
     /**
      * Show the view for performing the operation.
      *
-     * @return Response
      */
     public function assess($id)
     {
@@ -66,9 +65,7 @@ trait AssessOperation
 
         $id = $this->crud->getCurrentEntryId() ?? $id;
 
-        // TODO: it is setting the project record to "entry", corresponind project_red_line records will be showed
-        // Question: how to change to set the latest assessment record to "entry", get corresponding project_red_line records via assessment_id?
-        // maybe related to issue: "custom_score_tags records of current assessment will be deleted after saving assessment every time"
+
         $this->data['entry'] = $this->crud->getEntryWithLocale($id);
 
         $this->crud->setOperationSetting('fields', $this->crud->getUpdateFields());
@@ -85,9 +82,8 @@ trait AssessOperation
 
     public function postAssessForm(Request $request)
     {
-        $project = $this->crud->getEntry($request->input('id'));
 
-        $latestAssessment = $project->assessments->last();
+        $latestAssessment = $this->crud->getEntry($request->input('id'));
         $latestAssessment->customScoreTags()->delete();
 
         // validate fields
@@ -127,6 +123,7 @@ trait AssessOperation
                 }
 
                 $sync = collect($sync)->combine($syncPivot);
+
                 $principleAssessment->scoreTags()->sync($sync->toArray());
             }
 
@@ -161,7 +158,7 @@ trait AssessOperation
         } else {
             $latestAssessment->assessment_status = AssessmentStatus::InProgress;
         }
-        
+
         $latestAssessment->save();
 
 

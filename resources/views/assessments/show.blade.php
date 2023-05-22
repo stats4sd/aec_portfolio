@@ -78,7 +78,7 @@
                         @if($assessment->assessment_status === \App\Enums\AssessmentStatus::Complete)
                             <td><span class="font-weight-bold">{{ $assessment->overall_score }} % </span>
                                 <br/>
-                                <span class="text-sm text-secondary">Calculated based on {{ $assessment->principleProjects()->where('is_na', 0)->count() }} / 13 relevant principles.</span>
+                                <span class="text-sm text-secondary">Calculated based on {{ $assessment->principleAssessments()->where('is_na', 0)->count() }} / 13 relevant principles.</span>
                             </td>
                         @else
                             <td class="text-secondary">~~ Assessment not yet completed ~~</td>
@@ -103,33 +103,33 @@
                     </tr>
 
                     @php
-                        $principleProjects = $assessment->principleProjects;
+                        $principleAssessments = $assessment->principleAssessments;
                     @endphp
 
                     @foreach(\App\Models\Principle::all() as $principle)
 
                         @php
-                            $principleProject = $principleProjects->where('principle_id', $principle->id)->first();
+                            $principleAssessment = $principleAssessments->where('principle_id', $principle->id)->first();
                         @endphp
                         <tr>
                             <td>{{ $principle->name }}</td>
-                            <td> {{ $principleProject->is_na ? "NA" : $principleProject->rating }}</td>
-                            <td> {{ $principleProject->is_na ? "-" : $principleProject->rating_comment }}</td>
+                            <td> {{ $principleAssessment->is_na ? "NA" : $principleAssessment->rating }}</td>
+                            <td> {{ $principleAssessment->is_na ? "-" : $principleAssessment->rating_comment }}</td>
                             <td>
-                                @if($principleProject->scoreTags()->count() > 0)
+                                @if($principleAssessment->scoreTags()->count() > 0)
                                     <button class="btn btn-link" type="button" data-toggle="modal"
                                             data-target="#modal-shared-{{$principle->id}}">
-                                        {{ $principleProject->scoreTags()->count() }} selected
+                                        {{ $principleAssessment->scoreTags()->count() }} selected
                                     </button>
                                 @else
                                     <span class="btn">0 selected</span>
                                 @endif
                             </td>
                             <td>
-                                @if($principleProject->customScoreTags()->count() > 0)
+                                @if($principleAssessment->customScoreTags()->count() > 0)
                                     <button class="btn btn-link" type="button" data-toggle="modal"
                                             data-target="#modal-custom-shared-{{$principle->id}}">
-                                        {{ $principleProject->customScoreTags()->count() }} added
+                                        {{ $principleAssessment->customScoreTags()->count() }} added
                                     </button>
                                 @else
                                     <span class="btn">0 added</span>
@@ -146,7 +146,7 @@
     @foreach(\App\Models\Principle::all() as $principle)
 
         @php
-            $principleProjectModal = $principleProjects->where('principle_id', $principle->id)->first();
+            $principleAssessmentModel = $principleAssessments->where('principle_id', $principle->id)->first();
         @endphp
 
 
@@ -169,7 +169,7 @@
                             <tr>
                                 <th>Example / Indicator</th>
                             </tr>
-                            @foreach($principleProjectModal->scoreTags as $scoreTag)
+                            @foreach($principleAssessmentModel->scoreTags as $scoreTag)
                                 <tr>
                                     <td>{{ $scoreTag->name }}</td>
                                 </tr>
@@ -204,7 +204,7 @@
                                 <th>Example / Indicator</th>
                                 <th>Description</th>
                             </tr>
-                            @foreach($principleProjectModal->customScoreTags as $scoreTag)
+                            @foreach($principleAssessmentModel->customScoreTags as $scoreTag)
                                 <tr>
                                     <td>{{ $scoreTag->name }}</td>
                                     <td>{{ $scoreTag->description }}</td>
