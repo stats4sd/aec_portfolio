@@ -20,13 +20,13 @@ return new class extends Migration
                 ->cascadeOnUpdate()
                 ->cascadeOnDelete();
 
-            $table->foreignId('criteria_id')
+            $table->foreignId('assessment_criteria_id')
                 ->references('id')
                 ->on('assessment_criteria')
                 ->cascadeOnUpdate()
                 ->cascadeOnDelete();
 
-            $table->decimal('rating', 3, 2);
+            $table->decimal('rating', 3, 2)->nullable();
             $table->text('rating_comment')->nullable();
             $table->boolean('is_na')->default(0);
 

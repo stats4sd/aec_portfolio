@@ -156,6 +156,7 @@ class ProjectCrudController extends CrudController
 
         // add custom Preview button for assessment
         $this->crud->addButtonFromView('line', 'preview_latest_assessment', 'preview_latest_assessment', 'start');
+        $this->crud->addButton('line', 'assess_custom', 'view', 'crud::buttons.assess_custom')->makeFirst();
         $this->crud->addButton('line', 'assess', 'view', 'crud::buttons.assess')->makeFirst();
         $this->crud->addButton('line', 'redline', 'view', 'crud::buttons.redline')->makeFirst();
 

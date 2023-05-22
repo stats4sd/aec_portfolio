@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Enums\AssessmentStatus;
+use App\Http\Controllers\Admin\Operations\AssessCustomOperation;
 use App\Http\Controllers\Admin\Operations\AssessOperation;
 use App\Http\Controllers\Admin\Operations\RedlineOperation;
 use App\Http\Controllers\Admin\Traits\UsesSaveAndNextAction;
@@ -34,6 +35,7 @@ class AssessmentCrudController extends CrudController
 
 
     use AssessOperation;
+    use AssessCustomOperation;
     use RedlineOperation;
     use UsesSaveAndNextAction;
 
@@ -182,6 +184,140 @@ class AssessmentCrudController extends CrudController
             ->tab('Confirm Assessment')
             ->view_namespace('stats4sd.laravel-backpack-section-title::fields')
             ->content('You have not given a rating for every principle. You must complete each principle before marking the assessment as complete.')
+            ->variant('warning');
+
+        CRUD::field('assessment_complete')
+            ->type('boolean')
+            ->tab('Confirm Assessment')
+            ->label('I confirm the assessment is complete')
+            ->attributes([
+                'data-check-complete' => '1',
+            ])
+            ->default($entry->assessment_status === AssessmentStatus::Complete);
+
+
+        CRUD::field('assessment_incomplete')
+            ->type('boolean')
+            ->tab('Confirm Assessment')
+            ->label('I confirm the assessment is complete')
+            ->attributes([
+                'disabled' => 'disabled',
+                'readonly' => 'readonly',
+            ]);
+
+        $this->removeAllSaveActions();
+        $this->addSaveAndReturnToProjectListAction();
+        $this->addSaveAndNextAction('assess', backpack_url('project'));
+
+    }
+
+    public function setupAssessCustomOperation()
+    {
+        $this->authorize('assessProject', CRUD::getCurrentEntry()->project);
+
+        CRUD::field('section-title')
+            ->type('section-title')
+            ->view_namespace('stats4sd.laravel-backpack-section-title::fields')
+            ->title(function ($entry) {
+                return "Assess Project: " . $entry->project->name;
+            })
+            ->content('
+                    This additional section of the review asks about any additional criteria that your institution has added to this tool. While all projects across the system must be assessed against the 13 Principles of Agroecology, your institution may also have extra criteria that are important.
+                    <br/><br/>
+                    The form below asks about each of these custom criteria in turn. For each point, please enter:     <ul>
+                            <li><b>A rating:</b> This is a number between 0 and 2, based on your appreciation of the value of the specific criteria in the project design / activities, and following the Spectrum defined by your institution. Decimal digits are allowed.</li>
+                            <li><b>A comment:</b> Please add any comments to help explain the rating, and about how the criterion is seen within the project.</li>
+                        </ul>
+                        To help track progress, once a rating is given for a principle, that principle name will turn green. Once you have completed and reviewed every principle, please proceed to the final "Confirmation" tab, where you can mark the assessment as complete. Once done, you will return to the main projects list to view the final result.
+          ');
+
+        CRUD::enableVerticalTabs();
+        // cannot use relationship with repeatable because we need to filter the scoretags...
+        $entry = CRUD::getCurrentEntry();
+
+        foreach ($entry->assessmentCriteria as $assessmentCriterion) {
+            $ratingZeroDefintionRow = '<span class="text-secondary">This principle cannot be marked as not applicable</span>';
+            if ($assessmentCriterion->can_be_na) {
+                $ratingZeroDefintionRow = "
+                                            <tr>
+                                                <td>na</td>
+                                                <td>{$assessmentCriterion->rating_na}</td>
+                                            </tr>";
+            }
+
+            CRUD::field($assessmentCriterion->id . '_title')
+                ->tab($assessmentCriterion->name)
+                ->type('section-title')
+                ->view_namespace('stats4sd.laravel-backpack-section-title::fields')
+                ->title($assessmentCriterion->name)
+                ->content("<table class='table table - striped'>
+                                <tr>
+                                    <th>Score</th>
+                                    <th>Definition</th>
+                                </tr>
+                                <tr>
+                                    <td>2</td>
+                                    <td>{$assessmentCriterion->rating_two}</td>
+                                </tr>
+                                <tr>
+                                    <td>1</td>
+                                    <td>{$assessmentCriterion->rating_one}</td>
+                                </tr>
+                                <tr>
+                                    <td>0</td>
+                                    <td>{$assessmentCriterion->rating_zero}</td>
+                                </tr>
+                                {$ratingZeroDefintionRow}
+                            </table>");
+
+            if ($assessmentCriterion->can_be_na) {
+                CRUD::field($assessmentCriterion->id . "_is_na")
+                    ->tab($assessmentCriterion->name)
+                    ->attributes([
+                        'data-to-disable' => $assessmentCriterion->id,
+                    ])
+                    ->type('boolean')
+                    ->label('If this principle is not applicable for this project, tick this box.')
+                    ->default($assessmentCriterion->pivot->is_na);
+
+            }
+
+            CRUD::field($assessmentCriterion->id . '_rating')
+                ->tab($assessmentCriterion->name)
+                ->label('Rating for ' . $assessmentCriterion->name)
+                ->attributes([
+                    'data-tab' => Str::slug($assessmentCriterion->name),
+                    'data-update-tab' => '1',
+                ])
+                ->min(0)
+                ->max(2)
+                ->default($assessmentCriterion->pivot->rating);
+
+
+            CRUD::field($assessmentCriterion->id . '_rating_comment')
+                ->tab($assessmentCriterion->name)
+                ->label('Comment for ' . $assessmentCriterion->name)
+                ->hint('Please add a comment, even if the principle is not applicable to this project.')
+                ->type('textarea')
+                ->default($assessmentCriterion->pivot->rating_comment);
+
+
+        }
+
+        CRUD::field('complete_title')
+            ->type('section-title')
+            ->tab('Confirm Assessment')
+            ->view_namespace('stats4sd.laravel-backpack-section-title::fields')
+            ->content('
+                Once you have completed the review of each assessment criteria, and are satisfied that the above entries are correct, please tick this box to confirm the review.<br/>
+                <i>(Note: You may still edit this review after marking it as complete)</i>
+            ');
+
+        CRUD::field('assessment_incomplete_note')
+            ->type('section-title')
+            ->tab('Confirm Assessment')
+            ->view_namespace('stats4sd.laravel-backpack-section-title::fields')
+            ->content('You have not given a rating for all assessment criteria. You must complete each entry above before marking the assessment as complete.')
             ->variant('warning');
 
         CRUD::field('assessment_complete')
