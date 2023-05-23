@@ -2,14 +2,12 @@
 
 namespace App\Http\Controllers\Admin\Operations;
 
+use App\Models\CriteriaAssessment;
 use Carbon\Carbon;
-use App\Models\Principle;
 use Illuminate\Http\Request;
 use App\Enums\AssessmentStatus;
-use App\Models\PrincipleAssessment;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Validation\ValidationException;
 
 trait AssessCustomOperation
 {
@@ -73,20 +71,21 @@ trait AssessCustomOperation
         $this->data['id'] = $id;
 
         // load the view
-        return view("crud::operations.assess", $this->data);
+        return view("crud::operations.assess-custom", $this->data);
     }
 
     public function postAssessCustomForm(Request $request)
     {
 
         $latestAssessment = $this->crud->getEntry($request->input('id'));
-        $latestAssessment->customScoreTags()->delete();
+
+        $institution = $latestAssessment->project->organisation;
 
         // validate fields
         $rules = [];
 
-        foreach (Principle::all() as $principle) {
-            $rules[$principle->id . "_rating"] = ['nullable', 'numeric', 'max:2', 'min:0'];
+        foreach ($institution->assessmentCriteria as $assessmentCriterion) {
+            $rules[$assessmentCriterion->id . "_rating"] = ['nullable', 'numeric', 'max:2', 'min:0'];
         }
 
         // TODO: figure out why validator redirects and then _current_tab is reset to 1st tab, even though a different tab is shown...
@@ -97,54 +96,17 @@ trait AssessCustomOperation
         ])->validate();
 
 
-        foreach (Principle::all() as $principle) {
-            $principleId = $principle->id;
+        foreach ($institution->assessmentCriteria as $assessmentCriterion) {
+            $assessmentCriterionId = $assessmentCriterion->id;
 
-            $latestAssessment->principles()->updateExistingPivot($principleId, [
-                'rating' => $request->input("${principleId}_rating"),
-                'rating_comment' => $request->input("${principleId}_rating_comment"),
-                'is_na' => $request->input("${principleId}_is_na") ?? 0,
+            $latestAssessment->assessmentCriteria()->updateExistingPivot($assessmentCriterionId, [
+                'rating' => $request->input("${assessmentCriterionId}_rating"),
+                'rating_comment' => $request->input("${assessmentCriterionId}_rating_comment"),
+                'is_na' => $request->input("${assessmentCriterionId}_is_na") ?? 0,
             ]);
 
 
-            $principleAssessment = PrincipleAssessment::where('assessment_id', $latestAssessment->id)->where('principle_id', $principleId)->first();
-
-            $sync = json_decode($request->input("scoreTags" . $principle->id));
-            $syncPivot = [];
-
-            if ($sync) {
-
-                for ($i = 0, $iMax = count($sync); $i < $iMax; $i++) {
-                    $syncPivot[] = ['assessment_id' => $latestAssessment->id];
-                }
-
-                $sync = collect($sync)->combine($syncPivot);
-
-                $principleAssessment->scoreTags()->sync($sync->toArray());
-            }
-
-            $custom_score_tags = json_decode($request->input("customScoreTags" . $principle->id), true);
-
-            if ($custom_score_tags) {
-
-                for ($i = 0, $iMax = count($custom_score_tags); $i < $iMax; $i++) {
-
-                    if (empty($custom_score_tags[$i])){
-                        unset($custom_score_tags[$i]);
-                    }
-
-                    elseif (!array_key_exists('name', $custom_score_tags[$i])) {
-                        throw ValidationException::withMessages(['customScoreTags' . $principle->id => 'New examples/indicators must have a name']);
-                    }
-
-                    else {
-                        $custom_score_tags[$i]['assessment_id'] = $latestAssessment->id;
-                    }
-
-                }
-
-                $principleAssessment->customScoreTags()->createMany($custom_score_tags);
-            }
+            $criteriaAssessment = CriteriaAssessment::where('assessment_id', $latestAssessment->id)->where('assessment_criteria_id', $assessmentCriterionId)->first();
 
         }
 

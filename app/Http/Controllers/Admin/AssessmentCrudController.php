@@ -341,7 +341,7 @@ class AssessmentCrudController extends CrudController
 
         $this->removeAllSaveActions();
         $this->addSaveAndReturnToProjectListAction();
-        $this->addSaveAndNextAction('assess', backpack_url('project'));
+        $this->addSaveAndNextAction('assess-custom', backpack_url('project'));
 
     }
 

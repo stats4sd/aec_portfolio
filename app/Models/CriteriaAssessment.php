@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class CriteriaAssessment extends Model
 {
+    protected $table = 'criteria_assessment';
     protected $guarded = ['id'];
 
     public function assessmentCriteria(): BelongsTo
