@@ -216,6 +216,8 @@ class AssessmentCrudController extends CrudController
     {
         $this->authorize('assessProject', CRUD::getCurrentEntry()->project);
 
+        Widget::add()->type('script')->content('assets/js/admin/forms/project_assess.js');
+
         CRUD::field('section-title')
             ->type('section-title')
             ->view_namespace('stats4sd.laravel-backpack-section-title::fields')
