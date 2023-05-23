@@ -15,6 +15,7 @@
         "laravel/telescope": "^4.14",
         "laravel/tinker": "^2.5",
         "maatwebsite/excel": "^3.1",
+        "orangehill/iseed": "^3.0",
         "spatie/browsershot": "^3.57",
         "stats4sd/laravel-backpack-section-title": "dev-backpack-5",
         "stats4sd/laravel-file-util": "dev-laravel-9-support",
