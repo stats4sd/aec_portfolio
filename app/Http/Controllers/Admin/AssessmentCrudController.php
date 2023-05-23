@@ -9,6 +9,7 @@ use App\Http\Controllers\Admin\Operations\RedlineOperation;
 use App\Http\Controllers\Admin\Traits\UsesSaveAndNextAction;
 use App\Http\Requests\AssessmentRequest;
 use App\Models\Assessment;
+use App\Models\AdditionalCriteriaScoreTag;
 use App\Models\ScoreTag;
 use Backpack\CRUD\app\Http\Controllers\CrudController;
 use Backpack\CRUD\app\Http\Controllers\Operations\CreateOperation;
@@ -235,7 +236,7 @@ class AssessmentCrudController extends CrudController
         // cannot use relationship with repeatable because we need to filter the scoretags...
         $entry = CRUD::getCurrentEntry();
 
-        foreach ($entry->assessmentCriteria as $assessmentCriterion) {
+        foreach ($entry->additionalCriteria as $assessmentCriterion) {
             $ratingZeroDefintionRow = '<span class="text-secondary">This principle cannot be marked as not applicable</span>';
             if ($assessmentCriterion->can_be_na) {
                 $ratingZeroDefintionRow = "
@@ -301,7 +302,24 @@ class AssessmentCrudController extends CrudController
                 ->type('textarea')
                 ->default($assessmentCriterion->pivot->rating_comment);
 
+            CRUD::field('additionalCriteriaScoreTags' . $assessmentCriterion->id)
+                ->tab($assessmentCriterion->name)
+                ->label('Presence of Examples/Indicators for ' . $assessmentCriterion->name)
+                ->type('checklist_filtered')
+                ->number_of_columns(1)
+                ->model(AdditionalCriteriaScoreTag::class)
+                ->options(function ($query) use ($assessmentCriterion) {
+                    return $query->where('additional_criteria_id', $assessmentCriterion->id)->get()->pluck('name', 'id')->toArray();
+                });
 
+            CRUD::field('customScoreTags' . $assessmentCriterion->id)
+                ->tab($assessmentCriterion->name)
+                ->label('New Example/Indicator for ' . $assessmentCriterion->name)
+                ->type('table')
+                ->columns([
+                    'name' => 'Name',
+                    'description' => 'Description (optional)'],
+                );
         }
 
         CRUD::field('complete_title')

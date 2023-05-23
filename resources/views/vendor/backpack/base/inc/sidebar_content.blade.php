@@ -83,7 +83,7 @@ E.g., Centralise instituion selection to a single feature instead of distributin
     <hr/>
 @endif
 
-<li class="nav-item"><a class="nav-link" href="{{ backpack_url('assessment-criteria') }}"><i class="nav-icon la la-tag"></i> Custom Assessment criteria</a></li>
+<li class="nav-item"><a class="nav-link" href="{{ backpack_url('additional-criteria') }}"><i class="nav-icon la la-tag"></i> Custom Assessment criteria</a></li>
 
 
 
@@ -143,3 +143,6 @@ E.g., Centralise instituion selection to a single feature instead of distributin
 @endif
 
 <li class="nav-item"><a class="nav-link" href="{{ backpack_url('assessment') }}"><i class="nav-icon la la-question"></i> Assessments</a></li>
+<li class="nav-item"><a class="nav-link" href="{{ backpack_url('additional-criteria-score-tag') }}"><i class="nav-icon la la-question"></i> Additional criteria score tags</a></li>
+
+<li class="nav-item"><a class="nav-link" href="{{ backpack_url('additional-criteria-custom-score-tag') }}"><i class="nav-icon la la-question"></i> Additional criteria custom score tags</a></li>

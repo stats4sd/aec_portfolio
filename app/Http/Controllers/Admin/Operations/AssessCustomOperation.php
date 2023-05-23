@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use App\Enums\AssessmentStatus;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\ValidationException;
 
 trait AssessCustomOperation
 {
@@ -84,7 +85,7 @@ trait AssessCustomOperation
         // validate fields
         $rules = [];
 
-        foreach ($institution->assessmentCriteria as $assessmentCriterion) {
+        foreach ($institution->additionalCriteria as $assessmentCriterion) {
             $rules[$assessmentCriterion->id . "_rating"] = ['nullable', 'numeric', 'max:2', 'min:0'];
         }
 
@@ -96,19 +97,53 @@ trait AssessCustomOperation
         ])->validate();
 
 
-        foreach ($institution->assessmentCriteria as $assessmentCriterion) {
+        foreach ($institution->additionalCriteria as $assessmentCriterion) {
             $assessmentCriterionId = $assessmentCriterion->id;
 
-            $latestAssessment->assessmentCriteria()->updateExistingPivot($assessmentCriterionId, [
+            $latestAssessment->additionalCriteria()->updateExistingPivot($assessmentCriterionId, [
                 'rating' => $request->input("${assessmentCriterionId}_rating"),
                 'rating_comment' => $request->input("${assessmentCriterionId}_rating_comment"),
                 'is_na' => $request->input("${assessmentCriterionId}_is_na") ?? 0,
             ]);
 
 
-            $criteriaAssessment = AdditionalCriteriaAssessment::where('assessment_id', $latestAssessment->id)->where('assessment_criteria_id', $assessmentCriterionId)->first();
+            $criteriaAssessment = AdditionalCriteriaAssessment::where('assessment_id', $latestAssessment->id)->where('additional_criteria_id', $assessmentCriterionId)->first();
 
         }
+
+        $sync = json_decode($request->input("additionalCriteriaScoreTags" . $assessmentCriterion->id));
+        $syncPivot = [];
+
+        if ($sync) {
+
+            for ($i = 0, $iMax = count($sync); $i < $iMax; $i++) {
+                $syncPivot[] = ['assessment_id' => $latestAssessment->id];
+            }
+
+            $sync = collect($sync)->combine($syncPivot);
+
+            $criteriaAssessment->additionalCriteriaScoreTags()->sync($sync->toArray());
+        }
+
+        $custom_score_tags = json_decode($request->input("customScoreTags" . $assessmentCriterion->id), true);
+
+        if ($custom_score_tags) {
+
+            for ($i = 0, $iMax = count($custom_score_tags); $i < $iMax; $i++) {
+
+                if (empty($custom_score_tags[$i])) {
+                    unset($custom_score_tags[$i]);
+                } elseif (!array_key_exists('name', $custom_score_tags[$i])) {
+                    throw ValidationException::withMessages(['customScoreTags' . $assessmentCriterion->id => 'New examples/indicators must have a name']);
+                } else {
+                    $custom_score_tags[$i]['assessment_id'] = $latestAssessment->id;
+                }
+
+            }
+
+            $criteriaAssessment->customScoreTags()->createMany($custom_score_tags);
+        }
+
 
         if ($request->assessment_complete) {
             $latestAssessment->assessment_status = AssessmentStatus::Complete;

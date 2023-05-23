@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      */
@@ -23,6 +22,13 @@ return new class extends Migration
             $table->foreignId('additional_criteria_score_tag_id');
             $table->foreign('additional_criteria_score_tag_id', 'ca_acst_acst_id')
                 ->on('additional_criteria_score_tags')
+                ->references('id')
+                ->cascadeOnUpdate()
+                ->cascadeOnDelete();
+
+            $table->foreignId('assessment_id');
+            $table->foreign('additional_criteria_score_tag_id', 'ca_acst_assessment_id')
+                ->on('assessments')
                 ->references('id')
                 ->cascadeOnUpdate()
                 ->cascadeOnDelete();

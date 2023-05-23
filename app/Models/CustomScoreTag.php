@@ -24,8 +24,8 @@ class CustomScoreTag extends Model
         return $this->belongsTo(Principle::class);
     }
 
-    public function project(): BelongsTo
+    public function assessment(): BelongsTo
     {
-        return $this->belongsTo(Project::class);
+        return $this->belongsTo(Assessment::class);
     }
 }

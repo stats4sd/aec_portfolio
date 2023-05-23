@@ -17,20 +17,20 @@ class AdditionalCriteriaAssessment extends Model
         return $this->belongsTo(Assessment::class);
     }
 
-    public function assessmentCriteria(): BelongsTo
+    public function additionalCriteria(): BelongsTo
     {
         return $this->belongsTo(AdditionalCriteria::class);
     }
 
-    public function scoreTags(): BelongsToMany
+    public function additionalCriteriaScoreTags(): BelongsToMany
     {
-        return $this->belongsToMany(ScoreTag::class)
+        return $this->belongsToMany(AdditionalCriteriaScoreTag::class)
             ->withPivot('assessment_id');
     }
 
-    public function customScoreTags(): HasMany
+    public function additionalCriteriaCustomScoreTags(): HasMany
     {
-        return $this->hasMany(CustomScoreTag::class);
+        return $this->hasMany(AdditionalCriteriaCustomScoreTag::class);
     }
 
 }

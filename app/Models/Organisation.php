@@ -78,7 +78,7 @@ class Organisation extends Model
         return $this->belongsTo(User::class, 'creator_id');
     }
 
-    public function assessmentCriteria(): HasMany
+    public function additionalCriteria(): HasMany
     {
         return $this->hasMany(AdditionalCriteria::class);
     }

@@ -4,10 +4,14 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Requests\AssessmentCriteriaRequest;
 use App\Models\AdditionalCriteria;
+use App\Models\AdditionalCriteriaScoreTag;
 use Backpack\CRUD\app\Http\Controllers\CrudController;
 use Backpack\CRUD\app\Http\Controllers\Operations\ReorderOperation;
 use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
 use Backpack\CRUD\app\Library\Widget;
+use Backpack\Pro\Http\Controllers\Operations\FetchOperation;
+use Backpack\Pro\Http\Controllers\Operations\InlineCreateOperation;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Facades\Session;
 
@@ -25,7 +29,9 @@ class AdditionalCriteriaCrudController extends CrudController
     use \Backpack\CRUD\app\Http\Controllers\Operations\ShowOperation;
 
     use AuthorizesRequests;
+    use InlineCreateOperation;
     use ReorderOperation;
+    use FetchOperation;
 
     /**
      * Configure the CrudPanel object. Apply settings to all operations.
@@ -35,7 +41,7 @@ class AdditionalCriteriaCrudController extends CrudController
     public function setup()
     {
         CRUD::setModel(\App\Models\AdditionalCriteria::class);
-        CRUD::setRoute(config('backpack.base.route_prefix') . '/assessment-criteria');
+        CRUD::setRoute(config('backpack.base.route_prefix') . '/additional-criteria');
         CRUD::setEntityNameStrings('additional criteria', 'additional criteria');
     }
 
@@ -52,7 +58,7 @@ class AdditionalCriteriaCrudController extends CrudController
         CRUD::setPersistentTable(false);
         CRUD::setResponsiveTable(false);
         //CRUD::enableDetailsRow();
-        CRUD::setDetailsRowView('details.assessment_criteria');
+        CRUD::setDetailsRowView('details.additional_criteria');
 
         $this->crud->addClause('where', 'organisation_id', Session::get('selectedOrganisationId'));
 
@@ -106,6 +112,26 @@ class AdditionalCriteriaCrudController extends CrudController
             ->hint('If this is no, then every project or initiative must be given a rating for this.');
         CRUD::field('rating_na')->label('What does a rating of "na" mean?');
 
+        CRUD::field('score-tag-title')
+            ->type('section-title')
+            ->title('Add Examples / Indicators')
+            ->content('Optionally, you may add any number of examples or indicators that an initiative may use to show evidence of this criteria. These items will appear within each assessment, and users may tick items that are present or demonstrable within the initiative.')
+            ->view_namespace('stats4sd.laravel-backpack-section-title::fields');
+
+
+        CRUD::field('additionalCriteriaScoreTags')
+            ->label('Add Examples / Indicators')
+            ->type('relationship')
+            ->subfields([
+                [
+                    'name' => 'name',
+                    'type' => 'text',
+                ],
+                [
+                    'name' => 'description',
+                    'type' => 'textarea',
+                ],
+            ]);
 
     }
 
@@ -135,4 +161,17 @@ class AdditionalCriteriaCrudController extends CrudController
                 ',
             ]);
     }
+
+    public function fetchAdditionalCriteriaScoreTags()
+    {
+        return $this->fetch([
+            'model' => AdditionalCriteriaScoreTag::class,
+            'query' => function (AdditionalCriteriaScoreTag $model) {
+                return $model->whereHas('additionalCriteria', function (Builder $query) {
+                    $query->where('organisation_id', '=', Session::get('selectedOrganisationId'));
+                });
+            },
+        ]);
+    }
+
 }

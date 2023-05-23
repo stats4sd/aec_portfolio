@@ -26,7 +26,7 @@ class AdditionalCriteria extends Model
         static::created(static function(AdditionalCriteria $entry) {
            foreach($entry->institution->projects as $project) {
                $latestAssessment = $project->assessments->last();
-               $latestAssessment->assessmentCriteria()->attach($entry->id);
+               $latestAssessment->additionalCriteria()->attach($entry->id);
            }
         });
     }
@@ -52,9 +52,14 @@ class AdditionalCriteria extends Model
         return $this->hasMany(AdditionalCriteriaAssessment::class);
     }
 
-    public function assessmentCriteriaScoreTags(): HasMany
+    public function additionalCriteriaScoreTags(): HasMany
     {
-        return $this->hasMany(AssessmentCriteriaScoreTags);
+        return $this->hasMany(AdditionalCriteriaScoreTag::class);
+    }
+
+    public function additionalCriteriaCustomScoreTags(): HasMany
+    {
+        return $this->hasMany(AdditionalCriteriaCustomScoreTag::class);
     }
 
 

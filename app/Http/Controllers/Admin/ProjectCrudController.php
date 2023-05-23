@@ -6,7 +6,7 @@ use App\Models\Region;
 use App\Models\Country;
 use App\Models\Project;
 use App\Models\RedLine;
-use App\Models\ScoreTag;
+use App\Models\AdditionalCriteriaScoreTag;
 use App\Models\Portfolio;
 use App\Models\Principle;
 use App\Models\Assessment;

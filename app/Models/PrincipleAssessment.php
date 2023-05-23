@@ -28,7 +28,7 @@ class PrincipleAssessment extends Model
 
     public function scoreTags(): BelongsToMany
     {
-        return $this->belongsToMany(ScoreTag::class)
+        return $this->belongsToMany(AdditionalCriteriaScoreTag::class)
             ->withPivot('assessment_id');
     }
 
