@@ -82,28 +82,27 @@ class Project extends Model
         return $this->hasMany(Assessment::class);
     }
 
-    public function latestAssessment() {
+    public function latestAssessment()
+    {
         return $this->assessments->last();
     }
 
-    public function getLatestAssessmentStatusAttribute() {
+    public function getLatestAssessmentStatusAttribute()
+    {
         return $this->assessments->last()->assessment_status?->value;
     }
 
-    public
-    function organisation()
+    public function organisation()
     {
         return $this->belongsTo(Organisation::class);
     }
 
-    public
-    function portfolio()
+    public function portfolio()
     {
         return $this->belongsTo(Portfolio::class);
     }
 
-    public
-    function customScoreTags()
+    public function customScoreTags()
     {
         return $this->hasMany(CustomScoreTag::class);
     }
