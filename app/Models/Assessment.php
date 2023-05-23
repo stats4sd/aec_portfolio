@@ -124,7 +124,7 @@ class Assessment extends Model
     // Custom Assessment Criteria
     public function assessmentCriteria(): BelongsToMany
     {
-        return $this->belongsToMany(AssessmentCriteria::class, 'criteria_assessment')
+        return $this->belongsToMany(AdditionalCriteria::class, 'additional_criteria_assessment')
             ->withPivot([
                 'rating',
                 'rating_comment',

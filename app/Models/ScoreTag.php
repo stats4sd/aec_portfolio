@@ -27,6 +27,6 @@ class ScoreTag extends Model
 
     public function criteriaAssessment(): BelongsToMany
     {
-        return $this->belongsToMany(CriteriaAssessment::class);
+        return $this->belongsToMany(AdditionalCriteriaAssessment::class);
     }
 }

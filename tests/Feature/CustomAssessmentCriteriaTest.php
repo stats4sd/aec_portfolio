@@ -2,7 +2,7 @@
 
 namespace Tests\Feature;
 
-use App\Models\AssessmentCriteria;
+use App\Models\AdditionalCriteria;
 use App\Models\Organisation;
 use App\Models\Portfolio;
 use App\Models\User;
@@ -15,7 +15,7 @@ test('assessment criteria can be created', function() {
 
     $orgId = Organisation::first()->id;
 
-    $item = AssessmentCriteria::factory()
+    $item = AdditionalCriteria::factory()
         ->create([
             'organisation_id' => $orgId,
         ]);

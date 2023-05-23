@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Requests\AssessmentCriteriaRequest;
-use App\Models\AssessmentCriteria;
+use App\Models\AdditionalCriteria;
 use Backpack\CRUD\app\Http\Controllers\CrudController;
 use Backpack\CRUD\app\Http\Controllers\Operations\ReorderOperation;
 use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
@@ -16,7 +16,7 @@ use Illuminate\Support\Facades\Session;
  * @package App\Http\Controllers\Admin
  * @property-read \Backpack\CRUD\app\Library\CrudPanel\CrudPanel $crud
  */
-class AssessmentCriteriaCrudController extends CrudController
+class AdditionalCriteriaCrudController extends CrudController
 {
     use \Backpack\CRUD\app\Http\Controllers\Operations\ListOperation;
     use \Backpack\CRUD\app\Http\Controllers\Operations\CreateOperation;
@@ -34,9 +34,9 @@ class AssessmentCriteriaCrudController extends CrudController
      */
     public function setup()
     {
-        CRUD::setModel(\App\Models\AssessmentCriteria::class);
+        CRUD::setModel(\App\Models\AdditionalCriteria::class);
         CRUD::setRoute(config('backpack.base.route_prefix') . '/assessment-criteria');
-        CRUD::setEntityNameStrings('assessment criteria', 'assessment criteria');
+        CRUD::setEntityNameStrings('additional criteria', 'additional criteria');
     }
 
     /**
@@ -51,7 +51,7 @@ class AssessmentCriteriaCrudController extends CrudController
 
         CRUD::setPersistentTable(false);
         CRUD::setResponsiveTable(false);
-        CRUD::enableDetailsRow();
+        //CRUD::enableDetailsRow();
         CRUD::setDetailsRowView('details.assessment_criteria');
 
         $this->crud->addClause('where', 'organisation_id', Session::get('selectedOrganisationId'));

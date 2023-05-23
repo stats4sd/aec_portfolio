@@ -7,9 +7,9 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class CriteriaAssessment extends Model
+class AdditionalCriteriaAssessment extends Model
 {
-    protected $table = 'criteria_assessment';
+    protected $table = 'additional_criteria_assessment';
     protected $guarded = ['id'];
 
     public function assessment(): BelongsTo
@@ -19,7 +19,7 @@ class CriteriaAssessment extends Model
 
     public function assessmentCriteria(): BelongsTo
     {
-        return $this->belongsTo(AssessmentCriteria::class);
+        return $this->belongsTo(AdditionalCriteria::class);
     }
 
     public function scoreTags(): BelongsToMany

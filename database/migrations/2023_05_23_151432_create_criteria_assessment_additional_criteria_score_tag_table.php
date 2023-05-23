@@ -11,27 +11,23 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('additional_criteria_assessment', function (Blueprint $table) {
+        Schema::create('additional_criteria_assessment_additional_criteria_score_tag', function (Blueprint $table) {
             $table->id();
-
-            $table->foreignId('assessment_id')
+            $table->foreignId('additional_criteria_assessment_id');
+            $table->foreign('additional_criteria_assessment_id', 'ca_acst_ca_id')
+                ->on('additional_criteria_assessment')
                 ->references('id')
-                ->on('assessments')
                 ->cascadeOnUpdate()
                 ->cascadeOnDelete();
 
-            $table->foreignId('additional_criteria_id')
+            $table->foreignId('additional_criteria_score_tag_id');
+            $table->foreign('additional_criteria_score_tag_id', 'ca_acst_acst_id')
+                ->on('additional_criteria_score_tags')
                 ->references('id')
-                ->on('additional_criteria')
                 ->cascadeOnUpdate()
                 ->cascadeOnDelete();
-
-            $table->decimal('rating', 3, 2)->nullable();
-            $table->text('rating_comment')->nullable();
-            $table->boolean('is_na')->default(0);
 
             $table->timestamps();
-            $table->softDeletes();
         });
     }
 
@@ -40,6 +36,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('additional_criteria_assessment');
+        Schema::dropIfExists('criteria_assessment_additional_criteria_score_tag');
     }
 };

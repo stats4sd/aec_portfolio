@@ -80,7 +80,7 @@ class Organisation extends Model
 
     public function assessmentCriteria(): HasMany
     {
-        return $this->hasMany(AssessmentCriteria::class);
+        return $this->hasMany(AdditionalCriteria::class);
     }
 
     public function removalRequests()

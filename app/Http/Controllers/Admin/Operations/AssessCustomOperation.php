@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Admin\Operations;
 
-use App\Models\CriteriaAssessment;
+use App\Models\AdditionalCriteriaAssessment;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Enums\AssessmentStatus;
@@ -106,7 +106,7 @@ trait AssessCustomOperation
             ]);
 
 
-            $criteriaAssessment = CriteriaAssessment::where('assessment_id', $latestAssessment->id)->where('assessment_criteria_id', $assessmentCriterionId)->first();
+            $criteriaAssessment = AdditionalCriteriaAssessment::where('assessment_id', $latestAssessment->id)->where('assessment_criteria_id', $assessmentCriterionId)->first();
 
         }
 

@@ -10,11 +10,11 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create('criteria_assessment_score_tag', function (Blueprint $table) {
+        Schema::create('additional_criteria_score_tags', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('criteria_assessment_id')->constrained('criteria_assessment');
-            $table->foreignId('score_tag_id')->constrained();
-            $table->foreignId('assessment_id')->constrained();
+            $table->foreignId('additional_criteria_id')->constrained('additional_criteria');
+            $table->string('name');
+            $table->text('description')->nullable();
         });
     }
 
@@ -23,6 +23,6 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        //
+        Schema::dropIfExists('additional_criteria_score_tags');
     }
 };

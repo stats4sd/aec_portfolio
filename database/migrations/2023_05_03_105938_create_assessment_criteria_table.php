@@ -10,7 +10,7 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create('assessment_criteria', function (Blueprint $table) {
+        Schema::create('additional_criteria', function (Blueprint $table) {
             $table->id();
             $table->foreignId('organisation_id')
                 ->constrained();

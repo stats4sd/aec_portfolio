@@ -2,13 +2,13 @@
 
 namespace Database\Factories;
 
-use App\Models\AssessmentCriteria;
+use App\Models\AdditionalCriteria;
 use App\Models\Organisation;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class AssessmentCriteriaFactory extends Factory
 {
-    protected $model = AssessmentCriteria::class;
+    protected $model = AdditionalCriteria::class;
 
     public function definition(): array
     {

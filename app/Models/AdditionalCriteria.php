@@ -10,11 +10,11 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Testing\Fluent\Concerns\Has;
 
-class AssessmentCriteria extends Model
+class AdditionalCriteria extends Model
 {
     use CrudTrait, HasFactory;
 
-    protected $table = 'assessment_criteria';
+    protected $table = 'additional_criteria';
     protected $guarded = ['id'];
 
     protected static function booted()
@@ -23,7 +23,7 @@ class AssessmentCriteria extends Model
 
 
         // on creation, make sure that the new AssessmentCriterion is included in all exsiting projects (latest assessment only).
-        static::created(static function(AssessmentCriteria $entry) {
+        static::created(static function(AdditionalCriteria $entry) {
            foreach($entry->institution->projects as $project) {
                $latestAssessment = $project->assessments->last();
                $latestAssessment->assessmentCriteria()->attach($entry->id);
@@ -39,7 +39,7 @@ class AssessmentCriteria extends Model
 
     public function assessments(): BelongsToMany
     {
-        return $this->belongsToMany(Assessment::class, 'criteria_assessment')
+        return $this->belongsToMany(Assessment::class, 'additional_criteria_assessment')
             ->withPivot([
                 'rating',
                 'rating_comment',
@@ -47,9 +47,14 @@ class AssessmentCriteria extends Model
             ]);
     }
 
-    public function criteriaAssessment(): HasMany
+    public function additionalCriteriaAssessment(): HasMany
     {
-        return $this->hasMany(CriteriaAssessment::class);
+        return $this->hasMany(AdditionalCriteriaAssessment::class);
+    }
+
+    public function assessmentCriteriaScoreTags(): HasMany
+    {
+        return $this->hasMany(AssessmentCriteriaScoreTags);
     }
 
 

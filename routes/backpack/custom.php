@@ -6,7 +6,7 @@
 // This route file is loaded automatically by Backpack\Base.
 // Routes you generate using Backpack\Generators will be placed here.
 
-use App\Http\Controllers\Admin\AssessmentCriteriaCrudController;
+use App\Http\Controllers\Admin\AdditionalCriteriaCrudController;
 use App\Http\Controllers\Admin\AssessmentCrudController;
 use App\Http\Controllers\Admin\ContinentCrudController;
 use App\Http\Controllers\Admin\CountryCrudController;
@@ -76,7 +76,7 @@ Route::group([
 
     Route::get('/', [Backpack\CRUD\app\Http\Controllers\AdminController::class, 'redirect'])->name('backpack');
 
-    Route::crud('assessment-criteria', AssessmentCriteriaCrudController::class);
+    Route::crud('assessment-criteria', AdditionalCriteriaCrudController::class);
     Route::get('my-role', [MyRoleController::class, 'show']);
     Route::get('my-role/request-to-leave', [MyRoleController::class, 'requestToLeave']);
     Route::post('my-role/confirm-to-leave', [MyRoleController::class, 'confirmToLeave']);
