@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Backpack\CRUD\app\Models\Traits\CrudTrait;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -28,6 +29,10 @@ class AdditionalCriteria extends Model
                $latestAssessment = $project->assessments->last();
                $latestAssessment->additionalCriteria()->attach($entry->id);
            }
+        });
+
+        static::addGlobalScope('order', function(Builder $builder) {
+            $builder->orderBy('lft', 'asc');
         });
     }
 

@@ -142,91 +142,91 @@ class Assessment extends Model
         // hard-coded principles, so careful if we change our definition of AE!
         public function scoreTags1()
         {
-            return $this->belongsToMany(AdditionalCriteriaScoreTag::class, 'principle_assessment_score_tag', 'assessment_id', 'score_tag_id')
+            return $this->belongsToMany(ScoreTag::class, 'principle_assessment_score_tag', 'assessment_id', 'score_tag_id')
                 ->withPivot('principle_assessment_id')
                 ->where('principle_id', 1);
         }
 
         public function scoreTags2()
         {
-            return $this->belongsToMany(AdditionalCriteriaScoreTag::class, 'principle_assessment_score_tag', 'assessment_id', 'score_tag_id')
+            return $this->belongsToMany(ScoreTag::class, 'principle_assessment_score_tag', 'assessment_id', 'score_tag_id')
                 ->withPivot('principle_assessment_id')
                 ->where('principle_id', 2);
         }
 
         public function scoreTags3()
         {
-            return $this->belongsToMany(AdditionalCriteriaScoreTag::class, 'principle_assessment_score_tag', 'assessment_id', 'score_tag_id')
+            return $this->belongsToMany(ScoreTag::class, 'principle_assessment_score_tag', 'assessment_id', 'score_tag_id')
                 ->withPivot('principle_assessment_id')
                 ->where('principle_id', 3);
         }
 
         public function scoreTags4()
         {
-            return $this->belongsToMany(AdditionalCriteriaScoreTag::class, 'principle_assessment_score_tag', 'assessment_id', 'score_tag_id')
+            return $this->belongsToMany(ScoreTag::class, 'principle_assessment_score_tag', 'assessment_id', 'score_tag_id')
                 ->withPivot('principle_assessment_id')
                 ->where('principle_id', 4);
         }
 
         public function scoreTags5()
         {
-            return $this->belongsToMany(AdditionalCriteriaScoreTag::class, 'principle_assessment_score_tag', 'assessment_id', 'score_tag_id')
+            return $this->belongsToMany(ScoreTag::class, 'principle_assessment_score_tag', 'assessment_id', 'score_tag_id')
                 ->withPivot('principle_assessment_id')
                 ->where('principle_id', 5);
         }
 
         public function scoreTags6()
         {
-            return $this->belongsToMany(AdditionalCriteriaScoreTag::class, 'principle_assessment_score_tag', 'assessment_id', 'score_tag_id')
+            return $this->belongsToMany(ScoreTag::class, 'principle_assessment_score_tag', 'assessment_id', 'score_tag_id')
                 ->withPivot('principle_assessment_id')
                 ->where('principle_id', 6);
         }
 
         public function scoreTags7()
         {
-            return $this->belongsToMany(AdditionalCriteriaScoreTag::class, 'principle_assessment_score_tag', 'assessment_id', 'score_tag_id')
+            return $this->belongsToMany(ScoreTag::class, 'principle_assessment_score_tag', 'assessment_id', 'score_tag_id')
                 ->withPivot('principle_assessment_id')
                 ->where('principle_id', 7);
         }
 
         public function scoreTags8()
         {
-            return $this->belongsToMany(AdditionalCriteriaScoreTag::class, 'principle_assessment_score_tag', 'assessment_id', 'score_tag_id')
+            return $this->belongsToMany(ScoreTag::class, 'principle_assessment_score_tag', 'assessment_id', 'score_tag_id')
                 ->withPivot('principle_assessment_id')
                 ->where('principle_id', 8);
         }
 
         public function scoreTags9()
         {
-            return $this->belongsToMany(AdditionalCriteriaScoreTag::class, 'principle_assessment_score_tag', 'assessment_id', 'score_tag_id')
+            return $this->belongsToMany(ScoreTag::class, 'principle_assessment_score_tag', 'assessment_id', 'score_tag_id')
                 ->withPivot('principle_assessment_id')
                 ->where('principle_id', 9);
         }
 
         public function scoreTags10()
         {
-            return $this->belongsToMany(AdditionalCriteriaScoreTag::class, 'principle_assessment_score_tag', 'assessment_id', 'score_tag_id')
+            return $this->belongsToMany(ScoreTag::class, 'principle_assessment_score_tag', 'assessment_id', 'score_tag_id')
                 ->withPivot('principle_assessment_id')
                 ->where('principle_id', 10);
         }
 
         public function scoreTags11()
         {
-            return $this->belongsToMany(AdditionalCriteriaScoreTag::class, 'principle_assessment_score_tag', 'assessment_id', 'score_tag_id')
+            return $this->belongsToMany(ScoreTag::class, 'principle_assessment_score_tag', 'assessment_id', 'score_tag_id')
                 ->withPivot('principle_assessment_id')
                 ->where('principle_id', 11);
         }
 
         public function scoreTags12()
         {
-            return $this->belongsToMany(AdditionalCriteriaScoreTag::class, 'principle_assessment_score_tag', 'assessment_id', 'score_tag_id')
+            return $this->belongsToMany(ScoreTag::class, 'principle_assessment_score_tag', 'assessment_id', 'score_tag_id')
                 ->withPivot('principle_assessment_id')
                 ->where('principle_id', 12);
         }
 
         public function scoreTags13()
         {
-            return $this->belongsToMany(AdditionalCriteriaScoreTag::class, 'principle_assessment_score_tag', 'assessment_id', 'score_tag_id')
+            return $this->belongsToMany(ScoreTag::class, 'principle_assessment_score_tag', 'assessment_id', 'score_tag_id')
                 ->withPivot('principle_assessment_id')
                 ->where('principle_id', 13);
         }

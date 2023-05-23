@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -11,6 +12,8 @@ class AdditionalCriteriaAssessment extends Model
 {
     protected $table = 'additional_criteria_assessment';
     protected $guarded = ['id'];
+
+
 
     public function assessment(): BelongsTo
     {

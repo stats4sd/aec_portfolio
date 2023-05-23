@@ -26,7 +26,7 @@ return new class extends Migration {
             // for reordering operation
             $table->integer('parent_id')->default(0)->nullable();
             $table->integer('lft')->default(0);
-            $table->integer('fgt')->default(0);
+            $table->integer('rgt')->default(0);
             $table->integer('depth')->default(0);
 
             $table->timestamps();
