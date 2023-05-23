@@ -17,10 +17,24 @@ class AssessmentCriteria extends Model
     protected $table = 'assessment_criteria';
     protected $guarded = ['id'];
 
+    protected static function booted()
+    {
+        parent::booted();
+
+
+        // on creation, make sure that the new AssessmentCriterion is included in all exsiting projects (latest assessment only).
+        static::created(static function(AssessmentCriteria $entry) {
+           foreach($entry->institution->projects as $project) {
+               $latestAssessment = $project->assessments->last();
+               $latestAssessment->assessmentCriteria()->attach($entry->id);
+           }
+        });
+    }
+
 
     public function institution(): BelongsTo
     {
-        return $this->belongsTo(Organisation::class);
+        return $this->belongsTo(Organisation::class,  'organisation_id');
     }
 
     public function assessments(): BelongsToMany
