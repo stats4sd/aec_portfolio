@@ -141,7 +141,9 @@ trait AssessCustomOperation
 
             }
 
-            $criteriaAssessment->customScoreTags()->createMany($custom_score_tags);
+            // purge and recreate all custom score tags (easier than checking to see if we should delete individual ones)
+            $criteriaAssessment->additionalCriteriaCustomScoreTags()->delete();
+            $criteriaAssessment->additionalCriteriaCustomScoreTags()->createMany($custom_score_tags);
         }
 
 

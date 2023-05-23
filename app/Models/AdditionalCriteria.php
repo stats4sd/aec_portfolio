@@ -47,7 +47,7 @@ class AdditionalCriteria extends Model
             ]);
     }
 
-    public function additionalCriteriaAssessment(): HasMany
+    public function additionalCriteriaAssessments(): HasMany
     {
         return $this->hasMany(AdditionalCriteriaAssessment::class);
     }

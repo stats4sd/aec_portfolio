@@ -1,4 +1,4 @@
-@if ($crud->hasAccess('update') && $entry->organisation->assessmentCriteria()->count() > 0)
+    @if ($crud->hasAccess('update') && $entry->organisation->additionalCriteria()->count() > 0)
 	<a
     @if($entry->assessments->last()->overall_score === 0 || $entry->assessments->last()->assessment_status === \App\Enums\AssessmentStatus::NotStarted || $entry->assessments->last()->assessment_status === \App\Enums\AssessmentStatus::RedlinesIncomplete)
             class="btn btn-info disabled"

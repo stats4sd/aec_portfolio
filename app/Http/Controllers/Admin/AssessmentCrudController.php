@@ -237,6 +237,9 @@ class AssessmentCrudController extends CrudController
         $entry = CRUD::getCurrentEntry();
 
         foreach ($entry->additionalCriteria as $assessmentCriterion) {
+
+            $additionalCriteriaAssessment = $assessmentCriterion->additionalCriteriaAssessments()->where('assessment_id', $entry->id)->first();
+
             $ratingZeroDefintionRow = '<span class="text-secondary">This principle cannot be marked as not applicable</span>';
             if ($assessmentCriterion->can_be_na) {
                 $ratingZeroDefintionRow = "
@@ -302,6 +305,11 @@ class AssessmentCrudController extends CrudController
                 ->type('textarea')
                 ->default($assessmentCriterion->pivot->rating_comment);
 
+            // get existing score tags
+            $tags = $assessmentCriterion->additionalCriteriaScoreTags()->whereHas('additionalCriteriaAssessment', function ($query) use ($entry) {
+                $query->where('additional_criteria_assessment.assessment_id', $entry->id);
+            })->pluck('id')->toArray();
+
             CRUD::field('additionalCriteriaScoreTags' . $assessmentCriterion->id)
                 ->tab($assessmentCriterion->name)
                 ->label('Presence of Examples/Indicators for ' . $assessmentCriterion->name)
@@ -310,16 +318,22 @@ class AssessmentCrudController extends CrudController
                 ->model(AdditionalCriteriaScoreTag::class)
                 ->options(function ($query) use ($assessmentCriterion) {
                     return $query->where('additional_criteria_id', $assessmentCriterion->id)->get()->pluck('name', 'id')->toArray();
-                });
+                })
+                ->default($tags);
+
+            $customTags = $additionalCriteriaAssessment->additionalCriteriaCustomScoreTags
+                ->map(fn($item) => ['name' => $item->name, 'id' => $item->id, 'description' => $item->description])
+                ->toArray();
 
             CRUD::field('customScoreTags' . $assessmentCriterion->id)
                 ->tab($assessmentCriterion->name)
                 ->label('New Example/Indicator for ' . $assessmentCriterion->name)
-                ->type('table')
+                ->type('custom_table')
                 ->columns([
                     'name' => 'Name',
                     'description' => 'Description (optional)'],
-                );
+                )
+                ->default($customTags);
         }
 
         CRUD::field('complete_title')

@@ -13,6 +13,10 @@ return new class extends Migration
     {
         Schema::create('additional_criteria_custom_score_tags', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('additional_criteria_assessment_id');
+            $table->foreignId('assessment_id');
+            $table->string('name');
+            $table->text('description')->nullable();
             $table->timestamps();
         });
     }
