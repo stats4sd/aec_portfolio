@@ -6,6 +6,7 @@ use Backpack\CRUD\app\Models\Traits\CrudTrait;
 use App\Imports\PrincipleImport;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class CustomScoreTag extends Model
 {
@@ -13,17 +14,17 @@ class CustomScoreTag extends Model
 
     protected $guarded = ['id'];
 
-    public function principleProject()
+    public function principleAssessment(): BelongsTo
     {
-        return $this->belongsTo(PrincipleProject::class);
+        return $this->belongsTo(PrincipleAssessment::class);
     }
 
-    public function principle()
+    public function principle(): BelongsTo
     {
         return $this->belongsTo(Principle::class);
     }
 
-    public function project()
+    public function project(): BelongsTo
     {
         return $this->belongsTo(Project::class);
     }
