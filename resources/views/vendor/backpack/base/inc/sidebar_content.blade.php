@@ -1,5 +1,5 @@
 <!-- This file is used to store sidebar items, starting with Backpack\Base 0.9.0 -->
- 
+
 <!--
 
 Question: How should user select an institutions?
@@ -45,6 +45,7 @@ E.g., Centralise instituion selection to a single feature instead of distributin
 
 
 <!-- TODO: this page requires a full review on Policy and permisssions -->
+
 @if(Auth::user()->canAny(['invite institutional members', 'update role of institutional members', 'maintain institutional members']))
     <li class="nav-item"><a class="nav-link" href="{{ backpack_url('organisation-members') }}"><i class="la la-user-friends nav-icon"></i> Institution Members</a></li>
     <hr/>
@@ -82,6 +83,9 @@ E.g., Centralise instituion selection to a single feature instead of distributin
     <hr/>
 @endif
 
+@if(Auth::user()->canAny(['maintain custom principles', 'view custom principles']))
+<li class="nav-item"><a class="nav-link" href="{{ backpack_url('additional-criteria') }}"><i class="nav-icon la la-tag"></i> Additional Assessment criteria</a></li>
+@endif
 
 
 @if(Auth::user()->can('view users'))
@@ -138,5 +142,3 @@ E.g., Centralise instituion selection to a single feature instead of distributin
     <li class="nav-item"><a class="nav-link" href="{{ backpack_url('removal-request') }}"><i class="nav-icon la la-trash-alt"></i> Removal Requests</a></li>
     <hr/>
 @endif
-
-<li class="nav-item"><a class="nav-link" href="{{ backpack_url('assessment') }}"><i class="nav-icon la la-question"></i> Assessments</a></li>
