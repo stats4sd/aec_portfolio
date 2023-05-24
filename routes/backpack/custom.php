@@ -19,6 +19,7 @@ use App\Http\Controllers\Admin\ScoreTagCrudController;
 use App\Http\Controllers\Admin\UserCrudController;
 use App\Http\Controllers\Admin\SelectOrganisationController;
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\DataVisualisationDashboardController;
 use App\Http\Controllers\Admin\GenericDashboardController;
 use App\Http\Controllers\Admin\MyRoleController;
 use App\Http\Controllers\Admin\RemovalRequestCrudController;
@@ -83,5 +84,7 @@ Route::group([
     Route::get('data-removal/{removeRequest}/remind', [RemovalRequestCrudController::class, 'remind']);
     Route::get('data-removal/{removeRequest}/confirm', [RemovalRequestCrudController::class, 'confirm']);
     Route::get('data-removal/{removeRequest}/perform', [RemovalRequestCrudController::class, 'perform']);
+
+    Route::get('dv-dashboard', [DataVisualisationDashboardController::class, 'show']);
 
 }); // this should be the absolute last line of this file
