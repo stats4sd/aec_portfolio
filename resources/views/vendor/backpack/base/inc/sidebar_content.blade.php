@@ -85,7 +85,7 @@ E.g., Centralise instituion selection to a single feature instead of distributin
 
 @if(Auth::user()->canAny(['maintain custom principles', 'view custom principles']))
 <li class="nav-item"><a class="nav-link" href="{{ backpack_url('additional-criteria') }}"><i class="nav-icon la la-tag"></i> Additional Assessment criteria</a></li>
-
+@endif
 
 
 @if(Auth::user()->can('view users'))
