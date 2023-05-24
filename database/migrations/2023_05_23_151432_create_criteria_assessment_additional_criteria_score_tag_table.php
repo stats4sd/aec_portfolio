@@ -27,7 +27,7 @@ return new class extends Migration {
                 ->cascadeOnDelete();
 
             $table->foreignId('assessment_id');
-            $table->foreign('additional_criteria_score_tag_id', 'ca_acst_assessment_id')
+            $table->foreign('assessment_id', 'ca_acst_assessment_id')
                 ->on('assessments')
                 ->references('id')
                 ->cascadeOnUpdate()

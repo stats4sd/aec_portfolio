@@ -109,41 +109,41 @@ trait AssessCustomOperation
 
             $criteriaAssessment = AdditionalCriteriaAssessment::where('assessment_id', $latestAssessment->id)->where('additional_criteria_id', $assessmentCriterionId)->first();
 
-        }
+            $sync = json_decode($request->input("additionalCriteriaScoreTags" . $assessmentCriterionId));
+            $syncPivot = [];
 
-        $sync = json_decode($request->input("additionalCriteriaScoreTags" . $assessmentCriterion->id));
-        $syncPivot = [];
+            if ($sync) {
 
-        if ($sync) {
-
-            for ($i = 0, $iMax = count($sync); $i < $iMax; $i++) {
-                $syncPivot[] = ['assessment_id' => $latestAssessment->id];
-            }
-
-            $sync = collect($sync)->combine($syncPivot);
-
-            $criteriaAssessment->additionalCriteriaScoreTags()->sync($sync->toArray());
-        }
-
-        $custom_score_tags = json_decode($request->input("customScoreTags" . $assessmentCriterion->id), true);
-
-        if ($custom_score_tags) {
-
-            for ($i = 0, $iMax = count($custom_score_tags); $i < $iMax; $i++) {
-
-                if (empty($custom_score_tags[$i])) {
-                    unset($custom_score_tags[$i]);
-                } elseif (!array_key_exists('name', $custom_score_tags[$i])) {
-                    throw ValidationException::withMessages(['customScoreTags' . $assessmentCriterion->id => 'New examples/indicators must have a name']);
-                } else {
-                    $custom_score_tags[$i]['assessment_id'] = $latestAssessment->id;
+                for ($i = 0, $iMax = count($sync); $i < $iMax; $i++) {
+                    $syncPivot[] = ['assessment_id' => $latestAssessment->id];
                 }
 
+                $sync = collect($sync)->combine($syncPivot);
+
+
+                $criteriaAssessment->additionalCriteriaScoreTags()->sync($sync->toArray());
             }
 
-            // purge and recreate all custom score tags (easier than checking to see if we should delete individual ones)
-            $criteriaAssessment->additionalCriteriaCustomScoreTags()->delete();
-            $criteriaAssessment->additionalCriteriaCustomScoreTags()->createMany($custom_score_tags);
+            $custom_score_tags = json_decode($request->input("customScoreTags" . $assessmentCriterionId), true);
+
+            if ($custom_score_tags) {
+
+                for ($i = 0, $iMax = count($custom_score_tags); $i < $iMax; $i++) {
+
+                    if (empty($custom_score_tags[$i])) {
+                        unset($custom_score_tags[$i]);
+                    } elseif (!array_key_exists('name', $custom_score_tags[$i])) {
+                        throw ValidationException::withMessages(['customScoreTags' . $assessmentCriterion->id => 'New examples/indicators must have a name']);
+                    } else {
+                        $custom_score_tags[$i]['assessment_id'] = $latestAssessment->id;
+                    }
+
+                }
+
+                // purge and recreate all custom score tags (easier than checking to see if we should delete individual ones)
+                $criteriaAssessment->additionalCriteriaCustomScoreTags()->delete();
+                $criteriaAssessment->additionalCriteriaCustomScoreTags()->createMany($custom_score_tags);
+            }
         }
 
 
