@@ -104,14 +104,15 @@ trait AssessOperation
         foreach (Principle::all() as $principle) {
             $principleId = $principle->id;
 
-            $latestAssessment->principles()->updateExistingPivot($principleId, [
-                'rating' => $request->input("${principleId}_rating"),
-                'rating_comment' => $request->input("${principleId}_rating_comment"),
-                'is_na' => $request->input("${principleId}_is_na") ?? 0,
-            ]);
+            // To capture these changes in the revisions table, we cannot use "updateExistingPivot()", but instead must get the PA model object and save it.
+            $principleAssessment = PrincipleAssessment::where('principle_id', $principleId)
+                ->where('assessment_id', $latestAssessment->id)
+                ->first();
 
-
-            $principleAssessment = PrincipleAssessment::where('assessment_id', $latestAssessment->id)->where('principle_id', $principleId)->first();
+            $principleAssessment->rating = $request->input("${principleId}_rating");
+            $principleAssessment->rating_comment = $request->input("${principleId}_rating_comment");
+            $principleAssessment->is_na = $request->input("${principleId}_is_na") ?? 0;
+            $principleAssessment->save();
 
             $sync = json_decode($request->input("scoreTags" . $principle->id));
             $syncPivot = [];
@@ -133,15 +134,11 @@ trait AssessOperation
 
                 for ($i = 0, $iMax = count($custom_score_tags); $i < $iMax; $i++) {
 
-                    if (empty($custom_score_tags[$i])){
+                    if (empty($custom_score_tags[$i])) {
                         unset($custom_score_tags[$i]);
-                    }
-
-                    elseif (!array_key_exists('name', $custom_score_tags[$i])) {
+                    } elseif (!array_key_exists('name', $custom_score_tags[$i])) {
                         throw ValidationException::withMessages(['customScoreTags' . $principle->id => 'New examples/indicators must have a name']);
-                    }
-
-                    else {
+                    } else {
                         $custom_score_tags[$i]['assessment_id'] = $latestAssessment->id;
                     }
 
