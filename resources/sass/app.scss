@@ -20,12 +20,12 @@
 // Basic styling
 body {
     background: #F6F6F6;
-    font-family: "Hind", sans-serif;
+    font-family: "Hind", sans-serif !important;
 }
 
 .app-header {
-    height: 100px;
-    flex-basis: 100px;
+    height: 100px !important;
+    flex-basis: 100px !important;
 }
 
 .navbar-logo {
@@ -35,4 +35,8 @@ body {
     display: inline-flex;
     align-items: center;
     opacity: 1;
+}
+
+.text-deep-green {
+    color: $deep-green !important;
 }
