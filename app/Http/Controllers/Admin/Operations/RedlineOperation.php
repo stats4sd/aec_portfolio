@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin\Operations;
 
 use App\Enums\AssessmentStatus;
 use App\Models\Assessment;
+use App\Models\AssessmentRedLine;
 use App\Models\Principle;
 use App\Models\PrincipleProject;
 use App\Models\Project;
@@ -82,11 +83,11 @@ trait RedlineOperation
 
     public function postRedlineForm(Request $request)
     {
-        if($request->has('redlines_compelete') && $request->redlines_complete === 1) {
-            foreach(RedLine::all() as $redline) {
-                if($request->has('redline_value_' . $redline->id)) {
+        if ($request->has('redlines_compelete') && $request->redlines_complete === 1) {
+            foreach (RedLine::all() as $redline) {
+                if ($request->has('redline_value_' . $redline->id)) {
 
-                    if($request->{'redline_value'.$redline->id} === null) {
+                    if ($request->{'redline_value' . $redline->id} === null) {
                         $field = 'redline_value_' . $redline->id;
                         throw ValidationException::withMessages([
                             $field => 'You must select an option for every Redline before marking the assessment as complete',
@@ -96,22 +97,30 @@ trait RedlineOperation
             }
         }
 
+        $latestAssessment = Assessment::findOrFail($request->id);
         $updates = [];
+
+
         // custom handling of redline-project relationship data
         foreach (Redline::all() as $redline) {
             if ($request->has('redline_value_' . $redline->id)) {
-                $updates[$redline->id] = ['value' => $request->{'redline_value_' . $redline->id}];
+
+                // Need to call save() on the AssessmentRedline model directly in order to save the update via the Revisionable trait:
+                $assessmentRedLine = AssessmentRedLine::where('assessment_id', $latestAssessment->id)
+                    ->where('red_line_id', $redline->id)
+                    ->first();
+
+                $assessmentRedLine->value = $request->{'redline_value_' . $redline->id};
+                $assessmentRedLine->save();
+
             }
         }
-
-        $latestAssessment = Assessment::findOrFail($request->id);
-        $latestAssessment->redlines()->sync($updates);
 
         if (collect(AssessmentStatus::InProgress, AssessmentStatus::Complete)->contains($latestAssessment->assessment_status)) {
             $latestAssessment->assessment_status = !$request->redlines_complete ? AssessmentStatus::RedlinesIncomplete : $latestAssessment->assessment_status;
         } else {
             // if a redline fails, the assessment is complete!
-            if($latestAssessment->failingRedlines()->count() > 0) {
+            if ($latestAssessment->failingRedlines()->count() > 0) {
                 $latestAssessment->assessment_status = AssessmentStatus::Complete;
             } else {
                 $latestAssessment->assessment_status = $request->redlines_complete ? AssessmentStatus::RedlinesComplete : AssessmentStatus::RedlinesIncomplete;

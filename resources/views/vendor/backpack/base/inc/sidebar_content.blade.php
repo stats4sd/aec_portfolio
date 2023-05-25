@@ -45,7 +45,6 @@ E.g., Centralise instituion selection to a single feature instead of distributin
 
 
 <!-- TODO: this page requires a full review on Policy and permisssions -->
-
 @if(Auth::user()->canAny(['invite institutional members', 'update role of institutional members', 'maintain institutional members']))
     <li class="nav-item"><a class="nav-link" href="{{ backpack_url('organisation-members') }}"><i class="la la-user-friends nav-icon"></i> Institution Members</a></li>
     <hr/>

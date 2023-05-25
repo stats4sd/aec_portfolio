@@ -100,14 +100,13 @@ trait AssessCustomOperation
         foreach ($institution->additionalCriteria as $assessmentCriterion) {
             $assessmentCriterionId = $assessmentCriterion->id;
 
-            $latestAssessment->additionalCriteria()->updateExistingPivot($assessmentCriterionId, [
-                'rating' => $request->input("${assessmentCriterionId}_rating"),
-                'rating_comment' => $request->input("${assessmentCriterionId}_rating_comment"),
-                'is_na' => $request->input("${assessmentCriterionId}_is_na") ?? 0,
-            ]);
-
-
             $criteriaAssessment = AdditionalCriteriaAssessment::where('assessment_id', $latestAssessment->id)->where('additional_criteria_id', $assessmentCriterionId)->first();
+
+            $criteriaAssessment->rating = $request->input("${assessmentCriterionId}_rating");
+            $criteriaAssessment->rating_comment = $request->input("${assessmentCriterionId}_rating_comment");
+            $criteriaAssessment->is_na = $request->input("${assessmentCriterionId}_is_na") ?? 0;
+
+            $criteriaAssessment->save();
 
             $sync = json_decode($request->input("additionalCriteriaScoreTags" . $assessmentCriterionId));
             $syncPivot = [];
