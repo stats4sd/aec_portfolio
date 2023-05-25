@@ -6,11 +6,12 @@ use App\Enums\AssessmentStatus;
 use Illuminate\Database\Eloquent\Model;
 use Backpack\CRUD\app\Models\Traits\CrudTrait;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Assessment extends Model
 {
     use CrudTrait;
-    use HasFactory;
 
     protected $table = 'assessments';
     protected $guarded = ['id'];
@@ -38,20 +39,25 @@ class Assessment extends Model
             ]);
     }
 
-    public function completedRedlines()
+    public function assessmentRedLine(): HasMany
+    {
+        return $this->hasMany(AssessmentRedLine::class);
+    }
+
+    public function completedRedlines(): BelongsToMany
     {
         return $this->belongsToMany(RedLine::class)
             ->wherePivot('value', '!=', null);
     }
 
     // relationship to get Failing redlines
-    public function failingRedlines()
+    public function failingRedlines(): BelongsToMany
     {
         return $this->belongsToMany(RedLine::class)->wherePivot('value', 1);
     }
 
 
-    public function principles()
+    public function principles(): BelongsToMany
     {
         return $this->belongsToMany(Principle::class, 'principle_assessment', 'assessment_id')
             ->withPivot([
@@ -61,12 +67,12 @@ class Assessment extends Model
             ]);
     }
 
-    public function principleAssessments()
+    public function principleAssessments(): HasMany
     {
         return $this->hasMany(PrincipleAssessment::class);
     }
 
-    public function getTotalPossibleAttribute()
+    public function getTotalPossibleAttribute(): int
     {
         if ($this->failingRedlines()->count() > 0) {
             return 0;
@@ -82,7 +88,7 @@ class Assessment extends Model
     }
 
 
-    public function getTotalAttribute()
+    public function getTotalAttribute(): int
     {
         if ($this->failingRedlines()->count() > 0) {
             return 0;
@@ -91,14 +97,12 @@ class Assessment extends Model
         if ($this->assessment_status === AssessmentStatus::Complete) {
             $principles = $this->principles;
 
-            $nonNaPrinciples = $principles->filter(fn($pr) => !$pr->pivot->is_na);
-
-            return $nonNaPrinciples->sum(fn($pr) => $pr->pivot->rating);
+            return $principles->filter(fn($pr) => !$pr->pivot->is_na)->sum(fn($pr) => $pr->pivot->rating);
 
         }
     }
 
-    public function getOverallScoreAttribute()
+    public function getOverallScoreAttribute(): ?int
     {
         if ($this->failingRedlines()->count() > 0) {
             return 0;
@@ -125,7 +129,7 @@ class Assessment extends Model
         // Custom relationships to load scoreTags filtered by each of the 13 principles
         // hard-coded principles, so careful if we change our definition of AE!
         public
-        function scoreTags1()
+        function scoreTags1(): BelongsToMany
         {
             return $this->belongsToMany(ScoreTag::class, 'principle_assessment_score_tag', 'assessment_id', 'score_tag_id')
                 ->withPivot('principle_assessment_id')
@@ -133,7 +137,7 @@ class Assessment extends Model
         }
 
         public
-        function scoreTags2()
+        function scoreTags2(): BelongsToMany
         {
             return $this->belongsToMany(ScoreTag::class, 'principle_assessment_score_tag', 'assessment_id', 'score_tag_id')
                 ->withPivot('principle_assessment_id')
@@ -141,7 +145,7 @@ class Assessment extends Model
         }
 
         public
-        function scoreTags3()
+        function scoreTags3(): BelongsToMany
         {
             return $this->belongsToMany(ScoreTag::class, 'principle_assessment_score_tag', 'assessment_id', 'score_tag_id')
                 ->withPivot('principle_assessment_id')
@@ -149,7 +153,7 @@ class Assessment extends Model
         }
 
         public
-        function scoreTags4()
+        function scoreTags4(): BelongsToMany
         {
             return $this->belongsToMany(ScoreTag::class, 'principle_assessment_score_tag', 'assessment_id', 'score_tag_id')
                 ->withPivot('principle_assessment_id')
@@ -157,7 +161,7 @@ class Assessment extends Model
         }
 
         public
-        function scoreTags5()
+        function scoreTags5(): BelongsToMany
         {
             return $this->belongsToMany(ScoreTag::class, 'principle_assessment_score_tag', 'assessment_id', 'score_tag_id')
                 ->withPivot('principle_assessment_id')
@@ -165,7 +169,7 @@ class Assessment extends Model
         }
 
         public
-        function scoreTags6()
+        function scoreTags6(): BelongsToMany
         {
             return $this->belongsToMany(ScoreTag::class, 'principle_assessment_score_tag', 'assessment_id', 'score_tag_id')
                 ->withPivot('principle_assessment_id')
@@ -173,7 +177,7 @@ class Assessment extends Model
         }
 
         public
-        function scoreTags7()
+        function scoreTags7(): BelongsToMany
         {
             return $this->belongsToMany(ScoreTag::class, 'principle_assessment_score_tag', 'assessment_id', 'score_tag_id')
                 ->withPivot('principle_assessment_id')
@@ -181,7 +185,7 @@ class Assessment extends Model
         }
 
         public
-        function scoreTags8()
+        function scoreTags8(): BelongsToMany
         {
             return $this->belongsToMany(ScoreTag::class, 'principle_assessment_score_tag', 'assessment_id', 'score_tag_id')
                 ->withPivot('principle_assessment_id')
@@ -189,7 +193,7 @@ class Assessment extends Model
         }
 
         public
-        function scoreTags9()
+        function scoreTags9(): BelongsToMany
         {
             return $this->belongsToMany(ScoreTag::class, 'principle_assessment_score_tag', 'assessment_id', 'score_tag_id')
                 ->withPivot('principle_assessment_id')
@@ -197,7 +201,7 @@ class Assessment extends Model
         }
 
         public
-        function scoreTags10()
+        function scoreTags10(): BelongsToMany
         {
             return $this->belongsToMany(ScoreTag::class, 'principle_assessment_score_tag', 'assessment_id', 'score_tag_id')
                 ->withPivot('principle_assessment_id')
@@ -205,7 +209,7 @@ class Assessment extends Model
         }
 
         public
-        function scoreTags11()
+        function scoreTags11(): BelongsToMany
         {
             return $this->belongsToMany(ScoreTag::class, 'principle_assessment_score_tag', 'assessment_id', 'score_tag_id')
                 ->withPivot('principle_assessment_id')
@@ -213,7 +217,7 @@ class Assessment extends Model
         }
 
         public
-        function scoreTags12()
+        function scoreTags12(): BelongsToMany
         {
             return $this->belongsToMany(ScoreTag::class, 'principle_assessment_score_tag', 'assessment_id', 'score_tag_id')
                 ->withPivot('principle_assessment_id')
@@ -221,7 +225,7 @@ class Assessment extends Model
         }
 
         public
-        function scoreTags13()
+        function scoreTags13(): BelongsToMany
         {
             return $this->belongsToMany(ScoreTag::class, 'principle_assessment_score_tag', 'assessment_id', 'score_tag_id')
                 ->withPivot('principle_assessment_id')
@@ -231,79 +235,79 @@ class Assessment extends Model
         // Custom relationships to load customScoreTags filtered by each of the 13 principles
         // hard-coded principles, so careful if we change our definition of AE!
         public
-        function getCustomScoreTags1Attribute()
+        function getCustomScoreTags1Attribute(): array
         {
             return $this->principleAssessments()->where('principle_id', 1)->first()->customScoreTags->toArray();
         }
 
         public
-        function getCustomScoreTags2Attribute()
+        function getCustomScoreTags2Attribute(): array
         {
             return $this->principleAssessments()->where('principle_id', 2)->first()->customScoreTags->toArray();
         }
 
         public
-        function getCustomScoreTags3Attribute()
+        function getCustomScoreTags3Attribute(): array
         {
             return $this->principleAssessments()->where('principle_id', 3)->first()->customScoreTags->toArray();
         }
 
         public
-        function getCustomScoreTags4Attribute()
+        function getCustomScoreTags4Attribute(): array
         {
             return $this->principleAssessments()->where('principle_id', 4)->first()->customScoreTags->toArray();
         }
 
         public
-        function getCustomScoreTags5Attribute()
+        function getCustomScoreTags5Attribute(): array
         {
             return $this->principleAssessments()->where('principle_id', 5)->first()->customScoreTags->toArray();
         }
 
         public
-        function getCustomScoreTags6Attribute()
+        function getCustomScoreTags6Attribute(): array
         {
             return $this->principleAssessments()->where('principle_id', 6)->first()->customScoreTags->toArray();
         }
 
         public
-        function getCustomScoreTags7Attribute()
+        function getCustomScoreTags7Attribute(): array
         {
             return $this->principleAssessments()->where('principle_id', 7)->first()->customScoreTags->toArray();
         }
 
         public
-        function getCustomScoreTags8Attribute()
+        function getCustomScoreTags8Attribute(): array
         {
             return $this->principleAssessments()->where('principle_id', 8)->first()->customScoreTags->toArray();
         }
 
         public
-        function getCustomScoreTags9Attribute()
+        function getCustomScoreTags9Attribute(): array
         {
             return $this->principleAssessments()->where('principle_id', 9)->first()->customScoreTags->toArray();
         }
 
         public
-        function getCustomScoreTags10Attribute()
+        function getCustomScoreTags10Attribute(): array
         {
             return $this->principleAssessments()->where('principle_id', 10)->first()->customScoreTags->toArray();
         }
 
         public
-        function getCustomScoreTags11Attribute()
+        function getCustomScoreTags11Attribute(): array
         {
             return $this->principleAssessments()->where('principle_id', 11)->first()->customScoreTags->toArray();
         }
 
         public
-        function getCustomScoreTags12Attribute()
+        function getCustomScoreTags12Attribute(): array
         {
             return $this->principleAssessments()->where('principle_id', 12)->first()->customScoreTags->toArray();
         }
 
         public
-        function getCustomScoreTags13Attribute()
+        function getCustomScoreTags13Attribute(): array
         {
             return $this->principleAssessments()->where('principle_id', 13)->first()->customScoreTags->toArray();
         }
