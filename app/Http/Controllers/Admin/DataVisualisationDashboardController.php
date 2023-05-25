@@ -45,9 +45,9 @@ class DataVisualisationDashboardController extends Controller
         $yoursPrinciplesSummarySorted = $yoursPrinciplesSummary;      
         $othersPrinciplesSummarySorted = [];
 
-        // $sortBy = 1;    // highest to lowest score (highest green)
+        $sortBy = 1;    // highest to lowest score (highest green)
         // $sortBy = 2;    // lowest to highest score (highest red)
-        $sortBy = 3;    // default (order by principle number)
+        // $sortBy = 3;    // default (order by principle number)
 
        
         // highest to lowest score (highest green)
