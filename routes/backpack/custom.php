@@ -11,6 +11,7 @@ use App\Http\Controllers\Admin\ContinentCrudController;
 use App\Http\Controllers\Admin\CountryCrudController;
 use App\Http\Controllers\Admin\OrganisationCrudController;
 use App\Http\Controllers\Admin\PortfolioCrudController;
+use App\Http\Controllers\Admin\PrincipleAssessmentCrudController;
 use App\Http\Controllers\Admin\PrincipleCrudController;
 use App\Http\Controllers\Admin\ProjectCrudController;
 use App\Http\Controllers\Admin\RedLineCrudController;
@@ -90,5 +91,6 @@ Route::group([
 
     Route::post('generatePdf', [GeneratePdfFileController::class, 'generatePdfFile']);
 
+    Route::crud('principle-assessment', PrincipleAssessmentCrudController::class);
 
 }); // this should be the absolute last line of this file

@@ -9,6 +9,7 @@
         "backpack/crud": "^5.5.5",
         "backpack/permissionmanager": "^6.0",
         "backpack/pro": "*",
+        "backpack/revise-operation": "^1.0",
         "doctrine/dbal": "^3.0",
         "guzzlehttp/guzzle": "^7.0.1",
         "laravel/framework": "^10.0",
