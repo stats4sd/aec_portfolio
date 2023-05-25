@@ -15,6 +15,21 @@ return [
 
     'default' => env('MAIL_MAILER', 'smtp'),
 
+
+    /*
+    |--------------------------------------------------------------------------
+    | Email Recipient List (in CSV format) for Data Removal Email Alert
+    |--------------------------------------------------------------------------
+    |
+    | Define data removal email alert recipients in CSV format.
+    | It is recommended to define a email distribution list, 
+    | therefore user can have full control without updating this configuration file
+    |
+    */
+
+    'data_removal_alert_recipients' => env('DATA_REMOVAL_ALERT_RECIPIENTS'),
+
+
     /*
     |--------------------------------------------------------------------------
     | Mailer Configurations

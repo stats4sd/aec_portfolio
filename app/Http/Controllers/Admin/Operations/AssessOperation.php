@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers\Admin\Operations;
 
-use App\Enums\AssessmentStatus;
+use Carbon\Carbon;
 use App\Models\Principle;
-use App\Models\PrincipleProject;
 use Illuminate\Http\Request;
+use App\Enums\AssessmentStatus;
+use App\Models\PrincipleAssessment;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
@@ -56,7 +57,6 @@ trait AssessOperation
     /**
      * Show the view for performing the operation.
      *
-     * @return Response
      */
     public function assess($id)
     {
@@ -67,6 +67,7 @@ trait AssessOperation
 
 
         $this->data['entry'] = $this->crud->getEntryWithLocale($id);
+
         $this->crud->setOperationSetting('fields', $this->crud->getUpdateFields());
 
         $this->data['crud'] = $this->crud;
@@ -81,10 +82,9 @@ trait AssessOperation
 
     public function postAssessForm(Request $request)
     {
-        $project = $this->crud->getEntry($request->input('id'));
 
-        // delete all custom score tags for the project
-        $project->customScoreTags()->delete();
+        $latestAssessment = $this->crud->getEntry($request->input('id'));
+        $latestAssessment->customScoreTags()->delete();
 
         // validate fields
         $rules = [];
@@ -104,13 +104,15 @@ trait AssessOperation
         foreach (Principle::all() as $principle) {
             $principleId = $principle->id;
 
-            $project->principles()->updateExistingPivot($principleId, [
-                'rating' => $request->input("${principleId}_rating"),
-                'rating_comment' => $request->input("${principleId}_rating_comment"),
-                'is_na' => $request->input("${principleId}_is_na") ?? 0,
-            ]);
+            // To capture these changes in the revisions table, we cannot use "updateExistingPivot()", but instead must get the PA model object and save it.
+            $principleAssessment = PrincipleAssessment::where('principle_id', $principleId)
+                ->where('assessment_id', $latestAssessment->id)
+                ->first();
 
-            $principleProject = PrincipleProject::where('project_id', $project->id)->where('principle_id', $principleId)->first();
+            $principleAssessment->rating = $request->input("${principleId}_rating");
+            $principleAssessment->rating_comment = $request->input("${principleId}_rating_comment");
+            $principleAssessment->is_na = $request->input("${principleId}_is_na") ?? 0;
+            $principleAssessment->save();
 
             $sync = json_decode($request->input("scoreTags" . $principle->id));
             $syncPivot = [];
@@ -118,11 +120,12 @@ trait AssessOperation
             if ($sync) {
 
                 for ($i = 0, $iMax = count($sync); $i < $iMax; $i++) {
-                    $syncPivot[] = ['project_id' => $project->id];
+                    $syncPivot[] = ['assessment_id' => $latestAssessment->id];
                 }
 
                 $sync = collect($sync)->combine($syncPivot);
-                 $principleProject->scoreTags()->sync($sync->toArray());
+
+                $principleAssessment->scoreTags()->sync($sync->toArray());
             }
 
             $custom_score_tags = json_decode($request->input("customScoreTags" . $principle->id), true);
@@ -131,28 +134,30 @@ trait AssessOperation
 
                 for ($i = 0, $iMax = count($custom_score_tags); $i < $iMax; $i++) {
 
-                    if (empty($custom_score_tags[$i])){
+                    if (empty($custom_score_tags[$i])) {
                         unset($custom_score_tags[$i]);
-                    }
-
-                    elseif (!array_key_exists('name', $custom_score_tags[$i])) {
+                    } elseif (!array_key_exists('name', $custom_score_tags[$i])) {
                         throw ValidationException::withMessages(['customScoreTags' . $principle->id => 'New examples/indicators must have a name']);
-                    }
-
-                    else {
-                        $custom_score_tags[$i]['project_id'] = $project->id;
+                    } else {
+                        $custom_score_tags[$i]['assessment_id'] = $latestAssessment->id;
                     }
 
                 }
 
-                $principleProject->customScoreTags()->createMany($custom_score_tags);
+                $principleAssessment->customScoreTags()->createMany($custom_score_tags);
             }
 
         }
 
+        if ($request->assessment_complete) {
+            $latestAssessment->assessment_status = AssessmentStatus::Complete;
+            $latestAssessment->completed_at = Carbon::now()->format('Y-m-d');
+        } else {
+            $latestAssessment->assessment_status = AssessmentStatus::InProgress;
+        }
 
-        $project->assessment_status = $request->assessment_complete ? AssessmentStatus::Complete : AssessmentStatus::InProgress;
-        $project->save();
+        $latestAssessment->save();
+
 
         return $this->crud->performSaveAction();
     }

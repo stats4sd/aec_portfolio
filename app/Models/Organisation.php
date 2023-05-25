@@ -2,15 +2,18 @@
 
 namespace App\Models;
 
-use Backpack\CRUD\app\Models\Traits\CrudTrait;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Builder;
+use Backpack\CRUD\app\Models\Traits\CrudTrait;
 
 class Organisation extends Model
 {
-    use CrudTrait;
+    use CrudTrait, HasFactory;
 
     /*
     |--------------------------------------------------------------------------
@@ -21,20 +24,19 @@ class Organisation extends Model
     protected $table = 'organisations';
     protected $guarded = ['id'];
 
-protected static function booted()
+    protected static function booted()
     {
+        static::addGlobalScope('owned', function (Builder $builder) {
 
-        static::addGlobalScope('owned', function(Builder $builder) {
-
-            if(!Auth::check()) {
+            if (!Auth::check()) {
                 return;
             }
 
-            if(Auth::user()->hasRole('admin')) {
+            if (Auth::user()->can('view institutions')) {
                 return;
             }
 
-            $builder->whereHas('users', function($query) {
+            $builder->whereHas('users', function ($query) {
                 $query->where('users.id', Auth::id());
             });
         });
@@ -46,6 +48,11 @@ protected static function booted()
         return $this->hasMany(Project::class);
     }
 
+    public function portfolios()
+    {
+        return $this->hasMany(Portfolio::class);
+    }
+
     public function users()
     {
         return $this->belongsToMany(User::class, 'organisation_members')->withPivot('role');
@@ -53,7 +60,7 @@ protected static function booted()
 
     public function admins()
     {
-        return $this->belongsToMany(User::class, 'organisation_members')->withPivot('role')->wherePivot('role', '=', 'admin');
+        return $this->belongsToMany(User::class, 'organisation_members')->withPivot('role')->wherePivot('role', '=', 'Site Admin');
     }
 
     public function editors()
@@ -71,6 +78,16 @@ protected static function booted()
         return $this->belongsTo(User::class, 'creator_id');
     }
 
+    public function additionalCriteria(): HasMany
+    {
+        return $this->hasMany(AdditionalCriteria::class);
+    }
+
+    public function removalRequests()
+    {
+        return $this->hasMany(RemovalRequest::class);
+    }
+
 
     public function invites()
     {
@@ -78,14 +95,20 @@ protected static function booted()
     }
 
 
-    public function sendInvites($emails)
+    public function sendInvites($emails, $roleId)
     {
         foreach ($emails as $email) {
-            $this->invites()->create([
+            $invite = $this->invites()->create([
                 'email' => $email,
                 'inviter_id' => auth()->user()->id,
                 'token' => Str::random(24),
             ]);
+
+            // create role_invites record with same token from corresponding invites record
+            // P.S. tried to do the same by RoleInvite::create() but another invitation email with role will be sent
+            // To avoid sending the additional invitation email regarding role, insert a role_invites record via DB facade directly
+            DB::insert('insert into role_invites (email, role_id, inviter_id, token, created_at, updated_at) values (?, ?, ?, ?, NOW(), NOW())',
+                [$email, $roleId, auth()->user()->id, $invite->token]);
         }
     }
 }

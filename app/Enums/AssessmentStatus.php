@@ -8,5 +8,5 @@ enum AssessmentStatus: string
     case RedlinesIncomplete = "Redlines Incomplete";
     case RedlinesComplete = "Redlines Complete";
     case InProgress = "Assessment In Progress";
-    case Complete = "Assessment complete";
+    case Complete = "Assessment Complete";
 }

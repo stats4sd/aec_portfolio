@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Models\AdditionalCriteriaScoreTag;
 use App\Http\Controllers\Admin\Traits\ScoreTagInlineCreateOperation;
 use App\Http\Requests\ScoreTagRequest;
 use Backpack\CRUD\app\Http\Controllers\CrudController;
 use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Backpack\Pro\Http\Controllers\Operations\InlineCreateOperation;
 
 /**
@@ -18,10 +20,12 @@ class ScoreTagCrudController extends CrudController
     use \Backpack\CRUD\app\Http\Controllers\Operations\ListOperation;
     use \Backpack\CRUD\app\Http\Controllers\Operations\CreateOperation;
     use \Backpack\CRUD\app\Http\Controllers\Operations\UpdateOperation;
-    use \Backpack\CRUD\app\Http\Controllers\Operations\DeleteOperation;
-    use \Backpack\CRUD\app\Http\Controllers\Operations\ShowOperation;
+    use \Backpack\CRUD\app\Http\Controllers\Operations\DeleteOperation { destroy as traitDestroy; }
+    use \Backpack\CRUD\app\Http\Controllers\Operations\ShowOperation { show as traitShow; }
 
     use ScoreTagInlineCreateOperation;
+
+    use AuthorizesRequests;
 
     /**
      * Configure the CrudPanel object. Apply settings to all operations.
@@ -30,7 +34,7 @@ class ScoreTagCrudController extends CrudController
      */
     public function setup()
     {
-        CRUD::setModel(\App\Models\ScoreTag::class);
+        CRUD::setModel(\App\Models\AdditionalCriteriaScoreTag::class);
         CRUD::setRoute(config('backpack.base.route_prefix') . '/score-tag');
         CRUD::setEntityNameStrings('score tag', 'score tags');
     }
@@ -43,17 +47,13 @@ class ScoreTagCrudController extends CrudController
      */
     protected function setupListOperation()
     {
+        $this->authorize('viewAny', AdditionalCriteriaScoreTag::class);
+
         CRUD::column('created_at');
         CRUD::column('description');
         CRUD::column('id');
         CRUD::column('name');
         CRUD::column('updated_at');
-
-        /**
-         * Columns can be defined using the fluent syntax or array syntax:
-         * - CRUD::column('price')->type('number');
-         * - CRUD::addColumn(['name' => 'price', 'type' => 'number']);
-         */
     }
 
     /**
@@ -64,18 +64,13 @@ class ScoreTagCrudController extends CrudController
      */
     protected function setupCreateOperation()
     {
+        $this->authorize('create', AdditionalCriteriaScoreTag::class);
+
         CRUD::setValidation(ScoreTagRequest::class);
 
         CRUD::field('name');
         CRUD::field('description');
         CRUD::field('principle')->type('relationship');
-
-
-        /**
-         * Fields can be defined using the fluent syntax or array syntax:
-         * - CRUD::field('price')->type('number');
-         * - CRUD::addField(['name' => 'price', 'type' => 'number']));
-         */
     }
 
     /**
@@ -86,7 +81,33 @@ class ScoreTagCrudController extends CrudController
      */
     protected function setupUpdateOperation()
     {
+        $this->authorize('update', CRUD::getCurrentEntry());
+
         $this->setupCreateOperation();
+    }
+
+    /**
+     * Define what happens when the Delete operation is loaded.
+     */
+    public function destroy($id)
+    {
+        $this->authorize('delete', AdditionalCriteriaScoreTag::find($id));
+
+        $this->crud->hasAccessOrFail('delete');
+
+        return $this->crud->delete($id);
+    }
+
+    /**
+     * Define what happens when the Show operation is loaded.
+     */
+    public function show($id)
+    {
+        $this->authorize('view', AdditionalCriteriaScoreTag::find($id));
+
+        $content = $this->traitShow($id);
+
+        return $content;
     }
 
 }

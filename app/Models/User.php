@@ -45,8 +45,13 @@ class User extends Authenticatable
             ->withPivot('role');
     }
 
+    public function removalRequests()
+    {
+        return $this->hasMany(RemovalRequest::class, 'requester_id');
+    }
+
     public function isAdmin()
     {
-        return $this->hasAnyRole('admin');
+        return $this->hasAnyRole('Site Admin');
     }
 }

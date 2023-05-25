@@ -33,6 +33,18 @@ class Principle extends Model
             //->using(PrincipleProject::class);
     }
 
+    // TODO: add function for pivot
+    public function assessments()
+    {
+        return $this->belongsToMany(Assessment::class)
+            ->withPivot([
+                'rating',
+                'rating_comment',
+                'is_na',
+            ]);
+            //->using(PrincipleProject::class);
+    }
+
     public function principleProjects()
     {
         return $this->hasMany(PrincipleProject::class);
@@ -40,7 +52,7 @@ class Principle extends Model
 
     public function scoreTags()
     {
-        return $this->hasMany(ScoreTag::class);
+        return $this->hasMany(AdditionalCriteriaScoreTag::class);
     }
 
     public function customScoreTags()
