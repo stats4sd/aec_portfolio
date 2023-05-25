@@ -82,6 +82,9 @@ E.g., Centralise instituion selection to a single feature instead of distributin
     <hr/>
 @endif
 
+@if(Auth::user()->canAny(['maintain custom principles', 'view custom principles']))
+<li class="nav-item"><a class="nav-link" href="{{ backpack_url('additional-criteria') }}"><i class="nav-icon la la-tag"></i> Additional Assessment criteria</a></li>
+@endif
 
 
 @if(Auth::user()->can('view users'))
@@ -138,5 +141,3 @@ E.g., Centralise instituion selection to a single feature instead of distributin
     <li class="nav-item"><a class="nav-link" href="{{ backpack_url('removal-request') }}"><i class="nav-icon la la-trash-alt"></i> Removal Requests</a></li>
     <hr/>
 @endif
-
-<li class="nav-item"><a class="nav-link" href="{{ backpack_url('assessment') }}"><i class="nav-icon la la-question"></i> Assessments</a></li>

@@ -4,7 +4,7 @@ namespace Tests\Feature\AdminPanel;
 
 use Tests\TestCase;
 use App\Models\User;
-use App\Models\ScoreTag;
+use App\Models\AdditionalCriteriaScoreTag;
 
 class ScoreTagCrudPageTest extends TestCase
 {
@@ -113,7 +113,7 @@ class ScoreTagCrudPageTest extends TestCase
      */
     public function it_tries_to_load_the_show_view_with_different_users(): void
     {
-        $scoreTag01 = ScoreTag::create($this->scoreTagData01);
+        $scoreTag01 = AdditionalCriteriaScoreTag::create($this->scoreTagData01);
 
         $this->actingAs($this->siteAdmin)
             ->get('/admin/score-tag/' . $scoreTag01->id . '/show')
@@ -149,8 +149,8 @@ class ScoreTagCrudPageTest extends TestCase
      */
     public function it_tries_to_create_a_new_entry_with_different_users(): void
     {
-        ScoreTag::truncate();
-        
+        AdditionalCriteriaScoreTag::truncate();
+
 
         // ********** //
 
@@ -186,14 +186,14 @@ class ScoreTagCrudPageTest extends TestCase
             ->assertSee('Add score tag');
 
         // TODO
-        ScoreTag::create($this->scoreTagData01);
+        AdditionalCriteriaScoreTag::create($this->scoreTagData01);
 
         // Check the store endpoint works
         // $this->actingAs($this->siteAdmin)
         //     ->post('/admin/score-tag', $this->scoreTagData01);
 
         // check that the database contains the new red line
-        $this->assertDatabaseHas(ScoreTag::class, $this->scoreTagData01);
+        $this->assertDatabaseHas(AdditionalCriteriaScoreTag::class, $this->scoreTagData01);
 
 
         // ********** //
@@ -206,14 +206,14 @@ class ScoreTagCrudPageTest extends TestCase
             ->assertSee('Add score tag');
 
         // TODO
-        ScoreTag::create($this->scoreTagData02);
+        AdditionalCriteriaScoreTag::create($this->scoreTagData02);
 
         // Check the store endpoint works
         // $this->actingAs($this->siteManager)
         //     ->post('/admin/score-tag', $this->scoreTagData02);
 
         // check that the database contains the new red line
-        $this->assertDatabaseHas(ScoreTag::class, $this->scoreTagData02);
+        $this->assertDatabaseHas(AdditionalCriteriaScoreTag::class, $this->scoreTagData02);
     }
 
 
@@ -223,7 +223,7 @@ class ScoreTagCrudPageTest extends TestCase
      */
     public function it_tries_to_update_an_existing_entry_with_different_users(): void
     {
-        $scoreTag01 = ScoreTag::where('name', $this->scoreTagData01['name'])->first();
+        $scoreTag01 = AdditionalCriteriaScoreTag::where('name', $this->scoreTagData01['name'])->first();
 
 
         // ********** //
@@ -256,7 +256,7 @@ class ScoreTagCrudPageTest extends TestCase
         // ********** //
 
 
-        $scoreTag01 = ScoreTag::where('name', $this->scoreTagData01['name'])->first();
+        $scoreTag01 = AdditionalCriteriaScoreTag::where('name', $this->scoreTagData01['name'])->first();
 
         // Check the edit form loads
         $this->actingAs($this->siteAdmin)
@@ -274,13 +274,13 @@ class ScoreTagCrudPageTest extends TestCase
                 ])
             );
 
-        $this->assertDatabaseHas(ScoreTag::class, ['id' => $scoreTag01->id, 'name' => 'edited fake score tag name 01']);
+        $this->assertDatabaseHas(AdditionalCriteriaScoreTag::class, ['id' => $scoreTag01->id, 'name' => 'edited fake score tag name 01']);
 
 
         // ********** //
 
 
-        $scoreTag02 = ScoreTag::where('name', $this->scoreTagData02['name'])->first();
+        $scoreTag02 = AdditionalCriteriaScoreTag::where('name', $this->scoreTagData02['name'])->first();
 
         // Check the edit form loads
         $this->actingAs($this->siteManager)
@@ -298,7 +298,7 @@ class ScoreTagCrudPageTest extends TestCase
                 ])
             );
 
-        $this->assertDatabaseHas(ScoreTag::class, ['id' => $scoreTag02->id, 'name' => 'edited fake score tag name 02']);
+        $this->assertDatabaseHas(AdditionalCriteriaScoreTag::class, ['id' => $scoreTag02->id, 'name' => 'edited fake score tag name 02']);
     }
 
 
@@ -308,12 +308,12 @@ class ScoreTagCrudPageTest extends TestCase
      */
     public function it_tries_to_delete_an_existing_entry_with_different_users(): void
     {
-        ScoreTag::truncate();
+        AdditionalCriteriaScoreTag::truncate();
 
 
         // ********** //
 
-        $scoreTag01 = ScoreTag::create($this->scoreTagData01);
+        $scoreTag01 = AdditionalCriteriaScoreTag::create($this->scoreTagData01);
 
 
         // ********** //
@@ -343,25 +343,25 @@ class ScoreTagCrudPageTest extends TestCase
         // ********** //
 
 
-        $this->assertDatabaseHas(ScoreTag::class, $this->scoreTagData01);
+        $this->assertDatabaseHas(AdditionalCriteriaScoreTag::class, $this->scoreTagData01);
 
         $this->actingAs($this->siteAdmin)
             ->delete('/admin/score-tag/' . $scoreTag01->id);
 
-        $this->assertDatabaseMissing(ScoreTag::class, $this->scoreTagData01);
+        $this->assertDatabaseMissing(AdditionalCriteriaScoreTag::class, $this->scoreTagData01);
 
 
         // ********** //
 
 
-        $scoreTag01 = ScoreTag::create($this->scoreTagData01);
+        $scoreTag01 = AdditionalCriteriaScoreTag::create($this->scoreTagData01);
 
-        $this->assertDatabaseHas(ScoreTag::class, $this->scoreTagData01);
+        $this->assertDatabaseHas(AdditionalCriteriaScoreTag::class, $this->scoreTagData01);
 
         $this->actingAs($this->siteManager)
             ->delete('/admin/score-tag/' . $scoreTag01->id);
 
-        $this->assertDatabaseMissing(ScoreTag::class, $this->scoreTagData01);
+        $this->assertDatabaseMissing(AdditionalCriteriaScoreTag::class, $this->scoreTagData01);
     }
 
 }

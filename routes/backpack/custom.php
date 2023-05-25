@@ -6,6 +6,8 @@
 // This route file is loaded automatically by Backpack\Base.
 // Routes you generate using Backpack\Generators will be placed here.
 
+use App\Http\Controllers\Admin\AdditionalCriteriaCrudController;
+use App\Http\Controllers\Admin\AdditionalCriteriaScoreTagCrudController;
 use App\Http\Controllers\Admin\AssessmentCrudController;
 use App\Http\Controllers\Admin\ContinentCrudController;
 use App\Http\Controllers\Admin\CountryCrudController;
@@ -76,6 +78,7 @@ Route::group([
 
     Route::get('/', [Backpack\CRUD\app\Http\Controllers\AdminController::class, 'redirect'])->name('backpack');
 
+    Route::crud('additional-criteria', AdditionalCriteriaCrudController::class);
     Route::get('my-role', [MyRoleController::class, 'show']);
     Route::get('my-role/request-to-leave', [MyRoleController::class, 'requestToLeave']);
     Route::post('my-role/confirm-to-leave', [MyRoleController::class, 'confirmToLeave']);
@@ -91,6 +94,6 @@ Route::group([
 
     Route::post('generatePdf', [GeneratePdfFileController::class, 'generatePdfFile']);
 
-    Route::crud('principle-assessment', PrincipleAssessmentCrudController::class);
+    Route::crud('additional-criteria-score-tag', AdditionalCriteriaScoreTagCrudController::class);
 
 }); // this should be the absolute last line of this file
