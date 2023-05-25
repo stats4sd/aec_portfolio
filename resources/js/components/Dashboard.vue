@@ -1,16 +1,13 @@
 <template>
 
     <div>
-        TODO
+        Dashboard vue component
     </div>
 
 </template>
 
 
 <script>
-
-import vSelect from 'vue-select';
-import 'vue-select/dist/vue-select.css';
 
 export default {
 
@@ -28,7 +25,7 @@ export default {
     },
 
     components: {
-        vSelect
+
     },
 
     data() {
@@ -37,18 +34,13 @@ export default {
             // variables declaration
             userId: '',
             userOrganisation: '',
-
-            // toast notification
-            toast: useToast({position: 'bottom', duration: 4000}),
         }
     },
 
     // triggered when Vue component is loaded
     mounted() {
-        // initialise variables once team object is accessible
-        // this.teamId = this.team.id;
+        // initialise variables
         this.userId = this.user.id;
-
     },
 
     computed: {
@@ -65,8 +57,7 @@ export default {
 
         // clear data entry form
         clearForm() {
-            this.arrayIndex = '';
-            this.farm = null;
+            
         },
 
     }

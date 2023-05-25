@@ -116,17 +116,10 @@ E.g., Centralise instituion selection to a single feature instead of distributin
 
 
 
-@if(Auth::user()->can('view institution-level dashboard'))
-    <li class="nav-item"><a class="nav-link" href="{{ backpack_url('generic-dashboard?level=institution') }}"><i class="nav-icon la la-tachometer-alt"></i> Institution Dashboard</a></li>
+@if(Auth::user()->canAny(['view institution-level dashboard', 'view portfolio-level dashboard']))
+    <li class="nav-item"><a class="nav-link" href="{{ backpack_url('generic-dashboard') }}"><i class="nav-icon la la-tachometer-alt"></i> Dashboard</a></li>
 @endif
 
-@if(Auth::user()->can('view portfolio-level dashboard'))
-    <li class="nav-item"><a class="nav-link" href="{{ backpack_url('generic-dashboard?level=portfolio') }}"><i class="nav-icon la la-tachometer-alt"></i> Portfolio Dashboard</a></li>
-@endif
-
-@if(Auth::user()->can('view project-level dashboard'))
-    <li class="nav-item"><a class="nav-link" href="{{ backpack_url('generic-dashboard?level=initiative') }}"><i class="nav-icon la la-tachometer-alt"></i> Initiative Dashboard</a></li>
-@endif
 
 @if(Auth::user()->canAny(['view institution-level dashboard', 'view portfolio-level dashboard', 'view project-level dashboard']))
     <hr/>
