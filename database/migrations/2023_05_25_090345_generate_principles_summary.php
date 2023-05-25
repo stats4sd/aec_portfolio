@@ -18,391 +18,86 @@ return new class extends Migration
 
         $procedure =         
 "
-DROP PROCEDURE IF EXISTS `generate_dashboard_summary`;
+DROP FUNCTION IF EXISTS `generate_principles_summary`;
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `generate_dashboard_summary`(
-	IN dashboardYoursId INT,
-	IN dashboardOthersId INT,
-	IN organisationId INT, 
-	IN portfolioId INT, 
-	IN regionId INT, 
-	IN countryId INT, 
-	IN projectStartFrom INT, 
-	IN projectStartTo INT, 
-	IN budgetFrom INT, 
-	IN budgetTo INT,
-	OUT status INT,
-	OUT message VARCHAR(1000),
-	OUT statusSummary VARCHAR(16383),
-	OUT redlinesSummary VARCHAR(16383),
-	OUT yoursPrinciplesSummary VARCHAR(16383),
-	OUT othersPrinciplesSummary VARCHAR(16383)
-)
+CREATE DEFINER=`root`@`localhost` FUNCTION `generate_principles_summary`(
+	dashboardId INT
+) RETURNS varchar(16383) CHARSET utf8mb4
+    DETERMINISTIC
 BEGIN
 
-	-- variables for status summary
-	DECLARE ssCreatedCount INT;
-	DECLARE ssCreatedPercent DECIMAL(3);
-	DECLARE ssCreatedBudget BIGINT;
-	DECLARE ssPassedAllCount INT;
-	DECLARE ssPassedAllPercent DECIMAL(3);
-	DECLARE ssPassedAllBudget BIGINT;
-	DECLARE ssFailedAnyCount INT;
-	DECLARE ssFailedAnyPercent DECIMAL(3);
-	DECLARE ssFailedAnyBudget BIGINT;
-	DECLARE ssFullyAssessedCount INT;
-	DECLARE ssFullyAssessedPercent DECIMAL(3);
-	DECLARE ssFullyAssessedBudget BIGINT;
+	-- variables for principles summary
+	DECLARE psPrincipleId INT;
+	DECLARE psPrincipleName VARCHAR(16383);
+	DECLARE psGreenPercentage INT;
+	DECLARE psYellowPercentage INT;
+	DECLARE psRedPercentage INT;
 
-	-- variables for red line summary
-	DECLARE rsRedLineId INT;
-	DECLARE rsRedLineName VARCHAR(16383);
-	DECLARE rsYourPercentage INT;
-	DECLARE rsOthersPercentage INT;
-	
+	DECLARE principlesSummary VARCHAR(16383);
+
 	-- variable to determine whether it is end of cursor
-	DECLARE rsDone INT DEFAULT FALSE;
+	DECLARE psDone INT DEFAULT FALSE;
 
-	-- cursor to join yours, others, redlines as redlines summary
-	DECLARE rsCursor CURSOR FOR 
-	SELECT ta.red_line_id, tc.name, ta.percentage AS yours_percentage, tb.percentage AS others_percentage FROM
-	(SELECT * FROM dashboard_red_line WHERE dashboard_id = dashboardYoursId) AS ta,
-	(SELECT * FROM dashboard_red_line WHERE dashboard_id = dashboardOthersId) AS tb,
-	red_lines tc
-	WHERE ta.red_line_id = tb.red_line_id
-	AND ta.red_line_id = tc.id;
+	-- cursor to generate principle summary with counter and percentage for green, yellow, red
+	DECLARE psCursor CURSOR FOR 
+	SELECT p.id, p.name, 
+	-- these 4 columns are useful for debug, but not necessary to be showed in principle summary
+	-- IFNULL(green.counter, 0) AS green_counter,
+	-- IFNULL(yellow.counter, 0) AS yellow_counter,
+	-- IFNULL(red.counter, 0) AS red_counter,
+	-- IFNULL(green.counter, 0) + IFNULL(yellow.counter, 0) + IFNULL(red.counter, 0) AS total,
+	ROUND(IFNULL(green.counter, 0) / (IFNULL(green.counter, 0) + IFNULL(yellow.counter, 0) + IFNULL(red.counter, 0)) * 100, 0) AS green_percentage,
+	ROUND(IFNULL(yellow.counter, 0) / (IFNULL(green.counter, 0) + IFNULL(yellow.counter, 0) + IFNULL(red.counter, 0)) * 100, 0) AS yellow_percentage,
+	ROUND(IFNULL(red.counter, 0) / (IFNULL(green.counter, 0) + IFNULL(yellow.counter, 0) + IFNULL(red.counter, 0)) * 100, 0) AS red_percentage
+	FROM principles p
+	LEFT JOIN
+	(SELECT * FROM dashboard_principle WHERE dashboard_id = dashboardId AND category = 'GREEN') AS green
+	ON p.id = green.principle_id
+	LEFT JOIN
+	(SELECT * FROM dashboard_principle WHERE dashboard_id = dashboardId AND category = 'YELLOW') AS yellow
+	ON p.id = yellow.principle_id
+	LEFT JOIN
+	(SELECT * FROM dashboard_principle WHERE dashboard_id = dashboardId AND category = 'RED') AS red
+	ON p.id = red.principle_id
+	ORDER BY p.id;
 
 	-- handler declaration
-	DECLARE CONTINUE HANDLER FOR NOT FOUND SET rsDone = TRUE;
-
-
-
-	-- remove existing records if any
-	DELETE FROM dashboard_assessment WHERE dashboard_id IN (dashboardYoursId, dashboardOthersId);
-	DELETE FROM dashboard_principle WHERE dashboard_id IN (dashboardYoursId, dashboardOthersId);
-	DELETE FROM dashboard_project WHERE dashboard_id IN (dashboardYoursId, dashboardOthersId);
-	DELETE FROM dashboard_red_line WHERE dashboard_id IN (dashboardYoursId, dashboardOthersId);
-	DELETE FROM dashboard_result WHERE dashboard_id IN (dashboardYoursId, dashboardOthersId);
+	DECLARE CONTINUE HANDLER FOR NOT FOUND SET psDone = TRUE;
 	
 	
-	-- initialise status and message
-	SET status = 0;	
-	SET message = 'Success';
-	
-	
-	-- debug message
-	-- SELECT dashboardYoursId, dashboardOthersId, organisationId, portfolioId, regionId, countryId, projectStartFrom, projectStartTo, budgetFrom, budgetTo;
-	
-	
-	
-	-- -------------------------
-	-- FIND PROJECTS AND LATEST ASSESSMENTS (YOURS)
-	-- -------------------------
-
-	
-	-- find all project ids that fulfill criteria (yours)
-	
-	/*
-	
-	Example SQL:
-	
-	SELECT p.*, pr.region_id, cp.country_id
-	FROM projects p
-	LEFT JOIN project_region pr
-	ON p.id = pr.project_id
-	LEFT JOIN country_project cp
-	ON p.id = cp.project_id
-	WHERE p.id = p.id
-	AND p.organisation_id = 9
-	AND p.portfolio_id = 20
-	AND p.start_date BETWEEN '2023-05-01' AND '2023-12-31'
-	AND p.budget BETWEEN 200 AND 1000
-	AND pr.region_id = 11
-	AND cp.country_id = 132;
-	
-	*/ 
-	
-	-- construct dynamic SQL
-	SET @SQLText = '';
-	SET @SQLText = CONCAT(@SQLText, ' INSERT INTO dashboard_project (dashboard_id, project_id)');
-    SET @SQLText = CONCAT(@SQLText, ' SELECT ', dashboardYoursId, ', p.id');
-    SET @SQLText = CONCAT(@SQLText, ' FROM projects p');
-    SET @SQLText = CONCAT(@SQLText, ' LEFT JOIN project_region pr');
-    SET @SQLText = CONCAT(@SQLText, ' ON p.id = pr.project_id');
-    SET @SQLText = CONCAT(@SQLText, ' LEFT JOIN country_project cp');
-    SET @SQLText = CONCAT(@SQLText, ' ON p.id = cp.project_id');
-    SET @SQLText = CONCAT(@SQLText, ' WHERE p.id = p.id');
-    
-    
-    -- criteria
-    IF organisationId IS NOT NULL THEN
-    	SET @SQLText = CONCAT(@SQLText, ' AND p.organisation_id = ', organisationId);
-    END IF;
-
-	IF portfolioId IS NOT NULL THEN
-    	SET @SQLText = CONCAT(@SQLText, ' AND p.portfolio_id = ', portfolioId);
-    END IF;
-
-    IF projectStartFrom IS NOT NULL AND projectStartTo IS NOT NULL THEN
-    	SET @SQLText = CONCAT(@SQLText, ' AND p.start_date BETWEEN ', projectStartFrom , ' AND ', projectStartTo);
-    END IF;
-
-    IF budgetFrom IS NOT NULL AND budgetTo IS NOT NULL THEN
-    	SET @SQLText = CONCAT(@SQLText, ' AND p.budget BETWEEN ', budgetFrom, ' AND ', budgetTo);
-    END IF;
-
-    IF regionId IS NOT NULL THEN
-    	SET @SQLText = CONCAT(@SQLText, ' AND pr.region_id = ', regionId);
-    END IF;
-
-    IF countryId IS NOT NULL THEN
-    	SET @SQLText = CONCAT(@SQLText, ' AND cp.country_id = ', country_id);
-    END IF;
-    
-    -- debug message
-    -- SELECT @SQLText FROM DUAL;
-
-   
-    -- execute dynamic SQL
-	PREPARE stmt FROM @SQLText;
-    EXECUTE stmt;
-    DEALLOCATE PREPARE stmt;
-    
-    
-    
-    -- find latest assessments of projects (yours)
-	INSERT INTO dashboard_assessment (dashboard_id, assessment_id)
-	SELECT dashboardYoursId, MAX(id) AS latest_assessment_id 
-	FROM assessments 
-	WHERE project_id IN
-		(SELECT project_id FROM dashboard_project where dashboard_id = dashboardYoursId)
-	GROUP BY project_id;
-	
-	
-	
-	-- -------------------------
-	-- FIND PROJECTS AND LATEST ASSESSMENTS (OTHERS)
-	-- -------------------------
-
-	
-	-- find all project ids (others)
-	INSERT INTO dashboard_project (dashboard_id, project_id)
-	SELECT dashboardOthersId, id FROM projects;
-	
-
-    -- find latest assessments of projects (others)
-	INSERT INTO dashboard_assessment (dashboard_id, assessment_id)
-	SELECT dashboardOthersId, MAX(id) AS latest_assessment_id 
-	FROM assessments 
-	WHERE project_id IN
-		(SELECT project_id FROM dashboard_project where dashboard_id = dashboardOthersId)
-	GROUP BY project_id;
-
-
-
-	-- -------------------------
-	-- PROJECT STATUS SUMMARY
-	-- -------------------------
-
-	
-	-- CREATED PROJECTS
-	SELECT COUNT(*), SUM(budget) 
-	INTO ssCreatedCount, ssCreatedBudget 
-	FROM projects 
-	WHERE id IN
-		(SELECT project_id FROM dashboard_project where dashboard_id = dashboardYoursId);
-	
-	SET ssCreatedPercent = 100;
-
-
-	-- PASSED ALL REDLINES
-	-- find number of projects that passed all red lines
-	SELECT COUNT(*) 
-	INTO ssPassedAllCount
-	FROM
-	(SELECT assessment_id FROM assessment_red_line WHERE assessment_id IN
-		(SELECT assessment_id FROM dashboard_assessment WHERE dashboard_id = dashboardYoursId)
-	GROUP BY assessment_id
-	HAVING SUM(value) = 0) AS passed_all_red_lines;
-
-	-- find budget that passed all red lines
-	SELECT SUM(budget) 
-	INTO ssPassedAllBudget
-	FROM projects 
-	WHERE id IN
-		(SELECT project_id FROM assessments WHERE id IN 
-			(SELECT assessment_id FROM assessment_red_line WHERE assessment_id IN
-				(SELECT assessment_id FROM dashboard_assessment WHERE dashboard_id = dashboardYoursId)
-			GROUP BY assessment_id
-			HAVING SUM(value) = 0
-			)
-		);
-		
-	SET ssPassedAllPercent = ssPassedAllCount / ssCreatedCount * 100;
-
-
-	-- FAILED AT LEAST ONE RED LINE
-	-- find number of projects that failed at least one red line
-	SELECT COUNT(*) 
-	INTO ssFailedAnyCount
-	FROM
-	(SELECT assessment_id FROM assessment_red_line WHERE assessment_id IN
-		(SELECT assessment_id FROM dashboard_assessment WHERE dashboard_id = dashboardYoursId)
-	GROUP BY assessment_id
-	HAVING SUM(value) > 0) AS failed_any_red_lines;
-
-	-- find budget that failed at least one red line
-	SELECT SUM(budget) 
-	INTO ssFailedAnyBudget
-	FROM projects 
-	WHERE id IN
-		(SELECT project_id FROM assessments WHERE id IN 
-			(SELECT assessment_id FROM assessment_red_line WHERE assessment_id IN
-				(SELECT assessment_id FROM dashboard_assessment WHERE dashboard_id = dashboardYoursId)
-			GROUP BY assessment_id
-			HAVING SUM(value) > 0
-			)
-		);
-		
-	SET ssFailedAnyPercent = ssFailedAnyCount / ssCreatedCount * 100;
-
-
-	-- FULLY ASSESSED
-	-- number of latest assessments that fully assessed
-	SELECT COUNT(*) 
-	INTO ssFullyAssessedCount
-	FROM assessments 
-	WHERE assessment_status = 'Assessment Complete' 
-	AND id IN
-	(SELECT assessment_id FROM dashboard_assessment WHERE dashboard_id = dashboardYoursId);
-		
-	-- budget for fully assessed projects
-	SELECT SUM(budget)
-	INTO ssFullyAssessedBudget
-	FROM projects
-	WHERE id IN
-		(SELECT project_id from assessments
-		WHERE assessment_status = 'Assessment Complete'
-		AND id IN
-			(SELECT assessment_id FROM dashboard_assessment where dashboard_id = dashboardYoursId)
-		);
-	
-	SET ssFullyAssessedPercent = ssFullyAssessedCount / ssCreatedCount * 100;
-	
-	
-	-- debug message
-	SELECT ssCreatedCount, ssCreatedPercent, ssCreatedBudget, ssPassedAllCount, ssPassedAllPercent, ssPassedAllBudget, 
-	ssFailedAnyCount, ssFailedAnyPercent, ssFailedAnyBudget, ssFullyAssessedCount, ssFullyAssessedPercent, ssFullyAssessedBudget;
-
-
-	-- construct status summary
-	SET statusSummary = CONCAT('[{\"status\":\"Created\",\"number\":', ssCreatedCount, ',\"percent\":', ssCreatedPercent, ',\"budget\":', ssCreatedBudget, '},',
-						 '{\"status\":\"Passed all redlines\",\"number\":', ssPassedAllCount, ',\"percent\":', ssPassedAllPercent, ',\"budget\":', ssPassedAllBudget, '},',
-						 '{\"status\":\"Failed at least 1 redline\",\"number\":', ssFailedAnyCount, ',\"percent\":', ssFailedAnyPercent, ',\"budget\":', ssFailedAnyBudget, '},',
-						 '{\"status\":\"Fully assessed\",\"number\":', ssFullyAssessedCount, ',\"percent\":', ssFullyAssessedPercent, ',\"budget\":', ssFullyAssessedBudget, '}]');
-
-
-
-	-- -------------------------
-	-- RED LINES SUMMARY
-	-- -------------------------
-	
-	-- generate redlines summary (yours)
-	INSERT INTO dashboard_red_line (dashboard_id, red_line_id, percentage)
-	SELECT dashboardYoursId, red_line_id, 100 - ROUND((SUM(value) / COUNT(*) * 100), 0) AS percentage
-	FROM assessment_red_line
-	WHERE assessment_id IN
-		(SELECT assessment_id FROM dashboard_assessment WHERE dashboard_id = dashboardYoursId)
-	GROUP BY red_line_id
-	ORDER BY red_line_id;
-
-
-	-- generate redlines summary (others)
-	INSERT INTO dashboard_red_line (dashboard_id, red_line_id, percentage)
-	SELECT dashboardOthersId, red_line_id, 100 - ROUND((SUM(value) / COUNT(*) * 100), 0) AS percentage
-	FROM assessment_red_line
-	WHERE assessment_id IN
-		(SELECT assessment_id FROM dashboard_assessment WHERE dashboard_id = dashboardOthersId)
-	GROUP BY red_line_id
-	ORDER BY red_line_id;
-
-
-	-- construct red lines summary
-	SET redlinesSummary = '[';
+	-- construct principles summary
+	SET principlesSummary = '[';
 
 	-- open cursor
-	OPEN rsCursor;
+	OPEN psCursor;
 		
 	-- loop
-	rs_read_loop: LOOP
+	ps_read_loop: LOOP
 	  	
 		-- fetch one record from cursor
-		FETCH rsCursor INTO rsRedLineId, rsRedLineName, rsYourPercentage, rsOthersPercentage;
+		FETCH psCursor INTO psPrincipleId, psPrincipleName, psGreenPercentage, psYellowPercentage, psRedPercentage;
 			
 		-- exit loop if it is end of cursor
-		IF rsDone THEN
-		  	LEAVE rs_read_loop;
+		IF psDone THEN
+		  	LEAVE ps_read_loop;
 		END IF;
 		    
-		SET redlinesSummary = CONCAT(redlinesSummary, '{\"id\":', rsRedLineId, ',\"name\":\"', rsRedLineName, '\",\"yours\":', rsYourPercentage, ',\"others\":', rsOthersPercentage, '},');
+		SET principlesSummary = CONCAT(principlesSummary, '{\"id\":', psPrincipleId, ',\"name\":\"', psPrincipleName, '\",\"green\":', psGreenPercentage, ',\"yellow\":', psYellowPercentage, ',\"red\":', psRedPercentage, '},');
 	    
 	-- end loop
-	END LOOP rs_read_loop;
+	END LOOP ps_read_loop;
 		
 	-- close cursor
-	CLOSE rsCursor;
-
-	SET redlinesSummary = CONCAT(redlinesSummary, ']');
-
-
-
-	-- -------------------------
-	-- PRINCIPLES SUMMARY
-	-- -------------------------
-
-	-- generate principle assessment subtotal (yours)
-	INSERT INTO dashboard_principle (dashboard_id, principle_id, category, counter)
-	SELECT dashboardYoursId, principle_id, category, SUM(counter) AS counter FROM
-	(SELECT ta.*, tb.category FROM
-	(SELECT principle_id, rating, COUNT(*) AS counter FROM principle_assessment
-	WHERE rating IS NOT NULL
-	AND assessment_id IN (SELECT assessment_id FROM dashboard_assessment WHERE dashboard_id = dashboardYoursId)
-	GROUP BY principle_id, rating) AS ta, dashboard_rating AS tb
-	WHERE ta.rating = tb.rating
-	ORDER BY principle_id) AS principle_summary
-	GROUP BY principle_id, category
-	ORDER BY principle_id, category;
-
-	-- generate principle assessment subtotal (others)
-	INSERT INTO dashboard_principle (dashboard_id, principle_id, category, counter)
-	SELECT dashboardOthersId, principle_id, category, SUM(counter) AS counter FROM
-	(SELECT ta.*, tb.category FROM
-	(SELECT principle_id, rating, COUNT(*) AS counter FROM principle_assessment
-	WHERE rating IS NOT NULL
-	AND assessment_id IN (SELECT assessment_id FROM dashboard_assessment WHERE dashboard_id = dashboardOthersId)
-	GROUP BY principle_id, rating) AS ta, dashboard_rating AS tb
-	WHERE ta.rating = tb.rating
-	ORDER BY principle_id) AS principle_summary
-	GROUP BY principle_id, category
-	ORDER BY principle_id, category;
-
-
-	-- generate principle summary (yours)
-	SET yoursPrinciplesSummary = generate_principles_summary(dashboardYoursId);
+	CLOSE psCursor;
 	
-	-- generate principle summary (others)
-	SET othersPrinciplesSummary = generate_principles_summary(dashboardOthersId);
+	-- remove the last comma
+	SET principlesSummary = SUBSTRING(principlesSummary, 1, LENGTH(principlesSummary)-1);
 
-
-
-	-- -------------------------
-	-- STORING DASHBOARD RESULT
-	-- -------------------------
-
-	INSERT INTO dashboard_result (dashboard_id, dashboard_others_id, status, message, status_summary, red_lines_summary, principles_summary_yours, principles_summary_others, created_at, updated_at)
-	VALUE (dashboardYoursId, dashboardOthersId, status, message, statusSummary, redlinesSummary, yoursPrinciplesSummary, othersPrinciplesSummary, NOW(), NOW());
+	SET principlesSummary = CONCAT(principlesSummary, ']');
 	
 	
+	RETURN principlesSummary;
+
 END
 ";
 
@@ -416,7 +111,7 @@ END
      */
     public function down()
     {
-        $procedure = "DROP PROCEDURE IF EXISTS `generate_dashboard_summary` ";
+        $procedure = "DROP FUNCTION IF EXISTS `generate_principles_summary` ";
 
         DB::unprepared($procedure);
     }
