@@ -99,7 +99,11 @@ class AssessmentCrudController extends CrudController
                 ->type('section-title')
                 ->view_namespace('stats4sd.laravel-backpack-section-title::fields')
                 ->title($principle->name)
-                ->content("<table class='table table - striped'>
+                ->content("
+                            <div class='mb-4'>
+                            <strong>Description:</strong> {$principle->description}
+                            </div>
+                            <table class='table table - striped'>
                                 <tr>
                                     <th>Score</th>
                                     <th>Definition</th>
