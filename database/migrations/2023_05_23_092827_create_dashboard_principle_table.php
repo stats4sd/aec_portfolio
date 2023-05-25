@@ -13,12 +13,10 @@ return new class extends Migration
     {
         Schema::create('dashboard_principle', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('dashboard_id');
+            $table->unsignedBigInteger('dashboard_id')->index();
             $table->foreignId('principle_id');
-            $table->string('principle_name');
             $table->string('category');
             $table->integer('counter');
-            $table->tinyInteger('seq_no');
             $table->timestamps();
         });
     }

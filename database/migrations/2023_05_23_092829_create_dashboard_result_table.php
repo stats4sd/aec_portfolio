@@ -13,12 +13,14 @@ return new class extends Migration
     {
         Schema::create('dashboard_result', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('dashboard_id');
+            $table->unsignedBigInteger('dashboard_id')->index();
+            $table->unsignedBigInteger('dashboard_others_id')->index();
             $table->string('status');
             $table->string('message');
             $table->text('status_summary');
-            $table->text('redLines_summary');
-            $table->text('principles_summary');
+            $table->text('red_lines_summary');
+            $table->text('principles_summary_yours');
+            $table->text('principles_summary_others');
             $table->timestamps();
         });
     }

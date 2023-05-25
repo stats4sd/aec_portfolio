@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('dashboard_assessment', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('dashboard_id');
+            $table->unsignedBigInteger('dashboard_id')->index();
             $table->foreignId('assessment_id');
             $table->timestamps();
         });

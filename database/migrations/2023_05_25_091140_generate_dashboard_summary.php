@@ -11,12 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('dashboard_project', function (Blueprint $table) {
-            $table->id();
-            $table->unsignedBigInteger('dashboard_id')->index();
-            $table->foreignId('project_id');
-            $table->timestamps();
-        });
+        //
     }
 
     /**
@@ -24,6 +19,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('dashboard_project');
+        //
     }
 };

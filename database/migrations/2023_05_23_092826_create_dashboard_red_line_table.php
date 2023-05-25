@@ -13,11 +13,9 @@ return new class extends Migration
     {
         Schema::create('dashboard_red_line', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('dashboard_id');
+            $table->unsignedBigInteger('dashboard_id')->index();
             $table->foreignId('red_line_id');
-            $table->string('red_line_name');
-            $table->decimal('your_percentage', 5, 2);
-            $table->decimal('others_percentage', 5, 2);
+            $table->decimal('percentage', 5, 2);
             $table->timestamps();
         });
     }
