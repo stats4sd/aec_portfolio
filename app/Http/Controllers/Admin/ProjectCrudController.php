@@ -10,6 +10,7 @@ use App\Models\AdditionalCriteriaScoreTag;
 use App\Models\Portfolio;
 use App\Models\Principle;
 use App\Models\Assessment;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 use App\Models\Organisation;
 use App\Imports\ProjectImport;
@@ -277,11 +278,7 @@ class ProjectCrudController extends CrudController
 
         CRUD::field('geographic_reach')
             ->type('select2_from_array')
-            ->options([
-                'global' => 'Global Level',
-                'multi-country' => 'Multi Country Level',
-                'country' => 'Country Level'
-            ]);
+            ->options(Arr::mapWithKeys(GeographicalReach::cases(), fn($enum) => [$enum->name => $enum->value]));
 
         CRUD::field('continents')->type('relationship')
             ->label('Select the continent / continents that this project works in.')
@@ -301,7 +298,7 @@ class ProjectCrudController extends CrudController
             ->ajax(true)
             ->minimum_input_length(0)
             ->dependencies(['continents,regions'])
-            ->allows_null(true);;
+            ->allows_null(true);
 
         CRUD::field('sub_regions')->type('textarea')
             ->label('Optionally, add the specific regions within each country where the project works.');
@@ -391,7 +388,7 @@ class ProjectCrudController extends CrudController
 
 
         // pass organisation to importer;
-        $organisation = Organisation::find($request->organisation);
+        $organisation = Organisation::find(\Session::get('selectedOrganisationId'));
         Excel::import(new $importer($organisation), $request->importFile);
 
 
