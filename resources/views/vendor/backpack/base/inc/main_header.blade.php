@@ -1,4 +1,4 @@
-<header class="app-header bg-light border-0 navbar">
+<header class="app-header bg-light border-0 navbar shadow">
 
   {{-- Logo --}}
   <button class="navbar-toggler sidebar-toggler d-lg-none mr-auto ml-3" type="button" data-toggle="sidebar-show" aria-label="{{ trans('backpack::base.toggle_navigation')}}">
