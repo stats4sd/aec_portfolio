@@ -47,6 +47,7 @@ class Project extends Model
             $assessment = Assessment::create(['project_id' => $project->id]);
             $assessment->redLines()->sync(RedLine::all()->pluck('id')->toArray());
             $assessment->principles()->sync(Principle::all()->pluck('id')->toArray());
+            $assessment->additionalCriteria()->sync($project->organisation->additionalCriteria->pluck('id')->toArray());
         });
 
         static::addGlobalScope('organisation', function (Builder $builder) {
