@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Imports\ProjectWorkbookImport;
 use App\Models\Region;
 use App\Models\Country;
 use App\Models\Project;
@@ -11,6 +12,7 @@ use App\Models\Portfolio;
 use App\Models\Principle;
 use App\Models\Assessment;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use App\Models\Organisation;
 use App\Imports\ProjectImport;
@@ -46,7 +48,9 @@ class ProjectCrudController extends CrudController
     use \Backpack\CRUD\app\Http\Controllers\Operations\ListOperation;
     use \Backpack\CRUD\app\Http\Controllers\Operations\CreateOperation;
     use \Backpack\CRUD\app\Http\Controllers\Operations\UpdateOperation;
-    use \Backpack\CRUD\app\Http\Controllers\Operations\DeleteOperation { destroy as traitDestroy; }
+    use \Backpack\CRUD\app\Http\Controllers\Operations\DeleteOperation {
+        destroy as traitDestroy;
+    }
     use \Backpack\CRUD\app\Http\Controllers\Operations\ShowOperation;
 
     use AuthorizesRequests;
@@ -64,7 +68,7 @@ class ProjectCrudController extends CrudController
      */
     public function setup()
     {
-        if ( !Session::exists('selectedOrganisationId') ) {
+        if (!Session::exists('selectedOrganisationId')) {
             throw new BadRequestHttpException('Please select an institution first');
         }
 
@@ -72,7 +76,7 @@ class ProjectCrudController extends CrudController
         CRUD::setRoute(config('backpack.base.route_prefix') . '/project');
         CRUD::setEntityNameStrings('initiative', 'initiatives');
 
-        CRUD::set('import.importer', ProjectImport::class);
+        CRUD::set('import.importer', ProjectWorkbookImport::class);
         CRUD::set('import.template-path', 'AE Marker - Project Import Template.xlsx');
 
         CRUD::setShowView('projects.show');
@@ -245,9 +249,9 @@ class ProjectCrudController extends CrudController
                 'name' => 'portfolio_id',
                 'type' => 'select',
                 'label' => 'Portfolio',
-                'model'     => "App\Models\PortFolio",
+                'model' => "App\Models\PortFolio",
                 'attribute' => 'name',
-                'options'   => (function ($query) {
+                'options' => (function ($query) {
                     return $query->where('organisation_id', Session::get('selectedOrganisationId'))->orderBy('name', 'ASC')->get();
                 }),
             ],
@@ -321,7 +325,8 @@ class ProjectCrudController extends CrudController
     }
 
     // create related records for a new assessment
-    public function reAssess($id) {
+    public function reAssess($id)
+    {
         $assessment = Assessment::create(['project_id' => $id]);
         $assessment->redLines()->sync(RedLine::all()->pluck('id')->toArray());
         $assessment->principles()->sync(Principle::all()->pluck('id')->toArray());
@@ -360,8 +365,8 @@ class ProjectCrudController extends CrudController
 
 
         $this->crud->addField([
-            'name' => 'organisation',
-            'label' => 'Institution',
+            'name' => 'portfolio',
+            'label' => 'Portfolio',
             'type' => 'relationship',
             'validationRules' => 'required',
         ]);
@@ -383,13 +388,18 @@ class ProjectCrudController extends CrudController
         if (!$importer) {
             return response("Importer Class not found - please check the importer is properly setup for this page", 500);
         }
-
         $request = $this->crud->validateRequest();
 
 
+        Validator::make($request->all(), [
+            'portfolio' => 'required',
+            'importFile' => 'required',
+        ])->validate();
+
+
         // pass organisation to importer;
-        $organisation = Organisation::find(\Session::get('selectedOrganisationId'));
-        Excel::import(new $importer($organisation), $request->importFile);
+        $portfolio = Portfolio::find($request->portfolio);
+        Excel::import(new $importer($portfolio), $request->importFile);
 
 
         Alert::success(trans('backpack::crud.insert_success'))->flash();

@@ -29,6 +29,7 @@ class ProjectRequest extends FormRequest
     {
         return [
             'organisation_id' => 'required',
+            'portfolio_id' => 'required',
             'name' => 'required|string',
             'code' => ['nullable', 'string', new UniqueProjectCode],
             'description' => 'nullable|string',
