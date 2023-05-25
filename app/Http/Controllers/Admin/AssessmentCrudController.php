@@ -14,6 +14,7 @@ use Backpack\CRUD\app\Http\Controllers\Operations\CreateOperation;
 use Backpack\CRUD\app\Http\Controllers\Operations\UpdateOperation;
 use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
 use Backpack\CRUD\app\Library\Widget;
+use Backpack\ReviseOperation\ReviseOperation;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Str;
@@ -36,6 +37,8 @@ class AssessmentCrudController extends CrudController
     use AssessOperation;
     use RedlineOperation;
     use UsesSaveAndNextAction;
+
+    use ReviseOperation;
 
     /**
      * Configure the CrudPanel object. Apply settings to all operations.

@@ -116,9 +116,6 @@ trait RedlineOperation
             }
         }
 
-
-        $latestAssessment->redlines()->sync($updates);
-
         if (collect(AssessmentStatus::InProgress, AssessmentStatus::Complete)->contains($latestAssessment->assessment_status)) {
             $latestAssessment->assessment_status = !$request->redlines_complete ? AssessmentStatus::RedlinesIncomplete : $latestAssessment->assessment_status;
         } else {
