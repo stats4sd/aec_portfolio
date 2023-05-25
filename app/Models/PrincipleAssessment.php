@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\Pivot;
 use Illuminate\Support\Str;
+use Venturecraft\Revisionable\Revisionable;
 use Venturecraft\Revisionable\RevisionableTrait;
 
 class PrincipleAssessment extends Model
@@ -23,14 +24,16 @@ class PrincipleAssessment extends Model
     public function identifiableName(): string
     {
         // MAYBE: Adapt this to include the number of assessment for projects with multiple assessments?
-        return  $this->assessment->project->name
+        return $this->assessment->project->name
             . ' - ' . $this->principle->name;
     }
+
 
     public function assessment(): BelongsTo
     {
         return $this->belongsTo(Assessment::class);
     }
+
     public function principle(): BelongsTo
     {
         return $this->belongsTo(Principle::class);

@@ -8,6 +8,9 @@ use Backpack\CRUD\app\Models\Traits\CrudTrait;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Arr;
+use Illuminate\Support\Str;
+use Venturecraft\Revisionable\Revision;
 use Venturecraft\Revisionable\Revisionable;
 use Venturecraft\Revisionable\RevisionableTrait;
 
@@ -26,17 +29,29 @@ class Assessment extends Model
     public function hasRevisions(): bool
     {
         return $this->assessmentRedLines->some(fn(AssessmentRedLine $entry) => count($entry->revisionHistory))
-            || $this->principleAssessments->some(fn(PrincipleAssessment $entry) => count($entry->revisionHistory));
+            || $this->principleAssessments->some(fn(PrincipleAssessment $entry) => count($entry->revisionHistory))
+            || $this->additionalCriteriaAssessment->some(fn(AdditionalCriteriaAssessment $entry) => count($entry->revisionHistory));
     }
 
     public function getRevisionHistoryAttribute()
     {
         return
             collect([
-                $this->assessmentRedLines->reduce(fn($carry, $item) => $carry->merge($item->revisionHistory), collect([])),
-                $this->principleAssessments->reduce(fn($carry, $item) => $carry->merge($item->revisionHistory), collect([])),
+                $this->assessmentRedLines->reduce(fn($carry, $item) => $carry->merge($this->appendExtrasToRevision($item, 'redLine')), collect([])),
+                $this->principleAssessments->reduce(fn($carry, $item) => $carry->merge($this->appendExtrasToRevision($item, 'principle')), collect([])),
+                $this->additionalCriteriaAssessment->reduce(fn($carry, $item) => $carry->merge($this->appendExtrasToRevision($item, 'additionalCriteria')), collect([])),
             ])
             ->flatten();
+    }
+
+    public function appendExtrasToRevision($item, $relation)
+    {
+        return $item->revisionHistory->map(function(Revision $history) use ($item, $relation) {
+           $history->relation =  Str::lower(Arr::join(Str::ucsplit($relation), ' '));
+           $history->linkedItemName = $item->$relation?->name;
+
+           return $history;
+        });
     }
 
 
@@ -157,6 +172,11 @@ class Assessment extends Model
                 'rating_comment',
                 'is_na'
             ]);
+    }
+
+    public function additionalCriteriaAssessment(): HasMany
+    {
+        return $this->hasMany(AdditionalCriteriaAssessment::class);
     }
 
 

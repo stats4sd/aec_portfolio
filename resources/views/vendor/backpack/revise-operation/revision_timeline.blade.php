@@ -1,5 +1,6 @@
 
 <div id="timeline">
+    @dump($revisions);
 @foreach($revisions as $revisionDate => $dateRevisions)
       <h5 class="text-primary">
         {{ Carbon\Carbon::parse($revisionDate)->isoFormat(config('backpack.base.default_date_format')) }}
@@ -16,7 +17,7 @@
       @else
         <div class="card-header">
           <strong class="time"><i class="la la-clock"></i> {{ date('h:ia', strtotime($history->created_at)) }}</strong> -
-          {{ $history->userResponsible()?$history->userResponsible()->name:trans('revise-operation::revise.guest_user') }} {{ trans('revise-operation::revise.changed_the') }} {{ $history->fieldName() }}
+          {{ $history->userResponsible()?$history->userResponsible()->name:trans('revise-operation::revise.guest_user') }} {{ trans('revise-operation::revise.changed_the') }} {{ $history->fieldName() }} for {{ $history->relation }} - {{ $history->linkedItemName }}:
         </div>
         <div class="card-body">
           <div class="row">
