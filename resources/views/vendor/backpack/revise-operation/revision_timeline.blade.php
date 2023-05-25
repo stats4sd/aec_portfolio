@@ -1,6 +1,6 @@
 
 <div id="timeline">
-    @dump($revisions);
+
 @foreach($revisions as $revisionDate => $dateRevisions)
       <h5 class="text-primary">
         {{ Carbon\Carbon::parse($revisionDate)->isoFormat(config('backpack.base.default_date_format')) }}
