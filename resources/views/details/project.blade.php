@@ -13,7 +13,7 @@
                 <td>{{ $assessment->overall_score }}</td>
                 <td>{{ $assessment->assessment_status }}</td>
                 @if($assessment->hasRevisions())
-                    <td><a href="{{ url('admin/assessment/'.$assessment->id.'/revisions') }}"><i class="la la-recycle"></i> Show Revisions</a></td>
+                    <td><a href="{{ url('admin/assessment/'.$assessment->id.'/revise') }}"><i class="la la-recycle"></i> Show Revisions</a></td>
                 @endif
                 <td><a href="{{ url('admin/assessment/'.$assessment->id.'/show') }}" class="btn btn-sm btn-link" data-toggle="popover"><i class="la la-eye"></i> Preview</a></td>
             </tr>
