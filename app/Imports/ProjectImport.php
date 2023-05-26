@@ -28,15 +28,23 @@ class ProjectImport implements ToModel, WithHeadingRow, SkipsEmptyRows, WithCalc
 
     use Importable;
 
+    protected array $ignoreCodes;
+
     public function __construct(public Portfolio $portfolio)
     {
+        $this->ignoreCodes = [
+            'enter a unique code for the initiative',
+            'example',
+            'optional',
+            'required',
+        ];
     }
 
     public function model(array $row)
     {
 
         // skip instructions and example row from template;
-        if (isset($row['code']) && ($row['code'] === 'enter a unique code for the initiative' || $row['code'] === 'example')) {
+        if (isset($row['code']) && in_array($row['code'], $this->ignoreCodes, true)) {
             return null;
         }
 
@@ -62,6 +70,7 @@ class ProjectImport implements ToModel, WithHeadingRow, SkipsEmptyRows, WithCalc
             'budget' => $row['budget'],
             'start_date' => $startDate,
             'end_date' => $endDate,
+            'geographic_reach' => $row['geographic_reach'],
         ]);
 
     }
@@ -77,7 +86,7 @@ class ProjectImport implements ToModel, WithHeadingRow, SkipsEmptyRows, WithCalc
     {
         Log::info($data);
 
-        if (isset($data['code']) && ($data['code'] === 'enter a unique code for the initiative' || $data['code'] === 'example')) {
+        if (isset($data['code']) && in_array($data['code'], $this->ignoreCodes, true)) {
             return [
                 'organisation_id' => 1,
                 'portfolio_id' => 1,

@@ -33,7 +33,7 @@ class ProjectRequest extends FormRequest
             'name' => 'required|string',
             'code' => ['nullable', 'string', new UniqueProjectCode],
             'description' => 'nullable|string',
-            'budget' => 'required|integer',
+            'budget' => 'required|integer|gte:0',
             'currency' => 'required|max:3',
             'start_date' => 'required',
             'end_date' => 'nullable|after:start_date',
