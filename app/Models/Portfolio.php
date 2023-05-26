@@ -3,13 +3,14 @@
 namespace App\Models;
 
 use Backpack\CRUD\app\Models\Traits\CrudTrait;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Session;
 
 class Portfolio extends Model
 {
     use CrudTrait;
-    use HasFactory;
 
     /*
     |--------------------------------------------------------------------------
@@ -18,12 +19,16 @@ class Portfolio extends Model
     */
 
     protected $table = 'portfolios';
-    // protected $primaryKey = 'id';
-    // public $timestamps = false;
     protected $guarded = ['id'];
-    // protected $fillable = [];
-    // protected $hidden = [];
-    // protected $dates = [];
+
+    protected static function booted()
+    {
+        // add global scope to filter by currently selected organisation.
+        static::addGlobalScope('organisation',  function(Builder $query) {
+            $query->where('organisation_id', Session::get('selectedOrganisationId'));
+        });
+    }
+
 
     /*
     |--------------------------------------------------------------------------

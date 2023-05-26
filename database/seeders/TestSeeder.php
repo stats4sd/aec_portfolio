@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Enums\GeographicalReach;
 use App\Models\Organisation;
 use App\Models\User;
 use Illuminate\Database\Seeder;
@@ -47,7 +48,7 @@ class TestSeeder extends Seeder
             'budget' => '1000000',
             'currency' => 'EUR',
             'start_date' => '2023-01-01',
-            'geographic_reach' => 'global',
+            'geographic_reach' => GeographicalReach::Global->name,
         ]);
     }
 }
