@@ -16,7 +16,7 @@ use Backpack\ReviseOperation\ReviseOperation;
 class PrincipleAssessmentCrudController extends CrudController
 {
     use ListOperation;
-    use  ReviseOperation;
+    use ReviseOperation;
 
     public function setup()
     {

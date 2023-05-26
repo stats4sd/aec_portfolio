@@ -34,16 +34,10 @@
 
 </template>
 
-<script>
-export default {
-    mounted() {
-        console.log('Component mounted.')
-    },
+<script setup>
 
-    data() {
-        return {
-            principles: [],
-        }
-    }
-}
+let principleAssessments = await axios.get('/principle-assessment')
+
+console.log(principleAssessments);
+
 </script>

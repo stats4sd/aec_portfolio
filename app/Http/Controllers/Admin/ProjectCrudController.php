@@ -75,8 +75,6 @@ class ProjectCrudController extends CrudController
         CRUD::set('import.template-path', 'AE Marker - Project Import Template.xlsx');
 
         CRUD::setShowView('projects.show');
-        CRUD::setAssessView('projects.assess');
-
     }
 
     public function show($id)
