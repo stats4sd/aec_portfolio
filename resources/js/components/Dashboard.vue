@@ -2,11 +2,14 @@
 
     <div class="container pt-2">
 
+    <!--
     <table border="1" width="1000">
+    -->
+    <table class="table table-bordered">
 
         <tr>
         <td>
-            <table border="1">
+            <table>
                 <tr>
                     <td>Dashboard Filters</td>
                 </tr>
@@ -44,20 +47,14 @@
                     <td></td>
                     <td></td>
                     <td align="right">From
-                        <select name="projectStartFrom" id="projectStartFrom">
-                            <option>2020</option>
-                            <option>2021</option>
-                        </select>
+                        <input type="number" id="projectStartFrom" name="projectStartFrom" min="2020" max="2100" value="2020" style="width:80px;">
                     </td>
                 </tr>
                 <tr>
                     <td></td>
                     <td></td>
                     <td align="right">To
-                        <select name="projectStartTo" id="projectStartTo">
-                            <option>2040</option>
-                            <option>2041</option>
-                        </select>
+                        <input type="number" id="projectStartTo" name="projectStartTo" min="2020" max="2100" value="2030" style="width:80px;">
                     </td>
                 </tr>
 
@@ -75,10 +72,7 @@
                     <td></td>
                     <td></td>
                     <td align="right">From
-                        <select name="budgetFrom" id="budgetFrom">
-                            <option>500,000</option>
-                            <option>600,000</option>
-                        </select>
+                        <input type="number" id="budgetFrom" name="budgetFrom" min="0" max="10000000" value="100000" step="100000" style="width:100px;">
                         EUR
                     </td>
                 </tr>
@@ -86,10 +80,7 @@
                     <td></td>
                     <td></td>
                     <td align="right">To
-                        <select name="budgetTo" id="budgetTo">
-                            <option>2,000,000</option>
-                            <option>3,000,000</option>
-                        </select>
+                        <input type="number" id="budgetTo" name="budgetTo" min="0" max="10000000" value="10000000" step="100000" style="width:100px;">
                         EUR
                     </td>
                 </tr>
