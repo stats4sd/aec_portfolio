@@ -2,9 +2,7 @@
     <div class="card w-100 px-4 py-4">
         <div class="card-body">
             <div class="px-5 mx-5">
-
                 <h3 class="text-bright-green font-weight-bold">Agrocological Principles Assessment</h3>
-
                 <div class="mb-5">
 
                     This is the main section of the review. Below are the 13 Agroecology Principles, and you should rate the project against each one.
@@ -21,23 +19,22 @@
                     principle, please click the button mark the assessment as complete. Once done, you will return to the main projects list to view the final result.
                     <br/><br/><br/>
                     <b class="text-deep-green">Click on a principle to begin:</b>
-
                 </div>
-
-
-
-
-
             </div>
         </div>
     </div>
 
 </template>
 
-<script setup>
+<script>
 
-let principleAssessments = await axios.get('/principle-assessment')
+export default {
+    async mounted() {
+        let principleAssessments = await axios.get('/principle-assessment')
+        console.log(principleAssessments);
 
-console.log(principleAssessments);
+    }
+}
+
 
 </script>

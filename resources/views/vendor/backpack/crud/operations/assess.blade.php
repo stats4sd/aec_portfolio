@@ -10,7 +10,7 @@
 
 
         <div class="row" id="aePrinciplesAssessment">
-            <AgroecologicalPrinciplesAssessment/>
+            <agroecological-principles-assessment/>
         </div>
     </div>
 @endsection
