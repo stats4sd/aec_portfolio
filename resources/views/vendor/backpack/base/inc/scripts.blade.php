@@ -1,14 +1,6 @@
-@foreach(config('backpack.base.scripts', []) as $path)
-    <script type="text/javascript" src="{{ asset($path).'?v='.config('backpack.base.cachebusting_string') }}"></script>
-@endforeach
 
-@foreach(config('backpack.base.mix_scripts', []) as $path => $manifest)
-    <script type="text/javascript" src="{{ mix($path, $manifest) }}"></script>
-@endforeach
-
-@if(!empty(config('backpack.base.vite_scripts', [])))
-    @vite(config('backpack.base.vite_scripts', []))
-@endif
+<script src="/packages/backpack/base/js/bundle.js"></script>
+@vite('resources/js/app.js')
 
 @include('backpack::inc.alerts')
 

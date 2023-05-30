@@ -4,10 +4,6 @@ import {createApp} from 'vue';
 
 import 'bootstrap';
 
-
-window.Popper = require('popper.js').default;
-window.$ = window.jQuery = require('jquery');
-
 import AgroecologicalPrinciplesAssessment from "./components/AgroecologicalPrinciplesAssessment.vue"
 
 window._ = _;
