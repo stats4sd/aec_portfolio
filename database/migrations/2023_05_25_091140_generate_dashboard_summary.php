@@ -214,10 +214,10 @@ BEGIN
 	
 	SET ssCreatedPercent = 100;
 
-	
+
 	IF ssCreatedCount = 0 THEN
 		SET status = 1001;
-		SET message = 'This institution does not have any initiative yet';
+		SET message = 'There is no initiative found for this criteria';
 	END IF;
 
 
