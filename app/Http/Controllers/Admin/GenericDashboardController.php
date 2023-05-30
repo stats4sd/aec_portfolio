@@ -74,21 +74,21 @@ class GenericDashboardController extends Controller
         $sortBy = $request['sortBy'];
 
 
-        // logger($dashboardYoursId);
-        // logger($dashboardOthersId);
-        // logger($organisationId);
-        // logger($portfolioId);
-        // logger($regionId);
-        // logger($countryId);
-        // logger($projectStartFrom);
-        // logger($projectStartTo);
-        // logger($budgetFrom);
-        // logger($budgetTo);
-        // logger($chkRegion);
-        // logger($chkCountry);
-        // logger($chkProjectStart);
-        // logger($chkBudget);
-        // logger($sortBy);
+        logger($dashboardYoursId);
+        logger($dashboardOthersId);
+        logger($organisationId);
+        logger($portfolioId);
+        logger($regionId);
+        logger($countryId);
+        logger($projectStartFrom);
+        logger($projectStartTo);
+        logger($budgetFrom);
+        logger($budgetTo);
+        logger($chkRegion);
+        logger($chkCountry);
+        logger($chkProjectStart);
+        logger($chkBudget);
+        logger($sortBy);
 
 
         // constrcuct dynamic SQL
@@ -144,8 +144,26 @@ class GenericDashboardController extends Controller
 
         $results = DB::select('select @status as status, @message as message, @statusSummary as statusSummary, @redlinesSummary as redlinesSummary, @yoursPrinciplesSummary as yoursPrinciplesSummary, @othersPrinciplesSummary as othersPrinciplesSummary');
 
+        logger($results);
+
         $status = $results[0]->status;
         $message = $results[0]->message;
+
+
+        // error handling if status is not 0
+        if ($status != "0") {
+            $jsonRes = [];
+        
+            $jsonRes['status'] = $status;
+            $jsonRes['message'] = $message;
+            $jsonRes['statusSummary'] = null;
+            $jsonRes['redlinesSummary'] = null;
+            $jsonRes['yoursPrinciplesSummarySorted'] = null;
+            $jsonRes['othersPrinciplesSummarySorted'] = null;
+    
+            return $jsonRes;
+        }
+
 
         // convert string to JSON
         $statusSummary = json_decode($results[0]->statusSummary, true);

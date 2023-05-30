@@ -102,17 +102,6 @@
 
 
 
-    <!-- response status and message -->
-    <table>
-        <tr><td>
-            <input type="text" v-model="status">
-        </td></tr>
-        <tr><td>
-            <input type="text" v-model="message">
-        </td></tr>
-    </table>
-
-
     <!-- status summary -->
     <table class="table" v-if="statusSummary != null">
 
@@ -264,7 +253,7 @@ export default {
     mounted() {
 
         // temporary hard code to make testing quicker
-        this.formData['portfolio'] = 20;
+        //this.formData['portfolio'] = 20;
         this.formData['sortBy'] = 1;
 
         // set default values
@@ -520,6 +509,14 @@ export default {
         submitEnquiry() {
             // alert("submitEnquiry()");
 
+            // reset variables
+            // this.status = null;
+            // this.message = null;
+            // this.statusSummary = null;
+            // this.redlinesSummary = null;
+            // this.yoursPrinciplesSummarySorted = null;
+            // this.othersPrinciplesSummarySorted = null;
+
             // send ajax request to Controller
             axios.post("/admin/generic-dashboard/enquire", this.formData)
 
@@ -533,13 +530,16 @@ export default {
                 this.yoursPrinciplesSummarySorted = this.enquireResult['yoursPrinciplesSummarySorted'];
                 this.othersPrinciplesSummarySorted = this.enquireResult['othersPrinciplesSummarySorted'];
 
-                // show status summary automatically by data driven approach and v-if
+                if (this.status != "0") {
+                    alert(this.message);
+                } else {
+                    // show status summary automatically by data driven approach and v-if
 
-                // show red lines summary automatically by data driven approach and v-if
+                    // show red lines summary automatically by data driven approach and v-if
 
-                // show principles summary by calling Javascript function
-                // this.showPrinciplesSummary();
-                window.setTimeout(this.showPrinciplesSummary, 100);
+                    // show principles summary by calling Javascript function
+                    window.setTimeout(this.showPrinciplesSummary, 100);
+                }
 
             })
             .catch(error=>{

@@ -206,13 +206,19 @@ BEGIN
 
 	
 	-- CREATED PROJECTS
-	SELECT COUNT(*), SUM(budget) 
+	SELECT COUNT(*), IFNULL(SUM(budget), 0)
 	INTO ssCreatedCount, ssCreatedBudget 
 	FROM projects 
 	WHERE id IN
 		(SELECT project_id FROM dashboard_project where dashboard_id = dashboardYoursId);
 	
 	SET ssCreatedPercent = 100;
+
+	
+	IF ssCreatedCount = 0 THEN
+		SET status = 1001;
+		SET message = 'This institution does not have any initiative yet';
+	END IF;
 
 
 	-- PASSED ALL REDLINES
@@ -226,7 +232,7 @@ BEGIN
 	HAVING SUM(value) = 0) AS passed_all_red_lines;
 
 	-- find budget that passed all red lines
-	SELECT SUM(budget) 
+	SELECT IFNULL(SUM(budget), 0)
 	INTO ssPassedAllBudget
 	FROM projects 
 	WHERE id IN
@@ -252,7 +258,7 @@ BEGIN
 	HAVING SUM(value) > 0) AS failed_any_red_lines;
 
 	-- find budget that failed at least one red line
-	SELECT SUM(budget) 
+	SELECT IFNULL(SUM(budget), 0)
 	INTO ssFailedAnyBudget
 	FROM projects 
 	WHERE id IN
@@ -277,7 +283,7 @@ BEGIN
 	(SELECT assessment_id FROM dashboard_assessment WHERE dashboard_id = dashboardYoursId);
 		
 	-- budget for fully assessed projects
-	SELECT SUM(budget)
+	SELECT IFNULL(SUM(budget), 0)
 	INTO ssFullyAssessedBudget
 	FROM projects
 	WHERE id IN
