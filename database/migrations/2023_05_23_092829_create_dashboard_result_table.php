@@ -15,12 +15,12 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('dashboard_id')->index();
             $table->unsignedBigInteger('dashboard_others_id')->index();
-            $table->string('status');
-            $table->string('message');
-            $table->text('status_summary');
-            $table->text('red_lines_summary');
-            $table->text('principles_summary_yours');
-            $table->text('principles_summary_others');
+            $table->string('status')->nullable();
+            $table->string('message')->nullable();
+            $table->text('status_summary')->nullable();
+            $table->text('red_lines_summary')->nullable();
+            $table->text('principles_summary_yours')->nullable();
+            $table->text('principles_summary_others')->nullable();
             $table->timestamps();
         });
     }

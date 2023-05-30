@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use Carbon\Carbon;
 use App\Models\Region;
 use App\Models\Country;
 use App\Models\Portfolio;
@@ -56,9 +57,12 @@ class GenericDashboardController extends Controller
 
         // logger($request);
 
+        // get system time as unique dashboard Id
+        $current_timestamp = Carbon::now()->timestamp;
+
         // variables for stored procedure input parameters
-        $dashboardYoursId = 998;
-        $dashboardOthersId = 999;
+        $dashboardYoursId = $current_timestamp;
+        $dashboardOthersId = $current_timestamp + 1;
         $organisationId = $request['organisation'];
         $portfolioId = $request['portfolio'];
         $regionId = $request['region'];
