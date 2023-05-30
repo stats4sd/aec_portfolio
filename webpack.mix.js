@@ -12,6 +12,7 @@ const mix = require('laravel-mix');
  */
 
 mix.js('resources/js/app.js', 'public/js')
+    .js('resources/js/page.js', 'public/js')
     .vue()
     .js('resources/js/radarChart.js', 'public/js')
     .js('resources/js/comparisonCharts.js', 'public/js')
