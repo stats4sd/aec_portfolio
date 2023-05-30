@@ -9,18 +9,9 @@
     @yield('before_styles')
     @stack('before_styles')
 
-    @foreach(config('backpack.base.styles', []) as $path)
-        <link rel="stylesheet" type="text/css" href="{{ asset($path).'?v='.config('backpack.base.cachebusting_string') }}">
-    @endforeach
 
-    @foreach(config('backpack.base.mix_styles', []) as $path => $manifest)
-        <link rel="stylesheet" type="text/css" href="{{ mix($path, $manifest) }}">
-    @endforeach
+    @vite('resources/sass/app.scss')
 
-    @if(!empty(config('backpack.base.vite_styles', [])))
-        @vite(config('backpack.base.vite_styles', []))
-    @endif
-    
     @yield('after_styles')
     @stack('after_styles')
 
