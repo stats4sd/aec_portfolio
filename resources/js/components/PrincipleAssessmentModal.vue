@@ -38,9 +38,6 @@
 
 export default {
     name: "PrincipleAssessmentModal",
-    components: {
-        Slider,
-    },
 
     props: {
         principleAssessment: () => {
