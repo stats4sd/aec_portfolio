@@ -2,7 +2,7 @@ import axios from 'axios';
 import _ from 'lodash';
 import {createApp} from 'vue';
 
-require('bootstrap');
+import 'bootstrap';
 
 
 window.Popper = require('popper.js').default;
