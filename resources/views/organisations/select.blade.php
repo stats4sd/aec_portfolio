@@ -25,7 +25,7 @@
 @endsection
 
 @section('after_scripts')
-<script src="{{ mix('js/app.js') }}"></script>
+@vite('resources/js/app.js')
 
 <script>
 
