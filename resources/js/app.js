@@ -4,11 +4,12 @@ import {createApp} from 'vue';
 
 import 'bootstrap';
 
-import AgroecologicalPrinciplesAssessment from "./components/AgroecologicalPrinciplesAssessment.vue"
-
 window._ = _;
 window.axios = axios;
 window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 
-const app = createApp(AgroecologicalPrinciplesAssessment)
+import AgroecologicalPrinciplesAssessment from "./components/AgroecologicalPrinciplesAssessment"
+
+const app = createApp({})
+    .component('AgroecologicalPrinciplesAssessment', AgroecologicalPrinciplesAssessment)
     .mount('#aePrinciplesAssessment')

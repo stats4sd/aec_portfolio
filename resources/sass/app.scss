@@ -48,3 +48,7 @@ body {
 .text-bright-green {
     color: $bright-green !important;
 }
+
+.bg-bright-green, .bg-success {
+    background-color: $bright-green !important;
+}

@@ -10,7 +10,7 @@
 
 
         <div class="row" id="aePrinciplesAssessment">
-            <AgroecologicalPrinciplesAssessment/>
+            <agroecological-principles-assessment  :assessment="{{ $entry->toJson() }}"/>
         </div>
     </div>
 @endsection
