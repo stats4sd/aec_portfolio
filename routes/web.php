@@ -15,5 +15,6 @@ Route::get(config('backpack.base.route_prefix') . '/login', function () {
 // `API` calls for Vue components
 
 Route::apiResource('principle-assessment', PrincipleAssessmentController::class);
+Route::get('assessment/{assessment}/principle-assessments', [PrincipleAssessmentController::class, 'index']);
 
 require __DIR__.'/auth.php';
