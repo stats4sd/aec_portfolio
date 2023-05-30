@@ -31,11 +31,11 @@ class SelectOrganisationController extends Controller
         Session::put('selectedOrganisationId', $selectedOrganisationId);
         Session::put('selectedOrganisation', $selectedOrganisation);
 
-        // redirect to institution-level dashboard
-        return view('generic-dashboard.new-dashboard', [
+        // redirect to a page that simply showed the selected organisation
+        return view('organisations.selected', [
             'organisation' => $selectedOrganisation,
-            'level' => 'institution',
         ]);
+
     }
 
 }

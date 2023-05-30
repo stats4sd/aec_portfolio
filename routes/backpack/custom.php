@@ -56,6 +56,7 @@ Route::group([
     Route::get('selected_organisation', [SelectOrganisationController::class, 'selected']);
 
     Route::get('generic-dashboard', [GenericDashboardController::class, 'show']);
+    Route::post('generic-dashboard/enquire', [GenericDashboardController::class, 'enquire']);
 
     Route::get('organisation-members', [OrganisationMemberController::class, 'show']);
 
@@ -85,6 +86,6 @@ Route::group([
     Route::get('data-removal/{removeRequest}/confirm', [RemovalRequestCrudController::class, 'confirm']);
     Route::get('data-removal/{removeRequest}/perform', [RemovalRequestCrudController::class, 'perform']);
 
-    Route::get('dv-dashboard', [DataVisualisationDashboardController::class, 'show']);
+    // Route::get('dv-dashboard', [DataVisualisationDashboardController::class, 'show']);
 
 }); // this should be the absolute last line of this file

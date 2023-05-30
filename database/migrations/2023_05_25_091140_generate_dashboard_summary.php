@@ -115,7 +115,7 @@ BEGIN
 	WHERE p.id = p.id
 	AND p.organisation_id = 9
 	AND p.portfolio_id = 20
-	AND p.start_date BETWEEN '2023-05-01' AND '2023-12-31'
+	AND YEAR(p.start_date) BETWEEN 2020 AND 2030'
 	AND p.budget BETWEEN 200 AND 1000
 	AND pr.region_id = 11
 	AND cp.country_id = 132;
@@ -144,7 +144,7 @@ BEGIN
     END IF;
 
     IF projectStartFrom IS NOT NULL AND projectStartTo IS NOT NULL THEN
-    	SET @SQLText = CONCAT(@SQLText, ' AND p.start_date BETWEEN ', projectStartFrom , ' AND ', projectStartTo);
+		SET @SQLText = CONCAT(@SQLText, ' AND YEAR(p.start_date) BETWEEN ', projectStartFrom , ' AND ', projectStartTo);
     END IF;
 
     IF budgetFrom IS NOT NULL AND budgetTo IS NOT NULL THEN
@@ -156,7 +156,7 @@ BEGIN
     END IF;
 
     IF countryId IS NOT NULL THEN
-    	SET @SQLText = CONCAT(@SQLText, ' AND cp.country_id = ', country_id);
+    	SET @SQLText = CONCAT(@SQLText, ' AND cp.country_id = ', countryId);
     END IF;
     
     -- debug message

@@ -2,10 +2,15 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Http\Controllers\Controller;
+use App\Models\Region;
+use App\Models\Country;
+use App\Models\Portfolio;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Session;
+use App\Models\ProjectRegion;
+use App\Models\CountryProject;
 use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Session;
 
 class GenericDashboardController extends Controller
 {
@@ -19,17 +24,121 @@ class GenericDashboardController extends Controller
 
         // TODO: error handling if no organisation selected yet
 
+        // find all portfolios belong to selected organisation
+        $portfolios = Portfolio::where('organisation_id', $organisation->id)->orderBy('id')->get();
+
+        // find all project Ids belongs to selected organisation
+        $projectIds = $organisation->projects->pluck('id')->toArray();
+
+        // find all regions with projects that belong to selected organisation
+        $regionIds = ProjectRegion::whereIn('project_id', $projectIds)->get()->pluck('region_id')->toArray();
+
+        // find all regions with projects that belong to selected organisation
+        $regions = Region::whereIn('id', $regionIds)->get();
+
+        // find all coutnries with projects that belong to selected organisation
+        $countrieIds = CountryProject::whereIn('project_id', $projectIds)->get()->pluck('country_id')->toArray();
+
+        // find all countries with projects that belong to selected organisation
+        $countries = Country::whereIn('id', $countrieIds)->get();
+
         return view('generic-dashboard.new-dashboard', [
             'organisation' => $organisation,
+            'portfolios' => $portfolios,
+            'regions' => $regions,
+            'countries' => $countries,
         ]);
     }
 
-    public function find()
+    public function enquire(Request $request)
     {
-        logger("GenericDashboardController.find()");
+        logger("GenericDashboardController.enquire()");
+
+        logger($request);
+
+        // variables for stored procedure input parameters
+        $dashboardYoursId = 998;
+        $dashboardOthersId = 999;
+        $organisationId = $request['organisation'];
+        $portfolioId = $request['portfolio'];
+        $regionId = $request['region'];
+        $countryId = $request['country'];
+        $projectStartFrom = $request['projectStartFrom'];
+        $projectStartTo = $request['projectStartTo'];
+        $budgetFrom = $request['budgetFrom'];
+        $budgetTo = $request['budgetTo'];
+        $chkRegion = $request['chkRegion'];
+        $chkCountry = $request['chkCountry'];
+        $chkProjectStart = $request['chkProjectStart'];
+        $chkBudget = $request['chkBudget'];
+
+
+        logger($dashboardYoursId);
+        logger($dashboardOthersId);
+        logger($organisationId);
+        logger($portfolioId);
+        logger($regionId);
+        logger($countryId);
+        logger($projectStartFrom);
+        logger($projectStartTo);
+        logger($budgetFrom);
+        logger($budgetTo);
+        logger($chkRegion);
+        logger($chkCountry);
+        logger($chkProjectStart);
+        logger($chkBudget);
+
+
+        // constrcuct dynamic SQL
+        $sql = '';
+        $sql = $sql . 'CALL generate_dashboard_summary(';
+        $sql = $sql . $dashboardYoursId . ', ';
+        $sql = $sql . $dashboardOthersId . ', ';
+        $sql = $sql . $organisationId . ', ';
+
+        // portfolio Id 0 means all portfolios
+        if ($portfolioId == '0') {
+            $sql = $sql . 'null, ';
+        } else {
+            $sql = $sql . $portfolioId . ', ';
+        }
+
+        if ($chkRegion == '1') {
+            $sql = $sql . $regionId . ', ';
+        } else {
+            $sql = $sql . 'null, ';
+        }
+
+        if ($chkCountry == '1') {
+            $sql = $sql . $countryId . ', ';
+        } else {
+            $sql = $sql . 'null, ';
+        }
+
+        if ($chkProjectStart == '1') {
+            $sql = $sql . $projectStartFrom . ', ';
+            $sql = $sql . $projectStartTo . ', ';
+        } else {
+            $sql = $sql . 'null, ';
+            $sql = $sql . 'null, ';
+        }
+
+        if ($chkBudget == '1') {
+            $sql = $sql . $budgetFrom . ', ';
+            $sql = $sql . $budgetTo . ', ';
+        } else {
+            $sql = $sql . 'null, ';
+            $sql = $sql . 'null, ';
+        }
+
+        $sql = $sql . '@status, @message, @statusSummary, @redlinesSummary, @yoursPrinciplesSummary, @othersPrinciplesSummary)';
+
+        logger($sql);
+
 
         // call stored procedure to get dashboard summary data
-        DB::select("call generate_dashboard_summary(998, 999, 9, 20, null, null, null, null, null, null, @status, @message, @statusSummary, @redlinesSummary, @yoursPrinciplesSummary, @othersPrinciplesSummary)");
+        // DB::select("CALL generate_dashboard_summary(998, 999, 9, 20, null, null, null, null, null, null, @status, @message, @statusSummary, @redlinesSummary, @yoursPrinciplesSummary, @othersPrinciplesSummary)");
+        DB::select($sql);
 
         $results = DB::select('select @status as status, @message as message, @statusSummary as statusSummary, @redlinesSummary as redlinesSummary, @yoursPrinciplesSummary as yoursPrinciplesSummary, @othersPrinciplesSummary as othersPrinciplesSummary');
 
@@ -42,21 +151,8 @@ class GenericDashboardController extends Controller
         $yoursPrinciplesSummary = json_decode($results[0]->yoursPrinciplesSummary, true);
         $othersPrinciplesSummary = json_decode($results[0]->othersPrinciplesSummary, true);
 
-        dump($results);
 
-        dump($status);
-        dump($message);
-
-        // access JSON, array record, array element
-        dump($statusSummary);
-        dump($statusSummary[0]);
-        dump($statusSummary[0]['status']);
-
-        dump($redlinesSummary);
-        dump($yoursPrinciplesSummary);
-        dump($othersPrinciplesSummary);
-
-        dump("==========");
+        // prepare principles summary with sorting preference
 
         $yoursPrinciplesSummarySorted = $yoursPrinciplesSummary;      
         $othersPrinciplesSummarySorted = [];
@@ -104,36 +200,17 @@ class GenericDashboardController extends Controller
         }
 
 
-        $yoursId = '';
-        $yoursGreen = '';
-        $yoursRed = '';
-        $othersId = '';
-        $othersGreen = '';
-        $othersRed = '';
+        // construct JSON response
+        $jsonRes = [];
+        
+        $jsonRes['status'] = $status;
+        $jsonRes['message'] = $message;
+        $jsonRes['statusSummary'] = $statusSummary;
+        $jsonRes['redlinesSummary'] = $redlinesSummary;
+        $jsonRes['yoursPrinciplesSummarySorted'] = $yoursPrinciplesSummarySorted;
+        $jsonRes['othersPrinciplesSummarySorted'] = $othersPrinciplesSummarySorted;
 
-        foreach ($yoursPrinciplesSummarySorted as $yoursItem) {
-            $yoursId = $yoursId . $yoursItem['id'] . ',';
-            $yoursGreen = $yoursGreen . $yoursItem['green'] . ',';
-            $yoursRed = $yoursRed . $yoursItem['red'] . ',';
-        }
-
-        foreach ($othersPrinciplesSummarySorted as $othersItem) {
-            $othersId = $othersId . $othersItem['id'] . ',';
-            $othersGreen = $othersGreen . $othersItem['green'] . ',';
-            $othersRed = $othersRed . $othersItem['red'] . ',';
-        }
-
-        dump($yoursId);
-        dump($othersId);
-        dump($yoursGreen);
-        dump($othersGreen);
-        dump($yoursRed);
-        dump($othersRed);
-
-        dump($yoursPrinciplesSummarySorted);
-        dump($othersPrinciplesSummarySorted);
-
-        return;
+        return $jsonRes;
     }
 
 }

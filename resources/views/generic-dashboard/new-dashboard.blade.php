@@ -7,13 +7,15 @@
 <div class="row pl-4 pt-4 w-100">
 
     <div class="col-12 col-xl-12 card">
-        <h3>TODO: Dashboard for {{ $organisation->name }}</h3>
+        <h3>Dashboard for {{ $organisation->name }}</h3>
     </div>
     
-
+    
+    <!-- dashboard Vue component -->
     <div id="dashboard">
-        <dashboard :user="{{ Auth::user() }}" :organisation="{{ $organisation->toJson() }}" />
+        <dashboard :user="{{ Auth::user() }}" :organisation="{{ $organisation->toJson() }}" :portfolios="{{ $portfolios->toJson() }}" :regions="{{ $regions->toJson() }}" :countries="{{ $countries->toJson() }}"/>
     </div>
+
 
     @if(Auth::user()->can('download dashboard summary data'))
         <div class="col-12 col-xl-12 card">
