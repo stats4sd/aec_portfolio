@@ -52,9 +52,9 @@ class GenericDashboardController extends Controller
 
     public function enquire(Request $request)
     {
-        logger("GenericDashboardController.enquire()");
+        // logger("GenericDashboardController.enquire()");
 
-        logger($request);
+        // logger($request);
 
         // variables for stored procedure input parameters
         $dashboardYoursId = 998;
@@ -71,22 +71,24 @@ class GenericDashboardController extends Controller
         $chkCountry = $request['chkCountry'];
         $chkProjectStart = $request['chkProjectStart'];
         $chkBudget = $request['chkBudget'];
+        $sortBy = $request['sortBy'];
 
 
-        logger($dashboardYoursId);
-        logger($dashboardOthersId);
-        logger($organisationId);
-        logger($portfolioId);
-        logger($regionId);
-        logger($countryId);
-        logger($projectStartFrom);
-        logger($projectStartTo);
-        logger($budgetFrom);
-        logger($budgetTo);
-        logger($chkRegion);
-        logger($chkCountry);
-        logger($chkProjectStart);
-        logger($chkBudget);
+        // logger($dashboardYoursId);
+        // logger($dashboardOthersId);
+        // logger($organisationId);
+        // logger($portfolioId);
+        // logger($regionId);
+        // logger($countryId);
+        // logger($projectStartFrom);
+        // logger($projectStartTo);
+        // logger($budgetFrom);
+        // logger($budgetTo);
+        // logger($chkRegion);
+        // logger($chkCountry);
+        // logger($chkProjectStart);
+        // logger($chkBudget);
+        // logger($sortBy);
 
 
         // constrcuct dynamic SQL
@@ -133,7 +135,7 @@ class GenericDashboardController extends Controller
 
         $sql = $sql . '@status, @message, @statusSummary, @redlinesSummary, @yoursPrinciplesSummary, @othersPrinciplesSummary)';
 
-        logger($sql);
+        // logger($sql);
 
 
         // call stored procedure to get dashboard summary data
@@ -153,13 +155,8 @@ class GenericDashboardController extends Controller
 
 
         // prepare principles summary with sorting preference
-
         $yoursPrinciplesSummarySorted = $yoursPrinciplesSummary;      
         $othersPrinciplesSummarySorted = [];
-
-        $sortBy = 1;    // highest to lowest score (highest green)
-        // $sortBy = 2;    // lowest to highest score (highest red)
-        // $sortBy = 3;    // default (order by principle number)
 
        
         // highest to lowest score (highest green)

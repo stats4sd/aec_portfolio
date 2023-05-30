@@ -159,10 +159,48 @@
 
     </table>
 
+    
+    <!-- principles summary: sort by -->
+    <table class="table" v-if="yoursPrinciplesSummarySorted != null">
+        <thead>
+            <th width="30%">Principles</th>
+            <th width="70%">
+                <select v-model="formData['sortBy']" @change="validateCriteria">
+                    <option value="1">Highest to Lowest</option>
+                    <option value="2">Lowest to Highest</option>
+                    <option value="3">Default</option>
+                </select>
+            </th>
+        </thead>
+    </table>
+
 
     <!-- principles summary -->
+	<table class="table" v-if="yoursPrinciplesSummarySorted != null">
+        <thead>
+            <th width="30%"></th>
+            <th width="30%" align="center"><u>Your Portfolio</u></th>
+            <th width="30%"><center><u>Comparison Group</u></center></th>
+            <th width="10%"></th>
+        </thead>
 
-
+		<tr>
+		<td colspan="2">
+			<div class="demo-container-1">
+				<div id="chart1" class="demo-placeholder"></div>
+			</div>	
+		</td>
+		<td>
+			<div class="demo-container-2">
+				<div id="chart2" class="demo-placeholder"></div>
+			</div>	
+		</td>
+		<td valign="top">
+			<br/>
+			<div id="chart2Legend" class="legend"></div>
+		</td>
+		</tr>
+	</table>
 
 
     </div>
@@ -208,7 +246,6 @@ export default {
 
     data() {
         return {
-
             // form variables
             formData: {},
 
@@ -220,14 +257,15 @@ export default {
             redlinesSummary: null,
             yoursPrinciplesSummarySorted: null,
             othersPrinciplesSummarySorted: null,
-
         }
     },
 
     // triggered when Vue component is loaded
     mounted() {
-        // hard code to make testing quicker
+
+        // temporary hard code to make testing quicker
         this.formData['portfolio'] = 20;
+        this.formData['sortBy'] = 1;
 
         // set default values
         this.formData['organisation'] = this.organisation.id;
@@ -316,6 +354,169 @@ export default {
             this.submitEnquiry();
         },
 
+        showPrinciplesSummary() {
+            // alert("showPrinciplesSummary()");
+
+            // Features:
+            // 1. prepare chart data
+            // 2. define chart options for stacked bar chart
+            // 3. show legend, to indicate which color for which principle
+            // 4. y-axis, show AE principle name
+            // 5. Hide percentage of each bar (center principle name but number goes to top location...)
+            // 6. show legend in separate container
+
+            // ======================================== //
+
+            var record = [];
+            var index;
+
+
+            // yours principles summary sorted
+            var chart1Data0 = [];
+            var chart1Data1 = [];
+            var chart1Data2 = [];
+            
+            for (var i = this.yoursPrinciplesSummarySorted.length - 1; i >= 0; i--) {
+                index = 13 - i;
+
+                record = [this.yoursPrinciplesSummarySorted[i].green, index];
+                chart1Data0.push(record);
+
+                record = [this.yoursPrinciplesSummarySorted[i].yellow, index];
+                chart1Data1.push(record);
+
+                record = [this.yoursPrinciplesSummarySorted[i].red, index];
+                chart1Data2.push(record);
+            }
+
+
+            // others principles summary sorted
+            var chart2Data0 = [];
+            var chart2Data1 = [];
+            var chart2Data2 = [];
+
+            for (var i = this.othersPrinciplesSummarySorted.length - 1; i >= 0; i--) {
+                index = 13 - i;
+
+                record = [this.othersPrinciplesSummarySorted[i].green, index];
+                chart2Data0.push(record);
+
+                record = [this.othersPrinciplesSummarySorted[i].yellow, index];
+                chart2Data1.push(record);
+
+                record = [this.othersPrinciplesSummarySorted[i].red, index];
+                chart2Data2.push(record);
+            }
+
+
+            // prepare chart 1 and chart 2 data
+            var chart1Data = [];
+            chart1Data[0] = { label: '1.5 - 2',   color: '#54C45E', data: chart1Data0 };
+            chart1Data[1] = { label: '0.5 - 1.5', color: '#FFE342', data: chart1Data1 };
+            chart1Data[2] = { label: '0 - 0.5',   color: '#FF0000', data: chart1Data2 };
+
+            var chart2Data = [];
+            chart2Data[0] = { label: '1.5 - 2',   color: '#54C45E', data: chart2Data0 };
+            chart2Data[1] = { label: '0.5 - 1.5', color: '#FFE342', data: chart2Data1 };
+            chart2Data[2] = { label: '0 - 0.5',   color: '#FF0000', data: chart2Data2 };
+
+            // prepare chart 1 and chart 2 y axis ticks
+            var chart1yAxisTicks = [];
+            
+            for (var i=0; i < this.yoursPrinciplesSummarySorted.length; i++) {
+                var index = 13 - i;
+                chart1yAxisTicks.push([index, this.yoursPrinciplesSummarySorted[i].name]);
+            }
+
+            var chart2yAxisTicks = [
+                            [13, ''],
+                            [12, ''],
+                            [11, ''],
+                            [10, ''],
+                            [9, ''],
+                            [8, ''],
+                            [7, ''],
+                            [6, ''],
+                            [5, ''],
+                            [4, ''],
+                            [3, ''],
+                            [2, ''],
+                            [1, ''],
+                        ];
+
+            // prepare chart 1 and chart 2 flag to show legend
+            var chart1LegendFlag = false;
+            var chart2LegendFlag = true;
+
+            // plot chart 1 with chart 1 data and options
+            this.plotWithOptions("#chart1", chart1Data, chart1yAxisTicks, chart1LegendFlag, "");
+            
+            // plot chart 2 with chart 2 data and options
+            this.plotWithOptions("#chart2", chart2Data, chart2yAxisTicks, chart2LegendFlag, "chart2Legend");
+        },
+
+        // chart options
+        plotWithOptions(chartId, chartData, yAxisTicks, legendFlag, legendId) {
+            $.plot(chartId, chartData, {
+            
+                // stacked bar chart
+                // need to include "jquery.flot.stack.js"
+                series: {
+                    stack: true,
+                    lines: {
+                        show: false,
+                        fill: true,
+                        steps: false,
+                        
+                    },
+                    bars: {
+                        show: true,
+                        barWidth: 1,
+                        fill: 0.8,
+                        horizontal: true,
+                        align: 'center',
+                        
+                        // show number in bar segment
+                        // need to include "jquery.flot.barnumbers.js"
+                        numbers: { show: false }
+                    }
+                },
+
+                // customize x-axis labels
+                // need to include "jquery.flot.axislabel.js"
+                xaxis: {
+                    show: true,
+                    axisLabel: '% of Projects',
+                    tickLength: 15,
+                    tickSize: 50,
+                    tickFormatter: function (val, axis) {
+                        return val + '%';
+                    },
+                    
+                },
+
+                // customize y-axis labesl
+                yaxis: {
+                    show: true,
+                    tickLength: 0,
+                    autoScale: "exact",
+                    ticks: yAxisTicks,
+                },
+                
+                grid: {
+                    borderWidth: 1,
+                },
+                        
+                // show legend
+                // need to include "jquery.flot.legend.js"
+                legend: {
+                    show: legendFlag,
+                    container: document.getElementById(legendId),
+                },
+                
+            });
+        },
+
         submitEnquiry() {
             // alert("submitEnquiry()");
 
@@ -330,13 +531,15 @@ export default {
                 this.statusSummary = this.enquireResult['statusSummary'];
                 this.redlinesSummary = this.enquireResult['redlinesSummary'];
                 this.yoursPrinciplesSummarySorted = this.enquireResult['yoursPrinciplesSummarySorted'];
-                this.othersPrinciplesSummarySorted = this.enquireResult['staothersPrinciplesSummarySortedtus'];
+                this.othersPrinciplesSummarySorted = this.enquireResult['othersPrinciplesSummarySorted'];
 
-                // show status summary
+                // show status summary automatically by data driven approach and v-if
 
-                // show red lines summary
+                // show red lines summary automatically by data driven approach and v-if
 
-                // show principles summary
+                // show principles summary by calling Javascript function
+                // this.showPrinciplesSummary();
+                window.setTimeout(this.showPrinciplesSummary, 100);
 
             })
             .catch(error=>{
