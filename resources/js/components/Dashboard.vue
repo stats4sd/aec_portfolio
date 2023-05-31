@@ -368,14 +368,18 @@ export default {
             for (var i = this.yoursPrinciplesSummarySorted.length - 1; i >= 0; i--) {
                 index = 13 - i;
 
-                record = [this.yoursPrinciplesSummarySorted[i].green, index];
-                chart1Data0.push(record);
+                if (this.yoursPrinciplesSummarySorted[i].green != 0) {
+                    record = [this.yoursPrinciplesSummarySorted[i].green, index];
+                    chart1Data0.push(record);
+                }
 
                 record = [this.yoursPrinciplesSummarySorted[i].yellow, index];
                 chart1Data1.push(record);
 
-                record = [this.yoursPrinciplesSummarySorted[i].red, index];
-                chart1Data2.push(record);
+                if (this.yoursPrinciplesSummarySorted[i].red != 0) {
+                    record = [this.yoursPrinciplesSummarySorted[i].red, index];
+                    chart1Data2.push(record);
+                }
             }
 
 
@@ -387,14 +391,18 @@ export default {
             for (var i = this.othersPrinciplesSummarySorted.length - 1; i >= 0; i--) {
                 index = 13 - i;
 
-                record = [this.othersPrinciplesSummarySorted[i].green, index];
-                chart2Data0.push(record);
+                if (this.othersPrinciplesSummarySorted[i].green != 0) {
+                    record = [this.othersPrinciplesSummarySorted[i].green, index];
+                    chart2Data0.push(record);
+                }
 
                 record = [this.othersPrinciplesSummarySorted[i].yellow, index];
                 chart2Data1.push(record);
 
-                record = [this.othersPrinciplesSummarySorted[i].red, index];
-                chart2Data2.push(record);
+                if (this.othersPrinciplesSummarySorted[i].red != 0) {
+                    record = [this.othersPrinciplesSummarySorted[i].red, index];
+                    chart2Data2.push(record);
+                }
             }
 
 
