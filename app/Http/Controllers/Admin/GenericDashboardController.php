@@ -183,39 +183,80 @@ class GenericDashboardController extends Controller
        
         // highest to lowest score (highest green)
         if ($sortBy == 1) {
+            // sort by green, yellow, red
+
+            // sort by green first
             usort($yoursPrinciplesSummarySorted, function($a, $b) {
                 return $a['green'] <= $b['green'];
             });
 
-            // copy others principle summary item one by one according to the ordering of yours principles summary
-            foreach ($yoursPrinciplesSummarySorted as $yoursItem) {
-                foreach ($othersPrinciplesSummary as $othersItem) {
-                    if ($othersItem['id'] == $yoursItem['id']) {
-                        array_push($othersPrinciplesSummarySorted, $othersItem);
-                        break;
+            // then sort by yellow
+            usort($yoursPrinciplesSummarySorted, function($a, $b) {
+                if ($a['green'] != $b['green']) {
+                    return false;
+                } else {
+                    return $a['yellow'] <= $b['yellow'];
+                }
+            });
+
+            // finally sort by red
+            usort($yoursPrinciplesSummarySorted, function($a, $b) {
+                if ($a['green'] != $b['green']) {
+                    return false;
+                } else {
+                    if ($a['yellow'] != $b['yellow']) {
+                        return false;
+                    } else {
+                        return $a['red'] <= $b['red'];
                     }
                 }
-            }
+            });
 
         // lowest to highest score (highest red)
         } else if ($sortBy == 2) {
+            // sort by red, yellow, green
+
+            // sort by red first
             usort($yoursPrinciplesSummarySorted, function($a, $b) {
                 return $a['red'] <= $b['red'];
             });
 
-            // copy others principle summary item one by one according to the ordering of yours principles summary
-            foreach ($yoursPrinciplesSummarySorted as $yoursItem) {
-                foreach ($othersPrinciplesSummary as $othersItem) {
-                    if ($othersItem['id'] == $yoursItem['id']) {
-                        array_push($othersPrinciplesSummarySorted, $othersItem);
-                        break;
+            // then sort by yellow
+            usort($yoursPrinciplesSummarySorted, function($a, $b) {
+                if ($a['red'] != $b['red']) {
+                    return false;
+                } else {
+                    return $a['yellow'] <= $b['yellow'];
+                }
+            });
+
+            // finally sort by green
+            usort($yoursPrinciplesSummarySorted, function($a, $b) {
+                if ($a['red'] != $b['red']) {
+                    return false;
+                } else {
+                    if ($a['yellow'] != $b['yellow']) {
+                        return false;
+                    } else {
+                        return $a['red'] <= $b['red'];
                     }
                 }
-            }
+            });
 
         // default (order by principle number)
         } else if ($sortBy == 3) {
-            $othersPrinciplesSummarySorted = $othersPrinciplesSummary;
+            // the original returned principles summary is sorted by principle number already, no additional work required here
+
+        }
+
+        // copy others principle summary item one by one according to the ordering of yours principles summary
+        foreach ($yoursPrinciplesSummarySorted as $yoursItem) {
+            foreach ($othersPrinciplesSummary as $othersItem) {
+                if ($othersItem['id'] == $yoursItem['id']) {
+                    array_push($othersPrinciplesSummarySorted, $othersItem);
+                    break;
+                }
+            }
         }
 
 
