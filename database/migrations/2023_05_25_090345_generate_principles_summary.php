@@ -24,14 +24,14 @@ CREATE DEFINER=`root`@`localhost` FUNCTION `generate_principles_summary`(
 	dashboardId INT
 ) RETURNS varchar(16383) CHARSET utf8mb4
     DETERMINISTIC
-BEGIN
+	BEGIN
 
 	-- variables for principles summary
 	DECLARE psPrincipleId INT;
 	DECLARE psPrincipleName VARCHAR(16383);
-	DECLARE psGreenPercentage INT;
-	DECLARE psYellowPercentage INT;
-	DECLARE psRedPercentage INT;
+	DECLARE psGreenPercentage FLOAT;
+	DECLARE psYellowPercentage FLOAT;
+	DECLARE psRedPercentage FLOAT;
 
 	DECLARE principlesSummary VARCHAR(16383);
 
@@ -46,9 +46,9 @@ BEGIN
 	-- IFNULL(yellow.counter, 0) AS yellow_counter,
 	-- IFNULL(red.counter, 0) AS red_counter,
 	-- IFNULL(green.counter, 0) + IFNULL(yellow.counter, 0) + IFNULL(red.counter, 0) AS total,
-	ROUND(IFNULL(green.counter, 0) / (IFNULL(green.counter, 0) + IFNULL(yellow.counter, 0) + IFNULL(red.counter, 0)) * 100, 0) AS green_percentage,
-	ROUND(IFNULL(yellow.counter, 0) / (IFNULL(green.counter, 0) + IFNULL(yellow.counter, 0) + IFNULL(red.counter, 0)) * 100, 0) AS yellow_percentage,
-	ROUND(IFNULL(red.counter, 0) / (IFNULL(green.counter, 0) + IFNULL(yellow.counter, 0) + IFNULL(red.counter, 0)) * 100, 0) AS red_percentage
+	ROUND(IFNULL(green.counter, 0) / (IFNULL(green.counter, 0) + IFNULL(yellow.counter, 0) + IFNULL(red.counter, 0)) * 100, 2) AS green_percentage,
+	ROUND(IFNULL(yellow.counter, 0) / (IFNULL(green.counter, 0) + IFNULL(yellow.counter, 0) + IFNULL(red.counter, 0)) * 100, 2) AS yellow_percentage,
+	ROUND(IFNULL(red.counter, 0) / (IFNULL(green.counter, 0) + IFNULL(yellow.counter, 0) + IFNULL(red.counter, 0)) * 100, 2) AS red_percentage
 	FROM principles p
 	LEFT JOIN
 	(SELECT * FROM dashboard_principle WHERE dashboard_id = dashboardId AND category = 'GREEN') AS green
