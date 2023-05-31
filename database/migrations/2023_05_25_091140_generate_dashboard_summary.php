@@ -55,12 +55,17 @@ BEGIN
 	DECLARE ssFullyAssessedBudget BIGINT;
 
 	-- variables for red line summary
+	DECLARE rsRedLineCount INT;
 	DECLARE rsRedLineId INT;
 	DECLARE rsRedLineName VARCHAR(16383);
 	DECLARE rsYourPercentage INT;
 	DECLARE rsOthersPercentage INT;
 	DECLARE rsYoursOverallPercentage FLOAT;
 	DECLARE rsOthersOverallPercentage FLOAT;
+	
+	-- variables for principles summary
+	DECLARE psPrincipleCount INT;
+	
 	
 	-- variable to determine whether it is end of cursor
 	DECLARE rsDone INT DEFAULT FALSE;
@@ -219,209 +224,260 @@ BEGIN
 
 	IF ssCreatedCount = 0 THEN
 		SET status = 1001;
-		SET message = 'There is no initiative found for this criteria';
+		SET message = 'There is no initiative found';
+		
+		DELETE FROM dashboard_result WHERE dashboard_id = dashboardYoursId;
+		
+		INSERT INTO dashboard_result (dashboard_id, dashboard_others_id, status, message, created_at, updated_at)
+		VALUE (dashboardYoursId, dashboardOthersId, status, message, NOW(), NOW());
 	END IF;
 
 
-	-- PASSED ALL REDLINES
-	-- find number of projects that passed all red lines
-	SELECT COUNT(*) 
-	INTO ssPassedAllCount
-	FROM
-	(SELECT assessment_id FROM assessment_red_line WHERE assessment_id IN
-		(SELECT assessment_id FROM dashboard_assessment WHERE dashboard_id = dashboardYoursId)
-	GROUP BY assessment_id
-	HAVING SUM(value) = 0) AS passed_all_red_lines;
-
-	-- find budget that passed all red lines
-	SELECT IFNULL(SUM(budget), 0)
-	INTO ssPassedAllBudget
-	FROM projects 
-	WHERE id IN
-		(SELECT project_id FROM assessments WHERE id IN 
-			(SELECT assessment_id FROM assessment_red_line WHERE assessment_id IN
-				(SELECT assessment_id FROM dashboard_assessment WHERE dashboard_id = dashboardYoursId)
-			GROUP BY assessment_id
-			HAVING SUM(value) = 0
-			)
-		);
-		
-	SET ssPassedAllPercent = ssPassedAllCount / ssCreatedCount * 100;
-
-
-	-- FAILED AT LEAST ONE RED LINE
-	-- find number of projects that failed at least one red line
-	SELECT COUNT(*) 
-	INTO ssFailedAnyCount
-	FROM
-	(SELECT assessment_id FROM assessment_red_line WHERE assessment_id IN
-		(SELECT assessment_id FROM dashboard_assessment WHERE dashboard_id = dashboardYoursId)
-	GROUP BY assessment_id
-	HAVING SUM(value) > 0) AS failed_any_red_lines;
-
-	-- find budget that failed at least one red line
-	SELECT IFNULL(SUM(budget), 0)
-	INTO ssFailedAnyBudget
-	FROM projects 
-	WHERE id IN
-		(SELECT project_id FROM assessments WHERE id IN 
-			(SELECT assessment_id FROM assessment_red_line WHERE assessment_id IN
-				(SELECT assessment_id FROM dashboard_assessment WHERE dashboard_id = dashboardYoursId)
-			GROUP BY assessment_id
-			HAVING SUM(value) > 0
-			)
-		);
-		
-	SET ssFailedAnyPercent = ssFailedAnyCount / ssCreatedCount * 100;
-
-
-	-- FULLY ASSESSED
-	-- number of latest assessments that fully assessed
-	SELECT COUNT(*) 
-	INTO ssFullyAssessedCount
-	FROM assessments 
-	WHERE assessment_status = 'Assessment Complete' 
-	AND id IN
-	(SELECT assessment_id FROM dashboard_assessment WHERE dashboard_id = dashboardYoursId);
-		
-	-- budget for fully assessed projects
-	SELECT IFNULL(SUM(budget), 0)
-	INTO ssFullyAssessedBudget
-	FROM projects
-	WHERE id IN
-		(SELECT project_id from assessments
-		WHERE assessment_status = 'Assessment Complete'
-		AND id IN
-			(SELECT assessment_id FROM dashboard_assessment where dashboard_id = dashboardYoursId)
-		);
+	IF ssCreatedCount > 0 THEN
 	
-	SET ssFullyAssessedPercent = ssFullyAssessedCount / ssCreatedCount * 100;
+		-- PASSED ALL REDLINES
+		-- find number of projects that passed all red lines
+		SELECT COUNT(*) 
+		INTO ssPassedAllCount
+		FROM
+		(SELECT assessment_id FROM assessment_red_line WHERE assessment_id IN
+			(SELECT assessment_id FROM dashboard_assessment WHERE dashboard_id = dashboardYoursId)
+		GROUP BY assessment_id
+		HAVING SUM(value) = 0) AS passed_all_red_lines;
 	
-	
-	-- debug message
-	SELECT ssCreatedCount, ssCreatedPercent, ssCreatedBudget, ssPassedAllCount, ssPassedAllPercent, ssPassedAllBudget, 
-	ssFailedAnyCount, ssFailedAnyPercent, ssFailedAnyBudget, ssFullyAssessedCount, ssFullyAssessedPercent, ssFullyAssessedBudget;
-
-
-	-- construct status summary
-	SET statusSummary = CONCAT('[{\"status\":\"Created\",\"number\":', ssCreatedCount, ',\"percent\":', ssCreatedPercent, ',\"budget\":\"', FORMAT(ssCreatedBudget, 0), '\"},',
-						 '{\"status\":\"Passed all redlines\",\"number\":', ssPassedAllCount, ',\"percent\":', ssPassedAllPercent, ',\"budget\":\"', FORMAT(ssPassedAllBudget, 0), '\"},',
-						 '{\"status\":\"Failed at least 1 redline\",\"number\":', ssFailedAnyCount, ',\"percent\":', ssFailedAnyPercent, ',\"budget\":\"', FORMAT(ssFailedAnyBudget, 0), '\"},',
-						 '{\"status\":\"Fully assessed\",\"number\":', ssFullyAssessedCount, ',\"percent\":', ssFullyAssessedPercent, ',\"budget\":\"', FORMAT(ssFullyAssessedBudget, 0), '\"}]');
-
-
-
-	-- -------------------------
-	-- RED LINES SUMMARY
-	-- -------------------------
-	
-	-- generate redlines summary (yours)
-	INSERT INTO dashboard_red_line (dashboard_id, red_line_id, percentage)
-	SELECT dashboardYoursId, red_line_id, 100 - ROUND((SUM(value) / COUNT(*) * 100), 0) AS percentage
-	FROM assessment_red_line
-	WHERE assessment_id IN
-		(SELECT assessment_id FROM dashboard_assessment WHERE dashboard_id = dashboardYoursId)
-	GROUP BY red_line_id
-	ORDER BY red_line_id;
-
-
-	-- generate redlines summary (others)
-	INSERT INTO dashboard_red_line (dashboard_id, red_line_id, percentage)
-	SELECT dashboardOthersId, red_line_id, 100 - ROUND((SUM(value) / COUNT(*) * 100), 0) AS percentage
-	FROM assessment_red_line
-	WHERE assessment_id IN
-		(SELECT assessment_id FROM dashboard_assessment WHERE dashboard_id = dashboardOthersId)
-	GROUP BY red_line_id
-	ORDER BY red_line_id;
-
-
-	-- find yours overall percentage and others overall percentage
-	SELECT ROUND(AVG(ta.percentage), 1) AS yours_overall, ROUND(AVG(tb.percentage), 1) AS others_overall 
-	INTO rsYoursOverallPercentage, rsOthersOverallPercentage
-	FROM
-	(SELECT * FROM dashboard_red_line WHERE dashboard_id = dashboardYoursId) AS ta,
-	(SELECT * FROM dashboard_red_line WHERE dashboard_id = dashboardOthersId) AS tb
-	WHERE ta.red_line_id = tb.red_line_id;
-
-
-	-- construct red lines summary
-	SET redlinesSummary = '[';
-
-	-- open cursor
-	OPEN rsCursor;
-		
-	-- loop
-	rs_read_loop: LOOP
-	  	
-		-- fetch one record from cursor
-		FETCH rsCursor INTO rsRedLineId, rsRedLineName, rsYourPercentage, rsOthersPercentage;
+		-- find budget that passed all red lines
+		SELECT IFNULL(SUM(budget), 0)
+		INTO ssPassedAllBudget
+		FROM projects 
+		WHERE id IN
+			(SELECT project_id FROM assessments WHERE id IN 
+				(SELECT assessment_id FROM assessment_red_line WHERE assessment_id IN
+					(SELECT assessment_id FROM dashboard_assessment WHERE dashboard_id = dashboardYoursId)
+				GROUP BY assessment_id
+				HAVING SUM(value) = 0
+				)
+			);
 			
-		-- exit loop if it is end of cursor
-		IF rsDone THEN
-		  	LEAVE rs_read_loop;
-		END IF;
-		    
-		SET redlinesSummary = CONCAT(redlinesSummary, '{\"id\":', rsRedLineId, ',\"name\":\"', rsRedLineName, '\",\"yours\":', rsYourPercentage, ',\"others\":', rsOthersPercentage, '},');
-	    
-	-- end loop
-	END LOOP rs_read_loop;
+		SET ssPassedAllPercent = ssPassedAllCount / ssCreatedCount * 100;
+	
+	
+		-- FAILED AT LEAST ONE RED LINE
+		-- find number of projects that failed at least one red line
+		SELECT COUNT(*) 
+		INTO ssFailedAnyCount
+		FROM
+		(SELECT assessment_id FROM assessment_red_line WHERE assessment_id IN
+			(SELECT assessment_id FROM dashboard_assessment WHERE dashboard_id = dashboardYoursId)
+		GROUP BY assessment_id
+		HAVING SUM(value) > 0) AS failed_any_red_lines;
+	
+		-- find budget that failed at least one red line
+		SELECT IFNULL(SUM(budget), 0)
+		INTO ssFailedAnyBudget
+		FROM projects 
+		WHERE id IN
+			(SELECT project_id FROM assessments WHERE id IN 
+				(SELECT assessment_id FROM assessment_red_line WHERE assessment_id IN
+					(SELECT assessment_id FROM dashboard_assessment WHERE dashboard_id = dashboardYoursId)
+				GROUP BY assessment_id
+				HAVING SUM(value) > 0
+				)
+			);
+			
+		SET ssFailedAnyPercent = ssFailedAnyCount / ssCreatedCount * 100;
+	
+	
+		-- FULLY ASSESSED
+		-- number of latest assessments that fully assessed
+		SELECT COUNT(*) 
+		INTO ssFullyAssessedCount
+		FROM assessments 
+		WHERE assessment_status = 'Assessment Complete' 
+		AND id IN
+		(SELECT assessment_id FROM dashboard_assessment WHERE dashboard_id = dashboardYoursId);
+			
+		-- budget for fully assessed projects
+		SELECT IFNULL(SUM(budget), 0)
+		INTO ssFullyAssessedBudget
+		FROM projects
+		WHERE id IN
+			(SELECT project_id from assessments
+			WHERE assessment_status = 'Assessment Complete'
+			AND id IN
+				(SELECT assessment_id FROM dashboard_assessment where dashboard_id = dashboardYoursId)
+			);
 		
-	-- close cursor
-	CLOSE rsCursor;
+		SET ssFullyAssessedPercent = ssFullyAssessedCount / ssCreatedCount * 100;
+		
+		
+		-- debug message
+		SELECT ssCreatedCount, ssCreatedPercent, ssCreatedBudget, ssPassedAllCount, ssPassedAllPercent, ssPassedAllBudget, 
+		ssFailedAnyCount, ssFailedAnyPercent, ssFailedAnyBudget, ssFullyAssessedCount, ssFullyAssessedPercent, ssFullyAssessedBudget;
 	
-	-- add overall percentage
-	SET redlinesSummary = CONCAT(redlinesSummary, '{\"id\":-1,\"name\":\"Overall\", \"yours\":', rsYoursOverallPercentage, ',\"others\":', rsOthersOverallPercentage, '}');
-
-	SET redlinesSummary = CONCAT(redlinesSummary, ']');
-
-
-
-	-- -------------------------
-	-- PRINCIPLES SUMMARY
-	-- -------------------------
-
-	-- generate principle assessment subtotal (yours)
-	INSERT INTO dashboard_principle (dashboard_id, principle_id, category, counter)
-	SELECT dashboardYoursId, principle_id, category, SUM(counter) AS counter FROM
-	(SELECT ta.*, tb.category FROM
-	(SELECT principle_id, rating, COUNT(*) AS counter FROM principle_assessment
-	WHERE rating IS NOT NULL
-	AND assessment_id IN (SELECT assessment_id FROM dashboard_assessment WHERE dashboard_id = dashboardYoursId)
-	GROUP BY principle_id, rating) AS ta, dashboard_rating AS tb
-	WHERE ta.rating = tb.rating
-	ORDER BY principle_id) AS principle_summary
-	GROUP BY principle_id, category
-	ORDER BY principle_id, category;
-
-	-- generate principle assessment subtotal (others)
-	INSERT INTO dashboard_principle (dashboard_id, principle_id, category, counter)
-	SELECT dashboardOthersId, principle_id, category, SUM(counter) AS counter FROM
-	(SELECT ta.*, tb.category FROM
-	(SELECT principle_id, rating, COUNT(*) AS counter FROM principle_assessment
-	WHERE rating IS NOT NULL
-	AND assessment_id IN (SELECT assessment_id FROM dashboard_assessment WHERE dashboard_id = dashboardOthersId)
-	GROUP BY principle_id, rating) AS ta, dashboard_rating AS tb
-	WHERE ta.rating = tb.rating
-	ORDER BY principle_id) AS principle_summary
-	GROUP BY principle_id, category
-	ORDER BY principle_id, category;
-
-
-	-- generate principle summary (yours)
-	SET yoursPrinciplesSummary = generate_principles_summary(dashboardYoursId);
 	
-	-- generate principle summary (others)
-	SET othersPrinciplesSummary = generate_principles_summary(dashboardOthersId);
-
-
-
-	-- -------------------------
-	-- STORING DASHBOARD RESULT
-	-- -------------------------
-
-	INSERT INTO dashboard_result (dashboard_id, dashboard_others_id, status, message, status_summary, red_lines_summary, principles_summary_yours, principles_summary_others, created_at, updated_at)
-	VALUE (dashboardYoursId, dashboardOthersId, status, message, statusSummary, redlinesSummary, yoursPrinciplesSummary, othersPrinciplesSummary, NOW(), NOW());
+		-- construct status summary
+		SET statusSummary = CONCAT('[{\"status\":\"Created\",\"number\":', ssCreatedCount, ',\"percent\":', ssCreatedPercent, ',\"budget\":\"', FORMAT(ssCreatedBudget, 0), '\"},',
+							 '{\"status\":\"Passed all redlines\",\"number\":', ssPassedAllCount, ',\"percent\":', ssPassedAllPercent, ',\"budget\":\"', FORMAT(ssPassedAllBudget, 0), '\"},',
+							 '{\"status\":\"Failed at least 1 redline\",\"number\":', ssFailedAnyCount, ',\"percent\":', ssFailedAnyPercent, ',\"budget\":\"', FORMAT(ssFailedAnyBudget, 0), '\"},',
+							 '{\"status\":\"Fully assessed\",\"number\":', ssFullyAssessedCount, ',\"percent\":', ssFullyAssessedPercent, ',\"budget\":\"', FORMAT(ssFullyAssessedBudget, 0), '\"}]');
 	
+	
+	
+		-- -------------------------
+		-- RED LINES SUMMARY
+		-- -------------------------
+		
+		SELECT COUNT(*)
+		INTO rsRedLineCount
+		FROM assessment_red_line
+		WHERE assessment_id IN
+			(SELECT assessment_id FROM dashboard_assessment WHERE dashboard_id = dashboardYoursId)
+		AND value IS NOT NULL;
+		
+		
+		IF rsRedLineCount = 0 THEN
+			SET status = 1002;
+			SET message = 'There is no red line reviewed';
+			
+			DELETE FROM dashboard_result WHERE dashboard_id = dashboardYoursId;
+			
+			INSERT INTO dashboard_result (dashboard_id, dashboard_others_id, status, message, status_summary, created_at, updated_at)
+			VALUE (dashboardYoursId, dashboardOthersId, status, message, statusSummary, NOW(), NOW());
+		END IF;
+	
+	
+		IF rsRedLineCount > 0 THEN
+		
+			-- generate redlines summary (yours)
+			INSERT INTO dashboard_red_line (dashboard_id, red_line_id, percentage)
+			SELECT dashboardYoursId, red_line_id, 100 - ROUND((SUM(value) / COUNT(*) * 100), 0) AS percentage
+			FROM assessment_red_line
+			WHERE assessment_id IN
+				(SELECT assessment_id FROM dashboard_assessment WHERE dashboard_id = dashboardYoursId)
+			GROUP BY red_line_id
+			ORDER BY red_line_id;
+		
+		
+			-- generate redlines summary (others)
+			INSERT INTO dashboard_red_line (dashboard_id, red_line_id, percentage)
+			SELECT dashboardOthersId, red_line_id, 100 - ROUND((SUM(value) / COUNT(*) * 100), 0) AS percentage
+			FROM assessment_red_line
+			WHERE assessment_id IN
+				(SELECT assessment_id FROM dashboard_assessment WHERE dashboard_id = dashboardOthersId)
+			GROUP BY red_line_id
+			ORDER BY red_line_id;
+		
+		
+			-- find yours overall percentage and others overall percentage
+			SELECT ROUND(AVG(ta.percentage), 1) AS yours_overall, ROUND(AVG(tb.percentage), 1) AS others_overall 
+			INTO rsYoursOverallPercentage, rsOthersOverallPercentage
+			FROM
+			(SELECT * FROM dashboard_red_line WHERE dashboard_id = dashboardYoursId) AS ta,
+			(SELECT * FROM dashboard_red_line WHERE dashboard_id = dashboardOthersId) AS tb
+			WHERE ta.red_line_id = tb.red_line_id;
+		
+		
+			-- construct red lines summary
+			SET redlinesSummary = '[';
+		
+			-- open cursor
+			OPEN rsCursor;
+				
+			-- loop
+			rs_read_loop: LOOP
+			  	
+				-- fetch one record from cursor
+				FETCH rsCursor INTO rsRedLineId, rsRedLineName, rsYourPercentage, rsOthersPercentage;
+					
+				-- exit loop if it is end of cursor
+				IF rsDone THEN
+				  	LEAVE rs_read_loop;
+				END IF;
+				    
+				SET redlinesSummary = CONCAT(redlinesSummary, '{\"id\":', rsRedLineId, ',\"name\":\"', rsRedLineName, '\",\"yours\":', rsYourPercentage, ',\"others\":', rsOthersPercentage, '},');
+			    
+			-- end loop
+			END LOOP rs_read_loop;
+				
+			-- close cursor
+			CLOSE rsCursor;
+			
+			-- add overall percentage
+			SET redlinesSummary = CONCAT(redlinesSummary, '{\"id\":-1,\"name\":\"Overall\", \"yours\":', rsYoursOverallPercentage, ',\"others\":', rsOthersOverallPercentage, '}');
+		
+			SET redlinesSummary = CONCAT(redlinesSummary, ']');
+		
+		
+		
+			-- -------------------------
+			-- PRINCIPLES SUMMARY
+			-- -------------------------
+			
+			SELECT COUNT(*)
+			INTO psPrincipleCount
+			FROM principle_assessment
+			WHERE rating IS NOT NULL
+			AND assessment_id IN (SELECT assessment_id FROM dashboard_assessment WHERE dashboard_id = dashboardYoursId);
+			
+			IF psPrincipleCount = 0 THEN
+				SET status = 1003;
+				SET message = 'There is no principle assessed';
+				
+				DELETE FROM dashboard_result WHERE dashboard_id = dashboardYoursId;
+				
+				INSERT INTO dashboard_result (dashboard_id, dashboard_others_id, status, message, status_summary, red_lines_summary, created_at, updated_at)
+				VALUE (dashboardYoursId, dashboardOthersId, status, message, statusSummary, redlinesSummary, NOW(), NOW());
+			END IF;
+		
+
+			IF psPrincipleCount > 0 THEN
+
+				-- generate principle assessment subtotal (yours)
+				INSERT INTO dashboard_principle (dashboard_id, principle_id, category, counter)
+				SELECT dashboardYoursId, principle_id, category, SUM(counter) AS counter FROM
+				(SELECT ta.*, tb.category FROM
+				(SELECT principle_id, rating, COUNT(*) AS counter FROM principle_assessment
+				WHERE rating IS NOT NULL
+				AND assessment_id IN (SELECT assessment_id FROM dashboard_assessment WHERE dashboard_id = dashboardYoursId)
+				GROUP BY principle_id, rating) AS ta, dashboard_rating AS tb
+				WHERE ta.rating = tb.rating
+				ORDER BY principle_id) AS principle_summary
+				GROUP BY principle_id, category
+				ORDER BY principle_id, category;
+			
+				-- generate principle assessment subtotal (others)
+				INSERT INTO dashboard_principle (dashboard_id, principle_id, category, counter)
+				SELECT dashboardOthersId, principle_id, category, SUM(counter) AS counter FROM
+				(SELECT ta.*, tb.category FROM
+				(SELECT principle_id, rating, COUNT(*) AS counter FROM principle_assessment
+				WHERE rating IS NOT NULL
+				AND assessment_id IN (SELECT assessment_id FROM dashboard_assessment WHERE dashboard_id = dashboardOthersId)
+				GROUP BY principle_id, rating) AS ta, dashboard_rating AS tb
+				WHERE ta.rating = tb.rating
+				ORDER BY principle_id) AS principle_summary
+				GROUP BY principle_id, category
+				ORDER BY principle_id, category;
+			
+			
+				-- generate principle summary (yours)
+				SET yoursPrinciplesSummary = generate_principles_summary(dashboardYoursId);
+				
+				-- generate principle summary (others)
+				SET othersPrinciplesSummary = generate_principles_summary(dashboardOthersId);
+			
+			
+				-- -------------------------
+				-- STORING DASHBOARD RESULT
+				-- -------------------------
+			
+				INSERT INTO dashboard_result (dashboard_id, dashboard_others_id, status, message, status_summary, red_lines_summary, principles_summary_yours, principles_summary_others, created_at, updated_at)
+				VALUE (dashboardYoursId, dashboardOthersId, status, message, statusSummary, redlinesSummary, yoursPrinciplesSummary, othersPrinciplesSummary, NOW(), NOW());
+		
+			END IF;
+		
+		END IF;
+	
+	END IF;
 	
 END
 ";
