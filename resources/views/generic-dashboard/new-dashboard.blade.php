@@ -7,7 +7,7 @@
 
 .demo-container-1 {
     box-sizing: border-box;
-    width: 504px;
+    width: 594px;
     height: 450px;
     padding: 20px 15px 15px 15px;
     margin: 15px auto 30px auto;
@@ -15,7 +15,7 @@
 
 .demo-container-2 {
     box-sizing: border-box;
-    width: 360px;
+    width: 350px;
     height: 450px;
     padding: 20px 15px 15px 15px;
     margin: 15px auto 30px auto;
@@ -46,6 +46,10 @@
     fill: rgba(255, 255, 255, 0.65);
     stroke: rgba(0, 0, 0, 0.85);
     stroke-width: 1;
+}
+
+.tickLabel { 
+    font-size: 90% 
 }
 
 </style>

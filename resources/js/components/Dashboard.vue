@@ -1,6 +1,7 @@
 <template>
 
-    <div class="container pt-2">
+    <!-- Question: how to set a bigger width? I tried class "w-100" but it does not work... -->
+    <div class="container pt-3">
 
     <!-- dashboard filters -->
     <!-- Question: How to have a better look and feel for table...? -->
@@ -152,8 +153,11 @@
     <!-- principles summary: sort by -->
     <table class="table" v-if="yoursPrinciplesSummarySorted != null">
         <thead>
-            <th width="30%">Principles</th>
-            <th width="70%">
+            <th>Principles</th>
+        </thead>
+        <thead>
+            <th>
+                Sort by: 
                 <select v-model="formData['sortBy']" @change="validateCriteria">
                     <option value="1">Highest to Lowest</option>
                     <option value="2">Lowest to Highest</option>
@@ -167,8 +171,8 @@
     <!-- principles summary -->
 	<table class="table" v-if="yoursPrinciplesSummarySorted != null">
         <thead>
-            <th width="30%"></th>
-            <th width="30%" align="center"><u>Your Portfolio</u></th>
+            <th width="35%"></th>
+            <th width="25%" align="center"><u>Your Portfolio</u></th>
             <th width="30%"><center><u>Comparison Group</u></center></th>
             <th width="10%"></th>
         </thead>
@@ -445,15 +449,20 @@ export default {
             var chart1LegendFlag = false;
             var chart2LegendFlag = true;
 
+            // prepare chart 1 and chart 2 Y axis label width
+            var chart1YAxisLabelWidth = 250;
+            var chart2YAxisLabelWidth = 0;
+
+
             // plot chart 1 with chart 1 data and options
-            this.plotWithOptions("#chart1", chart1Data, chart1yAxisTicks, chart1LegendFlag, "");
+            this.plotWithOptions("#chart1", chart1Data, chart1yAxisTicks, chart1YAxisLabelWidth, chart1LegendFlag, "");
             
             // plot chart 2 with chart 2 data and options
-            this.plotWithOptions("#chart2", chart2Data, chart2yAxisTicks, chart2LegendFlag, "chart2Legend");
+            this.plotWithOptions("#chart2", chart2Data, chart2yAxisTicks, chart2YAxisLabelWidth, chart2LegendFlag, "chart2Legend");
         },
 
         // chart options
-        plotWithOptions(chartId, chartData, yAxisTicks, legendFlag, legendId) {
+        plotWithOptions(chartId, chartData, yAxisTicks, yAxisLabelWidth, legendFlag, legendId) {
             $.plot(chartId, chartData, {
             
                 // stacked bar chart
@@ -498,6 +507,7 @@ export default {
                     tickLength: 0,
                     autoScale: "exact",
                     ticks: yAxisTicks,
+                    labelWidth: yAxisLabelWidth,
                 },
                 
                 grid: {
