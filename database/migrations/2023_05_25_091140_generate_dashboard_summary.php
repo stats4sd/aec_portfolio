@@ -59,6 +59,8 @@ BEGIN
 	DECLARE rsRedLineName VARCHAR(16383);
 	DECLARE rsYourPercentage INT;
 	DECLARE rsOthersPercentage INT;
+	DECLARE rsYoursOverallPercentage FLOAT;
+	DECLARE rsOthersOverallPercentage FLOAT;
 	
 	-- variable to determine whether it is end of cursor
 	DECLARE rsDone INT DEFAULT FALSE;
@@ -302,10 +304,10 @@ BEGIN
 
 
 	-- construct status summary
-	SET statusSummary = CONCAT('[{\"status\":\"Created\",\"number\":', ssCreatedCount, ',\"percent\":', ssCreatedPercent, ',\"budget\":', ssCreatedBudget, '},',
-						 '{\"status\":\"Passed all redlines\",\"number\":', ssPassedAllCount, ',\"percent\":', ssPassedAllPercent, ',\"budget\":', ssPassedAllBudget, '},',
-						 '{\"status\":\"Failed at least 1 redline\",\"number\":', ssFailedAnyCount, ',\"percent\":', ssFailedAnyPercent, ',\"budget\":', ssFailedAnyBudget, '},',
-						 '{\"status\":\"Fully assessed\",\"number\":', ssFullyAssessedCount, ',\"percent\":', ssFullyAssessedPercent, ',\"budget\":', ssFullyAssessedBudget, '}]');
+	SET statusSummary = CONCAT('[{\"status\":\"Created\",\"number\":', ssCreatedCount, ',\"percent\":', ssCreatedPercent, ',\"budget\":\"', FORMAT(ssCreatedBudget, 0), '\"},',
+						 '{\"status\":\"Passed all redlines\",\"number\":', ssPassedAllCount, ',\"percent\":', ssPassedAllPercent, ',\"budget\":\"', FORMAT(ssPassedAllBudget, 0), '\"},',
+						 '{\"status\":\"Failed at least 1 redline\",\"number\":', ssFailedAnyCount, ',\"percent\":', ssFailedAnyPercent, ',\"budget\":\"', FORMAT(ssFailedAnyBudget, 0), '\"},',
+						 '{\"status\":\"Fully assessed\",\"number\":', ssFullyAssessedCount, ',\"percent\":', ssFullyAssessedPercent, ',\"budget\":\"', FORMAT(ssFullyAssessedBudget, 0), '\"}]');
 
 
 
@@ -333,6 +335,15 @@ BEGIN
 	ORDER BY red_line_id;
 
 
+	-- find yours overall percentage and others overall percentage
+	SELECT ROUND(AVG(ta.percentage), 1) AS yours_overall, ROUND(AVG(tb.percentage), 1) AS others_overall 
+	INTO rsYoursOverallPercentage, rsOthersOverallPercentage
+	FROM
+	(SELECT * FROM dashboard_red_line WHERE dashboard_id = dashboardYoursId) AS ta,
+	(SELECT * FROM dashboard_red_line WHERE dashboard_id = dashboardOthersId) AS tb
+	WHERE ta.red_line_id = tb.red_line_id;
+
+
 	-- construct red lines summary
 	SET redlinesSummary = '[';
 
@@ -358,8 +369,8 @@ BEGIN
 	-- close cursor
 	CLOSE rsCursor;
 	
-	-- remove the last comma
-	SET redlinesSummary = SUBSTRING(redlinesSummary, 1, LENGTH(redlinesSummary)-1);
+	-- add overall percentage
+	SET redlinesSummary = CONCAT(redlinesSummary, '{\"id\":-1,\"name\":\"Overall\", \"yours\":', rsYoursOverallPercentage, ',\"others\":', rsOthersOverallPercentage, '}');
 
 	SET redlinesSummary = CONCAT(redlinesSummary, ']');
 

@@ -106,15 +106,15 @@
     <!-- status summary -->
     <table class="table" v-if="statusSummary != null">
 
-        <thead>
-            <th>-</th>
+        <thead align="center">
+            <th>Initiatives</th>
             <th>Number</th>
             <th>%</th>
             <th>Budget</th>
         </thead>
 
         <tbody>
-        <tr v-for='statusSummaryRecord in statusSummary'>
+        <tr align="center" v-for='statusSummaryRecord in statusSummary'>
             <td>{{ statusSummaryRecord.status }}</td>
             <td>{{ statusSummaryRecord.number }}</td>
             <td>{{ statusSummaryRecord.percent }}</td>
@@ -128,18 +128,18 @@
     <!-- red lines summary -->
     <table class="table" v-if="redlinesSummary != null">
 
-        <thead>
+        <thead align="center">
             <th></th>
-            <th colspan="2">% projects passed</th>
+            <th colspan="2"><center>% projects passed</center></th>
         </thead>
 
-        <thead>
+        <thead align="center">
             <th>Red Lines</th>
             <th>Yours</th>
             <th>Others</th>
         </thead>
 
-        <tbody>
+        <tbody align="center">
         <tr v-for='redlinesSummaryRecord in redlinesSummary'>
             <td :class="[ redlinesSummaryRecord.yours == 100 ? 'table-success' : 'table-warning' ]">{{ redlinesSummaryRecord.name }}</td>
             <td :class="[ redlinesSummaryRecord.yours == 100 ? 'table-success' : 'table-warning' ]">{{ redlinesSummaryRecord.yours }}%</td>
@@ -171,10 +171,10 @@
     <!-- principles summary -->
 	<table class="table" v-if="yoursPrinciplesSummarySorted != null">
         <thead>
-            <th width="35%"></th>
-            <th width="25%" align="center"><u>Your Portfolio</u></th>
-            <th width="30%"><center><u>Comparison Group</u></center></th>
-            <th width="10%"></th>
+            <th width="39%"></th>
+            <th width="21%" align="center"><u>You</u></th>
+            <th width="28%"><center><u>Others</u></center></th>
+            <th width="12%"></th>
         </thead>
 
 		<tr>
@@ -255,17 +255,14 @@ export default {
 
     // triggered when Vue component is loaded
     mounted() {
-
-        // temporary hard code to make testing quicker
-        //this.formData['portfolio'] = 20;
-        this.formData['sortBy'] = 1;
-
         // set default values
+        this.formData['portfolio'] = 0;
         this.formData['organisation'] = this.organisation.id;
         this.formData['projectStartFrom'] = '2020';
         this.formData['projectStartTo'] = '2030';
         this.formData['budgetFrom'] = '100000';
         this.formData['budgetTo'] = '10000000';
+        this.formData['sortBy'] = 1;
     },
 
     computed: {
