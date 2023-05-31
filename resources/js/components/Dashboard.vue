@@ -33,10 +33,12 @@
                     <td colspan="2">Geographic Filters</td>
                     <td>Other Filters</td>
                 </tr>
+
+                <!-- Potential enhancement: click on checkbox label to tick or untick checkbox -->
                 <tr>
                     <td><input type="checkbox" v-model="formData['chkRegion']"> Filter by Region</td>
                     <td>
-                        <select v-model="formData['region']">
+                        <select v-model="formData['region']" @change="changeRegion">
                             <option :value="region.id" v-for="region in regions">{{ region.name }}</option>
                         </select>
                     </td>
@@ -61,9 +63,8 @@
                     <td><input type="checkbox" v-model="formData['chkCountry']"> Filter by Country</td>
                     <td>
                         <select v-model="formData['country']">
-                            <!-- TODO: When region change, remove selected country and show countries within the selected region -->                        
-                            <!-- show all countries temporary for testing -->
-                            <option :value="country.id" v-for="country in countries">{{ country.name }}</option>
+                            <!-- when region change, remove selected country and show countries within the selected region -->                        
+                            <option :value="country.id" v-for="country in filteredCountries">{{ country.name }}</option>
                         </select>
                     </td>
                     <td><input type="checkbox" v-model="formData['chkBudget']"> Filter by Budget</td>
@@ -171,8 +172,8 @@
     <!-- principles summary -->
 	<table class="table" v-if="yoursPrinciplesSummarySorted != null">
         <thead>
-            <th width="39%"></th>
-            <th width="21%" align="center"><u>You</u></th>
+            <th width="38%"></th>
+            <th width="22%" align="center"><u>Yours</u></th>
             <th width="28%"><center><u>Others</u></center></th>
             <th width="12%"></th>
         </thead>
@@ -242,6 +243,9 @@ export default {
             // form variables
             formData: {},
 
+            // countries for selected region
+            filteredCountries: [],
+
             // enquire result
             enquireResult: null,
             status : '',
@@ -276,6 +280,21 @@ export default {
 
     // custom methods for Vue component
     methods: {
+
+        changeRegion() {
+            // clear selected country
+            this.formData['country'] = '';
+
+            // clear filtered countries
+            this.filteredCountries = [];
+
+            // populate countries belong to the selected region
+            for (var i = 0; i < this.countries.length; i++) {
+                if (this.formData['region'] == this.countries[i].region_id) {
+                    this.filteredCountries.push(this.countries[i]);
+                }
+            }
+        },
 
         validateCriteria() {
             // alert("validateCriteria()");
