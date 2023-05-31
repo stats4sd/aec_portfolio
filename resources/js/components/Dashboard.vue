@@ -36,13 +36,13 @@
 
                 <!-- Potential enhancement: click on checkbox label to tick or untick checkbox -->
                 <tr>
-                    <td><input type="checkbox" v-model="formData['chkRegion']"> Filter by Region</td>
+                    <td><label><input type="checkbox" v-model="formData['chkRegion']"> Filter by Region</label></td>
                     <td>
                         <select v-model="formData['region']" @change="changeRegion">
                             <option :value="region.id" v-for="region in regions">{{ region.name }}</option>
                         </select>
                     </td>
-                    <td><input type="checkbox" v-model="formData['chkProjectStart']"> Filter by Project Start</td>
+                    <td><label><input type="checkbox" v-model="formData['chkProjectStart']"> Filter by Project Start</label></td>
                 </tr>
                 <tr>
                     <td></td>
@@ -60,14 +60,14 @@
                 </tr>
 
                 <tr>
-                    <td><input type="checkbox" v-model="formData['chkCountry']"> Filter by Country</td>
+                    <td><label><input type="checkbox" v-model="formData['chkCountry']"> Filter by Country</label></td>
                     <td>
                         <select v-model="formData['country']">
                             <!-- when region change, remove selected country and show countries within the selected region -->                        
                             <option :value="country.id" v-for="country in filteredCountries">{{ country.name }}</option>
                         </select>
                     </td>
-                    <td><input type="checkbox" v-model="formData['chkBudget']"> Filter by Budget</td>
+                    <td><label><input type="checkbox" v-model="formData['chkBudget']"> Filter by Budget</label></td>
                 </tr>
                 <tr>
                     <td></td>
