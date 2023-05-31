@@ -53,42 +53,27 @@
 
 </template>
 
-<script>
-
+<script setup>
+import {ref} from "vue";
 import PrincipleAssessmentModal from "./PrincipleAssessmentModal.vue";
 
-export default {
-    components: {PrincipleAssessmentModal},
-
-    props: {
-        assessment: () => {},
-    },
-
-    data() {
-        return {
-            principleAssessments: [],
-            selectedPrincipleAssessment: null,
-            modalIsOpen: false,
-        }
-    },
-
-    async mounted() {
-        const res = await axios.get(`/assessment/${this.assessment.id}/principle-assessments/`)
-        this.principleAssessments = res.data;
-
-        //  temp testing modal
-        this.selectedPrincipleAssessment = this.principleAssessments[0]
-        this.modalIsOpen = true;
-    },
-
-    methods: {
-        test() {
-            console.log(this.principleAssessments)
-            this.principleAssessments[0].complete = true;
-        },
-    }
+const props = defineProps({
+    assessment: Object,
+})
 
 
+// get principle Assessments
+const res = await axios.get(`/assessment/${props.assessment.id}/principle-assessments/`)
+let principleAssessments = ref(res.data);
+
+// select + edit principle assessments
+let selectedPrincipleAssessment = ref({})
+let modalIsOpen = ref(false)
+
+
+function test() {
+    this.selectedPrincipleAssessment = this.principleAssessments[0]
+    this.modalIsOpen = true;
 }
 
 

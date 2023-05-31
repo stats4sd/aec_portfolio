@@ -1,7 +1,7 @@
 <template>
 
     <teleport to="body">
-        <div class="vue-modal" v-if="isOpen">
+        <div class="vue-modal" v-if="isOpen" @click="isOpen = false">
             <div class="card rounded-0 px-5 py-2 d-flex flex-column justify-content-between">
                 <div class="card-header">
                     <h2 class="card-title text-bright-green">{{ principle.name }}</h2>
@@ -33,36 +33,19 @@
 
 </template>
 
-<script>
+<script setup>
+import {computed} from "vue";
 
 
-export default {
-    name: "PrincipleAssessmentModal",
-
-    props: {
-        principleAssessment: () => {
-            return {
-                rating: null,
-                rating_comment: '',
-            }
-        },
-        isOpen: false
-    },
-    computed: {
-        principle() {
-            return this.principleAssessment.principle ?? null;
-        },
-        assessment() {
-            return this.principleAssessment.assessment ?? null;
-        }
-    },
-
-    mounted() {
-
-    }
+const props = defineProps({
+    principleAssessment: Object,
+    isOpen: Boolean,
+})
 
 
-}
+const principle = computed(() => props.principleAssessment.principle ?? null)
+const assessment = computed(() => props.principleAssessment.assessment ?? null)
+
 </script>
 
 <style scoped>
