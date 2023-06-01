@@ -31,7 +31,7 @@
                             <button class="card-body py-3 btn btn-light rounded-pill">
                                 <div class="px-4 d-flex justify-content-between align-items-center">
                                     <span>{{ principleAssessment.principle.name }}</span>
-                                    <h3 class="p-0 m-0 la ">
+                                    <h3 class="p-0 m-0 la">
                                         <i :class="principleAssessment.complete ? 'la la-check-circle' : 'la la-edit'"></i>
                                     </h3>
                                 </div>
@@ -45,16 +45,20 @@
         </div>
     </div>
 
-    <PrincipleAssessmentModal
-        v-if="selectedPrincipleAssessment"
-        :principle-assessment="selectedPrincipleAssessment"
-        :is-open="modalIsOpen"
-    />
-
+    <v-dialog
+        v-model="modalIsOpen"
+        width="80vw"
+    >
+        <PrincipleAssessmentModal
+            v-if="selectedPrincipleAssessment"
+            :principle-assessment="selectedPrincipleAssessment"
+            :is-open="modalIsOpen"
+        />
+    </v-dialog>
 </template>
 
 <script setup>
-import {ref} from "vue";
+import {onMounted, ref} from "vue";
 import PrincipleAssessmentModal from "./PrincipleAssessmentModal.vue";
 
 const props = defineProps({
@@ -70,10 +74,14 @@ let principleAssessments = ref(res.data);
 let selectedPrincipleAssessment = ref({})
 let modalIsOpen = ref(false)
 
+onMounted(() => {
+    test()
+})
 
 function test() {
-    this.selectedPrincipleAssessment = this.principleAssessments[0]
-    this.modalIsOpen = true;
+    selectedPrincipleAssessment.value = principleAssessments.value[0]
+    modalIsOpen.value = true;
+    console.log('hi');
 }
 
 
