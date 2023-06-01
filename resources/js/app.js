@@ -3,6 +3,8 @@ import _ from 'lodash';
 import {createApp} from 'vue/dist/vue.esm-bundler';
 
 import {Suspense} from "vue";
+
+import '@mdi/font/css/materialdesignicons.css'
 import 'vuetify/styles'
 import {createVuetify} from "vuetify";
 import * as components from 'vuetify/components'

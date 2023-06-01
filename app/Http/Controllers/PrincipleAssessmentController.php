@@ -13,7 +13,7 @@ class PrincipleAssessmentController extends Controller
      */
     public function index(Assessment $assessment = null)
     {
-        $query = PrincipleAssessment::with('assessment', 'principle', 'scoreTags', 'customScoreTags');
+        $query = PrincipleAssessment::with('assessment', 'principle.scoreTags', 'scoreTags', 'customScoreTags');
 
         if($assessment) {
             $query = $query->where('assessment_id', $assessment->id);

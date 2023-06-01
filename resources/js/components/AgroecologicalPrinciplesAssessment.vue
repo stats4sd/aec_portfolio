@@ -5,6 +5,7 @@
                 <h3 class="text-bright-green font-weight-bold">Agrocological Principles Assessment</h3>
                 <div class="mb-5">
 
+
                     This is the main section of the review. Below are the 13 Agroecology Principles, and you should rate the project against each one.
                     <br/><br/>
                     For each principle, you should give:
@@ -48,6 +49,7 @@
     <v-dialog
         v-model="modalIsOpen"
         width="80vw"
+        :scrollable="true"
     >
         <PrincipleAssessmentModal
             v-if="selectedPrincipleAssessment"

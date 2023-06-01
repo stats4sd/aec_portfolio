@@ -24,6 +24,7 @@
     },
     "dependencies": {
         "@vitejs/plugin-vue": "^3.0.1",
+        "@mdi/font": "^2.2.43",
         "noty": "^3.2.0-beta-deprecated",
         "puppeteer": "^20.2.0",
         "vite-plugin-vuetify": "^1.0.2",
