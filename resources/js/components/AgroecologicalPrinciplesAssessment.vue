@@ -51,11 +51,14 @@
         width="80vw"
         :scrollable="true"
     >
-        <PrincipleAssessmentModal
-            v-if="selectedPrincipleAssessment"
-            :principle-assessment="selectedPrincipleAssessment"
-            :is-open="modalIsOpen"
-        />
+        <v-card>
+            <PrincipleAssessmentModal
+                v-if="selectedPrincipleAssessment"
+                :principle-assessment="selectedPrincipleAssessment"
+                :is-open="modalIsOpen"
+            />
+        </v-card>
+
     </v-dialog>
 </template>
 
