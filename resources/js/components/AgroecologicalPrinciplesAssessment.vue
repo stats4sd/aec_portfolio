@@ -58,7 +58,6 @@
                 :is-open="modalIsOpen"
                 @discard="discard"
                 @close="modalIsOpen = false"
-                @save="save"
                 @next="next"
             />
         </v-card>
@@ -104,9 +103,7 @@ async function discard() {
     modalIsOpen.value = false;
 }
 
-function save() {
-    alert('saved')
-}
+
 
 function next() {
     const index = principleAssessments.value.indexOf(selectedPrincipleAssessment.value)

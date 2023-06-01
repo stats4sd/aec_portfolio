@@ -23,7 +23,7 @@
                         track-fill-color="success"
                         show-ticks="always"
                         class="ae-slider"
-                        :disabled="principleAssessment.is_na"
+                        :disabled="principleAssessment.is_na === 1"
                     >
                         <template #tick-label="data">
                             {{ data.tick.value % 1 === 0 ? data.tick.value : '' }}
@@ -82,10 +82,11 @@
 
                     <div v-for="tag in principle.score_tags" class="checkbox-group">
                         <v-checkbox
-                            v-model="principleAssessment.score_tags"
-                            :value="tag.name"
+                            v-model="principleAssessment.score_tag_ids"
+                            :value="tag.id"
                             :label="tag.name"
                             density="compact"
+                            hide-details="auto"
                         ></v-checkbox>
                     </div>
                 </div>
@@ -113,8 +114,8 @@
     </v-card-text>
     <div class="card-footer d-flex justify-content-between" style="margin-left: 25%; margin-right: 25%">
         <div class="btn btn-secondary" @click="discard">Discard Changes</div>
-        <div class="btn btn-primary" @click="save">Save and Close</div>
-        <div class="btn btn-success" @click="saveAndNext">Save and Next</div>
+        <div class="btn btn-primary" @click="save('close')">Save and Close</div>
+        <div class="btn btn-success" @click="save('next')">Save and Next</div>
     </div>
 
 </template>
@@ -142,20 +143,18 @@ function addCustomScoreTag() {
 
 // data handling
 
-const emit = defineEmits(['discard', 'save', 'next', 'close'])
+const emit = defineEmits(['discard', 'next', 'close'])
 function discard() {
     emit('discard')
     emit('close')
 }
 
-function save() {
-    emit('save')
-    emit('close')
-}
+async function save(nextAction) {
 
-function saveAndNext() {
-    emit('save')
-    emit('next')
+    const res = await axios.patch(`/principle-assessment/${props.principleAssessment.id}`, props.principleAssessment)
+
+    emit(nextAction)
+
 }
 
 
