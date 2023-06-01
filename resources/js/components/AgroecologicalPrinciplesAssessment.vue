@@ -56,6 +56,10 @@
                 v-if="selectedPrincipleAssessment"
                 :principle-assessment="selectedPrincipleAssessment"
                 :is-open="modalIsOpen"
+                @discard="discard"
+                @close="modalIsOpen = false"
+                @save="save"
+                @next="next"
             />
         </v-card>
 
@@ -65,15 +69,21 @@
 <script setup>
 import {onMounted, ref} from "vue";
 import PrincipleAssessmentModal from "./PrincipleAssessmentModal.vue";
+import modal from "bootstrap/js/src/modal";
 
 const props = defineProps({
     assessment: Object,
 })
 
 
+async function getPrincipleAssessments() {
+    const res = await axios.get(`/assessment/${props.assessment.id}/principle-assessments/`);
+    return res.data
+}
+
 // get principle Assessments
-const res = await axios.get(`/assessment/${props.assessment.id}/principle-assessments/`)
-let principleAssessments = ref(res.data);
+const res = await getPrincipleAssessments()
+let principleAssessments = ref(res);
 
 // select + edit principle assessments
 let selectedPrincipleAssessment = ref({})
@@ -87,6 +97,31 @@ function test() {
     selectedPrincipleAssessment.value = principleAssessments.value[0]
     modalIsOpen.value = true;
     console.log('hi');
+}
+
+async function discard() {
+    principleAssessments.value = await getPrincipleAssessments()
+    modalIsOpen.value = false;
+}
+
+function save() {
+    alert('saved')
+}
+
+function next() {
+    const index = principleAssessments.value.indexOf(selectedPrincipleAssessment.value)
+
+    // if we've reached the end...
+    if(index >= selectedPrincipleAssessment.value.length) {
+        alert('complete')
+        modalIsOpen.value = false
+
+        return
+    }
+
+    selectedPrincipleAssessment.value = principleAssessments.value[index + 1]
+
+
 }
 
 

@@ -23,6 +23,7 @@
                         track-fill-color="success"
                         show-ticks="always"
                         class="ae-slider"
+                        :disabled="principleAssessment.is_na"
                     >
                         <template #tick-label="data">
                             {{ data.tick.value % 1 === 0 ? data.tick.value : '' }}
@@ -32,8 +33,9 @@
                     <v-checkbox
                         class="my-4"
                         v-model="principleAssessment.is_na"
-                        label="If this principle is not applicable for this project, tick this box">
+                        :label="`If ${principle.name.toLowerCase()} is not applicable for this project, tick this box.`">
                     </v-checkbox>
+                    <p class="alert alert-info" v-if="principleAssessment.is_na">You may still add a comment to explain why {{ principle.name }} is not applicable for this project.</p>
                 </div>
 
                 <div class="card bg-bright-green text-white rounded-b-xl rounded-t-xl mb-16">
@@ -110,15 +112,15 @@
         </div>
     </v-card-text>
     <div class="card-footer d-flex justify-content-between" style="margin-left: 25%; margin-right: 25%">
-        <div class="btn btn-secondary">Discard Changes</div>
-        <div class="btn btn-primary">Save and Close</div>
-        <div class="btn btn-success">Save and Next</div>
+        <div class="btn btn-secondary" @click="discard">Discard Changes</div>
+        <div class="btn btn-primary" @click="save">Save and Close</div>
+        <div class="btn btn-success" @click="saveAndNext">Save and Next</div>
     </div>
 
 </template>
 
 <script setup>
-import {computed, ref} from "vue";
+import {computed, ref, defineEmits} from "vue";
 
 
 const props = defineProps({
@@ -131,12 +133,29 @@ const assessment = computed(() => props.principleAssessment.assessment ?? null)
 
 
 // score tags
-
 function addCustomScoreTag() {
     props.principleAssessment.custom_score_tags.push({
         name: '',
         description: '',
     })
+}
+
+// data handling
+
+const emit = defineEmits(['discard', 'save', 'next', 'close'])
+function discard() {
+    emit('discard')
+    emit('close')
+}
+
+function save() {
+    emit('save')
+    emit('close')
+}
+
+function saveAndNext() {
+    emit('save')
+    emit('next')
 }
 
 
