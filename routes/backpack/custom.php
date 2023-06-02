@@ -30,6 +30,7 @@ use App\Http\Controllers\AssessmentController;
 use App\Http\Controllers\OrganisationController;
 use App\Http\Controllers\OrganisationMemberController;
 use App\Http\Controllers\GeneratePdfFileController;
+use App\Http\Controllers\ProjectController;
 
 Route::group([
     'prefix' => config('backpack.base.route_prefix', 'admin'),
@@ -42,7 +43,10 @@ Route::group([
 
     Route::crud('organisation', OrganisationCrudController::class);
     Route::crud('portfolio', PortfolioCrudController::class);
+
+
     Route::crud('project', ProjectCrudController::class);
+    Route::get('project', [ProjectController::class, 'index']);
     Route::get('project/{project}/re-assess', [ProjectCrudController::class, 'reAssess']);
 
 
