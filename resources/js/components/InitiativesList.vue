@@ -2,16 +2,21 @@
 
     <!-- filters -->
     <div class="d-flex justify-content-between">
-        <div>
+        <div class="d-flex align-items-center">
             <b class="mr-12"><i class="la la-filter"></i> Filter By Status</b>
-            <b>Sort By:</b>
+            <b class="mr-8">Sort By:</b>
             <v-select
-                v-model="sortOrder"
+                v-model="sortBy"
                 :options="sortOptions"
                 :reduce="(option) => option.id"
             >
-
             </v-select>
+            <h3 class="my-0 ml-4 btn btn-outline-info" @click="sortDir = -sortDir">
+            <i
+                class="la"
+                :class="sortDir === 1 ? 'la-arrow-up' : 'la-arrow-down'"
+                ></i>
+            </h3>
         </div>
 
         <div>
@@ -48,17 +53,25 @@ const sortOptions = ref([
         id: 'name',
         label: 'Name',
     },
+    {
+        id: 'budget',
+        label: 'Budget',
+    }
 ])
 
-const sortOrder = ref('name');
+const sortBy = ref('name')
+const sortDir = ref(1)
 
+// enable sorting on any property
+const propComparator = (propName, sortDir) =>
+  (a, b) => a[propName] === b[propName] ? 0 : a[propName] < b[propName] ? -sortDir : sortDir
 
-const propComparator = (propName) =>
-  (a, b) => a[propName] === b[propName] ? 0 : a[propName] < b[propName] ? -1 : 1
+watch(sortDir, (newSortDir) => {
+    props.initiatives.sort(propComparator(sortBy.value, newSortDir))
+})
 
-
-
-watch(sortOrder, (newSortOrder) => {
-    props.initiatives.sort(propComparator(newSortOrder))
+watch(sortBy, (newSortBy) => {
+    console.log('hi');
+    props.initiatives.sort(propComparator(newSortBy, sortDir.value))
 })
 </script>
