@@ -26,6 +26,7 @@ use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\GenericDashboardController;
 use App\Http\Controllers\Admin\MyRoleController;
 use App\Http\Controllers\Admin\RemovalRequestCrudController;
+use App\Http\Controllers\AssessmentController;
 use App\Http\Controllers\OrganisationController;
 use App\Http\Controllers\OrganisationMemberController;
 use App\Http\Controllers\GeneratePdfFileController;
@@ -44,9 +45,14 @@ Route::group([
     Route::crud('project', ProjectCrudController::class);
     Route::get('project/{project}/re-assess', [ProjectCrudController::class, 'reAssess']);
 
-    Route::get('assessment/{assessment}/show', [ProjectCrudController::class, 'showAssessment']);
 
     Route::crud('assessment', AssessmentCrudController::class);
+    Route::get('assessment/{assessment}/show', [ProjectCrudController::class, 'showAssessment']);
+    Route::get('assessment/{assessment}/assess', [AssessmentController::class, 'assess']);
+    Route::post('assessment/{assessment}/finalise', [AssessmentController::class, 'finaliseAssessment']);
+
+
+
     Route::crud('red-line', RedLineCrudController::class);
     Route::crud('principle', PrincipleCrudController::class);
     Route::crud('score-tag', ScoreTagCrudController::class);

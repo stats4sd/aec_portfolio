@@ -51,7 +51,6 @@ class ProjectCrudController extends CrudController
     use AuthorizesRequests;
 
     use ImportOperation;
-    use AssessOperation;
     use RedlineOperation;
     use FetchOperation;
     use UsesSaveAndNextAction;

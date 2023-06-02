@@ -47,6 +47,10 @@ body {
     background-color: $bright-green !important;
 }
 
+.bg-deep-green {
+    background-color: $deep-green !important;
+}
+
 .ae-slider {
 
     .v-slider-track__tick, .v-slider-track__tick--filled {
@@ -61,6 +65,10 @@ body {
         }
     }
 
+}
+
+.v-application {
+    background: #F6F6F6 !important;
 }
 
 label {

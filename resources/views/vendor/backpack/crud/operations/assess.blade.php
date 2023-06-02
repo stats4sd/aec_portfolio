@@ -5,14 +5,14 @@
     <div class="container">
 
         <div class="d-flex justify-content-between py-3">
-            <div><i class="las la-backward"></i> Back to all initiatives</div>
+            <a href="{{ backpack_url('project') }}"><i class="las la-backward"></i> Back to all initiatives</a>
         </div>
 
 
         <div class="row" id="aePrinciplesAssessment">
             <v-app>
                 <Suspense>
-                    <agroecological-principles-assessment :assessment="{{ $entry->toJson() }}"/>
+                    <agroecological-principles-assessment :assessment="{{ $assessment->toJson() }}"/>
                 </Suspense>
             </v-app>
         </div>

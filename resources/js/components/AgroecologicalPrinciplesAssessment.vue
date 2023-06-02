@@ -1,5 +1,5 @@
 <template>
-    <div class="card w-100 px-4 py-4">
+    <div class="card w-100 px-4 py-4 my-1">
         <div class="card-body">
             <div class="px-5 mx-5">
                 <h3 class="text-bright-green font-weight-bold">Agrocological Principles Assessment</h3>
@@ -16,9 +16,6 @@
                     </ul>
                     Each principle also lists a set of example activities relevant to that principle. Please tick all activities that are present in the project.
                     <br/><br/>
-                    To help track progress, once a rating is given for a principle, that principle name will turn green. Once you have completed and reviewed every
-                    principle, please click the button mark the assessment as complete. Once done, you will return to the main projects list to view the final result.
-                    <br/><br/><br/>
                     <b class="text-deep-green">Click on a principle to begin:</b>
                 </div>
 
@@ -26,25 +23,55 @@
                     <div class="col-6" v-for="principleAssessment in principleAssessments">
                         <div
                             class="card rounded-pill"
-                            :class="principleAssessment.complete ? 'bg-success' : 'bg-light'"
+                            :class="principleAssessment.complete ? 'bg-deep-green' : 'bg-light'"
                             @click="selectedPrincipleAssessment = principleAssessment; modalIsOpen = true"
                         >
-                            <button class="card-body py-3 btn btn-light rounded-pill">
-                                <div class="px-4 d-flex justify-content-between align-items-center">
+                            <button class="card-body py-3 btn btn-light rounded-pill"
+                                    :class="principleAssessment.complete ? 'bg-white' : ''"
+                            >
+                                <div class="px-4 d-flex justify-content-between align-items-center"
+                                     :class="principleAssessment.complete ? 'text-deep-green' : ''"
+                                >
                                     <span>{{ principleAssessment.principle.name }}</span>
-                                    <h3 class="p-0 m-0 la">
-                                        <i :class="principleAssessment.complete ? 'la la-check-circle' : 'la la-edit'"></i>
-                                    </h3>
+                                    <div class="d-flex align-items-end">
+                                        <h5 class="py-0 m-0 pr-4" style="line-height: 1.3em;" v-if="principleAssessment.complete">
+                                            {{ principleAssessment.is_na ? 'N/A' : Math.round(principleAssessment.rating * 10) / 10 }}
+                                        </h5>
+                                        <h3 class="p-0 m-0 d-flex">
+                                            <i :class="principleAssessment.complete ? 'la la-check-circle' : 'la la-edit'"></i>
+                                        </h3>
+                                    </div>
                                 </div>
                             </button>
                         </div>
                     </div>
                 </div>
 
-                <div class="btn btn-outline-danger" @click="test">Test</div>
             </div>
         </div>
+        <p class="ml-auto mr-auto">Once you have completed all {{ principleAssessments.length }} principles, you may mark the assessment as complete below.</p>
     </div>
+    <div class="ml-auto mr-auto d-flex flex-column align-items-center">
+        <v-checkbox
+            label="I confirm this assessment is complete and correct to the best of my knowledge."
+            density="compact"
+            hide-details="always"
+            :disabled="!allComplete"
+            v-model="assessment.complete"
+        />
+
+        <form method="POST" :action="`/admin/assessment/${assessment.id}/finalise`">
+            <input type="hidden" name="_token" :value="csrf">
+            <button
+                class="btn"
+                :class="assessment.complete ? 'btn-success' : 'btn-secondary'"
+                type="submit"
+            >
+                Finalise Assessment
+            </button>
+        </form>
+    </div>
+
 
     <v-dialog
         v-model="modalIsOpen"
@@ -66,14 +93,14 @@
 </template>
 
 <script setup>
-import {onMounted, ref} from "vue";
+import {onMounted, ref, computed} from "vue";
 import PrincipleAssessmentModal from "./PrincipleAssessmentModal.vue";
-import modal from "bootstrap/js/src/modal";
+
+const csrf = document.querySelector('meta[name="csrf-token"]').getAttribute('content')
 
 const props = defineProps({
     assessment: Object,
 })
-
 
 async function getPrincipleAssessments() {
     const res = await axios.get(`/assessment/${props.assessment.id}/principle-assessments/`);
@@ -93,8 +120,8 @@ onMounted(() => {
 })
 
 function test() {
-    selectedPrincipleAssessment.value = principleAssessments.value[0]
-    modalIsOpen.value = true;
+    // selectedPrincipleAssessment.value = principleAssessments.value[0]
+    // modalIsOpen.value = true;
     console.log('hi');
 }
 
@@ -104,12 +131,12 @@ async function discard() {
 }
 
 
-
 function next() {
+
     const index = principleAssessments.value.indexOf(selectedPrincipleAssessment.value)
 
     // if we've reached the end...
-    if(index >= selectedPrincipleAssessment.value.length) {
+    if (index >= selectedPrincipleAssessment.value.length) {
         alert('complete')
         modalIsOpen.value = false
 
@@ -118,8 +145,10 @@ function next() {
 
     selectedPrincipleAssessment.value = principleAssessments.value[index + 1]
 
-
 }
+
+// handle completion
+const allComplete = computed(() => principleAssessments.value.every(pa => pa.complete))
 
 
 </script>

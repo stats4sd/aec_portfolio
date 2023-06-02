@@ -22,6 +22,15 @@ class PrincipleAssessment extends Model
 
     public $table = 'principle_assessment';
 
+    protected $casts = [
+        'is_na' => 'bool',
+    ];
+
+    public function getCompleteAttribute(): bool
+    {
+        return $this->is_na || $this->rating !== null;
+    }
+
     // needed for revisionable
     public function identifiableName(): string
     {

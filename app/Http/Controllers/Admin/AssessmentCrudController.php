@@ -35,8 +35,6 @@ class AssessmentCrudController extends CrudController
 
     use AuthorizesRequests;
 
-
-    use AssessOperation;
     use AssessCustomOperation;
     use RedlineOperation;
     use UsesSaveAndNextAction;

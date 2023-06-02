@@ -16,15 +16,18 @@
                         :min="0"
                         :max="2"
                         :step="0.1"
-                        :thumb-size="24"
-                        thumb-label="always"
-                        thumb-color="green"
+                        :thumb-size="has_rating ? 18 : 24"
+                        :thumb-label="has_rating ? 'always' : 'never'"
+                        :thumb-color="has_rating ? 'green' : 'grey'"
                         track-color="light"
                         track-fill-color="success"
                         show-ticks="always"
                         class="ae-slider"
-                        :disabled="principleAssessment.is_na === 1"
+                        :disabled="principleAssessment.is_na"
                     >
+                        <template #thumb-label="data">
+                            {{ has_rating ? principleAssessment.rating : '' }}
+                        </template>
                         <template #tick-label="data">
                             {{ data.tick.value % 1 === 0 ? data.tick.value : '' }}
                         </template>
@@ -92,14 +95,15 @@
                 </div>
 
                 <div class="mt-8">
-                    <div v-for="tag in principleAssessment.custom_score_tags" class="d-flex form-group">
+                    <div v-for="(tag, index) in principleAssessment.custom_score_tags" class="d-flex form-group">
 
                         <v-text-field
                             v-model="tag.name"
                             label="Enter a descriptive name for the example / indicator"
                             density="compact"
                             variant="underlined"
-                            append-icon="mdi-trash"
+                            append-icon="mdi-delete"
+                            @click:append="removeCustomScoreTag(index)"
                         />
                     </div>
 
@@ -131,7 +135,7 @@ const props = defineProps({
 
 const principle = computed(() => props.principleAssessment.principle ?? null)
 const assessment = computed(() => props.principleAssessment.assessment ?? null)
-
+const has_rating = computed(() => props.principleAssessment.rating !== null || props.principleAssessment.is_na)
 
 // score tags
 function addCustomScoreTag() {
@@ -139,6 +143,11 @@ function addCustomScoreTag() {
         name: '',
         description: '',
     })
+}
+
+function removeCustomScoreTag(index) {
+    console.log('hi', index)
+    props.principleAssessment.custom_score_tags.splice(index, 1)
 }
 
 // data handling
@@ -150,6 +159,8 @@ function discard() {
 }
 
 async function save(nextAction) {
+
+    props.principleAssessment.complete = has_rating;
 
     const res = await axios.patch(`/principle-assessment/${props.principleAssessment.id}`, props.principleAssessment)
 
