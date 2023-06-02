@@ -94,6 +94,8 @@
 
 <script setup>
 import {onMounted, ref, computed} from "vue";
+
+
 import PrincipleAssessmentModal from "./PrincipleAssessmentModal.vue";
 
 const csrf = document.querySelector('meta[name="csrf-token"]').getAttribute('content')
@@ -149,6 +151,5 @@ function next() {
 
 // handle completion
 const allComplete = computed(() => principleAssessments.value.every(pa => pa.complete))
-
 
 </script>

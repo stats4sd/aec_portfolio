@@ -10,7 +10,6 @@
 
 @import "backpack-form-tweaks";
 
-
 // Basic styling
 body {
     background: #F6F6F6;
@@ -41,6 +40,10 @@ body {
 
 .text-bright-green {
     color: $bright-green !important;
+}
+
+.text-grey {
+    color: $gray-700 !important;
 }
 
 .bg-bright-green, .bg-success {
@@ -74,16 +77,170 @@ body {
 label {
     margin-bottom: 0 !important;
 }
-//
-//.checkbox-group {
-//    .v-checkbox .v-selection-control {
-//        min-height: 0 !important;
-//    }
-//    .v-input__details {
-//        min-height: 0 !important;
-//    }
-//    .v-messages {
-//        min-height: 0 !important;
-//    }
-//
-//}
+
+// custom margins + padding (from vuetify)
+
+.px-8 {
+    padding-right: 32px !important;
+    padding-left: 32px !important;
+}
+
+.px-12 {
+    padding-right: 48px !important;
+    padding-left: 48px !important;
+}
+
+.px-16 {
+  padding-right: 64px !important;
+  padding-left: 64px !important;
+}
+
+
+.mx-8 {
+    margin-right: 32px !important;
+    margin-left: 32px !important;
+}
+
+.mx-12 {
+    margin-right: 48px !important;
+    margin-left: 48px !important;
+}
+
+.mx-16 {
+  margin-right: 64px !important;
+  margin-left: 64px !important;
+}
+
+.py-8 {
+    padding-top: 32px !important;
+    padding-bottom: 32px !important;
+}
+
+.py-12 {
+    padding-top: 48px !important;
+    padding-bottom: 48px !important;
+}
+
+.py-16 {
+  padding-top: 64px !important;
+  padding-bottom: 64px !important;
+}
+
+
+.my-8 {
+    margin-top: 32px !important;
+    margin-bottom: 32px !important;
+}
+
+.my-12 {
+    margin-top: 48px !important;
+    margin-bottom: 48px !important;
+}
+
+.my-16 {
+  margin-top: 64px !important;
+  margin-bottom: 64px !important;
+}
+
+.pr-8 {
+    padding-right: 32px !important;
+}
+
+.pr-12 {
+    padding-right: 48px !important;
+}
+
+.pr-16 {
+  padding-right: 64px !important;
+}
+
+
+.mr-8 {
+    margin-right: 32px !important;
+}
+
+.mr-12 {
+    margin-right: 48px !important;
+}
+
+.mr-16 {
+  margin-right: 64px !important;
+}
+
+
+.pl-8 {
+    padding-left: 32px !important;
+}
+
+.pl-12 {
+    padding-left: 48px !important;
+}
+
+.pl-16 {
+  padding-left: 64px !important;
+}
+
+
+.ml-8 {
+    margin-left: 32px !important;
+}
+
+.ml-12 {
+    margin-left: 48px !important;
+}
+
+.ml-16 {
+  margin-left: 64px !important;
+}
+
+
+.pt-8 {
+    padding-top: 32px !important;
+}
+
+.pt-12 {
+    padding-top: 48px !important;
+}
+
+.pt-16 {
+  padding-top: 64px !important;
+}
+
+
+.mt-8 {
+    margin-top: 32px !important;
+}
+
+.mt-12 {
+    margin-top: 48px !important;
+}
+
+.mt-16 {
+  margin-top: 64px !important;
+}
+
+
+.pb-8 {
+    padding-bottom: 32px !important;
+}
+
+.pb-12 {
+    padding-bottom: 48px !important;
+}
+
+.pb-16 {
+  padding-bottom: 64px !important;
+}
+
+
+.mb-8 {
+    margin-bottom: 32px !important;
+}
+
+.mb-12 {
+    margin-bottom: 48px !important;
+}
+
+.mb-16 {
+  margin-bottom: 64px !important;
+}

@@ -27,6 +27,10 @@ class Project extends Model
         'end_date' => 'date',
     ];
 
+    protected $appends = [
+        'latest_assessment',
+    ];
+
     protected static function booted()
     {
         static::creating(function ($project) {
@@ -83,14 +87,14 @@ class Project extends Model
         return $this->hasMany(Assessment::class);
     }
 
-    public function latestAssessment()
+    public function getLatestAssessmentAttribute()
     {
         return $this->assessments->last();
     }
 
     public function getLatestAssessmentStatusAttribute()
     {
-        return $this->assessments->last()->assessment_status?->value;
+        return $this->assessments->last()?->assessment_status?->value;
     }
 
     public function organisation()

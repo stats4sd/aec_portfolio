@@ -13,9 +13,10 @@
             </div>
         </div>
 
-        <v-app>
-            <initiatives-list :initiatives="{{ $projects->toJson() }}">
-        </v-app>
+        <initiatives-list
+            :initiatives="{{ $projects->toJson() }}"
+            :has-additional-assessment="{{ $has_additional_assessment ? 'true' : 'false' }}"
+        >
 
     </div>
 

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Project;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Session;
 
 class ProjectController extends Controller
 {
@@ -12,9 +13,14 @@ class ProjectController extends Controller
      */
     public function index()
     {
-        $projects = Project::all();
+        $projects = Project::with('portfolio.organisation', 'assessments')->get();
 
-        return view('projects.index', ['projects' => $projects]);
+        $hasAdditionalAssessment = $projects->first()?->organisation->additionalCriteria->count() > 0;
+
+        return view('projects.index', [
+            'projects' => $projects,
+            'has_additional_assessment' => $hasAdditionalAssessment,
+        ]);
     }
 
     /**

@@ -18,3 +18,7 @@
         </div>
     </div>
 @endsection
+
+@section('after_scripts')
+    @vite('resources/js/assess.js')
+@endsection
