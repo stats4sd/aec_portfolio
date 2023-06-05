@@ -52,7 +52,7 @@ class Principle extends Model
 
     public function scoreTags()
     {
-        return $this->hasMany(ScoreTag::class);
+        return $this->hasMany(AdditionalCriteriaScoreTag::class);
     }
 
     public function customScoreTags()

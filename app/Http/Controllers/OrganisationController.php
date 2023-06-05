@@ -38,6 +38,10 @@ class OrganisationController extends Controller
         // get data for spider chart
         $principles = Principle::select(['name', 'id'])->get();
 
+        // Question: This function is to be used for the current dashboard page with spider chart.
+        // As we will have a Vue component based dashboard. it seems not to be used anymore in future.
+        // Can we leave "assessment_status" code as is in this function?
+
         // overall stats
         $assessedProjects = $organisation
             ->projects
@@ -96,8 +100,6 @@ class OrganisationController extends Controller
         $allPortfolio = collect([]);
         $naPrinciples = collect([]);
 
-        // DONE - TODO: check project latest assessment instead of project
-        // $passedProjects = $assessedProjects->filter(fn($project) => $project->overall_score > 0);
         $passedProjects = $assessedProjects->filter(fn($project) => $project->assessments->last()->overall_score > 0);
 
         $ratingsForPassedProjects = $passedProjects

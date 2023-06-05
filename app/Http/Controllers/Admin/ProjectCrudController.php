@@ -2,14 +2,17 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Imports\ProjectWorkbookImport;
 use App\Models\Region;
 use App\Models\Country;
 use App\Models\Project;
 use App\Models\RedLine;
-use App\Models\ScoreTag;
+use App\Models\AdditionalCriteriaScoreTag;
 use App\Models\Portfolio;
 use App\Models\Principle;
 use App\Models\Assessment;
+use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use App\Models\Organisation;
 use App\Imports\ProjectImport;
@@ -45,7 +48,9 @@ class ProjectCrudController extends CrudController
     use \Backpack\CRUD\app\Http\Controllers\Operations\ListOperation;
     use \Backpack\CRUD\app\Http\Controllers\Operations\CreateOperation;
     use \Backpack\CRUD\app\Http\Controllers\Operations\UpdateOperation;
-    use \Backpack\CRUD\app\Http\Controllers\Operations\DeleteOperation { destroy as traitDestroy; }
+    use \Backpack\CRUD\app\Http\Controllers\Operations\DeleteOperation {
+        destroy as traitDestroy;
+    }
     use \Backpack\CRUD\app\Http\Controllers\Operations\ShowOperation;
 
     use AuthorizesRequests;
@@ -63,7 +68,7 @@ class ProjectCrudController extends CrudController
      */
     public function setup()
     {
-        if ( !Session::exists('selectedOrganisationId') ) {
+        if (!Session::exists('selectedOrganisationId')) {
             throw new BadRequestHttpException('Please select an institution first');
         }
 
@@ -71,7 +76,7 @@ class ProjectCrudController extends CrudController
         CRUD::setRoute(config('backpack.base.route_prefix') . '/project');
         CRUD::setEntityNameStrings('initiative', 'initiatives');
 
-        CRUD::set('import.importer', ProjectImport::class);
+        CRUD::set('import.importer', ProjectWorkbookImport::class);
         CRUD::set('import.template-path', 'AE Marker - Project Import Template.xlsx');
 
         CRUD::setShowView('projects.show');
@@ -99,15 +104,6 @@ class ProjectCrudController extends CrudController
 
 
         // #### ADD SPIDER CHART DATA ###
-
-        // DONE - TODO: get data from latest assessment instead of project
-        // $this->data['spiderData'] = $this->data['entry']->principleProjects->map(function ($principleProject) {
-        //     return [
-        //         'axis' => $principleProject->principle->name,
-        //         'value' => $principleProject->rating,
-        //     ];
-        // });
-
         $this->data['spiderData'] = $this->data['entry']->assessments->last()->principleProjects->map(function ($principleProject) {
             return [
                 'axis' => $principleProject->principle->name,
@@ -139,10 +135,10 @@ class ProjectCrudController extends CrudController
 
 
         // #### ADD SPIDER CHART DATA ###
-        $this->data['spiderData'] = $assessment->principleProjects->map(function ($principleProject) {
+        $this->data['spiderData'] = $assessment->principleAssessments->map(function ($principleAssessment) {
             return [
-                'axis' => $principleProject->principle->name,
-                'value' => $principleProject->rating,
+                'axis' => $principleAssessment->principle->name,
+                'value' => $principleAssessment->rating,
             ];
         });
 
@@ -165,6 +161,13 @@ class ProjectCrudController extends CrudController
 
         // add custom Preview button for assessment
         $this->crud->addButtonFromView('line', 'preview_latest_assessment', 'preview_latest_assessment', 'start');
+        $this->crud->addButton('line', 'assess_custom', 'view', 'crud::buttons.assess_custom')->makeFirst();
+        $this->crud->addButton('line', 'assess', 'view', 'crud::buttons.assess')->makeFirst();
+        $this->crud->addButton('line', 'redline', 'view', 'crud::buttons.redline')->makeFirst();
+
+        // add Re-Assess Project button
+        // Question: Um... how to add this button next to Assess Project button...?
+        $this->crud->addButtonFromView('line', 're-assess', 're-assess', 'end');
 
         CRUD::setPersistentTable(false);
         CRUD::setResponsiveTable(false);
@@ -246,11 +249,11 @@ class ProjectCrudController extends CrudController
                 'name' => 'portfolio_id',
                 'type' => 'select',
                 'label' => 'Portfolio',
-                'model'     => "App\Models\PortFolio", 
+                'model' => "App\Models\PortFolio",
                 'attribute' => 'name',
-                'options'   => (function ($query) {
+                'options' => (function ($query) {
                     return $query->where('organisation_id', Session::get('selectedOrganisationId'))->orderBy('name', 'ASC')->get();
-                }), 
+                }),
             ],
         ]);
 
@@ -279,11 +282,7 @@ class ProjectCrudController extends CrudController
 
         CRUD::field('geographic_reach')
             ->type('select2_from_array')
-            ->options([
-                'global' => 'Global Level',
-                'multi-country' => 'Multi Country Level',
-                'country' => 'Country Level'
-            ]);
+            ->options(Arr::mapWithKeys(GeographicalReach::cases(), fn($enum) => [$enum->name => $enum->value]));
 
         CRUD::field('continents')->type('relationship')
             ->label('Select the continent / continents that this project works in.')
@@ -303,7 +302,7 @@ class ProjectCrudController extends CrudController
             ->ajax(true)
             ->minimum_input_length(0)
             ->dependencies(['continents,regions'])
-            ->allows_null(true);;
+            ->allows_null(true);
 
         CRUD::field('sub_regions')->type('textarea')
             ->label('Optionally, add the specific regions within each country where the project works.');
@@ -325,242 +324,15 @@ class ProjectCrudController extends CrudController
         $this->crud->setValidation();
     }
 
-    public function setupAssessOperation()
+    // create related records for a new assessment
+    public function reAssess($id)
     {
-        $this->authorize('assessProject', CRUD::getCurrentEntry());
+        $assessment = Assessment::create(['project_id' => $id]);
+        $assessment->redLines()->sync(RedLine::all()->pluck('id')->toArray());
+        $assessment->principles()->sync(Principle::all()->pluck('id')->toArray());
 
-        Widget::add()->type('script')->content('assets/js/admin/forms/project_assess.js');
-
-        CRUD::field('section-title')
-            ->type('section-title')
-            ->view_namespace('stats4sd.laravel-backpack-section-title::fields')
-            ->title(function ($entry) {
-                return "Assess Project: " . $entry->name;
-            })
-            ->content('
-                    This is the main section of the review. Below are the 13 Agroecology Principles, and you should rate the project against each one. <br/><br/>
-                    For each principle, you should give:
-                        <ul>
-                            <li><b>A rating:</b> This is a number between 0 and 2, based on your appreciation of the value of the principle in the project design / activities, and following the Spectrum defined for each principle. Decimal digits are allowed.</li>
-                            <li><b>A comment:</b> Please add any comments to help explain the rating, and about how the principle is seen within the project.</li>
-                        </ul>
-                    Each principle also lists a set of example activities relevant to that principle. Please tick all activities that are present in the project.<br/><br/>
-                    To help track progress, once a rating is given for a principle, that principle name will turn green. Once you have completed and reviewed every principle, please proceed to the final "Confirmation" tab, where you can mark the assessment as complete. Once done, you will return to the main projects list to view the final result.
-          ');
-
-
-        CRUD::enableVerticalTabs();
-        // cannot use relationship with repeatable because we need to filter the scoretags...
-        $entry = CRUD::getCurrentEntry();
-
-        // TODO: get principles via latest assessment instead of project
-        // foreach ($entry->principles as $principle) {
-        foreach ($entry->assessments->last()->principles as $principle) {
-            $ratingZeroDefintionRow = '<span class="text-secondary">This principle cannot be marked as not applicable</span>';
-            if ($principle->can_be_na) {
-                $ratingZeroDefintionRow = "
-                                            <tr>
-                                                <td>na</td>
-                                                <td>{$principle->rating_na}</td>
-                                            </tr>";
-            }
-
-            CRUD::field($principle->id . '_title')
-                ->tab($principle->name)
-                ->type('section-title')
-                ->view_namespace('stats4sd.laravel-backpack-section-title::fields')
-                ->title($principle->name)
-                ->content("<table class='table table - striped'>
-                                <tr>
-                                    <th>Score</th>
-                                    <th>Definition</th>
-                                </tr>
-                                <tr>
-                                    <td>2</td>
-                                    <td>{$principle->rating_two}</td>
-                                </tr>
-                                <tr>
-                                    <td>1</td>
-                                    <td>{$principle->rating_one}</td>
-                                </tr>
-                                <tr>
-                                    <td>0</td>
-                                    <td>{$principle->rating_zero}</td>
-                                </tr>
-                                {$ratingZeroDefintionRow}
-                            </table>");
-
-            if ($principle->can_be_na) {
-                CRUD::field($principle->id . "_is_na")
-                    ->tab($principle->name)
-                    ->attributes([
-                        'data-to-disable' => $principle->id,
-                    ])
-                    ->type('boolean')
-                    ->label('If this principle is not applicable for this project, tick this box.')
-                    ->default($principle->pivot->is_na);
-
-            }
-
-
-            CRUD::field($principle->id . '_rating')
-                ->tab($principle->name)
-                ->label('Rating for ' . $principle->name)
-                ->attributes([
-                    'data-tab' => Str::slug($principle->name),
-                    'data-update-tab' => '1',
-                ])
-                ->min(0)
-                ->max(2)
-                ->default($principle->pivot->rating);
-
-
-            CRUD::field($principle->id . '_rating_comment')
-                ->tab($principle->name)
-                ->label('Comment for ' . $principle->name)
-                ->hint('Please add a comment, even if the principle is not applicable to this project.')
-                ->type('textarea')
-                ->default($principle->pivot->rating_comment);
-
-            CRUD::field('scoreTags' . $principle->id)
-                ->tab($principle->name)
-                ->label('Presence of Examples/Indicators for ' . $principle->name)
-                ->type('checklist_filtered')
-                ->number_of_columns(1)
-                ->model(ScoreTag::class)
-                ->options(function ($query) use ($principle) {
-                    return $query->where('principle_id', $principle->id)->get()->pluck('name', 'id')->toArray();
-                });
-
-            CRUD::field('customScoreTags' . $principle->id)
-                ->tab($principle->name)
-                ->label('New Example/Indicator for ' . $principle->name)
-                ->type('table')
-                ->columns([
-                    'name' => 'Name',
-                    'description' => 'Description (optional)'],
-                );
-        }
-
-        CRUD::field('complete_title')
-            ->type('section-title')
-            ->tab('Confirm Assessment')
-            ->view_namespace('stats4sd.laravel-backpack-section-title::fields')
-            ->content('
-                Once you have completed the review of each principle, and are satisfied that the above entries are correct, please tick this box to confirm the review.<br/>
-                <i>(Note: You may still edit this review after marking it as complete)</i>
-            ');
-
-        CRUD::field('assessment_incomplete_note')
-            ->type('section-title')
-            ->tab('Confirm Assessment')
-            ->view_namespace('stats4sd.laravel-backpack-section-title::fields')
-            ->content('You have not given a rating for every principle. You must complete each principle before marking the assessment as complete.')
-            ->variant('warning');
-
-        CRUD::field('assessment_complete')
-            ->type('boolean')
-            ->tab('Confirm Assessment')
-            ->label('I confirm the assessment is complete')
-            ->attributes([
-                'data-check-complete' => '1',
-            ])
-            // TODO: get assessment status via latest assessment instead of project
-            // ->default($entry->assessment_status === AssessmentStatus::Complete);
-            ->default($entry->assessments->last()->assessment_status === AssessmentStatus::Complete);
-
-
-        CRUD::field('assessment_incomplete')
-            ->type('boolean')
-            ->tab('Confirm Assessment')
-            ->label('I confirm the assessment is complete')
-            ->attributes([
-                'disabled' => 'disabled',
-                'readonly' => 'readonly',
-            ]);
-
-        $this->setupCustomSaveActions('assess');
-
-
-    }
-
-    public function setupRedlineOperation()
-    {
-        // dump("ProjectCrudController.setupRedlineOperation()");
-
-        $this->authorize('reviewRedlines', CRUD::getCurrentEntry());
-
-        Widget::add()->type('script')->content('assets/js/admin/forms/project_redlines.js');
-
-
-        CRUD::setHeading('');
-        $entry = CRUD::getCurrentEntry();
-
-        CRUD::field('section-title')
-            ->type('section-title')
-            ->view_namespace('stats4sd.laravel-backpack-section-title::fields')
-            ->title(function ($entry) {
-                return "Assess Redlines for " . $entry->name;
-            })
-            ->content('
-                    Listed below is the set of red lines to check for each project.<br/><br/>
-                    These are the Red Line elements, which are counter-productive or harmful to the values and principles of agroecology. If any one of these is present in the project being rated, then the Agroecology Overall Score is 0.
-                          ');
-
-        // DONE - TODO: get red lines via latest assessment instead of project
-        // We cannot use the relationship with subfields field here, because we do not want the user to be able to unassign any redlines from the project.
-        // foreach ($entry->redLines as $redline) {
-        foreach ($entry->assessments->last()->redLines as $redline) {
-            CRUD::field('redline_title_' . $redline->id)
-                ->wrapper([
-                    'class' => 'col-md-6'
-                ])
-                ->type('custom_html')
-                ->value("<h4>{$redline->name}</h4><p>{$redline->description}</p>");
-
-            CRUD::field('redline_value_' . $redline->id)
-                ->label('Present?')
-                ->default($redline->pivot->value)
-                ->type('radio')
-                ->attributes([
-                    'data-required' => '1',
-                ])
-                ->wrapper([
-                    'class' => 'col-md-6',
-                    'data-required-wrapper' => '1',
-                ])
-                ->options([
-                    1 => 'Yes',
-                    0 => 'No',
-                ]);
-
-            CRUD::field('redline_divider_' . $redline->id)
-                ->type('custom_html')
-                ->value('<hr/>');
-
-        }
-
-        CRUD::field('complete_title')
-            ->type('section-title')
-            ->view_namespace('stats4sd.laravel-backpack-section-title::fields')
-            ->content('
-                Once you have completed the review of each redline, and are satisfied that the above entries are correct, please tick this box to confirm the review.<br/>
-                <i>(Note: You may still edit this review after marking it as complete)</i>
-                ');
-
-
-        CRUD::field('redlines_complete')
-            ->type('boolean')
-            ->label('I confirm the Redlines assessment is complete')
-            ->default($entry->assessment_status !== AssessmentStatus::NotStarted && $entry->assessment_status !== AssessmentStatus::RedlinesIncomplete);
-
-        CRUD::field('redlines_incomplete')
-            ->type('boolean')
-            ->label('I confirm the Redlines assessment is complete')
-            ->hint('You must assign a value (or mark as NA) for every redline above before marking the redline assessment as complete.')
-            ->attributes([
-                'disabled' => 'disabled',
-            ]);
+        // refresh CRUD panel
+        return back();
     }
 
     /**
@@ -571,7 +343,7 @@ class ProjectCrudController extends CrudController
         $this->authorize('delete', Project::find($id));
 
         $this->crud->hasAccessOrFail('delete');
-    
+
         return $this->crud->delete($id);
     }
 
@@ -593,8 +365,8 @@ class ProjectCrudController extends CrudController
 
 
         $this->crud->addField([
-            'name' => 'organisation',
-            'label' => 'Institution',
+            'name' => 'portfolio',
+            'label' => 'Portfolio',
             'type' => 'relationship',
             'validationRules' => 'required',
         ]);
@@ -616,13 +388,18 @@ class ProjectCrudController extends CrudController
         if (!$importer) {
             return response("Importer Class not found - please check the importer is properly setup for this page", 500);
         }
-
         $request = $this->crud->validateRequest();
 
 
+        Validator::make($request->all(), [
+            'portfolio' => 'required',
+            'importFile' => 'required',
+        ])->validate();
+
+
         // pass organisation to importer;
-        $organisation = Organisation::find($request->organisation);
-        Excel::import(new $importer($organisation), $request->importFile);
+        $portfolio = Portfolio::find($request->portfolio);
+        Excel::import(new $importer($portfolio), $request->importFile);
 
 
         Alert::success(trans('backpack::crud.insert_success'))->flash();

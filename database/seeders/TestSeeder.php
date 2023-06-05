@@ -2,6 +2,8 @@
 
 namespace Database\Seeders;
 
+use App\Enums\GeographicalReach;
+use App\Models\Organisation;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 
@@ -29,5 +31,24 @@ class TestSeeder extends Seeder
 
         $user = User::factory()->create(['name' => 'Institutional Member', 'email' => 'ins_member@example.com']);
         $user->assignRole('Institutional Member');
+
+        $institution = Organisation::create([
+            'name' => 'Test Institution 1',
+        ]);
+
+        $portfolio = $institution->portfolios()->create([
+            'name' => 'Test Portfolio 1',
+        ]);
+
+        $initiative = $portfolio->projects()->create([
+            'name' => 'Test Project 1',
+            'organisation_id' => $institution->id,
+            'code' => 'TP1',
+            'description' => 'A project for testing',
+            'budget' => '1000000',
+            'currency' => 'EUR',
+            'start_date' => '2023-01-01',
+            'geographic_reach' => GeographicalReach::Global->name,
+        ]);
     }
 }

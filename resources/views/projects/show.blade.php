@@ -9,6 +9,11 @@
         <h1>Initiative Review Page</h1>
         <h2>{{ $entry->organisation->name }} - {{ $entry->name }}</h2>
 
+        <form method="POST" action="/admin/generatePdf">
+            @csrf
+            <input type="submit" value="Generate PDF">
+        </form>
+
         <div class="row mt-3 mb-4">
             <div class="col-12 col-md-6 col-lg-6 pt-4 mt-4 d-flex align-items-center">
 

@@ -2,8 +2,10 @@
 
 namespace App\Http\Requests;
 
+use App\Enums\GeographicalReach;
 use App\Rules\UniqueProjectCode;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class ProjectRequest extends FormRequest
 {
@@ -27,14 +29,15 @@ class ProjectRequest extends FormRequest
     {
         return [
             'organisation_id' => 'required',
+            'portfolio_id' => 'required',
             'name' => 'required|string',
             'code' => ['nullable', 'string', new UniqueProjectCode],
             'description' => 'nullable|string',
-            'budget' => 'required|integer',
+            'budget' => 'required|integer|gte:0',
             'currency' => 'required|max:3',
             'start_date' => 'required',
             'end_date' => 'nullable|after:start_date',
-            'geographic_reach' => 'required',
+            'geographic_reach' => ['required', Rule::in(Collect(GeographicalReach::cases())->pluck('name')->toArray())],
             'continents' => 'nullable',
             'regions' => 'nullable',
             'countries' => 'nullable',
