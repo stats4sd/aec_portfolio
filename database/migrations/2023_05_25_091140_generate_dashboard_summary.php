@@ -471,7 +471,8 @@ BEGIN
 				WHERE rating IS NOT NULL
 				AND assessment_id IN (SELECT assessment_id FROM dashboard_assessment WHERE dashboard_id = dashboardYoursId)
 				GROUP BY principle_id, rating) AS ta, dashboard_rating AS tb
-				WHERE ta.rating = tb.rating
+				WHERE ta.rating >= tb.min_rating
+				AND ta.rating < tb.max_rating
 				ORDER BY principle_id) AS principle_summary
 				GROUP BY principle_id, category
 				ORDER BY principle_id, category;
@@ -484,7 +485,8 @@ BEGIN
 				WHERE rating IS NOT NULL
 				AND assessment_id IN (SELECT assessment_id FROM dashboard_assessment WHERE dashboard_id = dashboardOthersId)
 				GROUP BY principle_id, rating) AS ta, dashboard_rating AS tb
-				WHERE ta.rating = tb.rating
+				WHERE ta.rating >= tb.min_rating
+				AND ta.rating < tb.max_rating
 				ORDER BY principle_id) AS principle_summary
 				GROUP BY principle_id, category
 				ORDER BY principle_id, category;

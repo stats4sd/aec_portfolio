@@ -14,7 +14,8 @@ return new class extends Migration
         Schema::create('dashboard_rating', function (Blueprint $table) {
             $table->id();
             $table->string('category');
-            $table->decimal('rating', 8, 2)->index();
+            $table->decimal('min_rating', 8, 2)->index();
+            $table->decimal('max_rating', 8, 2)->index();
             $table->timestamps();
         });
     }

@@ -15,10 +15,8 @@ class DashboardRatingSeeder extends Seeder
      */
     public function run()
     {
-        DB::insert('INSERT INTO dashboard_rating (id, category, rating) VALUES (?, ?, ?)', [1, 'GREEN', 2.0]);
-        DB::insert('INSERT INTO dashboard_rating (id, category, rating) VALUES (?, ?, ?)', [2, 'YELLOW', 1.5]);
-        DB::insert('INSERT INTO dashboard_rating (id, category, rating) VALUES (?, ?, ?)', [3, 'YELLOW', 1.0]);
-        DB::insert('INSERT INTO dashboard_rating (id, category, rating) VALUES (?, ?, ?)', [4, 'YELLOW', 0.5]);
-        DB::insert('INSERT INTO dashboard_rating (id, category, rating) VALUES (?, ?, ?)', [5, 'RED', 0]);
+        DB::insert('INSERT INTO dashboard_rating (id, category, min_rating, max_rating) VALUES (?, ?, ?, ?)', [1, 'GREEN', 1.5, 2.0]);
+        DB::insert('INSERT INTO dashboard_rating (id, category, min_rating, max_rating) VALUES (?, ?, ?, ?)', [2, 'YELLOW', 0.5, 1.5]);
+        DB::insert('INSERT INTO dashboard_rating (id, category, min_rating, max_rating) VALUES (?, ?, ?, ?)', [3, 'RED', 0, 0.5]);
     }
 }
