@@ -6,6 +6,7 @@ use App\Models\Project;
 use App\Models\Organisation;
 use Illuminate\Contracts\Validation\DataAwareRule;
 use Illuminate\Contracts\Validation\Rule;
+use Illuminate\Support\Facades\Session;
 
 class UniqueProjectCode implements Rule, DataAwareRule
 {
@@ -32,7 +33,7 @@ class UniqueProjectCode implements Rule, DataAwareRule
     public function passes($attribute, $value)
     {
 
-        $projects = Organisation::find($this->data['organisation_id'])->projects;
+        $projects = Organisation::find(Session::get('selectedOrganisationId'))->projects;
 
         foreach ($projects as $project) {
             // if there is a current project, skip it for checking for uniqueness;
@@ -40,7 +41,7 @@ class UniqueProjectCode implements Rule, DataAwareRule
                 break;
             }
 
-            
+
             if ($value === $project->code) {
                 return false;
             }

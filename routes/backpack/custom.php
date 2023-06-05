@@ -72,6 +72,7 @@ Route::group([
     Route::get('selected_organisation', [SelectOrganisationController::class, 'selected']);
 
     Route::get('generic-dashboard', [GenericDashboardController::class, 'show']);
+    Route::post('generic-dashboard/enquire', [GenericDashboardController::class, 'enquire']);
 
     Route::get('organisation-members', [OrganisationMemberController::class, 'show']);
 

@@ -7,8 +7,13 @@ window.axios = axios;
 window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 
 import InitiativesList from "./components/InitiativesList.vue"
+import Dashboard from "./components/Dashboard.vue";
 
 
 createApp()
     .component('InitiativesList', InitiativesList)
     .mount('#initiativesListPage')
+
+createApp()
+    .component('dashboard', Dashboard)
+    .mount('#dashboard');

@@ -20,3 +20,4 @@ npm install
 npm run dev
 ```
 6.	Migrate the database: `php aritsan migrate:fresh --seed`
+
