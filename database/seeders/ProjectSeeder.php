@@ -9,6 +9,7 @@ use App\Models\Portfolio;
 use App\Models\Principle;
 use App\Models\Project;
 use App\Models\RedLine;
+use App\Models\Region;
 use Illuminate\Container\Container;
 use Faker\Generator;
 use Illuminate\Database\Seeder;
@@ -47,17 +48,40 @@ class ProjectSeeder extends Seeder
                     'portfolio_id' => $portfolio->id,
                     'organisation_id' => $organisation->id
                 ])
+
                     ->count(random_int(0, 50))
                     ->create();
             }
         }
 
+
+
         $redlines = Redline::all();
         $principles = Principle::all();
+        $regions = Region::with('countries')->get();
 
 
         // add complete assessments for projects
         foreach (Project::all() as $project) {
+
+            // assign 80% of projects to regions
+            if($this->faker->boolean(80)) {
+                $project->regions()->sync($this->faker->randomElements(
+                    $regions->pluck('id')->toArray(),
+                    $this->faker->numberBetween(1, 3)
+                ));
+
+                if($this->faker->boolean(80)) {
+
+                    $countriesInRegions = $project->regions->map(fn($region) => $region->countries)->flatten()->pluck('id');
+
+                    $project->countries()->sync($this->faker->randomElements(
+                        $countriesInRegions->toArray(),
+                        $this->faker->numberBetween(1, $countriesInRegions->count())
+                    ));
+                }
+            }
+
 
             // add redlines
             $redlinesToAdd = $redlines
@@ -80,9 +104,9 @@ class ProjectSeeder extends Seeder
 
                         $isNa = false;
 
-                    if ($principle->can_be_na) {
-                        $isNa = $this->faker->boolean(10);
-                    }
+                        if ($principle->can_be_na) {
+                            $isNa = $this->faker->boolean(10);
+                        }
 
 
                         return [$principle->id => [

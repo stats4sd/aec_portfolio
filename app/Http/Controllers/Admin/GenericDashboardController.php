@@ -6,6 +6,8 @@ use Carbon\Carbon;
 use App\Models\Region;
 use App\Models\Country;
 use App\Models\Portfolio;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Http\Request;
 use App\Models\ProjectRegion;
 use App\Models\CountryProject;
@@ -33,9 +35,14 @@ class GenericDashboardController extends Controller
 
         // find all regions with projects that belong to selected organisation
         $regionIds = ProjectRegion::whereIn('project_id', $projectIds)->get()->pluck('region_id')->toArray();
+        $countryIds = CountryProject::whereIn('project_id', $projectIds)->get()->pluck('country_id')->toArray();
 
         // find all regions with projects that belong to selected organisation
-        $regions = Region::whereIn('id', $regionIds)->get();
+        $regions = Region::whereIn('regions.id', $regionIds)
+            ->with('countries', function(HasMany $query) use ($countryIds) {
+                $query->whereIn('countries.id', $countryIds);
+            })
+            ->get();
 
         // find all coutnries with projects that belong to selected organisation
         $countrieIds = CountryProject::whereIn('project_id', $projectIds)->get()->pluck('country_id')->toArray();
@@ -157,14 +164,14 @@ class GenericDashboardController extends Controller
         // error handling if status is not 0
         if ($status != "0") {
             $jsonRes = [];
-        
+
             $jsonRes['status'] = $status;
             $jsonRes['message'] = $message;
             $jsonRes['statusSummary'] = null;
             $jsonRes['redlinesSummary'] = null;
             $jsonRes['yoursPrinciplesSummarySorted'] = null;
             $jsonRes['othersPrinciplesSummarySorted'] = null;
-    
+
             return $jsonRes;
         }
 
@@ -177,10 +184,12 @@ class GenericDashboardController extends Controller
 
 
         // prepare principles summary with sorting preference
-        $yoursPrinciplesSummarySorted = $yoursPrinciplesSummary;      
+        $yoursPrinciplesSummarySorted = collect($yoursPrinciplesSummary)->filter(fn($summary) => $summary !== null)->toArray();
         $othersPrinciplesSummarySorted = [];
 
-       
+
+
+
         // highest to lowest score (highest green)
         if ($sortBy == 1) {
             // sort by green, yellow, red
@@ -262,7 +271,7 @@ class GenericDashboardController extends Controller
 
         // construct JSON response
         $jsonRes = [];
-        
+
         $jsonRes['status'] = $status;
         $jsonRes['message'] = $message;
         $jsonRes['statusSummary'] = $statusSummary;

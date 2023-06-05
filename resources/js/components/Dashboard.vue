@@ -63,7 +63,7 @@
                     <td><label><input type="checkbox" v-model="formData['chkCountry']"> Filter by Country</label></td>
                     <td>
                         <select v-model="formData['country']">
-                            <!-- when region change, remove selected country and show countries within the selected region -->                        
+                            <!-- when region change, remove selected country and show countries within the selected region -->
                             <option :value="country.id" v-for="country in filteredCountries">{{ country.name }}</option>
                         </select>
                     </td>
@@ -150,7 +150,7 @@
 
     </table>
 
-    
+
     <!-- principles summary: sort by -->
     <table class="table" v-if="yoursPrinciplesSummarySorted != null">
         <thead>
@@ -158,7 +158,7 @@
         </thead>
         <thead>
             <th>
-                Sort by: 
+                Sort by:
                 <select v-model="formData['sortBy']" @change="validateCriteria">
                     <option value="1">Highest to Lowest</option>
                     <option value="2">Lowest to Highest</option>
@@ -182,12 +182,12 @@
 		<td colspan="2">
 			<div class="demo-container-1">
 				<div id="chart1" class="demo-placeholder"></div>
-			</div>	
+			</div>
 		</td>
 		<td>
 			<div class="demo-container-2">
 				<div id="chart2" class="demo-placeholder"></div>
-			</div>	
+			</div>
 		</td>
 		<td valign="top">
 			<br/>
@@ -270,11 +270,11 @@ export default {
     },
 
     computed: {
-        
+
     },
 
     watch: {
-        // monitor the value of variable 
+        // monitor the value of variable
 
     },
 
@@ -286,14 +286,8 @@ export default {
             this.formData['country'] = '';
 
             // clear filtered countries
-            this.filteredCountries = [];
+            this.filteredCountries = this.regions.filter((region) => region.id === this.formData['region'])[0]['countries'];
 
-            // populate countries belong to the selected region
-            for (var i = 0; i < this.countries.length; i++) {
-                if (this.formData['region'] == this.countries[i].region_id) {
-                    this.filteredCountries.push(this.countries[i]);
-                }
-            }
         },
 
         validateCriteria() {
@@ -384,7 +378,7 @@ export default {
             var chart1Data0 = [];
             var chart1Data1 = [];
             var chart1Data2 = [];
-            
+
             for (var i = this.yoursPrinciplesSummarySorted.length - 1; i >= 0; i--) {
                 index = 13 - i;
 
@@ -439,7 +433,7 @@ export default {
 
             // prepare chart 1 and chart 2 y axis ticks
             var chart1yAxisTicks = [];
-            
+
             for (var i=0; i < this.yoursPrinciplesSummarySorted.length; i++) {
                 var index = 13 - i;
                 chart1yAxisTicks.push([index, this.yoursPrinciplesSummarySorted[i].name]);
@@ -472,7 +466,7 @@ export default {
 
             // plot chart 1 with chart 1 data and options
             this.plotWithOptions("#chart1", chart1Data, chart1yAxisTicks, chart1YAxisLabelWidth, chart1LegendFlag, "");
-            
+
             // plot chart 2 with chart 2 data and options
             this.plotWithOptions("#chart2", chart2Data, chart2yAxisTicks, chart2YAxisLabelWidth, chart2LegendFlag, "chart2Legend");
         },
@@ -480,7 +474,7 @@ export default {
         // chart options
         plotWithOptions(chartId, chartData, yAxisTicks, yAxisLabelWidth, legendFlag, legendId) {
             $.plot(chartId, chartData, {
-            
+
                 // stacked bar chart
                 // need to include "jquery.flot.stack.js"
                 series: {
@@ -489,7 +483,7 @@ export default {
                         show: false,
                         fill: true,
                         steps: false,
-                        
+
                     },
                     bars: {
                         show: true,
@@ -497,7 +491,7 @@ export default {
                         fill: 0.8,
                         horizontal: true,
                         align: 'center',
-                        
+
                         // show number in bar segment
                         // need to include "jquery.flot.barnumbers.js"
                         numbers: { show: false }
@@ -514,7 +508,7 @@ export default {
                     tickFormatter: function (val, axis) {
                         return val + '%';
                     },
-                    
+
                 },
 
                 // customize y-axis labesl
@@ -525,18 +519,18 @@ export default {
                     ticks: yAxisTicks,
                     labelWidth: yAxisLabelWidth,
                 },
-                
+
                 grid: {
                     borderWidth: 1,
                 },
-                        
+
                 // show legend
                 // need to include "jquery.flot.legend.js"
                 legend: {
                     show: legendFlag,
                     container: document.getElementById(legendId),
                 },
-                
+
             });
         },
 
