@@ -193,9 +193,40 @@ BEGIN
 
 	
 	-- find all project ids (others)
-	INSERT INTO dashboard_project (dashboard_id, project_id)
-	SELECT dashboardOthersId, id FROM projects;
-	
+    -- construct dynamic SQL
+
+	SET @SQLText = '';
+	SET @SQLText = CONCAT(@SQLText, ' INSERT INTO dashboard_project (dashboard_id, project_id)');
+    SET @SQLText = CONCAT(@SQLText, ' SELECT ', dashboardOthersId, ', p.id');
+    SET @SQLText = CONCAT(@SQLText, ' FROM projects p');
+    SET @SQLText = CONCAT(@SQLText, ' LEFT JOIN project_region pr');
+    SET @SQLText = CONCAT(@SQLText, ' ON p.id = pr.project_id');
+    SET @SQLText = CONCAT(@SQLText, ' LEFT JOIN country_project cp');
+    SET @SQLText = CONCAT(@SQLText, ' ON p.id = cp.project_id');
+    SET @SQLText = CONCAT(@SQLText, ' WHERE p.id = p.id');
+
+
+    -- criteria
+    IF projectStartFrom IS NOT NULL AND projectStartTo IS NOT NULL THEN
+		SET @SQLText = CONCAT(@SQLText, ' AND YEAR(p.start_date) BETWEEN ', projectStartFrom , ' AND ', projectStartTo);
+    END IF;
+
+    IF budgetFrom IS NOT NULL AND budgetTo IS NOT NULL THEN
+    	SET @SQLText = CONCAT(@SQLText, ' AND p.budget BETWEEN ', budgetFrom, ' AND ', budgetTo);
+    END IF;
+
+    IF regionId IS NOT NULL THEN
+    	SET @SQLText = CONCAT(@SQLText, ' AND pr.region_id = ', regionId);
+    END IF;
+
+    IF countryId IS NOT NULL THEN
+    	SET @SQLText = CONCAT(@SQLText, ' AND cp.country_id = ', countryId);
+    END IF;
+
+    -- execute dynamic SQL
+	PREPARE stmt FROM @SQLText;
+    EXECUTE stmt;
+    DEALLOCATE PREPARE stmt;
 
     -- find latest assessments of projects (others)
 	INSERT INTO dashboard_assessment (dashboard_id, assessment_id)
