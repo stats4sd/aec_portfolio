@@ -16,6 +16,8 @@ class CreatePrinciplesTable extends Migration
         Schema::create('principles', function (Blueprint $table) {
             $table->id();
             $table->string('name');
+            $table->text('description')->nullable();
+            $table->text('info_link')->nullable();
             $table->integer('number');
             $table->text('rating_two');
             $table->text('rating_one');
