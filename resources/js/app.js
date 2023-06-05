@@ -9,9 +9,14 @@ window.Popper = require('popper.js').default;
 window.$ = window.jQuery = require('jquery');
 
 import ExampleComponent from "./components/ExampleComponent.vue"
+import Dashboard from "./components/Dashboard.vue";
 
 window._ = _;
 window.axios = axios;
 window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 
 const app = createApp(ExampleComponent)
+
+createApp()
+    .component('dashboard', Dashboard)
+    .mount('#dashboard');
