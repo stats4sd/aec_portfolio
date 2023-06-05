@@ -23,7 +23,6 @@ class ProjectFactory extends Factory
             'budget' => $this->faker->randomNumber(),
             'created_at' => Carbon::now(),
             'updated_at' => Carbon::now(),
-            'assessment_status' => $this->faker->randomElement(AssessmentStatus::cases()),
             'currency' => $this->faker->currencyCode(),
             'start_date' => Carbon::now(),
             'end_date' => Carbon::now(),

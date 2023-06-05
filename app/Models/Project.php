@@ -15,7 +15,7 @@ use Illuminate\Support\Str;
 
 class Project extends Model
 {
-    use \Backpack\CRUD\app\Models\Traits\CrudTrait;
+    use \Backpack\CRUD\app\Models\Traits\CrudTrait, HasFactory;
 
     protected $guarded = ['id'];
 
@@ -56,10 +56,6 @@ class Project extends Model
         });
 
         static::addGlobalScope('organisation', function (Builder $builder) {
-
-            if (!Auth::check()) {
-                abort(403, "It looks like you are not logged in.");
-            }
 
             if (Session::exists('selectedOrganisationId')) {
                 $builder->where('organisation_id', Session::get('selectedOrganisationId'));
