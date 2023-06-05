@@ -7,8 +7,6 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 use Backpack\CRUD\app\Models\Traits\CrudTrait;
@@ -34,7 +32,7 @@ class Organisation extends Model
                 return;
             }
 
-            if (Auth::user()->can('view institutions')) {
+            if (Auth::user()?->can('view institutions')) {
                 return;
             }
 
