@@ -25,6 +25,10 @@ class Assessment extends Model
         'assessment_status' => AssessmentStatus::class,
     ];
 
+    protected $appends = [
+        'overall_score',
+    ];
+
     // determine if there are revisions related to this assessment
     public function hasRevisions(): bool
     {

@@ -1,6 +1,7 @@
 <!-- =================================================== -->
 <!-- ========== Top menu items (ordered left) ========== -->
 <!-- =================================================== -->
+
 <ul class="nav navbar-nav d-md-down-none">
 
     @if (backpack_auth()->check())
@@ -11,7 +12,14 @@
 </ul>
 <!-- ========== End of top menu left items ========== -->
 
-
+<ul class="nav navbar-nav ml-auto mr-auto d-flex flex-">
+    <li class="nav-item mx-3 font-weight-bold"><a class="nav-link text-deep-green" href="{{ backpack_url('generic-dashboard?level=institution') }}">Dashboard</a>
+        </li>
+    <li class="nav-item mx-3 font-weight-bold"><a class="nav-link text-deep-green" href="{{ backpack_url('portfolio') }}">Portfolios</a>
+        </li>
+    <li class="nav-item mx-3 font-weight-bold"><a class="nav-link text-deep-green" href="{{ backpack_url('project') }}">Initiatives</a>
+        </li>
+</ul>
 
 
 <!-- ========================================================= -->
@@ -36,14 +44,19 @@
         @endif
 
         <li class="nav-item pr-4">
-            <a class="nav-link" href="{{ route('backpack.account.info') }}">My Account</a>
+            <a class="nav-link d-flex justify-content-between align-items-center"
+               href="{{ route('backpack.account.info') }}"
+            >
+                <i class="la la-user-circle font-3xl pr-2"></i>
+                <span>My Account</span>
+            </a>
         </li>
 
         <!-- Logout button - tailored to use Laravel Breeze -->
         <li class="nav-item pr-4">
             <form method="POST" action={{ route('logout') }}>
             @csrf
-            <button class="btn btn-link text-dark" type="submit"><i class="la la-lock"></i> {{ trans('backpack::base.logout') }}</button>
+            <button class="btn btn-link text-dark" type="submit">{{ trans('backpack::base.logout') }}</button>
             </form>
         </li>
 

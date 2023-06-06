@@ -45,7 +45,6 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
  */
 class ProjectCrudController extends CrudController
 {
-    use \Backpack\CRUD\app\Http\Controllers\Operations\ListOperation;
     use \Backpack\CRUD\app\Http\Controllers\Operations\CreateOperation;
     use \Backpack\CRUD\app\Http\Controllers\Operations\UpdateOperation;
     use \Backpack\CRUD\app\Http\Controllers\Operations\DeleteOperation {
@@ -56,7 +55,6 @@ class ProjectCrudController extends CrudController
     use AuthorizesRequests;
 
     use ImportOperation;
-    use AssessOperation;
     use RedlineOperation;
     use FetchOperation;
     use UsesSaveAndNextAction;
@@ -80,7 +78,6 @@ class ProjectCrudController extends CrudController
         CRUD::set('import.template-path', 'AE Marker - Project Import Template.xlsx');
 
         CRUD::setShowView('projects.show');
-
     }
 
     public function show($id)
@@ -146,84 +143,6 @@ class ProjectCrudController extends CrudController
     }
 
 
-    /**
-     * Define what happens when the List operation is loaded.
-     *
-     * @see  https://backpackforlaravel.com/docs/crud-operation-list-entries
-     * @return void
-     */
-    protected function setupListOperation()
-    {
-        $this->authorize('viewAny', Project::class);
-
-        // remove the default Preview button for project
-        $this->crud->removeButton('show');
-
-        // add custom Preview button for assessment
-        $this->crud->addButtonFromView('line', 'preview_latest_assessment', 'preview_latest_assessment', 'start');
-        $this->crud->addButton('line', 'assess_custom', 'view', 'crud::buttons.assess_custom')->makeFirst();
-        $this->crud->addButton('line', 'assess', 'view', 'crud::buttons.assess')->makeFirst();
-        $this->crud->addButton('line', 'redline', 'view', 'crud::buttons.redline')->makeFirst();
-
-        // add Re-Assess Project button
-        // Question: Um... how to add this button next to Assess Project button...?
-        $this->crud->addButtonFromView('line', 're-assess', 're-assess', 'end');
-
-        CRUD::setPersistentTable(false);
-        CRUD::setResponsiveTable(false);
-
-        CRUD::enableDetailsRow();
-        CRUD::setDetailsRowView('details.project');
-
-        Widget::add()
-            ->type('card')
-            ->wrapper([
-                'class' => 'col-md-10'
-            ])
-            ->content([
-                'body' => 'This page lists all of your projects within the platform. You may add new projects or import from an Excel file. You may also edit existing project details, and perform the 2 types of assessment for each project: <br/><br/>
-                    <ol>
-                    <li><b>Review Redlines:</b> As the first step, you will screen your project against a list of "red lines". Projects with any red lines do not qualify as agroecological no matter what the rest of the assessment might be. Therefore, any project failing this stage do not go through to the main assessment.</li>
-                    <li><b>Assess Project:</b>. You will evaluate the project under each of the 13 principles of Agroecology.</li>
-                    </ol>
-                    The table below shows all the projects, and the current state of the assessment. Use the buttons in the table below to begin or continue an assessment.
-                ',
-            ]);
-
-        CRUD::column('organisation')->type('relationship')->label('Institution');
-        CRUD::column('portfolio')->type('relationship')->label('Portfolio');
-        CRUD::column('name');
-        CRUD::column('code');
-        CRUD::column('budget')->type('closure')->function(function ($entry) {
-            $value = number_format($entry->budget, 2, '.', ',');
-            return "{$entry->currency} {$value}";
-        });
-
-        CRUD::column('latest_assessment_status')->label('Assessment status');
-
-        CRUD::column('score')->type('closure')->label('Overall score')->function(function ($entry) {
-            return $entry->assessments->last()->overall_score;
-        });
-
-        // check against latest assessment status of projects
-        CRUD::filter('assessment_status')
-            ->type('select2')
-            ->label('Filter by Status')
-            ->options(collect(AssessmentStatus::cases())->pluck('value', 'value')->toArray())
-            ->whenActive(function ($value) {
-                // find each project latest assessment with specified status
-                $assessments = DB::select('select project_id from assessments where assessment_status = ? and id in (select max(id) from assessments group by project_id)', [$value]);
-
-                // get values of a column as an array
-                $projectIds = array_column($assessments, 'project_id');
-
-                // find project with founded project Id list
-                $this->crud->query->whereIn("id", $projectIds);
-            });
-
-        $selectedOrganisationId = Session::get('selectedOrganisationId');
-        $this->crud->addClause('where', 'organisation_id', $selectedOrganisationId);
-    }
 
     /**
      * Define what happens when the Create operation is loaded.

@@ -5,16 +5,17 @@ namespace App\Models;
 use App\Enums\AssessmentStatus;
 use App\Enums\GeographicalReach;
 use App\Http\Controllers\Admin\Operations\RedlineOperation;
+use App\Services\OrganisationService;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Str;
 
 class Project extends Model
 {
-    use \Backpack\CRUD\app\Models\Traits\CrudTrait;
-    use HasFactory;
+    use \Backpack\CRUD\app\Models\Traits\CrudTrait, HasFactory;
 
     protected $guarded = ['id'];
 
@@ -24,6 +25,10 @@ class Project extends Model
     protected $casts = [
         'start_date' => 'date',
         'end_date' => 'date',
+    ];
+
+    protected $appends = [
+        'latest_assessment',
     ];
 
     protected static function booted()
@@ -52,14 +57,9 @@ class Project extends Model
 
         static::addGlobalScope('organisation', function (Builder $builder) {
 
-            if (!Auth::check()) {
-                return;
+            if (Session::exists('selectedOrganisationId')) {
+                $builder->where('organisation_id', Session::get('selectedOrganisationId'));
             }
-
-            if (Auth::user()->hasRole('Site Admin')) {
-                return;
-            }
-            $builder->whereIn('organisation_id', Auth::user()->organisations->pluck('id')->toArray());
         });
     }
 
@@ -83,14 +83,14 @@ class Project extends Model
         return $this->hasMany(Assessment::class);
     }
 
-    public function latestAssessment()
+    public function getLatestAssessmentAttribute()
     {
         return $this->assessments->last();
     }
 
     public function getLatestAssessmentStatusAttribute()
     {
-        return $this->assessments->last()->assessment_status?->value;
+        return $this->assessments->last()?->assessment_status?->value;
     }
 
     public function organisation()

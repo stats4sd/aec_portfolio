@@ -17,13 +17,12 @@ class ProjectFactory extends Factory
     public function definition(): array
     {
         return [
-            'name' => $this->faker->name(),
+            'name' => $this->faker->bs(),
             'code' => $this->faker->word(),
             'description' => $this->faker->text(),
             'budget' => $this->faker->randomNumber(),
             'created_at' => Carbon::now(),
             'updated_at' => Carbon::now(),
-            'assessment_status' => $this->faker->randomElement(AssessmentStatus::cases()),
             'currency' => $this->faker->currencyCode(),
             'start_date' => Carbon::now(),
             'end_date' => Carbon::now(),

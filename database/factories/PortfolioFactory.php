@@ -14,7 +14,7 @@ class PortfolioFactory extends Factory
     public function definition(): array
     {
         return [
-            'name' => $this->faker->name(),
+            'name' => $this->faker->catchPhrase(),
             'created_at' => Carbon::now(),
             'updated_at' => Carbon::now(),
 

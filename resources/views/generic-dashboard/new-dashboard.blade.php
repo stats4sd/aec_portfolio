@@ -90,7 +90,7 @@
 @endsection
 
 @section('after_scripts')
-<script src="{{ mix('js/app.js') }}"></script>
+@vite('resources/js/app.js')
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
 

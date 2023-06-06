@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Session;
 
 class Portfolio extends Model
 {
-    use CrudTrait;
+    use CrudTrait, HasFactory;
 
     /*
     |--------------------------------------------------------------------------
