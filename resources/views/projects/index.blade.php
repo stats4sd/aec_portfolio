@@ -12,11 +12,10 @@
                 <button class="btn btn-success">Import Initiatives</button>
             </div>
         </div>
-
-        <initiatives-list
-            :initiatives="{{ $projects->toJson() }}"
-            :has-additional-assessment="{{ $has_additional_assessment ? 'true' : 'false' }}"
-        >
+         <initiatives-list
+                :initiatives="{{ $projects->toJson() }}"
+                :has-additional-assessment="{{ $has_additional_assessment ? 'true' : 'false' }}"
+            >
 
     </div>
 
