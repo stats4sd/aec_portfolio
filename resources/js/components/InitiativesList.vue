@@ -33,45 +33,33 @@
     <div v-for="initiative in initiatives">
         <div class="card">
             <div class="card-body p-4">
-                <div class="row mb-3">
-                    <div class="col-12 col-lg-4">
-                        <h4 class="font-weight-bold text-deep-green">{{ initiative.name.toUpperCase() }}</h4>
-                    </div>
-                    <div class="col-12"
-                         :class="hasAdditionalAssessment ? 'col-lg-4' : 'col-lg-8'"
-                    >
-                        <h5 class="font-weight-bold text-bright-green">Current Assessment</h5>
-                    </div>
-                    <div v-if="hasAdditionalAssessment" class="col-12 col-lg-4">
-                        <h5>Additional Assessment</h5>
-
-                    </div>
-                </div>
-
                 <div class="row">
-                    <div
-                        class="col-12 col-lg-4 border border-top-0 border-left-0 border-bottom-0"
-                    >
-                        <div class="d-flex mb-3">
-                            <div class="w-50">
-                                <span class="font-weight-bold text-grey">CODE</span><br/>
-                                <span class="font-weight-bold">{{ initiative.code }}</span>
-                            </div>
-                            <div>
-                                <span class="font-weight-bold text-grey">PORTFOLIO</span><br/>
-                                <span class="font-weight-bold">{{ initiative.portfolio.name }}</span>
+                    <div class="col-12 col-lg-4 border border-top-0 border-left-0 border-bottom-0">
+                        <h4 class="font-weight-bold text-deep-green">{{ initiative.name.toUpperCase() }}</h4>
+                        <div
+                            class="collapse"
+                            :class="'initative-collapse_'+initiative.id"
+                        >
+
+                            <div class="d-flex">
+                                <div class="w-50">
+                                    <span class="font-weight-bold text-grey">CODE</span><br/>
+                                    <span class="font-weight-bold">{{ initiative.code }}</span>
+                                </div>
+                                <div>
+                                    <span class="font-weight-bold text-grey">PORTFOLIO</span><br/>
+                                    <span class="font-weight-bold">{{ initiative.portfolio.name }}</span>
+                                </div>
                             </div>
                         </div>
 
-                        <div class="btn btn-sm btn-primary">Edit Initiative Details</div>
-
-
                     </div>
-
-                    <div class="col-12 d-flex flex-column justify-content-between"
-                         :class="hasAdditionalAssessment ? 'col-lg-4' : 'col-lg-8'"
+                    <div
+                        class="col-12"
+                        :class="hasAdditionalAssessment ? 'col-lg-4' : 'col-lg-6'"
                     >
-                        <div class="d-flex justify-content-between mb-3">
+                        <h5 class="font-weight-bold text-bright-green">Current Assessment</h5>
+                        <div class="d-flex justify-content-between">
                             <div class="w-50">
                                 <span class="font-weight-bold text-grey">STATUS</span><br/>
                                 <span class="font-weight-bold">{{ initiative.latest_assessment.assessment_status }}</span>
@@ -82,38 +70,44 @@
                             </div>
                         </div>
 
-                        <div class="d-flex justify-content-between mb-3">
-                            <div class="w-50">
-                                <span class="font-weight-bold text-grey">REDLINES</span><br/>
-                                <span class="font-weight-bold">{{ initiative.latest_assessment.redline_status }}</span>
+                        <div
+                            class="collapse"
+                            :class="'initative-collapse_'+initiative.id"
+                        >
+
+                            <div class="d-flex justify-content-between mt-3">
+                                <div class="w-50">
+                                    <span class="font-weight-bold text-grey">REDLINES</span><br/>
+                                    <span class="font-weight-bold">{{ initiative.latest_assessment.redline_status }}</span>
+                                </div>
+                                <div class="w-50">
+                                    <a :href="`/admin/assessment/${initiative.latest_assessment.id}/redline`" class="btn btn-primary" style="width: 140px">Assess Redlines</a>
+                                </div>
                             </div>
-                            <div class="w-50">
-                                <a :href="`/admin/assessment/${initiative.latest_assessment.id}/redline`" class="btn btn-primary" style="width: 140px">Assess Redlines</a>
+
+                            <div class="d-flex justify-content-between mt-3">
+                                <div class="w-50">
+                                    <span class="font-weight-bold text-grey">PRINCIPLES</span><br/>
+                                    <span class="font-weight-bold">{{ initiative.latest_assessment.principle_status }}</span>
+                                </div>
+                                <div class="w-50">
+                                    <a :href="`/admin/assessment/${initiative.latest_assessment.id}/assess`" class="btn btn-primary" style="width: 140px">Assess Principles</a>
+                                </div>
                             </div>
                         </div>
 
-
-                        <div class="d-flex justify-content-between mb-3">
-                            <div class="w-50">
-                                <span class="font-weight-bold text-grey">PRINCIPLES</span><br/>
-                                <span class="font-weight-bold">{{ initiative.latest_assessment.principle_status }}</span>
-                            </div>
-                            <div class="w-50">
-                                <a :href="`/admin/assessment/${initiative.latest_assessment.id}/assess`" class="btn btn-primary" style="width: 140px">Assess Principles</a>
-                            </div>
+                    </div>
+                    <div v-if="hasAdditionalAssessment" class="col-12 col-lg-4">
+                        <h5>Additional Assessment</h5>
+                    </div>
+                    <div class="col-12 col-lg-2">
+                        <div class="btn btn-success mr-2">Next Action</div>
+                        <div class="btn btn-info" @click="initiative.expanded = !initiative.expanded" data-toggle="collapse" :data-target="'.initative-collapse_'+initiative.id">
+                            <i class="la"
+                               :class="initiative.expanded ? 'la-caret-down' : 'la-caret-right'"></i>
                         </div>
-
-
                     </div>
-
-                    <div v-if='hasAdditionalAssessment'
-                         class="col-12 col-lg-4"
-                    >
-
-                    </div>
-
                 </div>
-
             </div>
         </div>
     </div>
@@ -158,9 +152,12 @@ const propComparator = (propName, sortDir) =>
 watch(sortDir, (newSortDir) => {
     props.initiatives.sort(propComparator(sortBy.value, newSortDir))
 })
-
 watch(sortBy, (newSortBy) => {
     console.log('hi');
     props.initiatives.sort(propComparator(newSortBy, sortDir.value))
 })
+
+
+// collapsable
+
 </script>
