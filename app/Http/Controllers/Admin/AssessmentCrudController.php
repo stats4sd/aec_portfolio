@@ -262,7 +262,7 @@ class AssessmentCrudController extends CrudController
 
             CRUD::field('redline_value_' . $redline->id)
                 ->label('Present?')
-                ->default($redline->pivot->value)
+                ->default($redline->pivot->value ?? null)
                 ->type('radio')
                 ->attributes([
                     'data-required' => '1',
@@ -294,7 +294,7 @@ class AssessmentCrudController extends CrudController
         CRUD::field('redlines_complete')
             ->type('boolean')
             ->label('I confirm the Redlines assessment is complete')
-            ->default($entry->assessment_status !== AssessmentStatus::NotStarted && $entry->assessment_status !== AssessmentStatus::RedlinesIncomplete);
+            ->default($entry->redline_status === AssessmentStatus::Complete->value);
 
         CRUD::field('redlines_incomplete')
             ->type('boolean')

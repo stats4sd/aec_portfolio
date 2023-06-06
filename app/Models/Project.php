@@ -6,6 +6,7 @@ use App\Enums\AssessmentStatus;
 use App\Enums\GeographicalReach;
 use App\Http\Controllers\Admin\Operations\RedlineOperation;
 use App\Services\OrganisationService;
+use Backpack\CRUD\app\Models\Traits\CrudTrait;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -15,12 +16,9 @@ use Illuminate\Support\Str;
 
 class Project extends Model
 {
-    use \Backpack\CRUD\app\Models\Traits\CrudTrait, HasFactory;
+    use CrudTrait, HasFactory;
 
     protected $guarded = ['id'];
-
-    // TODO: this is no longer necessary as OrganisationController now check for passed project by referring to project latest assessment
-    // protected $appends = ['overall_score'];
 
     protected $casts = [
         'start_date' => 'date',

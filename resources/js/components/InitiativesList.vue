@@ -85,10 +85,10 @@
                         <div class="d-flex justify-content-between mb-3">
                             <div class="w-50">
                                 <span class="font-weight-bold text-grey">REDLINES</span><br/>
-                                <span class="font-weight-bold">{{ initiative.latest_assessment.assessment_status }}</span>
+                                <span class="font-weight-bold">{{ initiative.latest_assessment.redline_status }}</span>
                             </div>
                             <div class="w-50">
-                                <div class="btn btn-primary" style="width: 140px">Assess Redlines</div>
+                                <a :href="`/admin/assessment/${initiative.latest_assessment.id}/redline`" class="btn btn-primary" style="width: 140px">Assess Redlines</a>
                             </div>
                         </div>
 
@@ -96,10 +96,10 @@
                         <div class="d-flex justify-content-between mb-3">
                             <div class="w-50">
                                 <span class="font-weight-bold text-grey">PRINCIPLES</span><br/>
-                                <span class="font-weight-bold">{{ initiative.latest_assessment.assessment_status }}</span>
+                                <span class="font-weight-bold">{{ initiative.latest_assessment.principle_status }}</span>
                             </div>
                             <div class="w-50">
-                                <div class="btn btn-primary" style="width: 140px">Assess Principles</div>
+                                <a :href="`/admin/assessment/${initiative.latest_assessment.id}/assess`" class="btn btn-primary" style="width: 140px">Assess Principles</a>
                             </div>
                         </div>
 

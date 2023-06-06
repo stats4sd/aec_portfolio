@@ -116,17 +116,8 @@ trait RedlineOperation
             }
         }
 
-        if (collect(AssessmentStatus::InProgress, AssessmentStatus::Complete)->contains($latestAssessment->assessment_status)) {
-            $latestAssessment->assessment_status = !$request->redlines_complete ? AssessmentStatus::RedlinesIncomplete : $latestAssessment->assessment_status;
-        } else {
-            // if a redline fails, the assessment is complete!
-            if ($latestAssessment->failingRedlines()->count() > 0) {
-                $latestAssessment->assessment_status = AssessmentStatus::Complete;
-            } else {
-                $latestAssessment->assessment_status = $request->redlines_complete ? AssessmentStatus::RedlinesComplete : AssessmentStatus::RedlinesIncomplete;
-            }
-        }
-
+        // set redline status
+        $latestAssessment->redline_status = $request->redlines_complete ? AssessmentStatus::Complete : AssessmentStatus::InProgress;
         $latestAssessment->save();
 
 

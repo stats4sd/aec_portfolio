@@ -21,13 +21,25 @@ class Assessment extends Model
     protected $table = 'assessments';
     protected $guarded = ['id'];
 
-    protected $casts = [
-        'assessment_status' => AssessmentStatus::class,
-    ];
 
     protected $appends = [
         'overall_score',
+        'assessment_status',
     ];
+
+    public function getAssessmentStatusAttribute(): string
+    {
+        // if redlines are not complete, use that status
+        if($this->redline_status !== AssessmentStatus::Complete->value) {
+            return "Redlines " . $this->redline_status;
+        }
+
+        if($this->additionalCriteria->count() === 0 || $this->principle_status !== AssessmentStatus::Complete->value) {
+            return "Principles " . $this->principle_status;
+        }
+
+        return "Additional Criteria " . $this->additional_status;
+    }
 
     // determine if there are revisions related to this assessment
     public function hasRevisions(): bool
