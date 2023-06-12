@@ -1,18 +1,18 @@
 <?php
 
-namespace App\Http\Controllers\Admin;
+namespace App\Http\Controllers;
 
-use Carbon\Carbon;
-use App\Models\Region;
 use App\Models\Country;
+use App\Models\CountryProject;
+use App\Models\Organisation;
 use App\Models\Portfolio;
-use Illuminate\Database\Eloquent\Builder;
+use App\Models\Project;
+use App\Models\ProjectRegion;
+use App\Models\Region;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Http\Request;
-use App\Models\ProjectRegion;
-use App\Models\CountryProject;
 use Illuminate\Support\Facades\DB;
-use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Session;
 
 class GenericDashboardController extends Controller
@@ -20,18 +20,11 @@ class GenericDashboardController extends Controller
 
     public function show(Request $request)
     {
-        logger("GenericDashboardController.show()...");
-
-        // get organisation object from session
-        $organisation = Session::get('selectedOrganisation');
-
-        // TODO: error handling if no organisation selected yet
-
         // find all portfolios belong to selected organisation
-        $portfolios = Portfolio::where('organisation_id', $organisation->id)->orderBy('id')->get();
+        $portfolios = Portfolio::orderBy('id')->get();
 
         // find all project Ids belongs to selected organisation
-        $projectIds = $organisation->projects->pluck('id')->toArray();
+        $projectIds = Project::select('id')->pluck('id')->toArray();
 
         // find all regions with projects that belong to selected organisation
         $regionIds = ProjectRegion::whereIn('project_id', $projectIds)->get()->pluck('region_id')->toArray();
@@ -51,7 +44,7 @@ class GenericDashboardController extends Controller
         $countries = Country::whereIn('id', $countrieIds)->get();
 
         return view('generic-dashboard.new-dashboard', [
-            'organisation' => $organisation,
+            'organisation' => Organisation::find(Session::get('selectedOrganisationId')),
             'portfolios' => $portfolios,
             'regions' => $regions,
             'countries' => $countries,

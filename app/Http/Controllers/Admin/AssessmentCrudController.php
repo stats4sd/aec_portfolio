@@ -48,10 +48,6 @@ class AssessmentCrudController extends CrudController
      */
     public function setup()
     {
-        if (!Session::exists('selectedOrganisationId')) {
-            throw new BadRequestHttpException('Please select an institution first');
-        }
-
         CRUD::setModel(\App\Models\Assessment::class);
         CRUD::setRoute(config('backpack.base.route_prefix') . '/assessment');
         CRUD::setEntityNameStrings('assessment', 'assessments');

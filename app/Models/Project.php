@@ -54,10 +54,7 @@ class Project extends Model
         });
 
         static::addGlobalScope('organisation', function (Builder $builder) {
-
-            if (Session::exists('selectedOrganisationId')) {
-                $builder->where('organisation_id', Session::get('selectedOrganisationId'));
-            }
+             $builder->where('organisation_id', Session::get('selectedOrganisationId'));
         });
     }
 

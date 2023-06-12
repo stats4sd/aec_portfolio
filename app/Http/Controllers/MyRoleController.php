@@ -1,14 +1,14 @@
 <?php
 
-namespace App\Http\Controllers\Admin;
+namespace App\Http\Controllers;
 
-use Carbon\Carbon;
-use App\Models\User;
-use Illuminate\Http\Request;
-use App\Models\RemovalRequest;
 use App\Mail\DataRemovalRequested;
+use App\Models\Organisation;
 use App\Models\OrganisationMember;
-use App\Http\Controllers\Controller;
+use App\Models\RemovalRequest;
+use App\Models\User;
+use Carbon\Carbon;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Session;
@@ -19,7 +19,7 @@ class MyRoleController extends Controller
     public function show(Request $request)
     {
         // get organisation object from session
-        $organisation = Session::get('selectedOrganisation');
+        $organisation = Organisation::find(Session::get('selectedOrganisation'));
 
         return view('my-role.show', [
             'organisation' => $organisation,
@@ -29,7 +29,7 @@ class MyRoleController extends Controller
     public function requestToLeave(Request $request)
     {
         // get organisation object from session
-        $organisation = Session::get('selectedOrganisation');
+        $organisation = Organisation::find(Session::get('selectedOrganisation'));
 
         return view('my-role.request-to-leave', [
             'organisation' => $organisation,
@@ -39,7 +39,7 @@ class MyRoleController extends Controller
     public function confirmToLeave(Request $request)
     {
         // get organisation object from session
-        $organisation = Session::get('selectedOrganisation');
+        $organisation = Organisation::find(Session::get('selectedOrganisation'));
 
         // remove the linkage between user account and institution
         OrganisationMember::where('user_id', auth()->user()->id)->where('organisation_id', $organisation->id)->delete();
@@ -53,7 +53,7 @@ class MyRoleController extends Controller
             $user->save();
         }
 
-        // logout user 
+        // logout user
         Auth::logout();
 
         // redirect user to login page
@@ -63,7 +63,7 @@ class MyRoleController extends Controller
     public function requestToRemoveEverything(Request $request)
     {
         // get organisation object from session
-        $organisation = Session::get('selectedOrganisation');
+        $organisation = Organisation::find(Session::get('selectedOrganisation'));
 
         return view('my-role.request-to-remove-everything', [
             'organisation' => $organisation,
@@ -74,7 +74,7 @@ class MyRoleController extends Controller
     public function confirmToRemoveEverything(Request $request)
     {
         // get organisation object from session
-        $organisation = Session::get('selectedOrganisation');
+        $organisation = Organisation::find(Session::get('selectedOrganisation'));
 
         $removalRequest = RemovalRequest::create([
             'organisation_id' => $organisation->id,
@@ -93,6 +93,6 @@ class MyRoleController extends Controller
             'organisation' => $organisation,
         ]);
 
-    }    
+    }
 
 }

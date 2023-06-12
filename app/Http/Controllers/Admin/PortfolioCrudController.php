@@ -27,14 +27,11 @@ class PortfolioCrudController extends CrudController
 
     /**
      * Configure the CrudPanel object. Apply settings to all operations.
-     * 
+     *
      * @return void
      */
     public function setup()
     {
-        if ( !Session::exists('selectedOrganisationId') ) {
-            throw new BadRequestHttpException('Please select an institution first');
-        }
 
         CRUD::setModel(\App\Models\Portfolio::class);
         CRUD::setRoute(config('backpack.base.route_prefix') . '/portfolio');
@@ -44,7 +41,7 @@ class PortfolioCrudController extends CrudController
 
     /**
      * Define what happens when the List operation is loaded.
-     * 
+     *
      * @see  https://backpackforlaravel.com/docs/crud-operation-list-entries
      * @return void
      */
@@ -54,14 +51,11 @@ class PortfolioCrudController extends CrudController
 
         CRUD::column('organisation_id');
         CRUD::column('name');
-
-        $selectedOrganisationId = Session::get('selectedOrganisationId');
-        $this->crud->addClause('where', 'organisation_id', $selectedOrganisationId);
     }
 
     /**
      * Define what happens when the Create operation is loaded.
-     * 
+     *
      * @see https://backpackforlaravel.com/docs/crud-operation-create
      * @return void
      */
@@ -79,7 +73,7 @@ class PortfolioCrudController extends CrudController
 
     /**
      * Define what happens when the Update operation is loaded.
-     * 
+     *
      * @see https://backpackforlaravel.com/docs/crud-operation-update
      * @return void
      */
@@ -98,7 +92,7 @@ class PortfolioCrudController extends CrudController
         $this->authorize('delete', Portfolio::find($id));
 
         $this->crud->hasAccessOrFail('delete');
-    
+
         return $this->crud->delete($id);
     }
 
