@@ -21,7 +21,7 @@ use App\Http\Controllers\Admin\RegionCrudController;
 use App\Http\Controllers\Admin\RoleInviteCrudController;
 use App\Http\Controllers\Admin\ScoreTagCrudController;
 use App\Http\Controllers\Admin\UserCrudController;
-use App\Http\Controllers\Admin\SelectOrganisationController;
+use App\Http\Controllers\Admin\SelectedOrganisationController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\GenericDashboardController;
 use App\Http\Controllers\Admin\MyRoleController;
@@ -68,8 +68,8 @@ Route::group([
     Route::crud('continent', ContinentCrudController::class);
     Route::crud('region', RegionCrudController::class);
 
-    Route::get('select_organisation', [SelectOrganisationController::class, 'show']);
-    Route::get('selected_organisation', [SelectOrganisationController::class, 'selected']);
+    Route::get('select_organisation', [SelectedOrganisationController::class, 'create']);
+    Route::post('selected_organisation', [SelectedOrganisationController::class, 'store']);
 
     Route::get('generic-dashboard', [GenericDashboardController::class, 'show']);
     Route::post('generic-dashboard/enquire', [GenericDashboardController::class, 'enquire']);

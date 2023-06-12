@@ -16,7 +16,7 @@
 </div>
 
 
-<form name="selectedOrganisationForm" action="selected_organisation" method="get">
+<form name="selectedOrganisationForm" action="{{ url('select_organisation') }}" method="POST">
     <input type="hidden" name="organisationId">
 </form>
 
