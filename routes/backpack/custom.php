@@ -22,7 +22,6 @@ use App\Http\Controllers\Admin\RoleInviteCrudController;
 use App\Http\Controllers\Admin\ScoreTagCrudController;
 use App\Http\Controllers\Admin\UserCrudController;
 use App\Http\Controllers\AssessmentController;
-use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\GeneratePdfFileController;
 use App\Http\Controllers\GenericDashboardController;
 use App\Http\Controllers\MyRoleController;
@@ -44,7 +43,7 @@ Route::group([
     Route::get('selected_organisation', [SelectedOrganisationController::class, 'create']);
     Route::post('selected_organisation', [SelectedOrganisationController::class, 'store']);
 
-    Route::get('/', [Backpack\CRUD\app\Http\Controllers\AdminController::class, 'redirect'])->name('backpack');
+    Route::get('/', [SelectedOrganisationController::class, 'show']);
 
     Route::crud('organisation', OrganisationCrudController::class);
 

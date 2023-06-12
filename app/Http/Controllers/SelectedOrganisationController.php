@@ -34,4 +34,9 @@ class SelectedOrganisationController extends Controller
 
     }
 
+    public function show()
+    {
+        return redirect(backpack_url('generic-dashboard'));
+    }
+
 }
