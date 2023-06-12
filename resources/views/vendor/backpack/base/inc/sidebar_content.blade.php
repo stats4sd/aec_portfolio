@@ -34,7 +34,7 @@ E.g., Centralise instituion selection to a single feature instead of distributin
 
 
 @if(Auth::user()->can('select institution'))
-    <li class="nav-item"><a class="nav-link" href="{{ backpack_url('select_organisation') }}"><i class="la la-home nav-icon"></i> Select Institution</a></li>
+    <li class="nav-item"><a class="nav-link" href="{{ backpack_url('selected_organisation') }}"><i class="la la-home nav-icon"></i> Select Institution</a></li>
 @endif
 
 

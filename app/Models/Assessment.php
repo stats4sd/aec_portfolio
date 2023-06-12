@@ -163,7 +163,7 @@ class Assessment extends Model
             return 0;
         }
 
-        if ($this->assessment_status === AssessmentStatus::Complete) {
+        if ($this->principle_status === AssessmentStatus::Complete->value) {
             $principles = $this->principles;
 
             $nonNaPrinciples = $principles->filter(fn($pr) => !$pr->pivot->is_na);

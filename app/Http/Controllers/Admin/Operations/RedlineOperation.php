@@ -117,7 +117,16 @@ trait RedlineOperation
         }
 
         // set redline status
-        $latestAssessment->redline_status = $request->redlines_complete ? AssessmentStatus::Complete : AssessmentStatus::InProgress;
+        $latestAssessment->redline_status = AssessmentStatus::InProgress;
+
+        if ($request->redlines_complete) {
+            if ($latestAssessment->failingRedlines()->count() > 0) {
+                $latestAssessment->redline_status = AssessmentStatus::Failed;
+            } else {
+                $latestAssessment->redline_status = AssessmentStatus::Complete;
+            }
+        }
+
         $latestAssessment->save();
 
 

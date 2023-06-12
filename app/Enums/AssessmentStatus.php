@@ -8,4 +8,5 @@ enum AssessmentStatus: string
     case InProgress = "In Progress";
     case Complete = "Complete";
     case Na = "Not Applicable";
+    case Failed = "Failed"; // only for redlines
 }

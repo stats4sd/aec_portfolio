@@ -2,40 +2,60 @@
 
     <!-- filters -->
     <div class="d-flex justify-content-between">
-        <div class="d-flex align-items-center mb-8">
+        <div class="d-flex flex-column align-items-start mb-3">
 
-            <v-select
-                style="width: 250px"
-                class="mr-4"
-                v-model="statusFilter"
-                :options="filterOptions"
-                placeholder="Filter By Status"
-                :clearable="true"
+            <div class="d-flex align-items-center">
+                <b class="mr-8" style="width: 30px;">Filters:</b>
+                <v-select
+                    style="width: 250px"
+                    class="mr-4"
+                    v-model="redlineStatusFilter"
+                    :options="makeFilterOptions('Redlines')"
+                    placeholder="Filter By Redline Status"
+                    :clearable="true"
+                />
 
-            >
+                <v-select
+                    style="width: 250px"
+                    class="mr-4"
+                    v-model="principleStatusFilter"
+                    :options="makeFilterOptions('Principles')"
+                    placeholder="Filter By Assessment Status"
+                    :clearable="true"
+                />
 
-            </v-select>
-            <b class="mr-8">Sort By:</b>
-            <v-select
-                style="width: 150px"
-                v-model="sortBy"
-                :options="sortOptions"
-                :reduce="(option) => option.id"
-                :clearable="false"
-            >
-            </v-select>
+            </div>
+            <div class="d-flex align-items-center mt-4">
 
-            <h3 class="my-0 ml-4 btn btn-outline-info" @click="sortDir = -sortDir">
-                <i
-                    class="la"
-                    :class="sortDir === 1 ? 'la-arrow-up' : 'la-arrow-down'"
-                ></i> Sort {{ sortDir === 1 ? 'Ascending' : 'Descending' }}
-            </h3>
+                <b class="mr-8" style="width: 30px;">Sort:</b>
+                <v-select
+                    style="width: 150px"
+                    v-model="sortBy"
+                    :options="sortOptions"
+                    :reduce="(option) => option.id"
+                    :clearable="false"
+                >
+                </v-select>
+
+                <h3 class="my-0 mx-4 btn btn-outline-info" @click="sortDir = -sortDir">
+                    <i
+                        class="la"
+                        :class="sortDir === 1 ? 'la-arrow-up' : 'la-arrow-down'"
+                    ></i> Sort {{ sortDir === 1 ? 'Ascending' : 'Descending' }}
+                </h3>
+            </div>
         </div>
 
         <div>
-            <span>Showing 1 to {{ initiatives.length }} of {{ initiatives.length }} entries</span>
-            <button class="btn btn-link">Reset</button>
+
+
+            <div class="d-flex mb-4">
+                <button class="btn btn-primary mr-4">Add Initiative</button>
+                <button class="btn btn-success">Import Initiatives</button>
+            </div>
+
+            <span>Showing 1 to {{ filteredInitiatives.length }} of {{ filteredInitiatives.length }} entries</span>
+            <button class="btn btn-link" @click="resetFilters">Reset</button>
         </div>
     </div>
 
@@ -90,65 +110,55 @@ watch(sortBy, (newSortBy) => {
 
 
 // status filter
-const statusFilter = ref('');
-const filterOptions = ref([{
-    label: 'Redlines: Not Started',
-    filterItem: 'redlines',
-    value: 'Not Started',
-},
+const redlineStatusFilter = ref('');
+const principleStatusFilter = ref('');
+
+const filterOptions = ref([
     {
-        label: 'Redlines: In Progress',
-        filterItem: 'redlines',
+        label: 'Not Started',
+        value: 'Not Started',
+    },
+    {
+        label: 'In Progress',
         value: 'In Progress',
     },
     {
-        label: 'Redlines: Complete',
-        filterItem: 'redlines',
+        label: 'Complete',
         value: 'Complete',
     },
     {
-        label: 'Principles: In Progress',
-        filterItem: 'principles',
-        value: 'In Progress',
-    },
-    {
-        label: 'Principles: Complete',
-        filterItem: 'principles',
-        value: 'Complete',
+        label: 'Failed',
+        value: 'Failed',
     },
 ])
 
-if (props.hasAdditionalAssessment) {
-    filterOptions.push({
-        label: "Additional Criteria: In Progress",
-        filterItem: "additionalCriteria",
-        value: 'In Progress',
-    })
-    filterOptions.push({
-        label: "Additional Criteria: Complete",
-        filterItem: "additionalCriteria",
-        value: 'Complete',
+function makeFilterOptions(string) {
+    return filterOptions.value.map(option => {
+        return {
+            value: option.value,
+            label: string + ' - ' + option.label,
+        };
     })
 }
 
 const filteredInitiatives = computed(() => {
-    if(statusFilter.value) {
-        return props.initiatives.filter(initiative => {
-            if(statusFilter.value.filterItem === "redlines") {
-                return initiative.latest_assessment.redline_status === statusFilter.value.value
+    return props.initiatives.filter(initiative => {
+        if (redlineStatusFilter.value) {
+            return initiative.latest_assessment.redline_status === redlineStatusFilter.value.value
+        }
+
+        return true;
+    })
+        .filter(initiative => {
+            if (principleStatusFilter.value) {
+                return initiative.latest_assessment.principle_status === principleStatusFilter.value.value
             }
 
-            if(statusFilter.value.filterItem === "principles") {
-                return initiative.latest_assessment.assessment_status === statusFilter.value.value
-            }
-
-            if(statusFilter.value.filterItem === "redlines") {
-                return initiative.latest_assessment.additional_status === statusFilter.value.value
-            }
+            return true;
         })
-    }
-
-    return props.initiatives;
 })
+
+function resetFilters() {
+}
 
 </script>

@@ -61,7 +61,7 @@ class ProjectSeeder extends Seeder
 
 
         // add complete assessments for projects
-        foreach (Project::all() as $project) {
+        foreach (Project::withoutGlobalScopes()->get() as $project) {
 
             // assign 80% of projects to regions
             if ($this->faker->boolean(80)) {
@@ -104,9 +104,9 @@ class ProjectSeeder extends Seeder
             $assessment->redlines()->sync($redlinesToAdd);
 
             // if redlines are failed
-            if ($assessment->failingRedlines->count() !== 0) {
+            if ($assessment->failingRedlines()->count() !== 0) {
 
-                $assessment->redline_status = AssessmentStatus::Complete;
+                $assessment->redline_status = AssessmentStatus::Failed;
                 $assessment->principle_status = AssessmentStatus::Na;
                 $assessment->additional_status = AssessmentStatus::Na;
                 $assessment->completed_at = Carbon::now();
