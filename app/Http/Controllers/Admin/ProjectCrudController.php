@@ -66,9 +66,6 @@ class ProjectCrudController extends CrudController
      */
     public function setup()
     {
-        if (!Session::exists('selectedOrganisationId')) {
-            throw new BadRequestHttpException('Please select an institution first');
-        }
 
         CRUD::setModel(\App\Models\Project::class);
         CRUD::setRoute(config('backpack.base.route_prefix') . '/project');
