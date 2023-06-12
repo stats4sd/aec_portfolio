@@ -1,4 +1,4 @@
-    <template>
+<template>
 
 
     <v-card-title class="px-0">
@@ -140,6 +140,7 @@ const has_rating = computed(() => props.principleAssessment.rating !== null || p
 
 // score tags
 const tagNameRefs = ref([])
+
 function addCustomScoreTag() {
     props.principleAssessment.custom_score_tags.push({
         name: '',
@@ -158,7 +159,8 @@ function removeCustomScoreTag(index) {
 
 // data handling
 
-const emit = defineEmits(['discard', 'next', 'close'])
+const emit = defineEmits(['discard', 'next', 'close', 'update_rating'])
+
 function discard() {
     emit('discard')
     emit('close')
@@ -167,6 +169,11 @@ function discard() {
 async function save(nextAction) {
 
     props.principleAssessment.complete = has_rating;
+
+    if (has_rating) {
+        emit('update_rating', props.principleAssessment)
+
+    }
 
     const res = await axios.patch(`/principle-assessment/${props.principleAssessment.id}`, props.principleAssessment)
 

@@ -8,6 +8,7 @@ use App\Models\CustomScoreTag;
 use App\Models\PrincipleAssessment;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class PrincipleAssessmentController extends Controller
 {
@@ -23,7 +24,6 @@ class PrincipleAssessmentController extends Controller
         return $query->get()
             ->map(function (PrincipleAssessment $principleAssessment) {
                 $principleAssessment->score_tag_ids = $principleAssessment->scoreTags->pluck('id');
-                $principleAssessment->complete = $principleAssessment->rating !== null || $principleAssessment->is_na;
                 return $principleAssessment;
             });
     }
@@ -34,21 +34,15 @@ class PrincipleAssessmentController extends Controller
         $principle_assessment->update($request->validated());
 
         // handle score tags + custom score tags relationships
-
-        $request->validate(
-            ['score_tag_ids.*' => ['integer', 'exists:score_tags,id']],
-            ['custom_score_tags.*.name' => ['required']],
-        );
-
         $syncTags = collect($request->input('score_tag_ids'))->mapWithKeys(fn($tag) => [$tag => ['assessment_id' => $principle_assessment->assessment_id]]);
 
         $principle_assessment->scoreTags()->sync($syncTags);
 
-        $requestCustomTags = collect($request->input('custom_score_tags'));
+        $requestCustomTags = collect($request->input('custom_score_tags'))->filter(fn(array $tag): bool => $tag['name'] !== null && $tag['name'] !== '');
 
         // delete custom score tags that are not in the request
-        foreach($principle_assessment->customScoreTags as $customScoreTag) {
-            if($requestCustomTags->pluck('id')->doesntContain($customScoreTag->id)) {
+        foreach ($principle_assessment->customScoreTags as $customScoreTag) {
+            if ($requestCustomTags->pluck('id')->doesntContain($customScoreTag->id)) {
                 $customScoreTag->delete();
             } else {
                 $updated = $requestCustomTags->firstWhere('id', $customScoreTag->id);
@@ -60,8 +54,8 @@ class PrincipleAssessmentController extends Controller
         }
 
         // create new tags
-        foreach($requestCustomTags as $custom_score_tag) {
-            if(!isset($custom_score_tag['id'])) {
+        foreach ($requestCustomTags as $custom_score_tag) {
+            if (!isset($custom_score_tag['id'])) {
                 $principle_assessment->customScoreTags()->create([
                     'name' => $custom_score_tag['name'],
                     'assessment_id' => $principle_assessment->assessment_id,
