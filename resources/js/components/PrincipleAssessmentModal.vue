@@ -1,4 +1,4 @@
-<template>
+    <template>
 
 
     <v-card-title class="px-0">
@@ -98,6 +98,7 @@
                     <div v-for="(tag, index) in principleAssessment.custom_score_tags" class="d-flex form-group">
 
                         <v-text-field
+                            ref="tagNameRefs"
                             v-model="tag.name"
                             label="Enter a descriptive name for the example / indicator"
                             density="compact"
@@ -125,7 +126,7 @@
 </template>
 
 <script setup>
-import {computed, ref, defineEmits} from "vue";
+import {computed, ref, defineEmits, nextTick} from "vue";
 
 
 const props = defineProps({
@@ -138,11 +139,16 @@ const assessment = computed(() => props.principleAssessment.assessment ?? null)
 const has_rating = computed(() => props.principleAssessment.rating !== null || props.principleAssessment.is_na)
 
 // score tags
+const tagNameRefs = ref([])
 function addCustomScoreTag() {
     props.principleAssessment.custom_score_tags.push({
         name: '',
         description: '',
     })
+
+    const index = props.principleAssessment.custom_score_tags.length - 1;
+
+    nextTick(() => tagNameRefs.value[index].focus())
 }
 
 function removeCustomScoreTag(index) {
