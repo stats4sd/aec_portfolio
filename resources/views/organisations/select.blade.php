@@ -2,38 +2,45 @@
 
 @section('content')
 
-<div class="container">
+    <div class="container mt-8">
 
-<div class="row pl-4 pt-4 w-100">
-    <div class="col-12 col-xl-12 card">
-        <h2>Please select an institution</h2>
+        <div class="w-100 card">
+            <div class="card-header">
+                <h2>Please select an institution</h2>
+                <p>Your account has access to multiple institutions. To view information about projects and portfolios, please select which institution to view.</p>
+            </div>
+            <div class="card-body">
+                <div class="col-12 col-xl-12">
+                    @foreach ($organisations as $organisation)
+                        <button type="button" class="btn btn-lg btn-block btn-outline-primary" id="{{ $organisation->id }}" onclick="submitForm(this);" ;>{{ $organisation->name }}</button>
+                    @endforeach
+                </div>
+            </div>
+        </div>
     </div>
-    <div class="col-12 col-xl-12 card">
-    @foreach ($organisations as $organisation)
-        <button type="button" class="btn btn-lg btn-block btn-outline-primary" id="{{ $organisation->id }}" onclick="submitForm(this);";>{{ $organisation->name }}</button>
-    @endforeach
+
+
+    <form name="selectedOrganisationForm" action="{{ backpack_url('selected_organisation') }}" method="POST">
+        @csrf
+        @method('POST')
+        <input type="hidden" name="organisationId">
+        <input type="hidden" name="redirect" value="{{ Session::get('redirect') }}">
+    </form>
+
+
     </div>
-</div>
-
-
-<form name="selectedOrganisationForm" action="{{ url('select_organisation') }}" method="POST">
-    <input type="hidden" name="organisationId">
-</form>
-
-
-</div>
 @endsection
 
 @section('after_scripts')
-@vite('resources/js/app.js')
+    @vite('resources/js/app.js')
 
-<script>
+    <script>
 
-function submitForm(organisationButton) {
-    this.document.selectedOrganisationForm.organisationId.value = organisationButton.id;
-    this.document.selectedOrganisationForm.submit();
-}
+        function submitForm(organisationButton) {
+            this.document.selectedOrganisationForm.organisationId.value = organisationButton.id;
+            this.document.selectedOrganisationForm.submit();
+        }
 
-</script>
+    </script>
 
 @endsection

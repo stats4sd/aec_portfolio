@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Country;
 use App\Models\CountryProject;
+use App\Models\Organisation;
 use App\Models\Portfolio;
 use App\Models\ProjectRegion;
 use App\Models\Region;
@@ -21,9 +22,8 @@ class GenericDashboardController extends Controller
         logger("GenericDashboardController.show()...");
 
         // get organisation object from session
-        $organisation = Session::get('selectedOrganisation');
+        $organisation = Organisation::find(Session::get('selectedOrganisationId'));
 
-        // TODO: error handling if no organisation selected yet
 
         // find all portfolios belong to selected organisation
         $portfolios = Portfolio::where('organisation_id', $organisation->id)->orderBy('id')->get();

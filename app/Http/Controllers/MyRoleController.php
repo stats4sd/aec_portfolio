@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Mail\DataRemovalRequested;
+use App\Models\Organisation;
 use App\Models\OrganisationMember;
 use App\Models\RemovalRequest;
 use App\Models\User;
@@ -18,7 +19,7 @@ class MyRoleController extends Controller
     public function show(Request $request)
     {
         // get organisation object from session
-        $organisation = Session::get('selectedOrganisation');
+        $organisation = Organisation::find(Session::get('selectedOrganisation'));
 
         return view('my-role.show', [
             'organisation' => $organisation,
@@ -28,7 +29,7 @@ class MyRoleController extends Controller
     public function requestToLeave(Request $request)
     {
         // get organisation object from session
-        $organisation = Session::get('selectedOrganisation');
+        $organisation = Organisation::find(Session::get('selectedOrganisation'));
 
         return view('my-role.request-to-leave', [
             'organisation' => $organisation,
@@ -38,7 +39,7 @@ class MyRoleController extends Controller
     public function confirmToLeave(Request $request)
     {
         // get organisation object from session
-        $organisation = Session::get('selectedOrganisation');
+        $organisation = Organisation::find(Session::get('selectedOrganisation'));
 
         // remove the linkage between user account and institution
         OrganisationMember::where('user_id', auth()->user()->id)->where('organisation_id', $organisation->id)->delete();
@@ -62,7 +63,7 @@ class MyRoleController extends Controller
     public function requestToRemoveEverything(Request $request)
     {
         // get organisation object from session
-        $organisation = Session::get('selectedOrganisation');
+        $organisation = Organisation::find(Session::get('selectedOrganisation'));
 
         return view('my-role.request-to-remove-everything', [
             'organisation' => $organisation,
@@ -73,7 +74,7 @@ class MyRoleController extends Controller
     public function confirmToRemoveEverything(Request $request)
     {
         // get organisation object from session
-        $organisation = Session::get('selectedOrganisation');
+        $organisation = Organisation::find(Session::get('selectedOrganisation'));
 
         $removalRequest = RemovalRequest::create([
             'organisation_id' => $organisation->id,

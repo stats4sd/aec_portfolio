@@ -27,7 +27,7 @@ class OrganisationMemberController extends Controller
         $institutionalRoles = Role::where('name', 'like', 'Institutional%')->orderBy('name', 'ASC')->get();
 
         return view('organisations.create-members', [
-            'organisation' => $organisation, 
+            'organisation' => $organisation,
             'users' => $users,
             'institutionalRoles' => $institutionalRoles,
         ]);
@@ -70,7 +70,7 @@ class OrganisationMemberController extends Controller
         $institutionalRoles = Role::where('name', 'like', 'Institutional%')->orderBy('name', 'ASC')->get();
 
         return view('organisations.edit-members', [
-            'organisation' => $organisation, 
+            'organisation' => $organisation,
             'user' => $user,
             'institutionalRoles' => $institutionalRoles,
         ]);
@@ -126,16 +126,13 @@ class OrganisationMemberController extends Controller
 
 
     // redirect to organisation members page of the selected organisation
-    public function show() {
+    public function show()
+    {
         $this->authorize('viewAny', OrganisationMember::class);
 
-        if (!Session::exists('selectedOrganisation')) {
-            throw new BadRequestHttpException('Please select an institution first');
+        $selectedOrganisationId = Session::get('selectedOrganisationId');
 
-        } else {
-            $selectedOrganisationId = Session::get('selectedOrganisationId');
+        return redirect('admin/organisation/' . $selectedOrganisationId . '/show');
 
-            return redirect('admin/organisation/' . $selectedOrganisationId . '/show');
-        }
     }
 }

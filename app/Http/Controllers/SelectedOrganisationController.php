@@ -20,18 +20,17 @@ class SelectedOrganisationController extends Controller
     // store user selected institution in session
     public function store(Request $request)
     {
-
         $request->validate([
-            'organisationId' => 'exists:organisations:id',
+            'organisationId' => 'exists:organisations,id',
         ]);
 
         // store user selected organisation in session
         Session::put('selectedOrganisationId', $request->input('organisationId'));
 
         // redirect to a page that simply showed the selected organisation
-        return view('organisations.selected', [
-            'organisation' => Organisation::find($request->input('organisationId')),
-        ]);
+        $redirect = $request->input('redirect') ?? backpack_url('organisation');
+
+        return redirect($redirect);
 
     }
 
