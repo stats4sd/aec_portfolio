@@ -1,18 +1,16 @@
 <?php
 
-namespace App\Http\Controllers\Admin;
+namespace App\Http\Controllers;
 
-use Carbon\Carbon;
-use App\Models\Region;
 use App\Models\Country;
+use App\Models\CountryProject;
 use App\Models\Portfolio;
-use Illuminate\Database\Eloquent\Builder;
+use App\Models\ProjectRegion;
+use App\Models\Region;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Http\Request;
-use App\Models\ProjectRegion;
-use App\Models\CountryProject;
 use Illuminate\Support\Facades\DB;
-use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Session;
 
 class GenericDashboardController extends Controller
