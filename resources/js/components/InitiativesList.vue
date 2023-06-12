@@ -3,8 +3,18 @@
     <!-- filters -->
     <div class="d-flex justify-content-between">
         <div class="d-flex align-items-center mb-8">
-            <b class="mr-12"><i class="la la-filter"></i> Filter By Status</b>
 
+            <v-select
+                style="width: 250px"
+                class="mr-4"
+                v-model="statusFilter"
+                :options="filterOptions"
+                placeholder="Filter By Status"
+                :clearable="true"
+
+            >
+
+            </v-select>
             <b class="mr-8">Sort By:</b>
             <v-select
                 style="width: 150px"
@@ -24,13 +34,13 @@
         </div>
 
         <div>
-            <span>Showing 1 to 8 of 8 entries</span>
+            <span>Showing 1 to {{ initiatives.length }} of {{ initiatives.length }} entries</span>
             <button class="btn btn-link">Reset</button>
         </div>
     </div>
 
 
-    <InitiativeListCard v-for="initiative in initiatives" :key="initiative.id" :initiative="initiative" :has-additional-assessment="hasAdditionalAssessment"/>
+    <InitiativeListCard v-for="initiative in filteredInitiatives" :key="initiative.id" :initiative="initiative" :has-additional-assessment="hasAdditionalAssessment"/>
 
 </template>
 
@@ -38,7 +48,7 @@
 import 'vue-select/dist/vue-select.css';
 import vSelect from 'vue-select'
 
-import {ref, watch} from "vue";
+import {computed, ref, watch} from "vue";
 import InitiativeListCard from "./InitiativeListCard.vue";
 
 
@@ -79,6 +89,66 @@ watch(sortBy, (newSortBy) => {
 })
 
 
-// collapsable
+// status filter
+const statusFilter = ref('');
+const filterOptions = ref([{
+    label: 'Redlines: Not Started',
+    filterItem: 'redlines',
+    value: 'Not Started',
+},
+    {
+        label: 'Redlines: In Progress',
+        filterItem: 'redlines',
+        value: 'In Progress',
+    },
+    {
+        label: 'Redlines: Complete',
+        filterItem: 'redlines',
+        value: 'Complete',
+    },
+    {
+        label: 'Principles: In Progress',
+        filterItem: 'principles',
+        value: 'In Progress',
+    },
+    {
+        label: 'Principles: Complete',
+        filterItem: 'principles',
+        value: 'Complete',
+    },
+])
+
+if (props.hasAdditionalAssessment) {
+    filterOptions.push({
+        label: "Additional Criteria: In Progress",
+        filterItem: "additionalCriteria",
+        value: 'In Progress',
+    })
+    filterOptions.push({
+        label: "Additional Criteria: Complete",
+        filterItem: "additionalCriteria",
+        value: 'Complete',
+    })
+}
+
+const filteredInitiatives = computed(() => {
+    if(statusFilter.value) {
+        return props.initiatives.filter(initiative => {
+            if(statusFilter.value.filterItem === "redlines") {
+                return initiative.latest_assessment.redline_status === statusFilter.value.value
+            }
+
+            if(statusFilter.value.filterItem === "principles") {
+                return initiative.latest_assessment.assessment_status === statusFilter.value.value
+            }
+
+            if(statusFilter.value.filterItem === "redlines") {
+                return initiative.latest_assessment.additional_status === statusFilter.value.value
+            }
+        })
+    }
+
+    return props.initiatives;
+})
 
 </script>
