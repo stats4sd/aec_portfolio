@@ -30,34 +30,52 @@
                 <div class="card-body bg-blue-lighten-4">
                     <div class="row">
                         <div class="col-lg-6 col-12 px-12">
-                            <h3 class="mb-8">Geographic Filters</h3>
+                            <h4 class="mb-8">Filter By Region / Country</h4>
+                            <b>REGIONS:</b>
                             <v-select
                                 class="bg-white mb-8"
                                 v-model="selectedRegions"
                                 :options="regions"
                                 :reduce="region => region.id"
                                 label="name"
-                                placeholder="FILTER BY REGIONS"
+                                placeholder="SELECT REGIONS"
                                 multiple="true"
                                 :clearable="true"
                             />
+
+                            <b>COUNTRIES:</b>
                             <v-select
                                 v-model="selectedCountries"
                                 class="bg-white"
                                 :options="filteredCountries"
                                 :reduce="country => country.id"
                                 label="name"
-                                placeholder="FILTER BY COUNTRIES"
+                                placeholder="SELECT COUNTRIES"
                                 multiple="true"
                                 :clearable="true"
                             />
                         </div>
                         <div class="col-lg-6 col-12 px-12">
-                            <h3 class="mb-8">Other Filters</h3>
-
-                            <div class="d-flex align-items-center">
-                                <h5>Filter by Start Date</h5>
-                                <input type="date" class="date-picker" v-model="startDate" />
+                            <h4 class="mb-8">Filter by Start Date</h4>
+                            <div class="d-flex align-items-center justify-content-between">
+                                <div>
+                                    <b>FROM:</b>
+                                    <vue-date-picker
+                                        v-model="startDate"
+                                        year-picker
+                                        auto-apply
+                                        text-input
+                                    />
+                                </div>
+                                <div>
+                                    <b>TO:</b>
+                                    <vue-date-picker
+                                        v-model="endDate"
+                                        year-picker
+                                        auto-apply
+                                        text-input
+                                    />
+                                </div>
                             </div>
 
                         </div>
@@ -129,6 +147,10 @@
 <script setup>
 import 'vue-select/dist/vue-select.css';
 import vSelect from 'vue-select'
+
+import VueDatePicker from '@vuepic/vue-datepicker';
+import '@vuepic/vue-datepicker/dist/main.css'
+
 import {ref, computed, onMounted} from "vue";
 
 
@@ -164,7 +186,8 @@ const showFilters = ref(false)
 
 const selectedRegions = ref([])
 const selectedCountries = ref([])
-
+const startDate = ref(null)
+const endDate = ref(null)
 const filteredCountries = computed(() => {
     return props.countries.filter(country => selectedRegions.value.includes(country.region_id))
 })
