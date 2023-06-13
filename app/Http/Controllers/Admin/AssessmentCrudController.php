@@ -41,21 +41,11 @@ class AssessmentCrudController extends CrudController
 
     use ReviseOperation;
 
-    /**
-     * Configure the CrudPanel object. Apply settings to all operations.
-     *
-     * @return void
-     */
     public function setup()
     {
         CRUD::setModel(\App\Models\Assessment::class);
         CRUD::setRoute(config('backpack.base.route_prefix') . '/assessment');
         CRUD::setEntityNameStrings('assessment', 'assessments');
-    }
-
-    protected function setupAssessOperation()
-    {
-        $this->authorize('assessProject', CRUD::getCurrentEntry()->project);
     }
 
     public function setupAssessCustomOperation()
@@ -257,9 +247,9 @@ class AssessmentCrudController extends CrudController
                 ->value("<h4>{$redline->name}</h4><p>{$redline->description}</p>");
 
             CRUD::field('redline_value_' . $redline->id)
-                ->label('Present?')
+                ->label('')
                 ->default($redline->pivot->value ?? null)
-                ->type('radio')
+                ->type('redline_radio')
                 ->attributes([
                     'data-required' => '1',
                 ])

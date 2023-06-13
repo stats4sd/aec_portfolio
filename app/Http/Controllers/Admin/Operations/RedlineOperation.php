@@ -121,6 +121,7 @@ trait RedlineOperation
 
         if ($request->redlines_complete) {
             if ($latestAssessment->failingRedlines()->count() > 0) {
+                dd('hello');
                 $latestAssessment->redline_status = AssessmentStatus::Failed;
             } else {
                 $latestAssessment->redline_status = AssessmentStatus::Complete;

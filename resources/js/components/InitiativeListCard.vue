@@ -115,25 +115,25 @@ const nextAction = computed(() => {
     const principleStatus = props.initiative.latest_assessment.principle_status
     const additionalStatus = props.initiative.latest_assessment.additional_status
 
-    if(redlineStatus !== "Complete") {
+    if (redlineStatus === "Failed") {
+        return null;
+    }
+
+    if (redlineStatus !== "Complete") {
         return {
             label: "Assess Redlines",
             url: `/admin/assessment/${props.initiative.latest_assessment.id}/redline`
         }
     }
 
-    if(redlineStatus === "Failed") {
-        return null;
-    }
-
-    if(principleStatus !== "Complete") {
+    if (principleStatus !== "Complete") {
         return {
             label: "Assess Principles",
             url: `/admin/assessment/${props.initiative.latest_assessment.id}/assess`
         }
     }
 
-    if(props.hasAdditionalAssessment &&  additionalStatus !== "Complete") {
+    if (props.hasAdditionalAssessment && additionalStatus !== "Complete") {
         return {
             label: "Assess Additional Criteria",
             url: `/admin/assessment/${props.initiative.latest_assessment.id}/assess-custom`
