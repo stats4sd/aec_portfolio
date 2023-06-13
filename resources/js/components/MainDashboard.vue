@@ -18,11 +18,7 @@
                 ></vSelect>
             </div>
             <div>
-                <b class="pr-3">Filters:</b>
-                <span class="text-secondary pr-8">
-                    NO FILTERS APPLIED
-                </span>
-                <div class="btn btn-primary" @click="showFilters = !showFilters">Add Filters</div>
+
             </div>
         </div>
         <v-expand-transition>
@@ -30,7 +26,7 @@
                 <div class="card-body bg-blue-lighten-4">
                     <div class="row">
                         <div class="col-lg-6 col-12 px-12">
-                            <h4 class="mb-8">Filter By Region / Country</h4>
+                            <h4 class="mb-4">Filter By Region / Country</h4>
                             <b>REGIONS:</b>
                             <v-select
                                 class="bg-white mb-8"
@@ -56,9 +52,9 @@
                             />
                         </div>
                         <div class="col-lg-6 col-12 px-12">
-                            <h4 class="mb-8">Filter by Start Date</h4>
+                            <h4 class="mb-4">Filter by Start Date</h4>
                             <div class="d-flex align-items-center justify-content-between">
-                                <div>
+                                <div class="pr-16">
                                     <b>FROM:</b>
                                     <vue-date-picker
                                         v-model="startDate"
@@ -77,12 +73,38 @@
                                     />
                                 </div>
                             </div>
-
+                            <hr/>
+                            <h4 class="mt-8 mb-4">Filter by Initiative Budget</h4>
+                            <div class="d-flex align-items-center justify-content-between mb-8">
+                                <div class="pr-16">
+                                    <b>MINIMUM BUDGET:</b>
+                                    <input
+                                        class="bg-white d-block py-1"
+                                        v-model="minBudget"
+                                    />
+                                </div>
+                                <div class="w-50">
+                                    <b>MAXIMUM BUDGET:</b>
+                                    <input
+                                        class="bg-white d-block py-1"
+                                        v-model="maxBudget"
+                                    />
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </v-expand-transition>
+        <div class="card-footer bg-blue-lighten-4 d-flex justify-content-between align-items-center px-12 font-lg">
+            <div>
+                <b class="pr-3">Filters:</b>
+                <span class="text-dark pr-8">
+                    NO FILTERS APPLIED
+                </span>
+            </div>
+            <div class="btn btn-primary" @click="showFilters = !showFilters">{{ showFilters ? 'Apply' : 'Modify' }} Filters</div>
+        </div>
     </div>
 
 
@@ -188,6 +210,9 @@ const selectedRegions = ref([])
 const selectedCountries = ref([])
 const startDate = ref(null)
 const endDate = ref(null)
+const minBudget = ref(null)
+const maxBudget = ref(null)
+
 const filteredCountries = computed(() => {
     return props.countries.filter(country => selectedRegions.value.includes(country.region_id))
 })
