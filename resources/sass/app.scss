@@ -55,6 +55,13 @@ body {
     background-color: $deep-green !important;
 }
 
+.bg-light-success {
+    background-color: #c7eed8 !important;
+    .list-group-item {
+        background-color: #c7eed8 !important;
+    }
+}
+
 .ae-slider {
 
     .v-slider-track__tick, .v-slider-track__tick--filled {

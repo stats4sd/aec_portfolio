@@ -88,7 +88,9 @@ Route::group([
         Route::get('assessment/{assessment}/assess', [AssessmentController::class, 'assess']);
         Route::post('assessment/{assessment}/finalise', [AssessmentController::class, 'finaliseAssessment']);
 
-        Route::get('generic-dashboard', [GenericDashboardController::class, 'show']);
+        Route::get('generic-dashboard', [GenericDashboardController::class, 'new']);
+        Route::get('dashboard', [GenericDashboardController::class, 'show']);
+
         Route::post('generic-dashboard/enquire', [GenericDashboardController::class, 'enquire']);
 
         Route::crud('additional-criteria', AdditionalCriteriaCrudController::class);

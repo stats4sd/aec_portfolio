@@ -18,7 +18,23 @@ use Illuminate\Support\Facades\Session;
 class GenericDashboardController extends Controller
 {
 
+    // TEMP
+    // TODO: update based on required data for immediate load.
+    public function new(Request $request)
+    {
+        $data = $this->getData($request);
+
+        return view('generic-dashboard.new-dashboard', $data);
+    }
+
     public function show(Request $request)
+    {
+        $data = $this->getData($request);
+
+        return view('generic-dashboard.dashboard', $data);
+    }
+
+    public function getData(Request $request)
     {
         // find all portfolios belong to selected organisation
         $portfolios = Portfolio::orderBy('id')->get();
@@ -43,12 +59,12 @@ class GenericDashboardController extends Controller
         // find all countries with projects that belong to selected organisation
         $countries = Country::whereIn('id', $countrieIds)->get();
 
-        return view('generic-dashboard.new-dashboard', [
+        return [
             'organisation' => Organisation::find(Session::get('selectedOrganisationId')),
             'portfolios' => $portfolios,
             'regions' => $regions,
             'countries' => $countries,
-        ]);
+        ];
     }
 
     public function enquire(Request $request)
