@@ -1,8 +1,5 @@
 <template>
 
-    <!-- Question: how to set a bigger width? I tried class "w-100" but it does not work... -->
-    <div class="container pt-3">
-
     <!-- dashboard filters -->
     <!-- Question: How to have a better look and feel for table...? -->
     <table class="table table-bordered">
@@ -102,8 +99,6 @@
 
     </table>
 
-
-
     <!-- status summary -->
     <table class="table" v-if="statusSummary != null">
 
@@ -124,7 +119,6 @@
         </tbody>
 
     </table>
-
 
     <!-- red lines summary -->
     <table class="table" v-if="redlinesSummary != null">
@@ -150,7 +144,6 @@
 
     </table>
 
-
     <!-- principles summary: sort by -->
     <table class="table" v-if="yoursPrinciplesSummarySorted != null">
         <thead>
@@ -167,7 +160,6 @@
             </th>
         </thead>
     </table>
-
 
     <!-- principles summary -->
 	<table class="table" v-if="yoursPrinciplesSummarySorted != null">
@@ -195,9 +187,6 @@
 		</td>
 		</tr>
 	</table>
-
-
-    </div>
 
 </template>
 
