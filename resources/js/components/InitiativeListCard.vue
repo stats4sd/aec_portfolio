@@ -17,7 +17,7 @@
                         </div>
                         <div class="w-50">
                             <span class="font-weight-bold text-grey">SCORE</span><br/>
-                            <span class="font-xl text-bright-green font-weight-bold" v-if="initiative.latest_assessment.overall_score">{{ initiative.latest_assessment.overall_score }}%</span>
+                            <span class="font-xl text-bright-green font-weight-bold" v-if="initiative.latest_assessment.overall_score !== null">{{ initiative.latest_assessment.overall_score }}%</span>
                         </div>
                     </div>
                 </div>
@@ -25,8 +25,8 @@
                     <h5>Additional Assessment</h5>
                 </div>
                 <div class="col-12 col-lg-3 d-flex align-items-center justify-content-end">
-                    <a :href='nextAction.url' class="btn btn-success mr-2">
-                        Next Step
+                    <a :href='nextAction.url' class="btn btn-success mr-2" v-if="nextAction">
+                        {{ nextAction.label }}
                     </a>
                     <div class="btn btn-info" @click="toggleExpand" data-toggle="collapse" :data-target="'.initiative-collapse_'+initiative.id">
                         <i class="la"
@@ -63,10 +63,10 @@
                                     <a
                                         :href="`/admin/assessment/${initiative.latest_assessment.id}/redline`"
                                         class="btn text-light"
-                                        :class="initiative.latest_assessment.redline_status === 'Complete' ? 'btn-secondary' : 'btn-success'"
-                                        style="width: 140px"
+                                        :class="initiative.latest_assessment.redline_status === 'Complete' ? 'btn-info' : 'btn-success'"
+                                        style="width: 200px"
                                     >
-                                        Assess Redlines
+                                        {{ initiative.latest_assessment.redline_status === 'Complete' ? 'Edit Redline Assessment' : 'Assess Redlines' }}
                                     </a>
                                 </div>
                             </div>
@@ -79,11 +79,11 @@
                                 <div class="w-50">
                                     <a
                                         :href="`/admin/assessment/${initiative.latest_assessment.id}/assess`"
-                                        class="btn"
-                                        :class="initiative.latest_assessment.redline_status === 'Complete' ? (initiative.latest_assessment.principle_status === 'Complete' ? 'btn-secondary' : 'btn-success') : 'btn-light disabled'"
-                                        style="width: 140px"
+                                        class="btn text-light"
+                                        :class="initiative.latest_assessment.redline_status === 'Complete' ? (initiative.latest_assessment.principle_status === 'Complete' ? 'btn-info' : 'btn-success') : 'btn-info disabled'"
+                                        style="width: 200px"
                                     >
-                                        Assess Principles
+                                        {{ initiative.latest_assessment.principle_status === 'Complete' ? 'Edit Principle Assessment' : 'Assess Redlines' }}
                                     </a>
                                 </div>
                             </div>
@@ -115,26 +115,32 @@ const nextAction = computed(() => {
     const principleStatus = props.initiative.latest_assessment.principle_status
     const additionalStatus = props.initiative.latest_assessment.additional_status
 
-    if(redlineStatus !== "Complete") {
+    if (redlineStatus === "Failed") {
+        return null;
+    }
+
+    if (redlineStatus !== "Complete") {
         return {
             label: "Assess Redlines",
             url: `/admin/assessment/${props.initiative.latest_assessment.id}/redline`
         }
     }
 
-    if(principleStatus !== "Complete") {
+    if (principleStatus !== "Complete") {
         return {
             label: "Assess Principles",
             url: `/admin/assessment/${props.initiative.latest_assessment.id}/assess`
         }
     }
 
-    if(props.hasAdditionalAssessment &&  additionalStatus !== "Complete") {
+    if (props.hasAdditionalAssessment && additionalStatus !== "Complete") {
         return {
             label: "Assess Additional Criteria",
             url: `/admin/assessment/${props.initiative.latest_assessment.id}/assess-custom`
         }
     }
+
+    return null
 
 })
 

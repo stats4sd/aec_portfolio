@@ -26,6 +26,10 @@ class PrincipleAssessment extends Model
         'is_na' => 'bool',
     ];
 
+    protected $appends = [
+        'complete'
+    ];
+
     public function getCompleteAttribute(): bool
     {
         return $this->is_na || $this->rating !== null;

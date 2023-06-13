@@ -2,35 +2,65 @@
 
     <!-- filters -->
     <div class="d-flex justify-content-between">
-        <div class="d-flex align-items-center mb-8">
-            <b class="mr-12"><i class="la la-filter"></i> Filter By Status</b>
+        <div class="d-flex flex-column align-items-start mb-3">
 
-            <b class="mr-8">Sort By:</b>
-            <v-select
-                style="width: 150px"
-                v-model="sortBy"
-                :options="sortOptions"
-                :reduce="(option) => option.id"
-                :clearable="false"
-            >
-            </v-select>
+            <div class="d-flex align-items-center">
+                <b class="mr-8" style="width: 30px;">Filters:</b>
+                <v-select
+                    style="width: 250px"
+                    class="mr-4"
+                    v-model="redlineStatusFilter"
+                    :options="makeFilterOptions('Redlines')"
+                    placeholder="Filter By Redline Status"
+                    :clearable="true"
+                />
 
-            <h3 class="my-0 ml-4 btn btn-outline-info" @click="sortDir = -sortDir">
-                <i
-                    class="la"
-                    :class="sortDir === 1 ? 'la-arrow-up' : 'la-arrow-down'"
-                ></i> Sort {{ sortDir === 1 ? 'Ascending' : 'Descending' }}
-            </h3>
+                <v-select
+                    style="width: 250px"
+                    class="mr-4"
+                    v-model="principleStatusFilter"
+                    :options="makeFilterOptions('Principles')"
+                    placeholder="Filter By Assessment Status"
+                    :clearable="true"
+                />
+
+            </div>
+            <div class="d-flex align-items-center mt-4">
+
+                <b class="mr-8" style="width: 30px;">Sort:</b>
+                <v-select
+                    style="width: 150px"
+                    v-model="sortBy"
+                    :options="sortOptions"
+                    :reduce="(option) => option.id"
+                    :clearable="false"
+                >
+                </v-select>
+
+                <h3 class="my-0 mx-4 btn btn-outline-info" @click="sortDir = -sortDir">
+                    <i
+                        class="la"
+                        :class="sortDir === 1 ? 'la-arrow-up' : 'la-arrow-down'"
+                    ></i> Sort {{ sortDir === 1 ? 'Ascending' : 'Descending' }}
+                </h3>
+            </div>
         </div>
 
         <div>
-            <span>Showing 1 to 8 of 8 entries</span>
-            <button class="btn btn-link">Reset</button>
+
+
+            <div class="d-flex mb-4">
+                <button class="btn btn-primary mr-4">Add Initiative</button>
+                <button class="btn btn-success">Import Initiatives</button>
+            </div>
+
+            <span>Showing 1 to {{ filteredInitiatives.length }} of {{ filteredInitiatives.length }} entries</span>
+            <button class="btn btn-link" @click="resetFilters">Reset</button>
         </div>
     </div>
 
 
-    <InitiativeListCard v-for="initiative in initiatives" :key="initiative.id" :initiative="initiative" :has-additional-assessment="hasAdditionalAssessment"/>
+    <InitiativeListCard v-for="initiative in filteredInitiatives" :key="initiative.id" :initiative="initiative" :has-additional-assessment="hasAdditionalAssessment"/>
 
 </template>
 
@@ -38,7 +68,7 @@
 import 'vue-select/dist/vue-select.css';
 import vSelect from 'vue-select'
 
-import {ref, watch} from "vue";
+import {computed, ref, watch} from "vue";
 import InitiativeListCard from "./InitiativeListCard.vue";
 
 
@@ -79,6 +109,56 @@ watch(sortBy, (newSortBy) => {
 })
 
 
-// collapsable
+// status filter
+const redlineStatusFilter = ref('');
+const principleStatusFilter = ref('');
+
+const filterOptions = ref([
+    {
+        label: 'Not Started',
+        value: 'Not Started',
+    },
+    {
+        label: 'In Progress',
+        value: 'In Progress',
+    },
+    {
+        label: 'Complete',
+        value: 'Complete',
+    },
+    {
+        label: 'Failed',
+        value: 'Failed',
+    },
+])
+
+function makeFilterOptions(string) {
+    return filterOptions.value.map(option => {
+        return {
+            value: option.value,
+            label: string + ' - ' + option.label,
+        };
+    })
+}
+
+const filteredInitiatives = computed(() => {
+    return props.initiatives.filter(initiative => {
+        if (redlineStatusFilter.value) {
+            return initiative.latest_assessment.redline_status === redlineStatusFilter.value.value
+        }
+
+        return true;
+    })
+        .filter(initiative => {
+            if (principleStatusFilter.value) {
+                return initiative.latest_assessment.principle_status === principleStatusFilter.value.value
+            }
+
+            return true;
+        })
+})
+
+function resetFilters() {
+}
 
 </script>

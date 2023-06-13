@@ -98,6 +98,7 @@
                     <div v-for="(tag, index) in principleAssessment.custom_score_tags" class="d-flex form-group">
 
                         <v-text-field
+                            ref="tagNameRefs"
                             v-model="tag.name"
                             label="Enter a descriptive name for the example / indicator"
                             density="compact"
@@ -125,7 +126,7 @@
 </template>
 
 <script setup>
-import {computed, ref, defineEmits} from "vue";
+import {computed, ref, defineEmits, nextTick} from "vue";
 
 
 const props = defineProps({
@@ -138,11 +139,17 @@ const assessment = computed(() => props.principleAssessment.assessment ?? null)
 const has_rating = computed(() => props.principleAssessment.rating !== null || props.principleAssessment.is_na)
 
 // score tags
+const tagNameRefs = ref([])
+
 function addCustomScoreTag() {
     props.principleAssessment.custom_score_tags.push({
         name: '',
         description: '',
     })
+
+    const index = props.principleAssessment.custom_score_tags.length - 1;
+
+    nextTick(() => tagNameRefs.value[index].focus())
 }
 
 function removeCustomScoreTag(index) {
@@ -152,7 +159,8 @@ function removeCustomScoreTag(index) {
 
 // data handling
 
-const emit = defineEmits(['discard', 'next', 'close'])
+const emit = defineEmits(['discard', 'next', 'close', 'update_rating'])
+
 function discard() {
     emit('discard')
     emit('close')
@@ -161,6 +169,11 @@ function discard() {
 async function save(nextAction) {
 
     props.principleAssessment.complete = has_rating;
+
+    if (has_rating) {
+        emit('update_rating', props.principleAssessment)
+
+    }
 
     const res = await axios.patch(`/principle-assessment/${props.principleAssessment.id}`, props.principleAssessment)
 

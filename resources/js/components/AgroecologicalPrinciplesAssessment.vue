@@ -86,6 +86,7 @@
                 @discard="discard"
                 @close="modalIsOpen = false"
                 @next="next"
+                @update_rating="updateRating"
             />
         </v-card>
 
@@ -151,5 +152,11 @@ function next() {
 
 // handle completion
 const allComplete = computed(() => principleAssessments.value.every(pa => pa.complete))
+
+function updateRating(principleAssessment) {
+    const index = principleAssessments.value.findIndex(item => item.id === principleAssessment.id)
+
+    principleAssessments.value[index] = principleAssessment
+}
 
 </script>
