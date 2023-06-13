@@ -4,15 +4,23 @@
 
     <div class="container mt-16" id="dashboard">
         <h2 class="font-weight-bold text-bright-green">{{ $organisation->name }} - Summary</h2>
-        <main-dashboard
-            :user="{{ Auth::user() }}"
-            :organisation="{{ $organisation->toJson() }}"
-        />
+        <v-app>
+            <Suspense>
+                <main-dashboard
+                    :user="{{ Auth::user() }}"
+                    :organisation="{{ $organisation->toJson() }}"
+                    :regions="{{ $regions }}"
+                    :countries="{{ $countries }}"
+                />
+            </Suspense>
+        </v-app>
 
     </div>
 @endsection
 
 @section('after_scripts')
+
+    @vite('resources/js/dashboard.js')
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
 

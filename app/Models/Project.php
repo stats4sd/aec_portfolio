@@ -25,9 +25,9 @@ class Project extends Model
         'end_date' => 'date',
     ];
 
-    protected $appends = [
-        'latest_assessment',
-    ];
+//    protected $appends = [
+//        'latest_assessment',
+//    ];
 
     protected static function booted()
     {

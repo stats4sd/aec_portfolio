@@ -13,7 +13,9 @@ class ProjectController extends Controller
      */
     public function index()
     {
-        $projects = Project::with('portfolio.organisation', 'assessments')->get();
+        $projects = Project::with('portfolio.organisation', 'assessments')
+            ->get()
+            ->map(fn(Project $project) => $project->append('latest_assessment'));
 
         $hasAdditionalAssessment = $projects->first()?->organisation->additionalCriteria->count() > 0;
 

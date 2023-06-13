@@ -12,3 +12,7 @@
     </div>
 
 @endsection
+
+@section('after_scripts')
+    @vite('resources/js/initiatives.js')
+@endsection

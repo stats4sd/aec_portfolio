@@ -12,6 +12,7 @@ use App\Models\Region;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
 
@@ -36,32 +37,33 @@ class GenericDashboardController extends Controller
 
     public function getData(Request $request)
     {
-        // find all portfolios belong to selected organisation
-        $portfolios = Portfolio::orderBy('id')->get();
 
-        // find all project Ids belongs to selected organisation
-        $projectIds = Project::select('id')->pluck('id')->toArray();
+        $org = Organisation::with([
+            'portfolios.projects' => [
+                'regions',
+                'countries',
+            ]
+        ])->find(Session::get('selectedOrganisationId'));
 
-        // find all regions with projects that belong to selected organisation
-        $regionIds = ProjectRegion::whereIn('project_id', $projectIds)->get()->pluck('region_id')->toArray();
-        $countryIds = CountryProject::whereIn('project_id', $projectIds)->get()->pluck('country_id')->toArray();
+        $regions = $org->portfolios
+            ->map(fn(Portfolio $portfolio): Collection => $portfolio
+                ->projects
+                ->map(fn(Project $project): Collection => $project
+                    ->regions
+                )
+            )
+            ->flatten()
+            ->unique('id')
+            ->values();
 
-        // find all regions with projects that belong to selected organisation
-        $regions = Region::whereIn('regions.id', $regionIds)
-            ->with('countries', function(HasMany $query) use ($countryIds) {
-                $query->whereIn('countries.id', $countryIds);
-            })
-            ->get();
+        $countries = $regions->pluck('countries')
+            ->flatten()
+            ->unique()
+            ->values();
 
-        // find all coutnries with projects that belong to selected organisation
-        $countrieIds = CountryProject::whereIn('project_id', $projectIds)->get()->pluck('country_id')->toArray();
-
-        // find all countries with projects that belong to selected organisation
-        $countries = Country::whereIn('id', $countrieIds)->get();
 
         return [
-            'organisation' => Organisation::find(Session::get('selectedOrganisationId')),
-            'portfolios' => $portfolios,
+            'organisation' => $org,
             'regions' => $regions,
             'countries' => $countries,
         ];
@@ -197,19 +199,17 @@ class GenericDashboardController extends Controller
         $othersPrinciplesSummarySorted = [];
 
 
-
-
         // highest to lowest score (highest green)
         if ($sortBy == 1) {
             // sort by green, yellow, red
 
             // sort by green first
-            usort($yoursPrinciplesSummarySorted, function($a, $b) {
+            usort($yoursPrinciplesSummarySorted, function ($a, $b) {
                 return $a['green'] <= $b['green'];
             });
 
             // then sort by yellow
-            usort($yoursPrinciplesSummarySorted, function($a, $b) {
+            usort($yoursPrinciplesSummarySorted, function ($a, $b) {
                 if ($a['green'] != $b['green']) {
                     return false;
                 } else {
@@ -218,7 +218,7 @@ class GenericDashboardController extends Controller
             });
 
             // finally sort by red
-            usort($yoursPrinciplesSummarySorted, function($a, $b) {
+            usort($yoursPrinciplesSummarySorted, function ($a, $b) {
                 if ($a['green'] != $b['green']) {
                     return false;
                 } else {
@@ -230,17 +230,17 @@ class GenericDashboardController extends Controller
                 }
             });
 
-        // lowest to highest score (highest red)
+            // lowest to highest score (highest red)
         } else if ($sortBy == 2) {
             // sort by red, yellow, green
 
             // sort by red first
-            usort($yoursPrinciplesSummarySorted, function($a, $b) {
+            usort($yoursPrinciplesSummarySorted, function ($a, $b) {
                 return $a['red'] <= $b['red'];
             });
 
             // then sort by yellow
-            usort($yoursPrinciplesSummarySorted, function($a, $b) {
+            usort($yoursPrinciplesSummarySorted, function ($a, $b) {
                 if ($a['red'] != $b['red']) {
                     return false;
                 } else {
@@ -249,7 +249,7 @@ class GenericDashboardController extends Controller
             });
 
             // finally sort by green
-            usort($yoursPrinciplesSummarySorted, function($a, $b) {
+            usort($yoursPrinciplesSummarySorted, function ($a, $b) {
                 if ($a['red'] != $b['red']) {
                     return false;
                 } else {
@@ -261,7 +261,7 @@ class GenericDashboardController extends Controller
                 }
             });
 
-        // default (order by principle number)
+            // default (order by principle number)
         } else if ($sortBy == 3) {
             // the original returned principles summary is sorted by principle number already, no additional work required here
 

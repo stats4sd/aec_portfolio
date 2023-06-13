@@ -3,7 +3,6 @@
     <!-- dashboard filters -->
     <!-- Question: How to have a better look and feel for table...? -->
     <table class="table table-bordered">
-
         <tr>
         <td>
             <table>
