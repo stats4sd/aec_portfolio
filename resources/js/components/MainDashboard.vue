@@ -30,9 +30,8 @@
                             <b>REGIONS:</b>
                             <v-select
                                 class="bg-white mb-8"
-                                v-model="selectedRegions"
+                                v-model="filters.regions"
                                 :options="regions"
-                                :reduce="region => region.id"
                                 label="name"
                                 placeholder="SELECT REGIONS"
                                 multiple="true"
@@ -41,10 +40,9 @@
 
                             <b>COUNTRIES:</b>
                             <v-select
-                                v-model="selectedCountries"
+                                v-model="filters.countries"
                                 class="bg-white"
                                 :options="filteredCountries"
-                                :reduce="country => country.id"
                                 label="name"
                                 placeholder="SELECT COUNTRIES"
                                 multiple="true"
@@ -57,19 +55,21 @@
                                 <div class="pr-16">
                                     <b>FROM:</b>
                                     <vue-date-picker
-                                        v-model="startDate"
+                                        v-model="filters.startDate"
                                         year-picker
                                         auto-apply
                                         text-input
+                                        :max-date="filters.endDate ? new Date(filters.endDate + '-01-01') : null"
                                     />
                                 </div>
                                 <div>
                                     <b>TO:</b>
                                     <vue-date-picker
-                                        v-model="endDate"
+                                        v-model="filters.endDate"
                                         year-picker
                                         auto-apply
                                         text-input
+                                        :min-date="filters.startDate ? new Date(filters.startDate + '-01-01') : null"
                                     />
                                 </div>
                             </div>
@@ -80,15 +80,18 @@
                                     <b>MINIMUM BUDGET:</b>
                                     <input
                                         class="bg-white d-block py-1"
-                                        v-model="minBudget"
+                                        v-model="filters.minBudget"
+
                                     />
+                                    <p class="help-block text-error" style="height: 1em;" v-if="minBudgetError || maxBudgetError">{{ minBudgetError }}</p>
                                 </div>
                                 <div class="w-50">
                                     <b>MAXIMUM BUDGET:</b>
                                     <input
                                         class="bg-white d-block py-1"
-                                        v-model="maxBudget"
+                                        v-model="filters.maxBudget"
                                     />
+                                    <p class="help-block text-error" style="height: 1em;" v-if="minBudgetError || maxBudgetError">{{ maxBudgetError }}</p>
                                 </div>
                             </div>
                         </div>
@@ -97,11 +100,42 @@
             </div>
         </v-expand-transition>
         <div class="card-footer bg-blue-lighten-4 d-flex justify-content-between align-items-center px-12 font-lg">
-            <div>
-                <b class="pr-3">Filters:</b>
-                <span class="text-dark pr-8">
+            <b class="pr-8">Filters:</b>
+            <div class="d-flex flex-wrap justify-content-start">
+                <span class="text-dark pr-8" v-if="anyFilters === 0">
                     NO FILTERS APPLIED
                 </span>
+
+                <div v-if="filters.regions" class="px-2 mb-1 d-flex flex-wrap">
+                    REGIONS:
+                </div>
+                <span
+                    v-for="region in filters.regions"
+                    class="badge-pill badge-info mr-2 mb-1">
+                        {{ region.name }}
+                    </span>
+
+                <div v-if="filters.countries" class="px-2 mb-1 d-flex flex-wrap">
+                    <span class="pr-2">COUNTRIES:</span>
+                </div>
+                    <div
+                        v-for="country in filters.countries"
+                        class="badge-pill badge-info mr-2 mb-1">
+                        {{ country.name }}
+                    </div>
+                <div v-if="filters.startDate || filters.endDate" class="mr-3 mb-1">
+                    <span class="pr-2">DATES</span>
+                    <span class="badge-pill badge-info" v-if="filters.startDate && !filters.endDate"> {{ filters.startDate }} onwards</span>
+                    <span class="badge-pill badge-info" v-if="! filters.startDate && filters.endDate"> {{ filters.startDate }} and earlier</span>
+                    <span class="badge-pill badge-info" v-if="filters.startDate && filters.endDate">{{ filters.startDate }} - {{ filters.endDate }}</span>
+                </div>
+
+                <div v-if="(filters.minBudget || filters.maxBudget) && !minBudgetError && !maxBudgetError" class="mr-3 mb-1">
+                    <span class="pr-2">BUDGET</span>
+                    <span class="badge-pill badge-info" v-if="filters.minBudget && !filters.maxBudget"> USD {{ filters.minBudget }} or higher</span>
+                    <span class="badge-pill badge-info" v-if="!filters.minBudget && filters.maxBudget"> USD {{ filters.maxBudget }} or lower</span>
+                    <span class="badge-pill badge-info" v-if="filters.minBudget && filters.maxBudget"> USD {{ filters.minBudget }} - {{ filters.maxBudget }}</span>
+                </div>
             </div>
             <div class="btn btn-primary" @click="showFilters = !showFilters">{{ showFilters ? 'Apply' : 'Modify' }} Filters</div>
         </div>
@@ -173,7 +207,7 @@ import vSelect from 'vue-select'
 import VueDatePicker from '@vuepic/vue-datepicker';
 import '@vuepic/vue-datepicker/dist/main.css'
 
-import {ref, computed, onMounted} from "vue";
+import {ref, computed, onMounted, watch} from "vue";
 
 
 const props = defineProps({
@@ -206,15 +240,32 @@ const portfolios = computed(() => {
 // filters
 const showFilters = ref(false)
 
-const selectedRegions = ref([])
-const selectedCountries = ref([])
-const startDate = ref(null)
-const endDate = ref(null)
-const minBudget = ref(null)
-const maxBudget = ref(null)
+const filters = ref({
+    regions: null,
+    countries: null,
+    startDate: null,
+    endDate: null,
+    minBudget: null,
+    maxBudget: null,
+})
+
+const minBudgetError = computed(() => {
+    if (isNaN(Number(filters.value.minBudget))) return 'Please enter a valid number';
+
+    if (filters.value.minBudget && filters.value.maxBudget && Number(filters.value.minBudget) > Number(filters.value.maxBudget)) return 'Please ensure the budget range is valid';
+
+    return ''
+})
+const maxBudgetError = computed(() => {
+    if (isNaN(Number(filters.value.maxBudget))) return 'Please enter a valid number';
+
+    if (filters.value.minBudget && filters.value.maxBudget && Number(filters.value.minBudget) > Number(filters.value.maxBudget)) return 'Please ensure the budget range is valid';
+
+    return ''
+})
 
 const filteredCountries = computed(() => {
-    return props.countries.filter(country => selectedRegions.value.includes(country.region_id))
+    return props.countries.filter(country => filters.value.regions ? filters.value.regions.map(region => region.id).includes(country.region_id) : false)
 })
 
 
