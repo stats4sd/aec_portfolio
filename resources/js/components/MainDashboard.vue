@@ -124,14 +124,14 @@
                         {{ country.name }}
                     </div>
                 <div v-if="filters.startDate || filters.endDate" class="mr-3 mb-1">
-                    <span class="pr-2">DATES</span>
+                    <span class="px-2">DATES:</span>
                     <span class="badge-pill badge-info" v-if="filters.startDate && !filters.endDate"> {{ filters.startDate }} onwards</span>
                     <span class="badge-pill badge-info" v-if="! filters.startDate && filters.endDate"> {{ filters.startDate }} and earlier</span>
                     <span class="badge-pill badge-info" v-if="filters.startDate && filters.endDate">{{ filters.startDate }} - {{ filters.endDate }}</span>
                 </div>
 
                 <div v-if="(filters.minBudget || filters.maxBudget) && !minBudgetError && !maxBudgetError" class="mr-3 mb-1">
-                    <span class="pr-2">BUDGET</span>
+                    <span class="px-2">BUDGET:</span>
                     <span class="badge-pill badge-info" v-if="filters.minBudget && !filters.maxBudget"> USD {{ filters.minBudget }} or higher</span>
                     <span class="badge-pill badge-info" v-if="!filters.minBudget && filters.maxBudget"> USD {{ filters.maxBudget }} or lower</span>
                     <span class="badge-pill badge-info" v-if="filters.minBudget && filters.maxBudget"> USD {{ filters.minBudget }} - {{ filters.maxBudget }}</span>
