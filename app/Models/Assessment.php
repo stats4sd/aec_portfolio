@@ -159,7 +159,7 @@ class Assessment extends Model
 
     public function getOverallScoreAttribute(): ?int
     {
-        if ($this->failingRedlines()->count() > 0) {
+        if ($this->failingRedlines->count() > 0) {
             return 0;
         }
 

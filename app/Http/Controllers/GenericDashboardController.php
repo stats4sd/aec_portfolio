@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Assessment;
 use App\Models\Country;
 use App\Models\CountryProject;
 use App\Models\Organisation;
@@ -56,7 +57,13 @@ class GenericDashboardController extends Controller
             ->unique('id')
             ->values();
 
-        $countries = $regions->pluck('countries')
+        $countries = $org->portfolios
+            ->map(fn(Portfolio $portfolio): Collection => $portfolio
+                ->projects
+                ->map(fn(Project $project): Collection => $project
+                    ->countries
+                )
+            )
             ->flatten()
             ->unique()
             ->values();
@@ -71,109 +78,68 @@ class GenericDashboardController extends Controller
 
     public function enquire(Request $request)
     {
-        // logger("GenericDashboardController.enquire()");
-
-        // logger($request);
-
         // get system time as unique dashboard Id
         $current_timestamp = Carbon::now()->timestamp;
 
         // variables for stored procedure input parameters
         $dashboardYoursId = $current_timestamp;
         $dashboardOthersId = $current_timestamp + 1;
-        $organisationId = $request['organisation'];
-        $portfolioId = $request['portfolio'];
-        $regionId = $request['region'];
-        $countryId = $request['country'];
-        $projectStartFrom = $request['projectStartFrom'];
-        $projectStartTo = $request['projectStartTo'];
-        $budgetFrom = $request['budgetFrom'];
-        $budgetTo = $request['budgetTo'];
-        $chkRegion = $request['chkRegion'];
-        $chkCountry = $request['chkCountry'];
-        $chkProjectStart = $request['chkProjectStart'];
-        $chkBudget = $request['chkBudget'];
-        $sortBy = $request['sortBy'];
+        $organisationId = $request['organisation_id'];
 
 
-        logger($dashboardYoursId);
-        logger($dashboardOthersId);
-        logger($organisationId);
-        logger($portfolioId);
-        logger($regionId);
-        logger($countryId);
-        logger($projectStartFrom);
-        logger($projectStartTo);
-        logger($budgetFrom);
-        logger($budgetTo);
-        logger($chkRegion);
-        logger($chkCountry);
-        logger($chkProjectStart);
-        logger($chkBudget);
-        logger($sortBy);
+        // nullable items are cast to "null" string for inclusion into SQL query
+        $portfolioId = $request['portfolio']['id'] ?? 'null';
+        $regionIds = $request['regions'] ? collect($request['regions'])->pluck('id')->join(', ') : 'null';
+        $countryIds = $request['countries'] ? collect($request['countries'])->pluck('id')->join(', ') : 'null';
+        $projectStartFrom = $request['startDate'] ?? 'null';
+        $projectStartTo = $request['endDate'] ?? 'null';
+        $budgetFrom = $request['minBudget'] ?? 'null';
+        $budgetTo = $request['maxBudget'] ?? 'null';
 
+        $sortBy = $request['sortBy'] ?? '1';
 
         // constrcuct dynamic SQL
-        $sql = '';
-        $sql = $sql . 'CALL generate_dashboard_summary(';
-        $sql = $sql . $dashboardYoursId . ', ';
-        $sql = $sql . $dashboardOthersId . ', ';
-        $sql = $sql . $organisationId . ', ';
-
-        // portfolio Id 0 means all portfolios
-        if ($portfolioId == '0') {
-            $sql = $sql . 'null, ';
-        } else {
-            $sql = $sql . $portfolioId . ', ';
-        }
-
-        if ($chkRegion == '1') {
-            $sql = $sql . $regionId . ', ';
-        } else {
-            $sql = $sql . 'null, ';
-        }
-
-        if ($chkCountry == '1') {
-            $sql = $sql . $countryId . ', ';
-        } else {
-            $sql = $sql . 'null, ';
-        }
-
-        if ($chkProjectStart == '1') {
-            $sql = $sql . $projectStartFrom . ', ';
-            $sql = $sql . $projectStartTo . ', ';
-        } else {
-            $sql = $sql . 'null, ';
-            $sql = $sql . 'null, ';
-        }
-
-        if ($chkBudget == '1') {
-            $sql = $sql . $budgetFrom . ', ';
-            $sql = $sql . $budgetTo . ', ';
-        } else {
-            $sql = $sql . 'null, ';
-            $sql = $sql . 'null, ';
-        }
-
-        $sql = $sql . '@status, @message, @statusSummary, @redlinesSummary, @yoursPrinciplesSummary, @othersPrinciplesSummary)';
-
-        // logger($sql);
-
+        $sql = "CALL generate_dashboard_summary(
+            {$dashboardYoursId},
+            {$dashboardOthersId},
+            {$organisationId},
+            {$portfolioId},
+            {$regionIds},
+            {$countryIds},
+            {$projectStartFrom},
+            {$projectStartTo},
+            {$budgetFrom},
+            {$budgetTo},
+            @status,
+            @message,
+            @totalCount,
+            @totalBudget,
+            @statusSummary,
+            @redlinesSummary,
+            @yoursPrinciplesSummary,
+            @othersPrinciplesSummary)
+            ";
 
         // call stored procedure to get dashboard summary data
         // DB::select("CALL generate_dashboard_summary(998, 999, 9, 20, null, null, null, null, null, null, @status, @message, @statusSummary, @redlinesSummary, @yoursPrinciplesSummary, @othersPrinciplesSummary)");
         DB::select($sql);
 
-        $results = DB::select('select @status as status, @message as message, @statusSummary as statusSummary, @redlinesSummary as redlinesSummary, @yoursPrinciplesSummary as yoursPrinciplesSummary, @othersPrinciplesSummary as othersPrinciplesSummary');
-
-        logger($results);
+        $results = DB::select('select
+        @status as status,
+        @message as message,
+        @totalCount as totalCount,
+        @totalBudget as totalBudget,
+        @statusSummary as statusSummary,
+        @redlinesSummary as redlinesSummary,
+        @yoursPrinciplesSummary as yoursPrinciplesSummary,
+        @othersPrinciplesSummary as othersPrinciplesSummary');
 
         $status = $results[0]->status;
         $message = $results[0]->message;
 
 
         // error handling if status is not 0
-        if ($status != "0") {
+        if ($status !== 0) {
             $jsonRes = [];
 
             $jsonRes['status'] = $status;
@@ -182,10 +148,10 @@ class GenericDashboardController extends Controller
             $jsonRes['redlinesSummary'] = null;
             $jsonRes['yoursPrinciplesSummarySorted'] = null;
             $jsonRes['othersPrinciplesSummarySorted'] = null;
+            $jsonRes['dashboardYoursId'] = $dashboardYoursId;
 
             return $jsonRes;
         }
-
 
         // convert string to JSON
         $statusSummary = json_decode($results[0]->statusSummary, true);
@@ -278,15 +244,36 @@ class GenericDashboardController extends Controller
         }
 
 
+        // add overall score from PHP side because this is already calculated on the Assessment Model.
+        $assessmentScoreTotal = Assessment::with('principles', 'failingRedlines')->whereIn('id', DB::table('dashboard_assessment')
+            ->select('assessment_id')
+            ->where('dashboard_id', $dashboardYoursId))
+            ->get();
+
+        $assessmentScore = $assessmentScoreTotal->sum(fn(Assessment $assessment) => $assessment->overall_score)
+             / $assessmentScoreTotal->count();
+
+
+        $aeBudget = round($results[0]->totalBudget * ( $assessmentScore / 100), 0);
+
+        $assessmentScore = round($assessmentScore, 1);
+
         // construct JSON response
         $jsonRes = [];
 
         $jsonRes['status'] = $status;
         $jsonRes['message'] = $message;
+        $jsonRes['totalCount'] = $results[0]->totalCount;
+        $jsonRes['totalBudget'] = $results[0]->totalBudget;
+        $jsonRes['assessmentScore'] = $assessmentScore;
+        $jsonRes['aeBudget'] = $aeBudget;
         $jsonRes['statusSummary'] = $statusSummary;
         $jsonRes['redlinesSummary'] = $redlinesSummary;
         $jsonRes['yoursPrinciplesSummarySorted'] = $yoursPrinciplesSummarySorted;
         $jsonRes['othersPrinciplesSummarySorted'] = $othersPrinciplesSummarySorted;
+
+        // TEMP
+        $jsonRes['dashboardYoursId'] = $dashboardYoursId;
 
         return $jsonRes;
     }

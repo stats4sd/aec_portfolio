@@ -6,10 +6,11 @@
         :class="showFilters ? 'border-info' : ''"
     >
         <div class="card-body font-lg d-flex justify-content-between align-items-center px-12">
-            <div style="min-width: 400px" class="d-flex align-items-center">
-                <b class="pr-3">Showing:</b>
+            <div style="min-width: 400px" class="d-flex align-items-center w-100">
+                <b class="pr-3">SHOWING PORTFOLIO:</b>
                 <vSelect
                     class="flex-grow-1"
+                    v-model="filters.portfolio"
                     :options="portfolios"
                     :reduce="portfolio => portfolio.id"
                     :label="'name'"
@@ -49,10 +50,10 @@
                                 :clearable="true"
                             />
                         </div>
-                        <div class="col-lg-6 col-12 px-12">
+                        <div class="col-lg-6 col-12 px-12 mt-lg-0 mt-8">
                             <h4 class="mb-4">Filter by Start Date</h4>
                             <div class="d-flex align-items-center justify-content-between">
-                                <div class="pr-16">
+                                <div class="pr-8 pr-xl-16">
                                     <b>FROM:</b>
                                     <vue-date-picker
                                         v-model="filters.startDate"
@@ -76,7 +77,7 @@
                             <hr/>
                             <h4 class="mt-8 mb-4">Filter by Initiative Budget</h4>
                             <div class="d-flex align-items-center justify-content-between mb-8">
-                                <div class="pr-16">
+                                <div class="pr-8 pr-xl-16">
                                     <b>MINIMUM BUDGET:</b>
                                     <input
                                         class="bg-white d-block py-1"
@@ -143,32 +144,31 @@
 
 
     <div class="mt-8 card">
-        <div class="card-header">
-            <h2>Summary of Initiatives</h2>
+        <div class="card-header d-flex align-items-baseline">
+            <h2 class="mr-4">Summary of Initiatives</h2>
+            <h5>({{ filters.portfolio ? filters.portfolio.name.toUpperCase() : 'ALL PORTFOLIOS' }})</h5>
         </div>
         <div class="card-body">
             <div class="row">
-                <div class="col-6 p-0">
+                <div class="col-12 col-lg-6 p-0">
                     <ul class="list-group list-group-flush">
                         <li class="list-group-item d-flex font-xl">
                             <span class="w-50 text-right pr-4"># Initiatives Added</span>
-                            <span class="font-weight-bold ">500</span>
+                            <span class="font-weight-bold ">{{ summary.totalCount }}</span>
                         </li>
-                        <li class="list-group-item d-flex font-xl text-deep-green">
-                            <span class="w-50 text-right pr-4"># Passed all Redlines</span>
-                            <span class="font-weight-bold ">475 (95%)</span>
-                        </li>
-                        <li class="list-group-item d-flex font-xl text-deep-green">
-                            <span class="w-50 text-right pr-4"># Fully Assessed</span>
-                            <span class="font-weight-bold ">400 (80%)</span>
+                        <li
+                            v-for="summaryLine in summary.statusSummary"
+                            class="list-group-item d-flex font-xl text-deep-green">
+                            <span class="w-50 text-right pr-4">{{ summaryLine.status }}</span>
+                            <span class="font-weight-bold ">{{  summaryLine.number }} ({{ summaryLine.percent }}%)</span>
                         </li>
                     </ul>
                 </div>
-                <div class="col-6 p-0">
+                <div class="col-12 col-lg-6 p-0">
                     <ul class="list-group list-group-flush">
                         <li class="list-group-item d-flex font-xl">
                             <span class="w-50 text-right pr-4">Total Budget</span>
-                            <span class="font-weight-bold ">7,269,000 USD</span>
+                            <span class="font-weight-bold ">{{ formatBudget(summary.totalBudget) }} USD</span>
                         </li>
                     </ul>
                 </div>
@@ -177,19 +177,19 @@
 
         <div class="card-footer p-0 bg-light-success">
             <div class="row">
-                <div class="col-6 pr-0">
+                <div class="col-12 col-md-6">
                     <ul class="list-group list-group-flush">
-                        <li class="list-group-item d-flex font-xl p-3">
+                        <li class="list-group-item d-flex font-xl">
                             <span class="w-50 text-right pr-4">OVERALL SCORE</span>
-                            <span class="font-weight-bold ">86%</span>
+                            <span class="font-weight-bold">{{ summary.assessmentScore }}%</span>
                         </li>
                     </ul>
                 </div>
-                <div class="col-6">
+                <div class="col-12 col-md-6">
                     <ul class="list-group list-group-flush">
                         <li class="list-group-item d-flex font-xl">
                             <span class="w-50 text-right pr-4">AE-focused Budget</span>
-                            <span class="font-weight-bold ">6,251,340 USD</span>
+                            <span class="font-weight-bold ">{{ formatBudget(summary.aeBudget) }}USD</span>
                         </li>
                     </ul>
                 </div>
@@ -197,6 +197,15 @@
         </div>
     </div>
 
+    <hr/>
+
+    <div class="btn btn-danger" @click="checkSummary">
+            Console Log Summary Output
+    </div>
+
+    <div class="btn btn-primary" @click="getData">
+        Get Data Test
+    </div>
 </template>
 
 
@@ -208,6 +217,7 @@ import VueDatePicker from '@vuepic/vue-datepicker';
 import '@vuepic/vue-datepicker/dist/main.css'
 
 import {ref, computed, onMounted, watch} from "vue";
+import {isNumber} from "lodash";
 
 
 const props = defineProps({
@@ -241,6 +251,7 @@ const portfolios = computed(() => {
 const showFilters = ref(false)
 
 const filters = ref({
+    portfolio: null,
     regions: null,
     countries: null,
     startDate: null,
@@ -274,6 +285,41 @@ onMounted(() => {
     showFilters.value = true;
 })
 
+
+
+// handle summary data
+const summary = ref({
+    status: null,
+    message: null,
+    statusSummary: null,
+    redlinesSummary: null,
+    principleSummary: null,
+    principleSummaryOthers: null,
+})
+
+async function getData() {
+
+    filters.value.organisation_id = props.organisation.id
+
+    const res = await axios.post("/admin/generic-dashboard/enquire", filters.value)
+    summary.value = res.data
+}
+
+
+function checkSummary()
+{
+    console.clear()
+    console.log(summary.value)
+}
+
+
+// format budgets
+
+function formatBudget(amount) {
+
+    return amount ? amount.toLocaleString() : '';
+
+}
 
 </script>
 
