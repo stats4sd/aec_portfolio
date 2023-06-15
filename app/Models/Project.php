@@ -85,7 +85,7 @@ class Project extends Model
 
     public function getLatestAssessmentStatusAttribute()
     {
-        return $this->assessments->last()?->assessment_status?->value;
+        return $this->assessments->last()?->assessment_status;
     }
 
     public function organisation()
@@ -95,7 +95,8 @@ class Project extends Model
 
     public function portfolio()
     {
-        return $this->belongsTo(Portfolio::class);
+        return $this->belongsTo(Portfolio::class)
+            ->withoutGlobalScope('organisation');
     }
 
     public function customScoreTags()

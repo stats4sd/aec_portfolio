@@ -25,18 +25,20 @@ class PrincipleExport implements FromCollection, WithHeadings, WithTitle
             'scoreTags',
             'customScoreTags',
         ])
-            ->whereHas('assessment', function(Builder $query) {
-                $query->whereHas('project', function(Builder $query) {
+            ->whereHas('assessment', function (Builder $query) {
+                $query->whereHas('project', function (Builder $query) {
                     $query->where('organisation_id', $this->organisation->id);
                 });
             })
             ->get()
             ->map(fn(PrincipleAssessment $principleAssessment): Collection => collect([
+                'organisation_id' => $this->organisation->id,
+                'organisation_name' => $this->organisation->name,
                 'portfolio_id' => $principleAssessment->assessment->project->portfolio_id,
                 'portfolio_name' => $principleAssessment->assessment->project->portfolio->name,
                 'initiative_id' => $principleAssessment->assessment->project->id,
                 'initiative_name' => $principleAssessment->assessment->project->name,
-                'principle'  => $principleAssessment->principle->name,
+                'principle' => $principleAssessment->principle->name,
                 'is_na' => $principleAssessment->is_na,
                 'rating' => $principleAssessment->rating,
                 'comments' => $principleAssessment->rating_comment,
@@ -48,17 +50,19 @@ class PrincipleExport implements FromCollection, WithHeadings, WithTitle
     public function headings(): array
     {
         return [
-                'portfolio_id',
-                'portfolio_name',
-                'initiative_id',
-                'initiative_name',
-                'principle' ,
-                'is_na',
-                'rating',
-                'comments',
-                'indicators_present',
-                'additional_indicators',
-            ];
+            'organisation_id',
+            'organisation_name',
+            'portfolio_id',
+            'portfolio_name',
+            'initiative_id',
+            'initiative_name',
+            'principle',
+            'is_na',
+            'rating',
+            'comments',
+            'indicators_present',
+            'additional_indicators',
+        ];
     }
 
     public function title(): string

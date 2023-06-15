@@ -26,6 +26,8 @@ class RedlinesExport implements FromCollection, WithHeadings, WithTitle, WithStr
 
             return $project->assessments->last()->redlines->map(function ($redline) use ($project) {
                 return collect([
+                    'organisation_id' => $this->organisation->id,
+                    'organisation_name' => $this->organisation->name,
                     'portfolio_id' => $project->portfolio_id,
                     'portfolio_name' => $project->portfolio->name,
                     'initiative_id' => $project->id,
@@ -42,6 +44,8 @@ class RedlinesExport implements FromCollection, WithHeadings, WithTitle, WithStr
     public function headings(): array
     {
         return [
+            'organisation_id',
+            'organisation_name',
             'portfolio_id',
             'portfolio_name',
             'initiative_id',
