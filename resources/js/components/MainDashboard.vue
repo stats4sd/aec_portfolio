@@ -119,11 +119,11 @@
                 <div v-if="filters.countries" class="px-2 mb-1 d-flex flex-wrap">
                     <span class="pr-2">COUNTRIES:</span>
                 </div>
-                    <div
-                        v-for="country in filters.countries"
-                        class="badge-pill badge-info mr-2 mb-1">
-                        {{ country.name }}
-                    </div>
+                <div
+                    v-for="country in filters.countries"
+                    class="badge-pill badge-info mr-2 mb-1">
+                    {{ country.name }}
+                </div>
                 <div v-if="filters.startDate || filters.endDate" class="mr-3 mb-1">
                     <span class="px-2">DATES:</span>
                     <span class="badge-pill badge-info" v-if="filters.startDate && !filters.endDate"> {{ filters.startDate }} onwards</span>
@@ -152,21 +152,21 @@
             <div class="row">
                 <div class="col-12 col-lg-6 p-0">
                     <ul class="list-group list-group-flush">
-                        <li class="list-group-item d-flex font-xl">
+                        <li class="list-group-item d-flex font-lg">
                             <span class="w-50 text-right pr-4"># Initiatives Added</span>
                             <span class="font-weight-bold ">{{ summary.totalCount }}</span>
                         </li>
                         <li
                             v-for="summaryLine in summary.statusSummary"
-                            class="list-group-item d-flex font-xl text-deep-green">
+                            class="list-group-item d-flex font-lg text-deep-green">
                             <span class="w-50 text-right pr-4">{{ summaryLine.status }}</span>
-                            <span class="font-weight-bold ">{{  summaryLine.number }} ({{ summaryLine.percent }}%)</span>
+                            <span class="font-weight-bold ">{{ summaryLine.number }} ({{ summaryLine.percent }}%)</span>
                         </li>
                     </ul>
                 </div>
                 <div class="col-12 col-lg-6 p-0">
                     <ul class="list-group list-group-flush">
-                        <li class="list-group-item d-flex font-xl">
+                        <li class="list-group-item d-flex font-lg">
                             <span class="w-50 text-right pr-4">Total Budget</span>
                             <span class="font-weight-bold ">{{ formatBudget(summary.totalBudget) }} USD</span>
                         </li>
@@ -179,7 +179,7 @@
             <div class="row">
                 <div class="col-12 col-md-6">
                     <ul class="list-group list-group-flush">
-                        <li class="list-group-item d-flex font-xl">
+                        <li class="list-group-item d-flex font-lg">
                             <span class="w-50 text-right pr-4">OVERALL SCORE</span>
                             <span class="font-weight-bold">{{ summary.assessmentScore }}%</span>
                         </li>
@@ -187,7 +187,7 @@
                 </div>
                 <div class="col-12 col-md-6">
                     <ul class="list-group list-group-flush">
-                        <li class="list-group-item d-flex font-xl">
+                        <li class="list-group-item d-flex font-lg">
                             <span class="w-50 text-right pr-4">AE-focused Budget</span>
                             <span class="font-weight-bold ">{{ formatBudget(summary.aeBudget) }}USD</span>
                         </li>
@@ -197,10 +197,41 @@
         </div>
     </div>
 
+    <div class="mt-8 card">
+        <div class="card-header d-flex align-items-baseline">
+            <h2 class="mr-4">Summary of Red Flags</h2>
+            <h5>({{ filters.portfolio ? filters.portfolio.name.toUpperCase() : 'ALL PORTFOLIOS' }})</h5>
+        </div>
+        <div class="card-body">
+
+
+            <!-- red lines summary -->
+            <table class="table" v-if="summary.redlinesSummary != null">
+
+                <thead class="text-center">
+                <th>Red Lines</th>
+                <th>Yours</th>
+                <th>Others</th>
+                </thead>
+
+                <tbody class="text-center">
+                <tr v-for='redlinesSummaryRecord in summary.redlinesSummary'>
+                    <td :class="[ redlinesSummaryRecord.yours === 100 ? 'table-success' : 'table-warning' ]">{{ redlinesSummaryRecord.name }}</td>
+                    <td :class="[ redlinesSummaryRecord.yours === 100 ? 'table-success' : 'table-warning' ]">{{ redlinesSummaryRecord.yours }}%</td>
+                    <td :class="[ redlinesSummaryRecord.yours === 100 ? 'table-success' : 'table-warning' ]">{{ redlinesSummaryRecord.others }}%</td>
+                </tr>
+                </tbody>
+
+            </table>
+
+        </div>
+    </div>
+
+
     <hr/>
 
     <div class="btn btn-danger" @click="checkSummary">
-            Console Log Summary Output
+        Console Log Summary Output
     </div>
 
     <div class="btn btn-primary" @click="getData">
@@ -286,7 +317,6 @@ onMounted(() => {
 })
 
 
-
 // handle summary data
 const summary = ref({
     status: null,
@@ -306,8 +336,7 @@ async function getData() {
 }
 
 
-function checkSummary()
-{
+function checkSummary() {
     console.clear()
     console.log(summary.value)
 }
