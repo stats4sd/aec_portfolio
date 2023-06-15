@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\Assessment;
 use App\Models\Country;
-use App\Models\CountryProject;
 use App\Models\Organisation;
 use App\Models\Portfolio;
 use App\Models\Project;
@@ -245,13 +244,13 @@ class GenericDashboardController extends Controller
 
 
         // add overall score from PHP side because this is already calculated on the Assessment Model.
-        $assessmentScoreTotal = Assessment::with('principles', 'failingRedlines')->whereIn('id', DB::table('dashboard_assessment')
+        $allAssessments = Assessment::with('principles', 'failingRedlines')->whereIn('id', DB::table('dashboard_assessment')
             ->select('assessment_id')
             ->where('dashboard_id', $dashboardYoursId))
             ->get();
 
-        $assessmentScore = $assessmentScoreTotal->sum(fn(Assessment $assessment) => $assessment->overall_score)
-             / $assessmentScoreTotal->count();
+        $assessmentScore = $allAssessments->sum(fn(Assessment $assessment) => $assessment->overall_score)
+             / $allAssessments->where('completed_at', '!=', null)->count();
 
 
         $aeBudget = round($results[0]->totalBudget * ( $assessmentScore / 100), 0);
