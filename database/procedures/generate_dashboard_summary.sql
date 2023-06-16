@@ -13,8 +13,8 @@ CREATE PROCEDURE `generate_dashboard_summary` (
 	IN budgetTo INT,
 	OUT status INT,
 	OUT message VARCHAR(1000),
-	OUT totalCount INT,
-	OUT totalBudget INT,
+	OUT totalCount BIGINT,
+	OUT totalBudget BIGINT,
 	OUT statusSummary VARCHAR(16383),
 	OUT redlinesSummary VARCHAR(16383),
 	OUT yoursPrinciplesSummary VARCHAR(16383),
@@ -514,12 +514,14 @@ BEGIN
 				                                 dashboard_others_id = dashboardOthersId,
 				                                 status = status,
 				                                 message = message,
+				                                 total_count = totalCount,
+				                                 total_budget = totalBudget,
 				                                 status_summary = statusSummary,
 				                                 red_lines_summary = redlinesSummary,
 				                                 principles_summary_yours = yoursPrinciplesSummary,
 				                                 principles_summary_others = othersPrinciplesSummary,
 				                                 created_at = NOW(),
-				                                updated_at = NOW()
+				                                 updated_at = NOW();
 
 			END IF;
 

@@ -227,6 +227,34 @@
         </div>
     </div>
 
+    <!-- principles summary -->
+    <table class="table" v-if="summary.yoursPrinciplesSummarySorted != null">
+        <thead>
+        <th width="38%"></th>
+        <th width="22%" align="center"><u>Yours</u></th>
+        <th width="28%">
+            <center><u>Others</u></center>
+        </th>
+        <th width="12%"></th>
+        </thead>
+
+        <tr>
+            <td colspan="2">
+                <div class="demo-container-1">
+                    <div id="chart1" class="demo-placeholder"></div>
+                </div>
+            </td>
+            <td>
+                <div class="demo-container-2">
+                    <div id="chart2" class="demo-placeholder"></div>
+                </div>
+            </td>
+            <td valign="top">
+                <br/>
+                <div id="chart2Legend" class="legend"></div>
+            </td>
+        </tr>
+    </table>
 
     <hr/>
 
@@ -333,6 +361,10 @@ async function getData() {
 
     const res = await axios.post("/admin/generic-dashboard/enquire", filters.value)
     summary.value = res.data
+
+
+    // show principles summary by calling Javascript function
+    window.setTimeout(showPrinciplesSummary, 1000);
 }
 
 
@@ -350,6 +382,181 @@ function formatBudget(amount) {
 
 }
 
+
+function showPrinciplesSummary() {
+    // alert("showPrinciplesSummary()");
+
+    // Features:
+    // 1. prepare chart data
+    // 2. define chart options for stacked bar chart
+    // 3. show legend, to indicate which color for which principle
+    // 4. y-axis, show AE principle name
+    // 5. Hide percentage of each bar (center principle name but number goes to top location...)
+    // 6. show legend in separate container
+
+    // ======================================== //
+
+    let record = [];
+    let index;
+
+
+    // yours principles summary sorted
+    let chart1Data0 = [];
+    let chart1Data1 = [];
+    let chart1Data2 = [];
+
+    for (let i = summary.value.yoursPrinciplesSummarySorted.length - 1; i >= 0; i--) {
+        index = 13 - i;
+
+        record = [summary.value.yoursPrinciplesSummarySorted[i].green, index];
+        chart1Data0.push(record);
+
+        record = [summary.value.yoursPrinciplesSummarySorted[i].yellow, index];
+        chart1Data1.push(record);
+
+        record = [summary.value.yoursPrinciplesSummarySorted[i].red, index];
+        chart1Data2.push(record);
+    }
+
+
+    // others principles summary sorted
+    let chart2Data0 = [];
+    let chart2Data1 = [];
+    let chart2Data2 = [];
+
+    for (let i = summary.value.othersPrinciplesSummarySorted.length - 1; i >= 0; i--) {
+        index = 13 - i;
+
+        record = [summary.value.othersPrinciplesSummarySorted[i].green, index];
+        chart2Data0.push(record);
+
+        record = [summary.value.othersPrinciplesSummarySorted[i].yellow, index];
+        chart2Data1.push(record);
+
+        record = [summary.value.othersPrinciplesSummarySorted[i].red, index];
+        chart2Data2.push(record);
+    }
+
+
+    // prepare chart 1 and chart 2 data
+    let chart1Data = [];
+    chart1Data[0] = {label: '1.5 - 2', color: '#54C45E', data: chart1Data0};
+    chart1Data[1] = {label: '0.5 - 1.5', color: '#FFE342', data: chart1Data1};
+    chart1Data[2] = {label: '0 - 0.5', color: '#FF0000', data: chart1Data2};
+
+    let chart2Data = [];
+    chart2Data[0] = {label: '1.5 - 2', color: '#54C45E', data: chart2Data0};
+    chart2Data[1] = {label: '0.5 - 1.5', color: '#FFE342', data: chart2Data1};
+    chart2Data[2] = {label: '0 - 0.5', color: '#FF0000', data: chart2Data2};
+
+    // prepare chart 1 and chart 2 y axis ticks
+    let chart1yAxisTicks = [];
+
+    for (let i = 0; i < summary.value.yoursPrinciplesSummarySorted.length; i++) {
+        let index = 13 - i;
+        chart1yAxisTicks.push([index, summary.value.yoursPrinciplesSummarySorted[i].name]);
+    }
+
+    let chart2yAxisTicks = [
+        [13, ''],
+        [12, ''],
+        [11, ''],
+        [10, ''],
+        [9, ''],
+        [8, ''],
+        [7, ''],
+        [6, ''],
+        [5, ''],
+        [4, ''],
+        [3, ''],
+        [2, ''],
+        [1, ''],
+    ];
+
+    // prepare chart 1 and chart 2 flag to show legend
+    let chart1LegendFlag = false;
+    let chart2LegendFlag = true;
+
+    // prepare chart 1 and chart 2 Y axis label width
+    let chart1YAxisLabelWidth = 250;
+    let chart2YAxisLabelWidth = 0;
+
+    console.log("#chart1", chart1Data)
+    console.log('axisticks', chart1yAxisTicks)
+    console.log('axis-label-width', chart1YAxisLabelWidth)
+    console.log('legend-flag', chart1LegendFlag);
+
+    // plot chart 1 with chart 1 data and options
+    plotWithOptions("#chart1", chart1Data, chart1yAxisTicks, chart1YAxisLabelWidth, chart1LegendFlag, "");
+
+    // plot chart 2 with chart 2 data and options
+    plotWithOptions("#chart2", chart2Data, chart2yAxisTicks, chart2YAxisLabelWidth, chart2LegendFlag, "chart2Legend");
+}
+
+// chart options
+function plotWithOptions(chartId, chartData, yAxisTicks, yAxisLabelWidth, legendFlag, legendId) {
+    $.plot(chartId, chartData, {
+
+        // stacked bar chart
+        // need to include "jquery.flot.stack.js"
+        series: {
+            stack: true,
+            lines: {
+                show: false,
+                fill: true,
+                steps: false,
+
+            },
+            bars: {
+                show: true,
+                barWidth: 1,
+                fill: 0.8,
+                horizontal: true,
+                align: 'center',
+
+                // show number in bar segment
+                // need to include "jquery.flot.barnumbers.js"
+                numbers: {show: false}
+            }
+        },
+
+        // customize x-axis labels
+        // need to include "jquery.flot.axislabel.js"
+        xaxis: {
+            show: true,
+            axisLabel: '% of Projects',
+            tickLength: 15,
+            tickSize: 50,
+            tickFormatter: function (val, axis) {
+                return val + '%';
+            },
+
+        },
+
+        // customize y-axis labesl
+        yaxis: {
+            show: true,
+            tickLength: 0,
+            autoScale: "exact",
+            ticks: yAxisTicks,
+            labelWidth: yAxisLabelWidth,
+        },
+
+        grid: {
+            borderWidth: 1,
+        },
+
+        // show legend
+        // need to include "jquery.flot.legend.js"
+        legend: {
+            show: legendFlag,
+            container: document.getElementById(legendId),
+        },
+
+    });
+}
+
+
 </script>
 
 <style>
@@ -366,4 +573,53 @@ function formatBudget(amount) {
     transform: translateY(-20px);
     opacity: 0;
 }
+
+
+.demo-container-1 {
+    box-sizing: border-box;
+    width: 594px;
+    height: 450px;
+    padding: 20px 15px 15px 15px;
+    margin: 15px auto 30px auto;
+}
+
+.demo-container-2 {
+    box-sizing: border-box;
+    width: 350px;
+    height: 450px;
+    padding: 20px 15px 15px 15px;
+    margin: 15px auto 30px auto;
+}
+
+.demo-placeholder {
+    width: 100%;
+    height: 100%;
+    font-size: 14px;
+}
+
+.legend {
+    display: block;
+    -webkit-padding-start: 2px;
+    -webkit-padding-end: 2px;
+    border-width: initial;
+    border-style: none;
+    border-color: initial;
+    border-image: initial;
+    padding-left: 10px;
+    padding-right: 10px;
+    padding-top: 15px;
+    padding-bottom: 10px;
+    font-size: 14px;
+}
+
+.legendLayer .background {
+    fill: rgba(255, 255, 255, 0.65);
+    stroke: rgba(0, 0, 0, 0.85);
+    stroke-width: 1;
+}
+
+.tickLabel {
+    font-size: 90%
+}
+
 </style>
