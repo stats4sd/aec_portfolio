@@ -1,23 +1,3 @@
-<?php
-
-use Illuminate\Database\Migrations\Migration;
-use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Schema;
-
-return new class extends Migration
-{
-    /**
-     * Run the migrations.
-     *
-     * @return void
-     */
-    public function up()
-    {
-        // For correct indentation in MySQL stored procedure to be created,
-        // MySQL program source code needs to be stored in below format
-
-        $procedure =
-"
 DROP FUNCTION IF EXISTS `generate_principles_summary`;
 
 CREATE DEFINER=`root`@`localhost` FUNCTION `generate_principles_summary`(
@@ -113,20 +93,3 @@ CREATE DEFINER=`root`@`localhost` FUNCTION `generate_principles_summary`(
 	RETURN principlesSummary;
 
 END
-";
-
-        DB::unprepared($procedure);
-    }
-
-    /**
-     * Reverse the migrations.
-     *
-     * @return void
-     */
-    public function down()
-    {
-        $procedure = "DROP FUNCTION IF EXISTS `generate_principles_summary` ";
-
-        DB::unprepared($procedure);
-    }
-};

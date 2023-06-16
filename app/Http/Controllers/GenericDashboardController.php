@@ -21,10 +21,12 @@ class GenericDashboardController extends Controller
 {
 
     // TEMP
-    // TODO: update based on required data for immediate load.
+    // TODO: OLD ONE TO BE REMOVED
     public function new(Request $request)
     {
         $data = $this->getData($request);
+
+        $data['portfolios'] = $data['organisation']['portfolios'];
 
         return view('generic-dashboard.new-dashboard', $data);
     }
@@ -32,7 +34,6 @@ class GenericDashboardController extends Controller
     public function show(Request $request)
     {
         $data = $this->getData($request);
-
         return view('generic-dashboard.dashboard', $data);
     }
 

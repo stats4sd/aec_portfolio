@@ -14,6 +14,7 @@ export default defineConfig({
                 'resources/js/dashboard.js',
                 'resources/js/initiatives.js',
                 'resources/js/assess.js',
+                'resources/js/dashboard-temp.js',
             ],
             refresh: true,
         }),

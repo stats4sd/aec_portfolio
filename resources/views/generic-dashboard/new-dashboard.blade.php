@@ -93,6 +93,9 @@
 @section('after_scripts')
     @vite('resources/js/app.js')
 
+        @vite('resources/js/dashboard-temp.js')
+
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/flot/4.2.3/jquery.canvaswrapper.js"></script>

@@ -86,7 +86,7 @@
                 <tr>
                     <td></td>
                     <td align="center">
-                        <input type="hidden" v-model="formData['organisation']">
+                        <input type="hidden" v-model="formData['organisation_id']">
                         <button @click="validateCriteria" class="btn btn-primary">Submit</button>
                     </td>
                     <td></td>
@@ -172,8 +172,7 @@
 		<tr>
 		<td colspan="2">
 			<div class="demo-container-1">
-				<div id="chart1" class="demo-placeholder"></div>
-			</div>
+				<div id="chart1" class="demo-placeholder"></div></div>
 		</td>
 		<td>
 			<div class="demo-container-2">
@@ -249,7 +248,7 @@ export default {
     mounted() {
         // set default values
         this.formData['portfolio'] = 0;
-        this.formData['organisation'] = this.organisation.id;
+        this.formData['organisation_id'] = this.organisation.id;
         this.formData['projectStartFrom'] = '2020';
         this.formData['projectStartTo'] = '2030';
         this.formData['budgetFrom'] = '100000';
@@ -282,7 +281,7 @@ export default {
             // alert("validateCriteria()");
 
             var message = "";
-            message += "Organisation: " + this.formData['organisation'] + "\n";
+            message += "Organisation: " + this.formData['organisation_id'] + "\n";
             message += "Portfolio: " + this.formData['portfolio'] + "\n";
             message += "Region: " + this.formData['region'] + "\n";
             message += "Country: " + this.formData['country'] + "\n";
