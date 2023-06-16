@@ -139,7 +139,8 @@
                         <span class="badge-pill badge-info" v-if="filters.minBudget && filters.maxBudget"> USD {{ filters.minBudget }} - {{ filters.maxBudget }}</span>
                     </div>
                 </div>
-                <div class="btn btn-primary" @click="showFilters = !showFilters">{{ showFilters ? 'Apply' : 'Modify' }} Filters</div>
+                <div class="btn btn-warning text-dark" @click="resetFilters" v-if="anyFilters">Reset Filters</div>
+                <div class="btn btn-primary" @click="modifyFilters">{{ showFilters ? 'Apply' : 'Modify' }} Filters</div>
             </div>
         </div>
 
@@ -328,8 +329,23 @@ const filteredCountries = computed(() => {
     return props.countries.filter(country => filters.value.regions ? filters.value.regions.map(region => region.id).includes(country.region_id) : false)
 })
 
+function modifyFilters() {
+    showFilters.value = !showFilters.value
 
-// TEST
+    if(!showFilters.value) {
+        getData()
+    }
+}
+
+const anyFilters = computed(() => {
+    return Object.keys(filters.value).some(key => filters.value[key] !== null)
+})
+
+function resetFilters() {
+    Object.keys(filters.value).forEach(key => filters.value[key] = null);
+    getData()
+}
+
 onMounted(() => {
     getData()
 })
@@ -347,9 +363,11 @@ const summary = ref({
 
 async function getData() {
 
-    filters.value.organisation_id = props.organisation.id
+    let data = {...filters.value}
 
-    const res = await axios.post("/admin/generic-dashboard/enquire", filters.value)
+    data.organisation_id = props.organisation.id
+
+    const res = await axios.post("/admin/generic-dashboard/enquire", data)
     summary.value = res.data
 
 
@@ -359,23 +377,12 @@ async function getData() {
     //window.setTimeout(showPrinciplesSummary, 1000);
 }
 
-
-function checkSummary() {
-    console.clear()
-    console.log(summary.value)
-}
-
-
-// format budgets
-
 function formatBudget(amount) {
-
     return amount ? amount.toLocaleString() : '';
-
 }
 
 
-// ChartJS
+// **************** ChartJS ****************
 import {
     Chart as ChartJS,
     Title,
