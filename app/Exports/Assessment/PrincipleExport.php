@@ -24,7 +24,7 @@ class PrincipleExport implements FromCollection, WithHeadings, WithTitle
             'principle',
             'scoreTags',
             'customScoreTags',
-        ])
+        ])->withoutGlobalScopes(['organisation'])
             ->whereHas('assessment', function (Builder $query) {
                 $query->whereHas('project', function (Builder $query) {
                     $query->where('organisation_id', $this->organisation->id);
