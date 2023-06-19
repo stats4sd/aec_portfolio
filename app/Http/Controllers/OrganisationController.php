@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Enums\AssessmentStatus;
-use App\Exports\OrganisationExport;
+use App\Exports\Assessment\AssessmentExportWorkbook;
+use App\Exports\MergedExport;
+use App\Jobs\ExportOrgData;
 use App\Models\Organisation;
 use App\Models\Principle;
 use App\Models\Project;
@@ -11,16 +13,13 @@ use App\Models\RedLine;
 use App\Models\Team;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Session;
 use Maatwebsite\Excel\Facades\Excel;
 use Prologue\Alerts\Facades\Alert;
 
 class OrganisationController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+
     public function publicIndex()
     {
         return Organisation::withCount(['projects'])->get();
@@ -29,7 +28,7 @@ class OrganisationController extends Controller
     public function portfolio(Organisation $organisation)
     {
         // hotfix for no projects
-        if($organisation->projects()->count() === 0) {
+        if ($organisation->projects()->count() === 0) {
             Alert::add('info', 'This institution has no projects. Please add at least one project before reviewing the portfolio page')->flash();
             return back();
         }
@@ -85,7 +84,7 @@ class OrganisationController extends Controller
 
         // comparative
         $allRatings = Project::withoutGlobalScope('organisation')
-        ->where('assessment_status', "=", AssessmentStatus::Complete)
+            ->where('assessment_status', "=", AssessmentStatus::Complete)
             ->with('principleProjects.principle')
             ->get()
             ->map(function ($project) {
@@ -132,8 +131,8 @@ class OrganisationController extends Controller
                 }
             }
 
-            foreach($ratingsForPassedProjects as $rating) {
-                if(!$rating[$principle->name]) {
+            foreach ($ratingsForPassedProjects as $rating) {
+                if (!$rating[$principle->name]) {
                     $naPrinciplesTemp++;
                 }
             }
@@ -146,7 +145,6 @@ class OrganisationController extends Controller
 
         // TEMP HACK
         $currency = $organisation->projects->first()->currency;
-
 
 
         return view('organisations.portfolio', [
@@ -171,9 +169,33 @@ class OrganisationController extends Controller
     }
 
 
-    public function export(Organisation $organisation)
+    public function export()
     {
-        return Excel::download(new OrganisationExport($organisation), "AEC - Portfolio Export - " . $organisation->name . "-" .
+        $organisation = Organisation::find(Session::get('selectedOrganisationId'));
+
+        return Excel::download(new AssessmentExportWorkbook($organisation), "AEC - Data Export - " . $organisation->name . "-" .
             Carbon::now()->toDateTimeString() . ".xlsx");
     }
+
+    public function exportAll()
+    {
+        $this->authorize('viewAny', Organisation::class);
+
+        foreach(Organisation::all() as $organisation) {
+
+            $timestamp = Carbon::now()->toDateTimeString();
+
+            ExportOrgData::dispatch($organisation, $timestamp);
+
+        }
+
+        return 'done - queued';
+    }
+
+    public function mergeAll()
+    {
+        return Excel::download(new MergedExport(), 'test.xlsx');
+    }
+
+
 }
