@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Exports;
+namespace App\Exports\Assessment;
 
 use App\Models\Country;
 use App\Models\Organisation;
