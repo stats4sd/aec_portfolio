@@ -1,14 +1,14 @@
 <template>
 
     <!-- filters -->
-    <div class="d-flex justify-content-between">
+    <div class="d-flex justify-content-between flex-column flex-lg-row">
         <div class="d-flex flex-column align-items-start mb-3">
 
-            <div class="d-flex align-items-center">
+            <div class="d-flex align-items-center flex-column flex-md-row">
                 <b class="mr-8" style="width: 30px;">Filters:</b>
                 <v-select
                     style="width: 250px"
-                    class="mr-4"
+                    class="mr-4 mb-3 mb-md-0"
                     v-model="redlineStatusFilter"
                     :options="makeFilterOptions('Redlines')"
                     placeholder="Filter By Redline Status"

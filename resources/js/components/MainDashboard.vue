@@ -1,150 +1,164 @@
 <template>
 
+
     <div class="container">
 
-        <div
-            class="card bg-light"
-            :class="showFilters ? 'border-info' : ''"
-        >
-            <div class="card-body font-lg d-flex justify-content-between align-items-center px-12">
-                <div style="min-width: 400px" class="d-flex align-items-center w-100">
-                    <b class="pr-3">SHOWING PORTFOLIO:</b>
-                    <vSelect
-                        class="flex-grow-1"
-                        v-model="filters.portfolio"
-                        :options="portfolios"
-                        :reduce="portfolio => portfolio.id"
-                        :label="'name'"
-                        placeholder="ALL PORTFOLIOS"
-                        :clearable="true"
-                    ></vSelect>
-                </div>
-                <div>
 
-                </div>
+    </div>
+    <!-- FILTERS -->
+    <div
+        class="card bg-light"
+        :class="showFilters ? 'border-info' : ''"
+    >
+        <div class="card-body font-lg d-flex justify-content-between align-items-center px-12">
+            <div style="min-width: 400px" class="d-flex align-items-center w-100">
+                <b class="pr-3">SHOWING PORTFOLIO:</b>
+                <vSelect
+                    class="flex-grow-1"
+                    v-model="filters.portfolio"
+                    :options="portfolios"
+                    :reduce="portfolio => portfolio.id"
+                    :label="'name'"
+                    placeholder="ALL PORTFOLIOS"
+                    :clearable="true"
+                ></vSelect>
             </div>
-            <v-expand-transition>
-                <div v-if="showFilters">
-                    <div class="card-body bg-blue-lighten-4">
-                        <div class="row">
-                            <div class="col-lg-6 col-12 px-12">
-                                <h4 class="mb-4">Filter By Region / Country</h4>
-                                <b>REGIONS:</b>
-                                <v-select
-                                    class="bg-white mb-8"
-                                    v-model="filters.regions"
-                                    :options="regions"
-                                    label="name"
-                                    placeholder="SELECT REGIONS"
-                                    multiple="true"
-                                    :clearable="true"
-                                />
+            <div>
 
-                                <b>COUNTRIES:</b>
-                                <v-select
-                                    v-model="filters.countries"
-                                    class="bg-white"
-                                    :options="filteredCountries"
-                                    label="name"
-                                    placeholder="SELECT COUNTRIES"
-                                    multiple="true"
-                                    :clearable="true"
-                                />
-                            </div>
-                            <div class="col-lg-6 col-12 px-12 mt-lg-0 mt-8">
-                                <h4 class="mb-4">Filter by Start Date</h4>
-                                <div class="d-flex align-items-center justify-content-between">
-                                    <div class="pr-8 pr-xl-16">
-                                        <b>FROM:</b>
-                                        <vue-date-picker
-                                            v-model="filters.startDate"
-                                            year-picker
-                                            auto-apply
-                                            text-input
-                                            :max-date="filters.endDate ? new Date(filters.endDate + '-01-01') : null"
-                                        />
-                                    </div>
-                                    <div>
-                                        <b>TO:</b>
-                                        <vue-date-picker
-                                            v-model="filters.endDate"
-                                            year-picker
-                                            auto-apply
-                                            text-input
-                                            :min-date="filters.startDate ? new Date(filters.startDate + '-01-01') : null"
-                                        />
-                                    </div>
+            </div>
+        </div>
+        <v-expand-transition>
+            <div v-if="showFilters">
+                <div class="card-body bg-blue-lighten-4">
+                    <div class="row">
+                        <div class="col-lg-6 col-12 px-12">
+                            <h4 class="mb-4">Filter By Region / Country</h4>
+                            <b>REGIONS:</b>
+                            <v-select
+                                class="bg-white mb-8"
+                                v-model="filters.regions"
+                                :options="regions"
+                                label="name"
+                                placeholder="SELECT REGIONS"
+                                multiple="true"
+                                :clearable="true"
+                            />
+
+                            <b>COUNTRIES:</b>
+                            <v-select
+                                v-model="filters.countries"
+                                class="bg-white"
+                                :options="filteredCountries"
+                                label="name"
+                                placeholder="SELECT COUNTRIES"
+                                multiple="true"
+                                :clearable="true"
+                            />
+                        </div>
+                        <div class="col-lg-6 col-12 px-12 mt-lg-0 mt-8">
+                            <h4 class="mb-4">Filter by Start Date</h4>
+                            <div class="d-flex align-items-center justify-content-between">
+                                <div class="pr-8 pr-xl-16">
+                                    <b>FROM:</b>
+                                    <vue-date-picker
+                                        v-model="filters.startDate"
+                                        year-picker
+                                        auto-apply
+                                        text-input
+                                        :max-date="filters.endDate ? new Date(filters.endDate + '-01-01') : null"
+                                    />
                                 </div>
-                                <hr/>
-                                <h4 class="mt-8 mb-4">Filter by Initiative Budget</h4>
-                                <div class="d-flex align-items-center justify-content-between mb-8">
-                                    <div class="pr-8 pr-xl-16">
-                                        <b>MINIMUM BUDGET:</b>
-                                        <input
-                                            class="bg-white d-block py-1"
-                                            v-model="filters.minBudget"
+                                <div>
+                                    <b>TO:</b>
+                                    <vue-date-picker
+                                        v-model="filters.endDate"
+                                        year-picker
+                                        auto-apply
+                                        text-input
+                                        :min-date="filters.startDate ? new Date(filters.startDate + '-01-01') : null"
+                                    />
+                                </div>
+                            </div>
+                            <hr/>
+                            <h4 class="mt-8 mb-4">Filter by Initiative Budget</h4>
+                            <div class="d-flex align-items-center justify-content-between mb-8">
+                                <div class="pr-8 pr-xl-16">
+                                    <b>MINIMUM BUDGET:</b>
+                                    <input
+                                        class="bg-white d-block py-1"
+                                        v-model="filters.minBudget"
 
-                                        />
-                                        <p class="help-block text-error" style="height: 1em;" v-if="minBudgetError || maxBudgetError">{{ minBudgetError }}</p>
-                                    </div>
-                                    <div class="w-50">
-                                        <b>MAXIMUM BUDGET:</b>
-                                        <input
-                                            class="bg-white d-block py-1"
-                                            v-model="filters.maxBudget"
-                                        />
-                                        <p class="help-block text-error" style="height: 1em;" v-if="minBudgetError || maxBudgetError">{{ maxBudgetError }}</p>
-                                    </div>
+                                    />
+                                    <p class="help-block text-error" style="height: 1em;" v-if="minBudgetError || maxBudgetError">{{ minBudgetError }}</p>
+                                </div>
+                                <div class="w-50">
+                                    <b>MAXIMUM BUDGET:</b>
+                                    <input
+                                        class="bg-white d-block py-1"
+                                        v-model="filters.maxBudget"
+                                    />
+                                    <p class="help-block text-error" style="height: 1em;" v-if="minBudgetError || maxBudgetError">{{ maxBudgetError }}</p>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </v-expand-transition>
-            <div class="card-footer bg-blue-lighten-4 d-flex justify-content-between align-items-center px-12 font-lg">
-                <b class="pr-8">Filters:</b>
-                <div class="d-flex flex-wrap justify-content-start">
+            </div>
+        </v-expand-transition>
+        <div class="card-footer bg-blue-lighten-4 d-flex justify-content-between align-items-center px-12 font-lg">
+            <b class="pr-8">Filters:</b>
+            <div class="d-flex flex-wrap justify-content-start">
                 <span class="text-dark pr-8" v-if="anyFilters === 0">
                     NO FILTERS APPLIED
                 </span>
 
-                    <div v-if="filters.regions" class="px-2 mb-1 d-flex flex-wrap">
-                        REGIONS:
-                    </div>
-                    <span
-                        v-for="region in filters.regions"
-                        class="badge-pill badge-info mr-2 mb-1">
+                <div v-if="filters.regions" class="px-2 mb-1 d-flex flex-wrap">
+                    REGIONS:
+                </div>
+                <span
+                    v-for="region in filters.regions"
+                    class="badge-pill badge-info mr-2 mb-1">
                         {{ region.name }}
                     </span>
 
-                    <div v-if="filters.countries" class="px-2 mb-1 d-flex flex-wrap">
-                        <span class="pr-2">COUNTRIES:</span>
-                    </div>
-                    <div
-                        v-for="country in filters.countries"
-                        class="badge-pill badge-info mr-2 mb-1">
-                        {{ country.name }}
-                    </div>
-                    <div v-if="filters.startDate || filters.endDate" class="mr-3 mb-1">
-                        <span class="px-2">DATES:</span>
-                        <span class="badge-pill badge-info" v-if="filters.startDate && !filters.endDate"> {{ filters.startDate }} onwards</span>
-                        <span class="badge-pill badge-info" v-if="! filters.startDate && filters.endDate"> {{ filters.startDate }} and earlier</span>
-                        <span class="badge-pill badge-info" v-if="filters.startDate && filters.endDate">{{ filters.startDate }} - {{ filters.endDate }}</span>
-                    </div>
-
-                    <div v-if="(filters.minBudget || filters.maxBudget) && !minBudgetError && !maxBudgetError" class="mr-3 mb-1">
-                        <span class="px-2">BUDGET:</span>
-                        <span class="badge-pill badge-info" v-if="filters.minBudget && !filters.maxBudget"> USD {{ filters.minBudget }} or higher</span>
-                        <span class="badge-pill badge-info" v-if="!filters.minBudget && filters.maxBudget"> USD {{ filters.maxBudget }} or lower</span>
-                        <span class="badge-pill badge-info" v-if="filters.minBudget && filters.maxBudget"> USD {{ filters.minBudget }} - {{ filters.maxBudget }}</span>
-                    </div>
+                <div v-if="filters.countries" class="px-2 mb-1 d-flex flex-wrap">
+                    <span class="pr-2">COUNTRIES:</span>
                 </div>
-                <div class="btn btn-warning text-dark" @click="resetFilters" v-if="anyFilters">Reset Filters</div>
-                <div class="btn btn-primary" @click="modifyFilters">{{ showFilters ? 'Apply' : 'Modify' }} Filters</div>
+                <div
+                    v-for="country in filters.countries"
+                    class="badge-pill badge-info mr-2 mb-1">
+                    {{ country.name }}
+                </div>
+                <div v-if="filters.startDate || filters.endDate" class="mr-3 mb-1">
+                    <span class="px-2">DATES:</span>
+                    <span class="badge-pill badge-info" v-if="filters.startDate && !filters.endDate"> {{ filters.startDate }} onwards</span>
+                    <span class="badge-pill badge-info" v-if="! filters.startDate && filters.endDate"> {{ filters.startDate }} and earlier</span>
+                    <span class="badge-pill badge-info" v-if="filters.startDate && filters.endDate">{{ filters.startDate }} - {{ filters.endDate }}</span>
+                </div>
+
+                <div v-if="(filters.minBudget || filters.maxBudget) && !minBudgetError && !maxBudgetError" class="mr-3 mb-1">
+                    <span class="px-2">BUDGET:</span>
+                    <span class="badge-pill badge-info" v-if="filters.minBudget && !filters.maxBudget"> USD {{ filters.minBudget }} or higher</span>
+                    <span class="badge-pill badge-info" v-if="!filters.minBudget && filters.maxBudget"> USD {{ filters.maxBudget }} or lower</span>
+                    <span class="badge-pill badge-info" v-if="filters.minBudget && filters.maxBudget"> USD {{ filters.minBudget }} - {{ filters.maxBudget }}</span>
+                </div>
             </div>
+            <div class="btn btn-warning text-dark" @click="resetFilters" v-if="anyFilters">Reset Filters</div>
+            <div class="btn btn-primary" @click="modifyFilters">{{ showFilters ? 'Apply' : 'Modify' }} Filters</div>
+        </div>
+    </div>
+
+    <div class="nav nav-pills"
+
+
+        >
+            <div class="rounded-pill btn btn-primary" @click="tab = 'summary'">Summary of Initiatives</div>
+            <div class="rounded-pill btn btn-primary" @click="tab = 'redflags'">Summary of Red Flags</div>
+            <div class="rounded-pill btn btn-primary" @click="tab = 'principles'">Summary of Principles</div>
+
         </div>
 
-
+    <div v-if="tab==='summary'">
         <div class="mt-8 card">
             <div class="card-header d-flex align-items-baseline">
                 <h2 class="mr-4">Summary of Initiatives</h2>
@@ -198,7 +212,8 @@
                 </div>
             </div>
         </div>
-
+    </div>
+    <div v-if="tab==='redflags'">
         <div class="mt-8 card">
             <div class="card-header d-flex align-items-baseline">
                 <h2 class="mr-4">Summary of Red Flags</h2>
@@ -208,7 +223,7 @@
 
 
                 <!-- red lines summary -->
-                <table class="table" v-if="summary.redlinesSummary != null && false === true">
+                <table class="table" v-if="summary.redlinesSummary != null">
 
                     <thead class="text-center">
                     <th>Red Lines</th>
@@ -229,25 +244,27 @@
             </div>
         </div>
     </div>
-    <div class="card mx-auto w-100" style="max-width: 1500px;" v-if="summary.yoursPrinciplesSummarySorted">
-        <div class="card-header">
-            <h2 class="mr-4">Summary of Principles</h2>
-            <h5>({{ filters.portfolio ? filters.portfolio.name.toUpperCase() : 'ALL PORTFOLIOS' }})</h5>
-        </div>
-        <div class="card-body">
-            <div class="row">
-                <div class="col-12 col-lg-6">
-                    <Bar :data="chartDataYours" :options="chartOptions"/>
-                </div>
 
-                <div class="col-12 col-lg-6">
-                    <Bar :data="chartDataOthers" :options="chartOptions"/>
+    <div v-if="tab==='principles'">
+        <div class="card mx-auto w-100" style="max-width: 1500px;" v-if="summary.yoursPrinciplesSummarySorted">
+            <div class="card-header">
+                <h2 class="mr-4">Summary of Principles</h2>
+                <h5>({{ filters.portfolio ? filters.portfolio.name.toUpperCase() : 'ALL PORTFOLIOS' }})</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-12 col-lg-6">
+                        <Bar :data="chartDataYours" :options="chartOptions"/>
+                    </div>
+
+                    <div class="col-12 col-lg-6">
+                        <Bar :data="chartDataOthers" :options="chartOptions"/>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <hr/>
 
     <div class="btn btn-danger" @click="checkSummary">
         Console Log Summary Output
@@ -269,6 +286,7 @@ import '@vuepic/vue-datepicker/dist/main.css'
 import {ref, computed, onMounted, watch} from "vue";
 import {isNumber} from "lodash";
 
+const tab = ref('summary')
 
 const props = defineProps({
     user: {
@@ -332,7 +350,7 @@ const filteredCountries = computed(() => {
 function modifyFilters() {
     showFilters.value = !showFilters.value
 
-    if(!showFilters.value) {
+    if (!showFilters.value) {
         getData()
     }
 }
@@ -444,7 +462,7 @@ const chartDataOthers = computed(() => {
 const chartOptions = ref({
     responsive: true,
     maintainAspectRatio: true,
-    aspectRatio: 0.75,
+    aspectRatio: 1,
     indexAxis: 'y',
     scales: {
         y: {
@@ -455,7 +473,7 @@ const chartOptions = ref({
                 z: 1,
                 color: 'black',
                 font: {
-                    size: 16,
+                    size: 14,
                 },
             },
         },
@@ -470,11 +488,11 @@ const chartOptions = ref({
             backgroundColor: '#f8f9fa',
             titleColor: 'black',
             titleFont: {
-                size: 16,
+                size: 14,
             },
             bodyColor: 'black',
             bodyFont: {
-                size: 16,
+                size: 14,
             },
             xAlign: 'center',
             yAlign: 'center',
