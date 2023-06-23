@@ -48,7 +48,7 @@ class Project extends Model
             }
         });
 
-        static::created(function ($project) {
+        static::created(function (Project $project) {
             $assessment = Assessment::create(['project_id' => $project->id]);
             $assessment->redLines()->sync(RedLine::all()->pluck('id')->toArray());
             $assessment->principles()->sync(Principle::all()->pluck('id')->toArray());

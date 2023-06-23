@@ -561,10 +561,7 @@ const chartOptions = ref({
     border-style: none;
     border-color: initial;
     border-image: initial;
-    padding-left: 10px;
-    padding-right: 10px;
-    padding-top: 15px;
-    padding-bottom: 10px;
+    padding: 15px 10px 10px;
     font-size: 14px;
 }
 

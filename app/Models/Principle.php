@@ -2,21 +2,15 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Backpack\CRUD\app\Models\Traits\CrudTrait;
 use Illuminate\Database\Eloquent\Model;
 
 class Principle extends Model
 {
-    use \Backpack\CRUD\app\Models\Traits\CrudTrait;
-    use HasFactory;
+    use CrudTrait;
 
     protected $guarded = ['id'];
 
-    /**
-     * The attributes that should be cast to native types.
-     *
-     * @var array
-     */
     protected $casts = [
         'id' => 'integer',
         'can_be_na' => 'boolean',
@@ -45,9 +39,9 @@ class Principle extends Model
             //->using(PrincipleProject::class);
     }
 
-    public function principleProjects()
+    public function principleAssessments()
     {
-        return $this->hasMany(PrincipleProject::class);
+        return $this->hasMany(PrincipleAssessment::class);
     }
 
     public function scoreTags()

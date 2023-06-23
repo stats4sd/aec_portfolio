@@ -55,7 +55,7 @@ class ProjectSeeder extends Seeder
         }
 
 
-        $redlines = Redline::all();
+        $redlines = RedLine::all();
         $principles = Principle::all();
         $regions = Region::with('countries')->get();
 
@@ -101,7 +101,7 @@ class ProjectSeeder extends Seeder
                 continue;
             }
 
-            $assessment->redlines()->sync($redlinesToAdd);
+            $assessment->redLines()->sync($redlinesToAdd);
 
             // if redlines are failed
             if ($assessment->failingRedlines()->count() !== 0) {

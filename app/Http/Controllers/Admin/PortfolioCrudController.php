@@ -5,23 +5,23 @@ namespace App\Http\Controllers\Admin;
 use App\Models\Portfolio;
 use App\Http\Requests\PortfolioRequest;
 use Backpack\CRUD\app\Http\Controllers\CrudController;
+use Backpack\CRUD\app\Http\Controllers\Operations\CreateOperation;
+use Backpack\CRUD\app\Http\Controllers\Operations\DeleteOperation;
+use Backpack\CRUD\app\Http\Controllers\Operations\ListOperation;
+use Backpack\CRUD\app\Http\Controllers\Operations\ShowOperation;
+use Backpack\CRUD\app\Http\Controllers\Operations\UpdateOperation;
 use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Facades\Session;
-use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
-/**
- * Class PortfolioCrudController
- * @package App\Http\Controllers\Admin
- * @property-read \Backpack\CRUD\app\Library\CrudPanel\CrudPanel $crud
- */
+
 class PortfolioCrudController extends CrudController
 {
-    use \Backpack\CRUD\app\Http\Controllers\Operations\ListOperation;
-    use \Backpack\CRUD\app\Http\Controllers\Operations\CreateOperation;
-    use \Backpack\CRUD\app\Http\Controllers\Operations\UpdateOperation;
-    use \Backpack\CRUD\app\Http\Controllers\Operations\DeleteOperation { destroy as traitDestroy; }
-    use \Backpack\CRUD\app\Http\Controllers\Operations\ShowOperation { show as traitShow; }
+    use ListOperation;
+    use CreateOperation;
+    use UpdateOperation;
+    use DeleteOperation { destroy as traitDestroy; }
+    use ShowOperation { show as traitShow; }
 
     use AuthorizesRequests;
 
@@ -103,9 +103,7 @@ class PortfolioCrudController extends CrudController
     {
         $this->authorize('view', Portfolio::find($id));
 
-        $content = $this->traitShow($id);
-
-        return $content;
+        return $this->traitShow($id);
     }
 
 }
