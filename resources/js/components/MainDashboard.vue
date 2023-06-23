@@ -12,16 +12,19 @@
     >
         <div class="card-body font-lg d-flex justify-content-between align-items-center px-12">
             <div style="min-width: 400px" class="d-flex align-items-center w-100">
-                <b class="pr-3">SHOWING PORTFOLIO:</b>
-                <vSelect
-                    class="flex-grow-1"
-                    v-model="filters.portfolio"
-                    :options="portfolios"
-                    :reduce="portfolio => portfolio.id"
-                    :label="'name'"
-                    placeholder="ALL PORTFOLIOS"
-                    :clearable="true"
-                ></vSelect>
+                    <b class="pr-3">SHOWING PORTFOLIO:</b>
+                    <vSelect
+                        class="flex-grow-1 mr-16"
+                        v-model="filters.portfolio"
+                        :options="portfolios"
+                        :label="'name'"
+                        placeholder="ALL PORTFOLIOS"
+                        :clearable="true"
+                    ></vSelect>
+                <div class="btn btn-warning justify-end">
+                    Show all portfolios
+                </div>
+
             </div>
             <div>
 
