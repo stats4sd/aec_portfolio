@@ -27,6 +27,7 @@
         "@vitejs/plugin-vue": "^3.0.1",
         "@vuepic/vue-datepicker": "^5.2.1",
         "chart.js": "^4.3.0",
+        "chartjs-plugin-datalabels": "^2.2.0",
         "flot": "^4.2.3",
         "noty": "^3.2.0-beta-deprecated",
         "puppeteer": "^20.2.0",
