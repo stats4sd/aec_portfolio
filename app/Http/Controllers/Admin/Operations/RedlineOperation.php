@@ -8,6 +8,8 @@ use App\Models\AssessmentRedLine;
 use App\Models\Principle;
 use App\Models\Project;
 use App\Models\RedLine;
+use Carbon\Carbon;
+use Cron\AbstractField;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Validation\ValidationException;
@@ -115,6 +117,7 @@ trait RedlineOperation
         if ($request->redlines_complete) {
             if ($latestAssessment->failingRedlines()->count() > 0) {
                 $latestAssessment->redline_status = AssessmentStatus::Failed;
+                $latestAssessment->completed_at = Carbon::now();
             } else {
                 $latestAssessment->redline_status = AssessmentStatus::Complete;
             }
