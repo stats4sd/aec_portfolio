@@ -40,6 +40,7 @@ use App\Http\Controllers\Admin\Operations\RedlineOperation;
 use App\Http\Controllers\Admin\Traits\UsesSaveAndNextAction;
 use Backpack\Pro\Http\Controllers\Operations\FetchOperation;
 use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
+
 class ProjectCrudController extends CrudController
 {
     use CreateOperation;
@@ -85,12 +86,19 @@ class ProjectCrudController extends CrudController
             $this->data['entry'] = $this->crud->getEntryWithLocale($id);
         }
 
+        $this->data['entry']->load([
+            'assessments' => [
+                'failingRedLines'
+            ],
+        ]);
+
+
         $this->data['crud'] = $this->crud;
         $this->data['title'] = $this->crud->getTitle() ?? trans('backpack::crud.preview') . ' ' . $this->crud->entity_name;
 
 
         // #### ADD SPIDER CHART DATA ###
-        $this->data['spiderData'] = $this->data['entry']->assessments->last()->principleProjects->map(function ($principleProject) {
+        $this->data['spiderData'] = $this->data['entry']->assessments->last()->principleAssessments->map(function ($principleProject) {
             return [
                 'axis' => $principleProject->principle->name,
                 'value' => $principleProject->rating,
@@ -145,6 +153,8 @@ class ProjectCrudController extends CrudController
         $selectedOrganisationId = Session::get('selectedOrganisationId');
         CRUD::field('organisation_id')->type('hidden')->value($selectedOrganisationId);
 
+        $selectedOrganisation = Organisation::find($selectedOrganisationId);
+
         $this->crud->addFields([
             [
                 'name' => 'portfolio_id',
@@ -162,6 +172,13 @@ class ProjectCrudController extends CrudController
         CRUD::field('code')->hint('The code should uniquely identify the project within your institution\'s porfolio. Leave blank for an auto-generated code.');
         CRUD::field('description')->hint('This is optional, but will help to provide context for the AE assessment');
 
+
+        CRUD::field('currency-info')
+            ->type('section-title')
+            ->view_namespace('stats4sd.laravel-backpack-section-title::fields')
+            ->title('Currency and Budget')
+            ->content("$selectedOrganisation->name uses $selectedOrganisation->currency as the default currency. You may change the currency for this initiative if you wish. For analysis, the budget will be converted into $selectedOrganisation->currency using the exchange rates from either the start date of the initiative (if in the past), or today (if the initiative has not yet started)");
+
         CRUD::field('currency')
             ->wrapper(['class' => 'form-group col-sm-3 required'])
             ->attributes(['class' => 'form-control text-right'])
@@ -169,6 +186,60 @@ class ProjectCrudController extends CrudController
         CRUD::field('budget')
             ->wrapper(['class' => 'form-group col-sm-9 required'])
             ->hint('Enter the overall budget for the project');
+
+
+        CRUD::field('funding_sources_title')
+            ->type('section-title')
+            ->view_namespace('stats4sd.laravel-backpack-section-title::fields')
+            ->title('Funding Source and Recipient')
+            ->content("To enable a high-level analysis of funding flows towards Agroecology, please answer the following questions.");
+
+        CRUD::field('uses_only_own_funds')
+            ->type('radio')
+            ->label('Is this initiative entirely funded through your own institutional funds, or are there external funding sources?')
+            ->options([
+                0 => 'This initiative is <b>entirely</b> self-funded',
+                1 => 'This initiative has external funding sources',
+            ]);
+
+        CRUD::field('fundingSources')
+            ->label('Funding Sources')
+            ->new_item_label('Add funding source')
+            ->type('relationship')
+            ->attribute('source')
+            ->subfields([
+                [
+                    'name' => 'institution_id',
+                    'type' => 'relationship',
+                    'label' => 'Select the funding source...',
+                    'ajax' => true,
+                    'data_source' => url('/admin/project/fetch/funding-sources'),
+                    'minimum_input_length' => 0,
+                    'wrapper' => ['class' => 'form-group col-md-6'],
+                ],
+                [
+                    'name' => 'source',
+                    'type' => 'text',
+                    'label' => '...or type in the name here',
+                    'wrapper' => ['class' => 'form-group col-md-6'],
+                ],
+                [
+                    'name' => 'amount',
+                    'type' => 'number',
+                    'label' => 'Enter the amount of funding given by this source',
+                ],
+            ]);
+
+        CRUD::field('main_recipient')
+            ->label('Please enter the main recipient of the funds for this initiative')
+            ->hint('E.g., the institution or entity that directly receives the majority of the funds for this initiative');
+
+
+        CRUD::field('initiative-timing-title')
+            ->type('section-title')
+            ->view_namespace('stats4sd.laravel-backpack-section-title::fields')
+            ->title('Initiative Timing');
+
 
         CRUD::field('start_date')->type('date_picker')->label('Enter the start date for the project.');
         CRUD::field('end_date')->type('date_picker')->label('Enter the end date for the project.')
@@ -495,5 +566,18 @@ class ProjectCrudController extends CrudController
         ]);
     }
 
+    public function fetchFundingSources()
+    {
+
+        $currentOrgId = Session::get('selectedOrganisationId');
+
+        return $this->fetch([
+            'model' => Organisation::class,
+            'query' => function (Organisation $model) use ($currentOrgId) {
+                return $model->withoutGlobalScopes(['owned'])
+                    ->whereNot('id', $currentOrgId);
+            }
+        ]);
+    }
 
 }

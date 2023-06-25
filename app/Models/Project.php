@@ -12,6 +12,7 @@ use Backpack\CRUD\app\Models\Traits\CrudTrait;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Str;
@@ -66,6 +67,11 @@ class Project extends Model
         static::addGlobalScope('organisation', function (Builder $builder) {
              $builder->where('organisation_id', Session::get('selectedOrganisationId'));
         });
+    }
+
+    public function fundingSources(): HasMany
+    {
+        return $this->hasMany(FundingSource::class);
     }
 
     public function continents()

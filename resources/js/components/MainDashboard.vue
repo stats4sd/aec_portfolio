@@ -151,6 +151,10 @@
         </div>
     </div>
 
+    <div v-if="summary.tooFewOtherProjects" class="alert alert-warning text-dark">
+        NOTE: The chosen filters have resulted in a comparison dataset too small to guarantee anonymity, so the "other instutitions" results will not be shown.
+    </div>
+
     <ul class="nav nav-tabs mt-4" role="tablist">
         <li class="nav-item" role="presentation">
             <button
@@ -266,7 +270,9 @@
                         <tr v-for='redlinesSummaryRecord in summary.redlinesSummary'>
                             <td :class="[ redlinesSummaryRecord.yours === 100 ? 'table-success' : 'table-warning' ]">{{ redlinesSummaryRecord.name }}</td>
                             <td :class="[ redlinesSummaryRecord.yours === 100 ? 'table-success' : 'table-warning' ]">{{ redlinesSummaryRecord.yours }}%</td>
-                            <td :class="[ redlinesSummaryRecord.yours === 100 ? 'table-success' : 'table-warning' ]">{{ redlinesSummaryRecord.others }}%</td>
+                            <td v-if="!summary.tooFewOtherProjects"
+                                :class="[ redlinesSummaryRecord.yours === 100 ? 'table-success' : 'table-warning' ]">{{ redlinesSummaryRecord.others }}%
+                            </td>
                         </tr>
                         </tbody>
 
@@ -290,7 +296,11 @@
 
                         <div class="col-12 col-lg-6 d-flex flex-column align-items-center">
                             <h2 class="mb-4">Other Institutions' Initiatives</h2>
-                            <Bar :data="chartDataOthers" :options="chartOptions"/>
+                            <Bar v-if="!summary.tooFewOtherProjects" :data="chartDataOthers" :options="chartOptions"/>
+
+                            <div v-else class="d-flex flex-column justify-content-center h-100">
+                                <div class="alert alert-info text-dark">There are too few initiatives or institutions within the current set of filters to display anonymized results.</div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -413,10 +423,6 @@ async function getData() {
     summary.value = res.data
 
 
-    console.clear();
-    console.log(summary.value.yoursPrinciplesSummarySorted)
-    // show principles summary by calling Javascript function
-    //window.setTimeout(showPrinciplesSummary, 1000);
 }
 
 function formatBudget(amount) {
@@ -438,6 +444,7 @@ import {Bar} from 'vue-chartjs'
 // import ChartDataLabels from 'chartjs-plugin-datalabels';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend)
+
 // ChartJS.register(ChartDataLabels);
 
 function getChartData(principlesSummary) {
@@ -476,7 +483,7 @@ const chartDataYours = computed(() => {
 
 const chartDataOthers = computed(() => {
 
-    if (summary.value.othersPrinciplesSummarySorted) {
+    if (summary.value.othersPrinciplesSummarySorted && !summary.value.tooFewOtherProjects) {
         return getChartData(summary.value.othersPrinciplesSummarySorted)
     }
     return {

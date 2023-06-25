@@ -19,6 +19,8 @@ return new class extends Migration
             $table->string('message')->nullable();
             $table->unsignedBigInteger('total_count')->nullable();
             $table->unsignedBigInteger('total_budget')->nullable();
+            $table->boolean('too_few_others')->default(0)
+                ->comment('Is true if there are too few "other" initiatives or institutions to do an anonymous comparison');
             $table->text('status_summary')->nullable();
             $table->text('red_lines_summary')->nullable();
             $table->text('principles_summary_yours')->nullable();

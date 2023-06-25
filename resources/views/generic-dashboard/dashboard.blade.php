@@ -4,7 +4,12 @@
 
     <div class="mt-16 container-fluid" id="dashboard">
 
-        <h1 class="font-weight-bold text-deep-green mb-4">{{ $organisation->name }} - Summary</h1>
+        <div class="d-flex justify-content-between">
+            <h1 class="font-weight-bold text-deep-green mb-4">{{ $organisation->name }} - Summary</h1>
+            <div>
+                <a class="btn btn-info" href="{{ url('/admin/organisation/export') }}">Export All Initiative Data</a>
+            </div>
+        </div>
 
         <v-app>
             <Suspense>

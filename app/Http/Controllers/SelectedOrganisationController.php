@@ -34,7 +34,7 @@ class SelectedOrganisationController extends Controller
         Session::put('selectedOrganisationId', $request->input('organisationId'));
 
         // redirect to a page that simply showed the selected organisation
-        $redirect = $request->input('redirect') ?? backpack_url('organisation');
+        $redirect = $request->input('redirect') ?? backpack_url('organisation/show');
 
         return redirect($redirect);
 
@@ -42,7 +42,7 @@ class SelectedOrganisationController extends Controller
 
     public function show()
     {
-        return redirect(backpack_url('generic-dashboard'));
+        return redirect(backpack_url('organisation/show'));
     }
 
 }

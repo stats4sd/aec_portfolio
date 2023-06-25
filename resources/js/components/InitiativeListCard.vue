@@ -36,7 +36,7 @@
 
                     <div class="row">
                         <div class="col-12 col-lg-4 border border-bottom-0 border-left-0 border-top-0">
-                            <div class="d-flex">
+                            <div class="d-flex mb-4">
                                 <div class="w-50">
                                     <span class="font-weight-bold text-grey">CODE</span><br/>
                                     <span class="font-weight-bold">{{ initiative.code }}</span>
@@ -46,6 +46,9 @@
                                     <span class="font-weight-bold">{{ initiative.portfolio.name }}</span>
                                 </div>
                             </div>
+                            <a class="btn btn-primary" :href="`/admin/project/${initiative.id}/edit`">Edit Initiative Details</a>
+                            <a class="btn btn-success" :href="`/admin/project/${initiative.id}/show`">Show Initiative Information</a>
+
                         </div>
 
                         <div class="col-12 col-lg-6">
@@ -151,7 +154,10 @@ const nextAction = computed(() => {
         }
     }
 
-    return null
+    return {
+        label: "Show Initiative Information",
+        url: `/admin/project/${props.initiative.id}/show`,
+    }
 
 })
 

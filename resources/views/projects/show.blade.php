@@ -66,26 +66,23 @@
                     @endif
                     <tr>
                         <td class="text-right pr-4 mr-2">Status:</td>
-                        <td>{{ $entry->assessment_status }}</td>
+                        <td>{{ $entry->latest_assessment_status }}</td>
                     </tr>
 
-                    <!-- TODO: get ratings total, overall score from latest assessment instead of project -->
-                    <!-- As the show view will be used to past assessments and latest assessment, we need to pass in assessment ID -->
-                    <!-- Question: how to get and pass latest assessment ID into the URL of show view...? -->
                     <tr>
                         <td class="text-right pr-4 mr-2">Ratings Total:</td>
-                        @if($entry->assessment_status === \App\Enums\AssessmentStatus::Complete)
-                            <td>{{ $entry->total }} / {{ $entry->totalPossible }}</td>
+                        @if($entry->latest_assessment->principle_status === \App\Enums\AssessmentStatus::Complete->value)
+                            <td>{{ $entry->latest_assessment->total }} / {{ $entry->latest_assessment->total_possible }}</td>
                         @else
                             <td class="text-secondary">~~ Assessment not yet completed ~~</td>
                         @endif
                     </tr>
                     <tr>
                         <td class="text-right pr-4 mr-2">Overall Score:</td>
-                        @if($entry->assessment_status === \App\Enums\AssessmentStatus::Complete)
-                            <td><span class="font-weight-bold">{{ $entry->overall_score }} % </span>
+                        @if($entry->latest_assessment->principle_status === \App\Enums\AssessmentStatus::Complete->value)
+                            <td><span class="font-weight-bold">{{ $entry->latest_assessment->overall_score }} % </span>
                                 <br/>
-                                <span class="text-sm text-secondary">Calculated based on {{ $entry->principleProjects()->where('is_na', 0)->count() }} / 13 relevant principles.</span>
+                                <span class="text-sm text-secondary">Calculated based on {{ $entry->latest_assessment->principleAssessments()->where('is_na', 0)->count() }} / 13 relevant principles.</span>
                             </td>
                         @else
                             <td class="text-secondary">~~ Assessment not yet completed ~~</td>
@@ -109,36 +106,34 @@
                         <th>Custom Examples/Indicators</th>
                     </tr>
 
-                    <!-- TODO: get principle projects from assessment instead of project -->
-
                     @php
-                        $principleProjects = $entry->principleProjects;
+                        $principleAssessments = $entry->latest_assessment->principleAssessments;
                     @endphp
 
                     @foreach(\App\Models\Principle::all() as $principle)
 
                         @php
-                            $principleProject = $principleProjects->where('principle_id', $principle->id)->first();
+                            $principleAssessment = $principleAssessments->where('principle_id', $principle->id)->first();
                         @endphp
                         <tr>
                             <td>{{ $principle->name }}</td>
-                            <td> {{ $principleProject->is_na ? "NA" : $principleProject->rating }}</td>
-                            <td> {{ $principleProject->is_na ? "-" : $principleProject->rating_comment }}</td>
+                            <td> {{ $principleAssessment->is_na ? "NA" : $principleAssessment->rating }}</td>
+                            <td> {{ $principleAssessment->is_na ? "-" : $principleAssessment->rating_comment }}</td>
                             <td>
-                                @if($principleProject->scoreTags()->count() > 0)
+                                @if($principleAssessment->scoreTags()->count() > 0)
                                     <button class="btn btn-link" type="button" data-toggle="modal"
                                             data-target="#modal-shared-{{$principle->id}}">
-                                        {{ $principleProject->scoreTags()->count() }} selected
+                                        {{ $principleAssessment->scoreTags()->count() }} selected
                                     </button>
                                 @else
                                     <span class="btn">0 selected</span>
                                 @endif
                             </td>
                             <td>
-                                @if($principleProject->customScoreTags()->count() > 0)
+                                @if($principleAssessment->customScoreTags()->count() > 0)
                                     <button class="btn btn-link" type="button" data-toggle="modal"
                                             data-target="#modal-custom-shared-{{$principle->id}}">
-                                        {{ $principleProject->customScoreTags()->count() }} added
+                                        {{ $principleAssessment->customScoreTags()->count() }} added
                                     </button>
                                 @else
                                     <span class="btn">0 added</span>
@@ -155,7 +150,7 @@
     @foreach(\App\Models\Principle::all() as $principle)
 
         @php
-            $principleProjectModal = $principleProjects->where('principle_id', $principle->id)->first();
+            $principleProjectModal = $principleAssessments->where('principle_id', $principle->id)->first();
         @endphp
 
 

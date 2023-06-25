@@ -58,9 +58,10 @@
         <div>
 
 
-            <div class="d-flex mb-4">
-                <a href="/admin/project/create" class="btn btn-primary mr-4">Add Initiative</a>
+            <div class="d-flex mb-4 btn-group">
+                <a href="/admin/project/create" class="btn btn-primary">Add Initiative</a>
                 <button class="btn btn-success">Import Initiatives</button>
+                <a href="/admin/organisation/export" class="btn btn-info">Export All Initiative Data</a>
             </div>
 
             <span>Showing 1 to {{ filteredInitiatives.length }} of {{ filteredInitiatives.length }} entries</span>

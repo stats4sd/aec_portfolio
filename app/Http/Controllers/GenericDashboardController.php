@@ -89,8 +89,8 @@ class GenericDashboardController extends Controller
 
         // nullable items are cast to "null" string for inclusion into SQL query
         $portfolioId = $request['portfolio']['id'] ?? 'null';
-        $regionIds = $request['regions'] ? collect($request['regions'])->pluck('id')->join(', ') : 'null';
-        $countryIds = $request['countries'] ? collect($request['countries'])->pluck('id')->join(', ') : 'null';
+        $regionIds = $request['regions'] ? "'" . collect($request['regions'])->pluck('id')->join(', ') . "'" : 'null';
+        $countryIds = $request['countries'] ? "'" . collect($request['countries'])->pluck('id')->join(', ') . "'" : 'null';
         $projectStartFrom = $request['startDate'] ?? 'null';
         $projectStartTo = $request['endDate'] ?? 'null';
         $budgetFrom = $request['minBudget'] ?? 'null';
@@ -114,6 +114,7 @@ class GenericDashboardController extends Controller
             @message,
             @totalCount,
             @totalBudget,
+            @tooFewOtherProjects,
             @statusSummary,
             @redlinesSummary,
             @yoursPrinciplesSummary,
@@ -129,6 +130,7 @@ class GenericDashboardController extends Controller
         @message as message,
         @totalCount as totalCount,
         @totalBudget as totalBudget,
+        @tooFewOtherProjects as tooFewOtherProjects,
         @statusSummary as statusSummary,
         @redlinesSummary as redlinesSummary,
         @yoursPrinciplesSummary as yoursPrinciplesSummary,
@@ -149,6 +151,7 @@ class GenericDashboardController extends Controller
             $jsonRes['yoursPrinciplesSummarySorted'] = null;
             $jsonRes['othersPrinciplesSummarySorted'] = null;
             $jsonRes['dashboardYoursId'] = $dashboardYoursId;
+            $jsonRes['tooFewOtherProjects'] = $results[0]->tooFewOtherProjects;
 
             return $jsonRes;
         }
@@ -156,9 +159,13 @@ class GenericDashboardController extends Controller
         // convert string to JSON
         $statusSummary = json_decode($results[0]->statusSummary, true);
         $redlinesSummary = json_decode($results[0]->redlinesSummary, true);
+
         $yoursPrinciplesSummary = json_decode($results[0]->yoursPrinciplesSummary, true);
         $othersPrinciplesSummary = json_decode($results[0]->othersPrinciplesSummary, true);
 
+        if ($results[0]->tooFewOtherProjects === 1) {
+            $othersPrinciplesSummary = null;
+        }
 
         // prepare principles summary with sorting preference
         $yoursPrinciplesSummarySorted = collect($yoursPrinciplesSummary)->filter(fn($summary) => $summary !== null)->toArray();
@@ -235,10 +242,14 @@ class GenericDashboardController extends Controller
 
         // copy others principle summary item one by one according to the ordering of yours principles summary
         foreach ($yoursPrinciplesSummarySorted as $yoursItem) {
-            foreach ($othersPrinciplesSummary as $othersItem) {
-                if ($othersItem['id'] == $yoursItem['id']) {
-                    array_push($othersPrinciplesSummarySorted, $othersItem);
-                    break;
+
+            if ($othersPrinciplesSummary) {
+
+                foreach ($othersPrinciplesSummary as $othersItem) {
+                    if ($othersItem['id'] == $yoursItem['id']) {
+                        array_push($othersPrinciplesSummarySorted, $othersItem);
+                        break;
+                    }
                 }
             }
         }
@@ -251,10 +262,10 @@ class GenericDashboardController extends Controller
             ->get();
 
         $assessmentScore = $allAssessments->sum(fn(Assessment $assessment) => $assessment->overall_score)
-             / $allAssessments->where('completed_at', '!=', null)->count();
+            / $allAssessments->where('completed_at', '!=', null)->count();
 
 
-        $aeBudget = round($results[0]->totalBudget * ( $assessmentScore / 100), 0);
+        $aeBudget = round($results[0]->totalBudget * ($assessmentScore / 100), 0);
 
         $assessmentScore = round($assessmentScore, 1);
 
@@ -267,6 +278,7 @@ class GenericDashboardController extends Controller
         $jsonRes['totalBudget'] = $results[0]->totalBudget;
         $jsonRes['assessmentScore'] = $assessmentScore;
         $jsonRes['aeBudget'] = $aeBudget;
+        $jsonRes['tooFewOtherProjects'] = $results[0]->tooFewOtherProjects;
         $jsonRes['statusSummary'] = $statusSummary;
         $jsonRes['redlinesSummary'] = $redlinesSummary;
         $jsonRes['yoursPrinciplesSummarySorted'] = $yoursPrinciplesSummarySorted;
@@ -277,9 +289,6 @@ class GenericDashboardController extends Controller
 
         return $jsonRes;
 
-        // TODO: separate 'overall' from other redline summary lines
-        // TODO: fix formatting for redlines;
-        // Consider 'yours' vs ' others'?
     }
 
 }
