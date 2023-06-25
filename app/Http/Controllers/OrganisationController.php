@@ -2,21 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Enums\AssessmentStatus;
 use App\Exports\Assessment\AssessmentExportWorkbook;
-use App\Exports\MergedExport;
 use App\Http\Requests\OrganisationRequest;
 use App\Jobs\ExportOrgData;
 use App\Models\Organisation;
-use App\Models\Principle;
-use App\Models\Project;
-use App\Models\RedLine;
-use App\Models\Team;
 use Carbon\Carbon;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
 use Maatwebsite\Excel\Facades\Excel;
-use Prologue\Alerts\Facades\Alert;
 
 class OrganisationController extends Controller
 {
@@ -28,7 +20,7 @@ class OrganisationController extends Controller
 
     public function show()
     {
-        $organisation = Organisation::find(Session::get('selectedOrganisationId'));
+        $organisation = Organisation::find(Session::get('selectedOrganisationId'))->load('portfolios.projects');
 
         return view('organisations.show', ['organisation' => $organisation]);
 
