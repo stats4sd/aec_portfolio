@@ -103,7 +103,7 @@ class PortfolioCrudController extends CrudController
     {
         $this->authorize('view', Portfolio::find($id));
 
-        return $this->traitShow($id);
+        return view('organisations.portfolio');
     }
 
 }

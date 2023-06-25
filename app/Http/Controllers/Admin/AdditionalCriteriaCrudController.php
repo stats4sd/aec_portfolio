@@ -68,6 +68,23 @@ class AdditionalCriteriaCrudController extends CrudController
         CRUD::column('can_be_na');
     }
 
+    public function setupShowOperation()
+    {
+        CRUD::column('name');
+
+        CRUD::column('description')->type('textarea');
+
+        CRUD::column('link');
+
+        CRUD::column('Rating Definitions');
+        CRUD::column('rating_two')->label('Score of 2.0:');
+        CRUD::column('rating_one')->label('Score of 1.0:');
+        CRUD::column('rating_zero')->label('Score of 0.0:');
+        CRUD::column('can_be_na')->type('boolean');
+
+
+    }
+
     protected function setupCreateOperation()
     {
 

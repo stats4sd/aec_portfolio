@@ -11,9 +11,7 @@
             <th scope="col">Portfolio Name</th>
             <th scope="col"># of Initiatives</th>
             <th scope="col"># of Fully Assessed Initiatives</th>
-            @if(Auth::user()->can('maintain portfolios'))
-                <th scope="col">Actions</th>
-            @endif
+            <th scope="col">Actions</th>
         </tr>
         </thead>
         <tbody>
@@ -25,12 +23,16 @@
                     </td>
                     <td>{{ $portfolio->projects->count() }}</td>
                     <td>{{ $portfolio->projects->filter(fn(\App\Models\Project $initiative): bool => $initiative->latest_assessment->completed_at)->count() }}</td>
-                    @if(Auth::user()->can('maintain portfolios'))
-                        <td>
-                            <a href="{{ route('portfolio.edit', [$organisation, $portfolio]) }}" class="btn btn-dark btn-sm" name="edit_member{{ $portfolio->id }}" onclick="">EDIT</a>
-                            <button class="btn btn-dark btn-sm remove-button" data-portfolio="{{ $portfolio->id }}" data-toggle="modal" data-target="#removePortfolioModal{{ $portfolio->id }}">REMOVE</button>
-                        </td>
-                    @endif
+                    <td>
+                        <div class="btn-group">
+
+                            <a href="{{ url('admin/project') }}" class="btn btn-success btn-sm">SHOW INITIATIVES</a>
+                            @if(Auth::user()->can('maintain portfolios'))
+                                <a href="{{ route('portfolio.edit', [$organisation, $portfolio]) }}" class="btn btn-info btn-sm">EDIT</a>
+                                <button class="btn btn-danger btn-sm remove-button" data-portfolio="{{ $portfolio->id }}" data-toggle="modal" data-target="#removePortfolioModal{{ $portfolio->id }}">REMOVE</button>
+                            @endif
+                        </div>
+                    </td>
                 </tr>
             @endforeach
         @endif
