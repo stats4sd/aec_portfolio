@@ -11,6 +11,10 @@ use App\Models\AdditionalCriteriaScoreTag;
 use App\Models\Portfolio;
 use App\Models\Principle;
 use App\Models\Assessment;
+use Backpack\CRUD\app\Http\Controllers\Operations\CreateOperation;
+use Backpack\CRUD\app\Http\Controllers\Operations\DeleteOperation;
+use Backpack\CRUD\app\Http\Controllers\Operations\ShowOperation;
+use Backpack\CRUD\app\Http\Controllers\Operations\UpdateOperation;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
@@ -36,21 +40,14 @@ use App\Http\Controllers\Admin\Operations\RedlineOperation;
 use App\Http\Controllers\Admin\Traits\UsesSaveAndNextAction;
 use Backpack\Pro\Http\Controllers\Operations\FetchOperation;
 use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
-use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
-
-/**
- * Class ProjectCrudController
- * @package App\Http\Controllers\Admin
- * @property-read \Backpack\CRUD\app\Library\CrudPanel\CrudPanel $crud
- */
 class ProjectCrudController extends CrudController
 {
-    use \Backpack\CRUD\app\Http\Controllers\Operations\CreateOperation;
-    use \Backpack\CRUD\app\Http\Controllers\Operations\UpdateOperation;
-    use \Backpack\CRUD\app\Http\Controllers\Operations\DeleteOperation {
+    use CreateOperation;
+    use UpdateOperation;
+    use DeleteOperation {
         destroy as traitDestroy;
     }
-    use \Backpack\CRUD\app\Http\Controllers\Operations\ShowOperation;
+    use ShowOperation;
 
     use AuthorizesRequests;
 
@@ -59,15 +56,10 @@ class ProjectCrudController extends CrudController
     use FetchOperation;
     use UsesSaveAndNextAction;
 
-    /**
-     * Configure the CrudPanel object. Apply settings to all operations.
-     *
-     * @return void
-     */
     public function setup()
     {
 
-        CRUD::setModel(\App\Models\Project::class);
+        CRUD::setModel(Project::class);
         CRUD::setRoute(config('backpack.base.route_prefix') . '/project');
         CRUD::setEntityNameStrings('initiative', 'initiatives');
 
@@ -140,13 +132,6 @@ class ProjectCrudController extends CrudController
     }
 
 
-
-    /**
-     * Define what happens when the Create operation is loaded.
-     *
-     * @see https://backpackforlaravel.com/docs/crud-operation-create
-     * @return void
-     */
     protected function setupCreateOperation()
     {
         $this->authorize('create', Project::class);
@@ -225,12 +210,6 @@ class ProjectCrudController extends CrudController
 
     }
 
-    /**
-     * Define what happens when the Update operation is loaded.
-     *
-     * @see https://backpackforlaravel.com/docs/crud-operation-update
-     * @return void
-     */
     protected function setupUpdateOperation()
     {
         $this->authorize('update', CRUD::getCurrentEntry());
@@ -251,9 +230,6 @@ class ProjectCrudController extends CrudController
         return back();
     }
 
-    /**
-     * Define what happens when the Delete operation is loaded.
-     */
     public function destroy($id)
     {
         $this->authorize('delete', Project::find($id));

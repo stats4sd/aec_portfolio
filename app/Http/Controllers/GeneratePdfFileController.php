@@ -16,7 +16,7 @@ class GeneratePdfFileController extends Controller
         try
         {
             // visit URL with logged in session, get HTML body content
-            $opts = array('http' => array('header'=> 'Cookie: ' . $_SERVER['HTTP_COOKIE']."\r\n"));
+            $opts = ['http' => ['header'=> 'Cookie: ' . $_SERVER['HTTP_COOKIE']."\r\n"]];
             $context = stream_context_create($opts);
             $htmlContent = file_get_contents($url, false, $context);
 
@@ -33,7 +33,7 @@ class GeneratePdfFileController extends Controller
         }
         catch(\Exception $e)
         {
-            logger($e->getmessage());
+            logger($e->getMessage());
 
             return false;
         }

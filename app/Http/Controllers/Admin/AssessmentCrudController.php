@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Admin;
 
 use App\Enums\AssessmentStatus;
 use App\Http\Controllers\Admin\Operations\AssessCustomOperation;
-use App\Http\Controllers\Admin\Operations\AssessOperation;
 use App\Http\Controllers\Admin\Operations\RedlineOperation;
 use App\Http\Controllers\Admin\Traits\UsesSaveAndNextAction;
 use App\Http\Requests\AssessmentRequest;
@@ -13,6 +12,7 @@ use App\Models\AdditionalCriteriaScoreTag;
 use App\Models\ScoreTag;
 use Backpack\CRUD\app\Http\Controllers\CrudController;
 use Backpack\CRUD\app\Http\Controllers\Operations\CreateOperation;
+use Backpack\CRUD\app\Http\Controllers\Operations\ShowOperation;
 use Backpack\CRUD\app\Http\Controllers\Operations\UpdateOperation;
 use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
 use Backpack\CRUD\app\Library\Widget;
@@ -22,14 +22,10 @@ use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Str;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
-/**
- * Class AssessmentCrudController
- * @package App\Http\Controllers\Admin
- * @property-read \Backpack\CRUD\app\Library\CrudPanel\CrudPanel $crud
- */
+
 class AssessmentCrudController extends CrudController
 {
-    use \Backpack\CRUD\app\Http\Controllers\Operations\ShowOperation;
+    use ShowOperation;
     use CreateOperation;
     use UpdateOperation;
 
@@ -43,7 +39,7 @@ class AssessmentCrudController extends CrudController
 
     public function setup()
     {
-        CRUD::setModel(\App\Models\Assessment::class);
+        CRUD::setModel(Assessment::class);
         CRUD::setRoute(config('backpack.base.route_prefix') . '/assessment');
         CRUD::setEntityNameStrings('assessment', 'assessments');
     }
@@ -83,7 +79,7 @@ class AssessmentCrudController extends CrudController
                 $ratingZeroDefintionRow = "
                                             <tr>
                                                 <td>na</td>
-                                                <td>{$assessmentCriterion->rating_na}</td>
+                                                <td>$assessmentCriterion->rating_na</td>
                                             </tr>";
             }
 
@@ -99,17 +95,17 @@ class AssessmentCrudController extends CrudController
                                 </tr>
                                 <tr>
                                     <td>2</td>
-                                    <td>{$assessmentCriterion->rating_two}</td>
+                                    <td>$assessmentCriterion->rating_two</td>
                                 </tr>
                                 <tr>
                                     <td>1</td>
-                                    <td>{$assessmentCriterion->rating_one}</td>
+                                    <td>$assessmentCriterion->rating_one</td>
                                 </tr>
                                 <tr>
                                     <td>0</td>
-                                    <td>{$assessmentCriterion->rating_zero}</td>
+                                    <td>$assessmentCriterion->rating_zero</td>
                                 </tr>
-                                {$ratingZeroDefintionRow}
+                                $ratingZeroDefintionRow
                             </table>");
 
             if ($assessmentCriterion->can_be_na) {
@@ -244,7 +240,7 @@ class AssessmentCrudController extends CrudController
                     'class' => 'col-md-6'
                 ])
                 ->type('custom_html')
-                ->value("<h4>{$redline->name}</h4><p>{$redline->description}</p>");
+                ->value("<h4>$redline->name</h4><p>$redline->description</p>");
 
             CRUD::field('redline_value_' . $redline->id)
                 ->label('')

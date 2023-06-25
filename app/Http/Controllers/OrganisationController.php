@@ -77,7 +77,7 @@ class OrganisationController extends Controller
         });
 
         // redlines
-        $redlines = RedLine::select('id', 'name')
+        $redlines = RedLine::select(['id', 'name'])
             ->with('failingProjects', function ($query) use ($organisation) {
                 $query->where('organisation_id', $organisation->id);
             })->get();

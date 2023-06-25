@@ -46,14 +46,7 @@ class RegisteredUserController extends Controller
         return view('auth.register', compact('invite', 'inviteMessage'));
     }
 
-    /**
-     * Handle an incoming registration request.
-     *
-     * @param \Illuminate\Http\Request $request
-     * @return \Illuminate\Http\RedirectResponse
-     *
-     * @throws \Illuminate\Validation\ValidationException
-     */
+
     public function store(Request $request)
     {
         $request->validate([

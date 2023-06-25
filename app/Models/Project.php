@@ -6,6 +6,8 @@ use App\Enums\AssessmentStatus;
 use App\Enums\GeographicalReach;
 use App\Http\Controllers\Admin\Operations\RedlineOperation;
 use App\Services\OrganisationService;
+use App\Services\XeCurrency;
+use App\Services\XeCurrencyHelper;
 use Backpack\CRUD\app\Models\Traits\CrudTrait;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -46,11 +48,19 @@ class Project extends Model
             }
         });
 
-        static::created(function ($project) {
+        static::created(function (Project $project) {
             $assessment = Assessment::create(['project_id' => $project->id]);
             $assessment->redLines()->sync(RedLine::all()->pluck('id')->toArray());
             $assessment->principles()->sync(Principle::all()->pluck('id')->toArray());
             $assessment->additionalCriteria()->sync($project->organisation->additionalCriteria->pluck('id')->toArray());
+        });
+
+        static::saving(function (Project $project) {
+           $project->budget_org = XeCurrencyHelper::convert(
+               budget: $project->budget,
+               currencyFrom: $project->currency,
+               currencyTo: $project->organisation->currency,
+           );
         });
 
         static::addGlobalScope('organisation', function (Builder $builder) {

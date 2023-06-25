@@ -21,3 +21,25 @@ npm run dev
 ```
 6.	Migrate the database: `php aritsan migrate:fresh --seed`
 
+
+
+## TODOS
+- [ ] Add export data button to dashboard and initiatives page.
+- [ ] Turn summary pages into tabs to test out.
+- [ ] Resize principle summary block to always fit onto the page. 
+- [ ] Get Import Initiatives Working
+- [ ] At the "Institution Data Main View", add navigation to:
+  - Dashboard
+  - Portfolios
+  - Initiatives
+  - Additional Assessment Criteria
+- [ ] Permanently hide the sidebar and confirm that Institutional users can still access all the things...  
+
+
+- [ ] For Site Managers, Tidy up and document main sidebar view.
+
+## TESTS
+- [ ] Workflow for creating a new institution + inviting members
+- [ ] Workflow for a member deleting their account
+- 
+----

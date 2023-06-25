@@ -13,7 +13,9 @@
 
 // Database Migrations <- fully reset database, including seeds
 // Refresh Database <- perform test within a transaction, so only changes made in the test are rolled back each time. Doesn't work when you manually seed the database in the beforeEach hook.
-uses(Tests\TestCase::class, \Illuminate\Foundation\Testing\DatabaseMigrations::class)
+use Illuminate\Foundation\Testing\DatabaseMigrations;
+
+uses(Tests\TestCase::class, DatabaseMigrations::class)
     ->beforeEach(function() {
 
         $this->seed();

@@ -1,5 +1,5 @@
 <template>
-    <div class="card">
+    <div class="card" style="min-width:325px;">
         <div class="card-body p-4">
             <div class="row">
                 <div class="col-12 col-lg-4 border border-top-0 border-left-0 border-bottom-0">
@@ -54,7 +54,7 @@
 
                         <div class="col-12"
                              :class="hasAdditionalAssessment ? 'col-lg-4' : 'col-lg-6'">
-                            <div class="d-flex justify-content-between mt-3">
+                            <div class="d-flex justify-content-between mt-3 w-100">
                                 <div class="w-50">
                                     <span class="font-weight-bold text-grey">REDLINES</span><br/>
                                     <span class="font-weight-bold">{{ initiative.latest_assessment.redline_status }}</span>
@@ -62,16 +62,15 @@
                                 <div class="w-50">
                                     <a
                                         :href="`/admin/assessment/${initiative.latest_assessment.id}/redline`"
-                                        class="btn text-light"
+                                        class="btn text-light w-100"
                                         :class="initiative.latest_assessment.redline_status === 'Complete' ? 'btn-info' : 'btn-success'"
-                                        style="width: 200px"
                                     >
                                         {{ initiative.latest_assessment.redline_status === 'Complete' ? 'Edit Redline Assessment' : 'Assess Redlines' }}
                                     </a>
                                 </div>
                             </div>
 
-                            <div class="d-flex justify-content-between mt-3">
+                            <div class="d-flex justify-content-between mt-3 w-100">
                                 <div class="w-50">
                                     <span class="font-weight-bold text-grey">PRINCIPLES</span><br/>
                                     <span class="font-weight-bold">{{ initiative.latest_assessment.principle_status }}</span>
@@ -79,9 +78,9 @@
                                 <div class="w-50">
                                     <a
                                         :href="`/admin/assessment/${initiative.latest_assessment.id}/assess`"
-                                        class="btn text-light"
+                                        class="btn text-light w-100"
                                         :class="initiative.latest_assessment.redline_status === 'Complete' ? (initiative.latest_assessment.principle_status === 'Complete' ? 'btn-info' : 'btn-success') : 'btn-info disabled'"
-                                        style="width: 200px"
+
                                     >
                                         {{ initiative.latest_assessment.principle_status === 'Complete' ? 'Edit Principle Assessment' : 'Assess Redlines' }}
                                     </a>
