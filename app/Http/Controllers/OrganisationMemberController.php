@@ -79,7 +79,7 @@ class OrganisationMemberController extends Controller
         // add new role
         $user->assignRole($data['new_system_role']);
 
-        return redirect()->route('organisation.show', ['id' => $organisation->id]);
+        return redirect()->route('organisation.self.show');
     }
 
 
