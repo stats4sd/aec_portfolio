@@ -12,15 +12,15 @@
     >
         <div class="card-body font-lg d-flex justify-content-between align-items-center px-12">
             <div style="min-width: 400px" class="d-flex align-items-center w-100">
-                    <b class="pr-3">SHOWING PORTFOLIO:</b>
-                    <vSelect
-                        class="flex-grow-1 mr-16"
-                        v-model="filters.portfolio"
-                        :options="portfolios"
-                        :label="'name'"
-                        placeholder="ALL PORTFOLIOS"
-                        :clearable="true"
-                    ></vSelect>
+                <b class="pr-3">SHOWING PORTFOLIO:</b>
+                <vSelect
+                    class="flex-grow-1 mr-16"
+                    v-model="filters.portfolio"
+                    :options="portfolios"
+                    :label="'name'"
+                    placeholder="ALL PORTFOLIOS"
+                    :clearable="true"
+                ></vSelect>
                 <div class="btn btn-warning justify-end">
                     Show all portfolios
                 </div>
@@ -154,12 +154,12 @@
     <div class="nav nav-pills"
 
 
-        >
-            <div class="rounded-pill btn btn-primary" @click="tab = 'summary'">Summary of Initiatives</div>
-            <div class="rounded-pill btn btn-primary" @click="tab = 'redflags'">Summary of Red Flags</div>
-            <div class="rounded-pill btn btn-primary" @click="tab = 'principles'">Summary of Principles</div>
+    >
+        <div class="rounded-pill btn btn-primary" @click="tab = 'summary'">Summary of Initiatives</div>
+        <div class="rounded-pill btn btn-primary" @click="tab = 'redflags'">Summary of Red Flags</div>
+        <div class="rounded-pill btn btn-primary" @click="tab = 'principles'">Summary of Principles</div>
 
-        </div>
+    </div>
 
     <div v-if="tab==='summary'">
         <div class="mt-8 card">
@@ -414,8 +414,10 @@ import {
     LinearScale
 } from 'chart.js'
 import {Bar} from 'vue-chartjs'
+import ChartDataLabels from 'chartjs-plugin-datalabels';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend)
+ChartJS.register(ChartDataLabels);
 
 function getChartData(principlesSummary) {
     return {
@@ -472,7 +474,7 @@ const chartOptions = ref({
             stacked: true,
 
             ticks: {
-                mirror: true,
+              //  mirror: true,
                 z: 1,
                 color: 'black',
                 font: {
@@ -486,6 +488,19 @@ const chartOptions = ref({
         },
     },
     plugins: {
+        datalabels: {
+            color: 'black',
+            display: function (context) {
+                return context.dataset.data[context.dataIndex] > 10; // hide label if bar is too short
+            },
+            font: {
+                weight: 'bold'
+            },
+            formatter: function(value, context) {
+                return Math.round(value) + "%"
+            }
+        },
+
         tooltip: {
             padding: 14,
             backgroundColor: '#f8f9fa',

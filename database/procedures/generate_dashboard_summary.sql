@@ -197,6 +197,10 @@ BEGIN
 
 
     -- criteria
+	IF organisationId IS NOT NULL THEN
+    	SET @SQLText = CONCAT(@SQLText, ' AND p.organisation_id != ', organisationId);
+    END IF;
+
     IF projectStartFrom IS NOT NULL THEN
 		SET @SQLText = CONCAT(@SQLText, ' AND YEAR(p.start_date) >= ', projectStartFrom);
     END IF;
