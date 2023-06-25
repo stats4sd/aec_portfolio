@@ -25,6 +25,7 @@ class OrganisationRequest extends FormRequest
         return [
             'name' => 'required|max:255',
             'currency' => 'required|max:3',
+            'has_additional_criteria' => 'sometimes|nullable|bool',
         ];
     }
 }

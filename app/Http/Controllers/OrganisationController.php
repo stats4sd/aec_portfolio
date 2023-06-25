@@ -37,10 +37,13 @@ class OrganisationController extends Controller
     // can only be used when an organisation is selected in the current session
     public function update(OrganisationRequest $request)
     {
-
         $organisation = Organisation::find(Session::get('selectedOrganisationId'));
 
+
         $validated = $request->validated();
+        if(!$request->has('has_additional_criteria')) {
+            $validated['has_additional_criteria'] = false;
+        }
 
         $organisation->update($validated);
 

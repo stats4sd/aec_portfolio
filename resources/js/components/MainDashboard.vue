@@ -151,130 +151,151 @@
         </div>
     </div>
 
-    <div class="nav nav-pills"
+    <ul class="nav nav-tabs mt-4" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button
+                class="nav-link p-3"
+                :class="tab==='summary' ? 'active' : ''"
+                type="button"
+                role="tab"
+                @click="tab = 'summary'"
+            >
+                <h5 class="text-uppercase m-0 p-0">Summary of Initiatives</h5>
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button
+                class="nav-link p-3"
+                :class="tab==='redflags' ? 'active' : ''"
+                type="button"
+                role="tab"
+                @click="tab = 'redflags'"
+            >
+                <h5 class="text-uppercase m-0 p-0">Summary of Red Flags</h5>
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button
+                class="nav-link p-3"
+                :class="tab==='principles' ? 'active' : ''"
+                type="button"
+                role="tab"
+                @click="tab = 'principles'"
+            >
+                <h5 class="text-uppercase m-0 p-0">Summary of Principles</h5>
+            </button>
+        </li>
+    </ul>
 
+    <div class="tab-content">
 
-    >
-        <div class="rounded-pill btn btn-primary" @click="tab = 'summary'">Summary of Initiatives</div>
-        <div class="rounded-pill btn btn-primary" @click="tab = 'redflags'">Summary of Red Flags</div>
-        <div class="rounded-pill btn btn-primary" @click="tab = 'principles'">Summary of Principles</div>
-
-    </div>
-
-    <div v-if="tab==='summary'">
-        <div class="mt-8 card">
-            <div class="card-header d-flex align-items-baseline">
-                <h2 class="mr-4">Summary of Initiatives</h2>
-                <h5>({{ filters.portfolio ? filters.portfolio.name.toUpperCase() : 'ALL PORTFOLIOS' }})</h5>
-            </div>
-            <div class="card-body">
-                <div class="row">
-                    <div class="col-12 col-lg-6 p-0">
-                        <ul class="list-group list-group-flush">
-                            <li class="list-group-item d-flex font-lg">
-                                <span class="w-50 text-right pr-4"># Initiatives Added</span>
-                                <span class="font-weight-bold ">{{ summary.totalCount }}</span>
-                            </li>
-                            <li
-                                v-for="summaryLine in summary.statusSummary"
-                                class="list-group-item d-flex font-lg text-deep-green">
-                                <span class="w-50 text-right pr-4">{{ summaryLine.status }}</span>
-                                <span class="font-weight-bold ">{{ summaryLine.number }} ({{ summaryLine.percent }}%)</span>
-                            </li>
-                        </ul>
-                    </div>
-                    <div class="col-12 col-lg-6 p-0">
-                        <ul class="list-group list-group-flush">
-                            <li class="list-group-item d-flex font-lg">
-                                <span class="w-50 text-right pr-4">Total Budget</span>
-                                <span class="font-weight-bold ">{{ formatBudget(summary.totalBudget) }} USD</span>
-                            </li>
-                        </ul>
+        <div class='tab pane' v-if="tab==='summary'">
+            <div class="mt-8">
+                <div class="card-header d-flex align-items-baseline">
+                    <h2 class="mr-4">Summary of Initiatives</h2>
+                    <h5>({{ filters.portfolio ? filters.portfolio.name.toUpperCase() : 'ALL PORTFOLIOS' }})</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-12 col-lg-6 p-0">
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item d-flex font-lg">
+                                    <span class="w-50 text-right pr-4"># Initiatives Added</span>
+                                    <span class="font-weight-bold ">{{ summary.totalCount }}</span>
+                                </li>
+                                <li
+                                    v-for="summaryLine in summary.statusSummary"
+                                    class="list-group-item d-flex font-lg text-deep-green">
+                                    <span class="w-50 text-right pr-4">{{ summaryLine.status }}</span>
+                                    <span class="font-weight-bold ">{{ summaryLine.number }} ({{ summaryLine.percent }}%)</span>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="col-12 col-lg-6 p-0">
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item d-flex font-lg">
+                                    <span class="w-50 text-right pr-4">Total Budget</span>
+                                    <span class="font-weight-bold ">{{ formatBudget(summary.totalBudget) }} USD</span>
+                                </li>
+                            </ul>
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <div class="card-footer p-0 bg-light-success">
-                <div class="row">
-                    <div class="col-12 col-md-6">
-                        <ul class="list-group list-group-flush">
-                            <li class="list-group-item d-flex font-lg">
-                                <span class="w-50 text-right pr-4">OVERALL SCORE</span>
-                                <span class="font-weight-bold">{{ summary.assessmentScore }}%</span>
-                            </li>
-                        </ul>
-                    </div>
-                    <div class="col-12 col-md-6">
-                        <ul class="list-group list-group-flush">
-                            <li class="list-group-item d-flex font-lg">
-                                <span class="w-50 text-right pr-4">AE-focused Budget</span>
-                                <span class="font-weight-bold ">{{ formatBudget(summary.aeBudget) }}USD</span>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div v-if="tab==='redflags'">
-        <div class="mt-8 card">
-            <div class="card-header d-flex align-items-baseline">
-                <h2 class="mr-4">Summary of Red Flags</h2>
-                <h5>({{ filters.portfolio ? filters.portfolio.name.toUpperCase() : 'ALL PORTFOLIOS' }})</h5>
-            </div>
-            <div class="card-body">
-
-
-                <!-- red lines summary -->
-                <table class="table" v-if="summary.redlinesSummary != null">
-
-                    <thead class="text-center">
-                    <th>Red Lines</th>
-                    <th>Yours</th>
-                    <th>Others</th>
-                    </thead>
-
-                    <tbody class="text-center">
-                    <tr v-for='redlinesSummaryRecord in summary.redlinesSummary'>
-                        <td :class="[ redlinesSummaryRecord.yours === 100 ? 'table-success' : 'table-warning' ]">{{ redlinesSummaryRecord.name }}</td>
-                        <td :class="[ redlinesSummaryRecord.yours === 100 ? 'table-success' : 'table-warning' ]">{{ redlinesSummaryRecord.yours }}%</td>
-                        <td :class="[ redlinesSummaryRecord.yours === 100 ? 'table-success' : 'table-warning' ]">{{ redlinesSummaryRecord.others }}%</td>
-                    </tr>
-                    </tbody>
-
-                </table>
-
-            </div>
-        </div>
-    </div>
-
-    <div v-if="tab==='principles'">
-        <div class="card mx-auto w-100" style="max-width: 1500px;" v-if="summary.yoursPrinciplesSummarySorted">
-            <div class="card-header">
-                <h2 class="mr-4">Summary of Principles</h2>
-                <h5>({{ filters.portfolio ? filters.portfolio.name.toUpperCase() : 'ALL PORTFOLIOS' }})</h5>
-            </div>
-            <div class="card-body">
-                <div class="row">
-                    <div class="col-12 col-lg-6">
-                        <Bar :data="chartDataYours" :options="chartOptions"/>
-                    </div>
-
-                    <div class="col-12 col-lg-6">
-                        <Bar :data="chartDataOthers" :options="chartOptions"/>
+                <div class="card-footer p-0 bg-light-success">
+                    <div class="row">
+                        <div class="col-12 col-md-6">
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item d-flex font-lg">
+                                    <span class="w-50 text-right pr-4">OVERALL SCORE</span>
+                                    <span class="font-weight-bold">{{ summary.assessmentScore }}%</span>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item d-flex font-lg">
+                                    <span class="w-50 text-right pr-4">AE-focused Budget</span>
+                                    <span class="font-weight-bold ">{{ formatBudget(summary.aeBudget) }}USD</span>
+                                </li>
+                            </ul>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
+        <div v-if="tab==='redflags'">
+            <div class="mt-8">
+                <div class="card-header d-flex align-items-baseline">
+                    <h2 class="mr-4">Summary of Red Flags</h2>
+                    <h5>({{ filters.portfolio ? filters.portfolio.name.toUpperCase() : 'ALL PORTFOLIOS' }})</h5>
+                </div>
+                <div class="card-body">
 
 
-    <div class="btn btn-danger" @click="checkSummary">
-        Console Log Summary Output
-    </div>
+                    <!-- red lines summary -->
+                    <table class="table" v-if="summary.redlinesSummary != null">
 
-    <div class="btn btn-primary" @click="getData">
-        Get Data Test
+                        <thead class="text-center">
+                        <th>Red Lines</th>
+                        <th>Yours</th>
+                        <th>Others</th>
+                        </thead>
+
+                        <tbody class="text-center">
+                        <tr v-for='redlinesSummaryRecord in summary.redlinesSummary'>
+                            <td :class="[ redlinesSummaryRecord.yours === 100 ? 'table-success' : 'table-warning' ]">{{ redlinesSummaryRecord.name }}</td>
+                            <td :class="[ redlinesSummaryRecord.yours === 100 ? 'table-success' : 'table-warning' ]">{{ redlinesSummaryRecord.yours }}%</td>
+                            <td :class="[ redlinesSummaryRecord.yours === 100 ? 'table-success' : 'table-warning' ]">{{ redlinesSummaryRecord.others }}%</td>
+                        </tr>
+                        </tbody>
+
+                    </table>
+
+                </div>
+            </div>
+        </div>
+        <div v-if="tab==='principles'">
+            <div class="mx-auto mt-8 w-100" style="max-width: 1500px;" v-if="summary.yoursPrinciplesSummarySorted">
+                <div class="card-header">
+                    <h2 class="mr-4">Summary of Principles</h2>
+                    <h5>({{ filters.portfolio ? filters.portfolio.name.toUpperCase() : 'ALL PORTFOLIOS' }})</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-12 col-lg-6 d-flex flex-column align-items-center">
+                            <h2 class="mb-4">Your Initiatives</h2>
+                            <Bar :data="chartDataYours" :options="chartOptions"/>
+                        </div>
+
+                        <div class="col-12 col-lg-6 d-flex flex-column align-items-center">
+                            <h2 class="mb-4">Other Institutions' Initiatives</h2>
+                            <Bar :data="chartDataOthers" :options="chartOptions"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </template>
 
@@ -414,10 +435,10 @@ import {
     LinearScale
 } from 'chart.js'
 import {Bar} from 'vue-chartjs'
-import ChartDataLabels from 'chartjs-plugin-datalabels';
+// import ChartDataLabels from 'chartjs-plugin-datalabels';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend)
-ChartJS.register(ChartDataLabels);
+// ChartJS.register(ChartDataLabels);
 
 function getChartData(principlesSummary) {
     return {
@@ -474,7 +495,7 @@ const chartOptions = ref({
             stacked: true,
 
             ticks: {
-              //  mirror: true,
+                mirror: true,
                 z: 1,
                 color: 'black',
                 font: {
@@ -488,18 +509,18 @@ const chartOptions = ref({
         },
     },
     plugins: {
-        datalabels: {
-            color: 'black',
-            display: function (context) {
-                return context.dataset.data[context.dataIndex] > 10; // hide label if bar is too short
-            },
-            font: {
-                weight: 'bold'
-            },
-            formatter: function(value, context) {
-                return Math.round(value) + "%"
-            }
-        },
+        // datalabels: {
+        //     color: 'black',
+        //     display: function (context) {
+        //         return context.dataset.data[context.dataIndex] > 10; // hide label if bar is too short
+        //     },
+        //     font: {
+        //         weight: 'bold'
+        //     },
+        //     formatter: function (value, context) {
+        //         return Math.round(value) + "%"
+        //     }
+        // },
 
         tooltip: {
             padding: 14,
@@ -526,7 +547,6 @@ const chartOptions = ref({
     borderColor: 'lightgrey',
 
 })
-
 
 </script>
 

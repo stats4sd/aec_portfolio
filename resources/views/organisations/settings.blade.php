@@ -5,10 +5,14 @@
 
 </div>
 
-<div class="card-body"
+<div class="card-body">
     <form action="{{ route('organisation.self.update') }}" method="POST">
         @method('PUT')
         @csrf
+
+                    @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
 
         <div class="form-group row mt-16">
             <label for="input_name" class="col-sm-4 col-form-label text-right pr-2">Institution Name</label>
@@ -34,6 +38,22 @@
                 <small id="emailHelp" class="form-text font-sm">This currency will be used for the summary dashboard. All initiative budgets for your institution will be converted into this currency.</small>
             </div>
         </div>
+        <div class="form-group row">
+            <div class="col-sm-8 offset-sm-4">
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="additional_criteria_check" name="has_additional_criteria" @if($organisation->has_additional_criteria) checked @endif value="1">
+                    <label class="form-check-label" for="additional_criteria_check">
+                        This Institution uses additional assessment criteria
+                    </label>
+                    @if($errors->has('has_additional_criteria'))
+                        <span class="text-danger emphasis show" role="alert">
+                            <strong>{{ collect($errors->get('currency'))->join('<br/>') }}</strong>
+                        </span>
+                    @endif
+                </div>
+            </div>
+        </div>
+
 
         <div class="form-group d-flex justify-content-end mt-16">
             <button type="cancel" class="btn btn-secondary mr-4">Discard Changes</button>

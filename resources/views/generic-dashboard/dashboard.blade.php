@@ -4,20 +4,21 @@
 
     <div class="mt-16" id="dashboard">
 
-        <div class="container">
-            <h2 class="font-weight-bold text-bright-green">{{ $organisation->name }} - Summary</h2>
-        </div>
+        <div class="container-fluid">
 
-        <v-app>
-            <Suspense>
-                <main-dashboard
-                    :user="{{ Auth::user() }}"
-                    :organisation="{{ $organisation->toJson() }}"
-                    :regions="{{ $regions }}"
-                    :countries="{{ $countries }}"
-                />
-            </Suspense>
-        </v-app>
+            <h1 class="font-weight-bold text-bright-green mb-4">{{ $organisation->name }}</h1>
+
+            <v-app>
+                <Suspense>
+                    <main-dashboard
+                        :user="{{ Auth::user() }}"
+                        :organisation="{{ $organisation->toJson() }}"
+                        :regions="{{ $regions }}"
+                        :countries="{{ $countries }}"
+                    />
+                </Suspense>
+            </v-app>
+        </div>
 
     </div>
 @endsection
