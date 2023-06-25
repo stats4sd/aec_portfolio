@@ -15,7 +15,7 @@
 <ul class="nav navbar-nav ml-auto mr-auto d-flex">
     <li class="nav-item mx-3 font-weight-bold"><a class="nav-link text-deep-green" href="{{ backpack_url('dashboard') }}">Dashboard</a>
         </li>
-    <li class="nav-item mx-3 font-weight-bold"><a class="nav-link text-deep-green" href="{{ backpack_url('portfolio') }}">Portfolios</a>
+    <li class="nav-item mx-3 font-weight-bold"><a class="nav-link text-deep-green" href="{{ backpack_url('organisation/show') }}">My Institution</a>
         </li>
     <li class="nav-item mx-3 font-weight-bold"><a class="nav-link text-deep-green" href="{{ backpack_url('project') }}">Initiatives</a>
         </li>

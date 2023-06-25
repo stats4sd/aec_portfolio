@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Organisation;
 use App\Models\Project;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
@@ -20,6 +21,7 @@ class ProjectController extends Controller
         $hasAdditionalAssessment = $projects->first()?->organisation->additionalCriteria->count() > 0;
 
         return view('projects.index', [
+            'organisation' => Organisation::find(Session::get('selectedOrganisationId')),
             'projects' => $projects,
             'has_additional_assessment' => $hasAdditionalAssessment,
         ]);

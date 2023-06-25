@@ -17,6 +17,10 @@ body {
     font-family: "Hind", sans-serif !important;
 }
 
+.container-fluid {
+    max-width: 1500px !important;
+}
+
 .app-header {
     height: 100px !important;
     flex-basis: 100px !important;

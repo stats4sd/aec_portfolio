@@ -23,14 +23,14 @@ class TestSeeder extends Seeder
         $user->assignRole('Site Manager');
 
         // TODO: assign institutional users to an organisation
-        $user = User::factory()->create(['name' => 'Institutional Admin', 'email' => 'ins_admin@example.com']);
-        $user->assignRole('Institutional Admin');
+        $user1 = User::factory()->create(['name' => 'Institutional Admin', 'email' => 'ins_admin@example.com']);
+        $user1->assignRole('Institutional Admin');
 
-        $user = User::factory()->create(['name' => 'Institutional Assessor', 'email' => 'ins_assessor@example.com']);
-        $user->assignRole('Institutional Assessor');
+        $user2 = User::factory()->create(['name' => 'Institutional Assessor', 'email' => 'ins_assessor@example.com']);
+        $user2->assignRole('Institutional Assessor');
 
-        $user = User::factory()->create(['name' => 'Institutional Member', 'email' => 'ins_member@example.com']);
-        $user->assignRole('Institutional Member');
+        $user3 = User::factory()->create(['name' => 'Institutional Member', 'email' => 'ins_member@example.com']);
+        $user3->assignRole('Institutional Member');
 
         $institution = Organisation::create([
             'name' => 'Test Institution 1',
@@ -50,5 +50,9 @@ class TestSeeder extends Seeder
             'start_date' => '2023-01-01',
             'geographic_reach' => GeographicalReach::Global->name,
         ]);
+
+        $user1->organisations()->sync([$institution->id]);
+        $user2->organisations()->sync([$institution->id]);
+        $user3->organisations()->sync([$institution->id]);
     }
 }

@@ -208,6 +208,10 @@ class ProjectCrudController extends CrudController
         CRUD::field('sub_regions')->type('textarea')
             ->label('Optionally, add the specific regions within each country where the project works.');
 
+
+        $this->removeAllSaveActions();
+        $this->addSaveAndReturnToProjectListAction();
+
     }
 
     protected function setupUpdateOperation()

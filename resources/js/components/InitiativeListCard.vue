@@ -6,8 +6,7 @@
                     <h4 class="font-weight-bold text-deep-green">{{ initiative.name.toUpperCase() }}</h4>
                 </div>
                 <div
-                    class="col-12"
-                    :class="hasAdditionalAssessment ? 'col-lg-3' : 'col-lg-5'"
+                    class="col-12 col-lg-5"
                 >
                     <h5 class="font-weight-bold text-bright-green">Current Assessment</h5>
                     <div class="d-flex justify-content-between">
@@ -20,9 +19,6 @@
                             <span class="font-xl text-bright-green font-weight-bold" v-if="initiative.latest_assessment.overall_score !== null">{{ initiative.latest_assessment.overall_score }}%</span>
                         </div>
                     </div>
-                </div>
-                <div v-if="hasAdditionalAssessment" class="col-12 col-lg-3">
-                    <h5>Additional Assessment</h5>
                 </div>
                 <div class="col-12 col-lg-3 d-flex align-items-center justify-content-end">
                     <a :href='nextAction.url' class="btn btn-success mr-2" v-if="nextAction">
@@ -52,8 +48,7 @@
                             </div>
                         </div>
 
-                        <div class="col-12"
-                             :class="hasAdditionalAssessment ? 'col-lg-4' : 'col-lg-6'">
+                        <div class="col-12 col-lg-6">
                             <div class="d-flex justify-content-between mt-3 w-100">
                                 <div class="w-50">
                                     <span class="font-weight-bold text-grey">REDLINES</span><br/>
@@ -83,6 +78,23 @@
 
                                     >
                                         {{ initiative.latest_assessment.principle_status === 'Complete' ? 'Edit Principle Assessment' : 'Assess Redlines' }}
+                                    </a>
+                                </div>
+                            </div>
+
+                            <div v-if="hasAdditionalAssessment" class="d-flex justify-content-between mt-3 w-100">
+                                <div class="w-50">
+                                    <span class="font-weight-bold text-grey">ADDITIONAL CRITERIA</span><br/>
+                                    <span class="font-weight-bold">{{ initiative.latest_assessment.additional_status }}</span>
+                                </div>
+                                <div class="w-50">
+                                    <a
+                                        :href="`/admin/assessment/${initiative.latest_assessment.id}/assess-custom`"
+                                        class="btn text-light w-100"
+                                        :class="initiative.latest_assessment.redline_status === 'Complete' ? (initiative.latest_assessment.additional_status === 'Complete' ? 'btn-info' : 'btn-success') : 'btn-info disabled'"
+
+                                    >
+                                        {{ initiative.latest_assessment.additional_status === 'Complete' ? 'Edit Additional Criteria Assessment' : 'Assess Additional Criteria' }}
                                     </a>
                                 </div>
                             </div>

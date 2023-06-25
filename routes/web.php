@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\OrganisationController;
 use App\Http\Controllers\PrincipleAssessmentController;
 use Illuminate\Support\Facades\Route;
 
@@ -10,6 +11,9 @@ Route::get('/', function () {
 Route::get(config('backpack.base.route_prefix') . '/login', function () {
     return redirect('login');
 });
+
+
+Route::put('organisation/update', [OrganisationController::class, 'update'])->name('organisation.self.update');
 
 
 // `API` calls for Vue components

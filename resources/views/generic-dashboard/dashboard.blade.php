@@ -2,11 +2,9 @@
 
 @section('content')
 
-    <div class="mt-16" id="dashboard">
+    <div class="mt-16 container-fluid" id="dashboard">
 
-        <div class="container">
-            <h2 class="font-weight-bold text-bright-green">{{ $organisation->name }} - Summary</h2>
-        </div>
+        <h1 class="font-weight-bold text-deep-green mb-4">{{ $organisation->name }} - Summary</h1>
 
         <v-app>
             <Suspense>

@@ -45,7 +45,7 @@ Route::group([
 
     Route::get('/', [SelectedOrganisationController::class, 'show']);
 
-    Route::crud('organisation', OrganisationCrudController::class);
+    Route::crud('organisation-crud', OrganisationCrudController::class);
 
 
     Route::crud('red-line', RedLineCrudController::class);
@@ -68,8 +68,6 @@ Route::group([
     Route::put('organisation/{organisation}/members/{user}', [OrganisationMemberController::class, 'update'])->name('organisationmembers.update');
     Route::delete('organisation/{organisation}/members/{user}', [OrganisationMemberController::class, 'destroy'])->name('organisationmembers.destroy');
 
-    Route::get('organisation/{organisation}/portfolio', [OrganisationController::class, 'portfolio'])->name('organisation.portfolio');
-
      Route::get('organisation/export-all', [OrganisationController::class, 'exportAll'])->name('organisation.export-all');
 
      Route::get('organisation/export-merged', [OrganisationController::class, 'mergeAll']);
@@ -79,10 +77,10 @@ Route::group([
         'middleware' => ['org.selected'],
     ], function () {
 
+        Route::get('organisation/show', [OrganisationController::class, 'show'])->name('organisation.self.show');
         Route::get('organisation/export', [OrganisationController::class, 'export'])->name('organisation.export');
 
         Route::crud('portfolio', PortfolioCrudController::class);
-
 
         Route::crud('project', ProjectCrudController::class);
         Route::get('project', [ProjectController::class, 'index']);

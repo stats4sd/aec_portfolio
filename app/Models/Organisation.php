@@ -24,6 +24,10 @@ class Organisation extends Model
     protected $table = 'organisations';
     protected $guarded = ['id'];
 
+    protected $casts = [
+        'has_additional_criteria' => 'boolean',
+    ];
+
     protected static function booted()
     {
         static::addGlobalScope('owned', function (Builder $builder) {

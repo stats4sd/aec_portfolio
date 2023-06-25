@@ -78,6 +78,10 @@ class RoleSeeder extends Seeder
         Permission::create(['name' => 'view custom principles', 'guard_name' => 'web']);
         Permission::create(['name' => 'maintain custom principles', 'guard_name' => 'web']);
 
+        // extras
+        Permission::create(['name' => 'edit own institution', 'guard_name' => 'web']);
+
+
 
 
         // roles_has_permissions
@@ -123,7 +127,7 @@ class RoleSeeder extends Seeder
             [ 'role_id' => 1, 'permission_id' => 39, ],
             [ 'role_id' => 1, 'permission_id' => 40, ],
         ]);
-        
+
         // site manager
         DB::table('role_has_permissions')->insert([
             [ 'role_id' => 2, 'permission_id' => 8, ],
@@ -167,6 +171,7 @@ class RoleSeeder extends Seeder
             [ 'role_id' => 3, 'permission_id' => 38, ],
             [ 'role_id' => 3, 'permission_id' => 39, ],
             [ 'role_id' => 3, 'permission_id' => 40, ],
+            [ 'role_id' => 3, 'permission_id' => 41, ],
         ]);
 
         // institutional assessor
@@ -190,7 +195,7 @@ class RoleSeeder extends Seeder
             [ 'role_id' => 4, 'permission_id' => 39, ],
             [ 'role_id' => 4, 'permission_id' => 40, ],
         ]);
-        
+
         // institutional member
         DB::table('role_has_permissions')->insert([
             [ 'role_id' => 5, 'permission_id' => 20, ],
