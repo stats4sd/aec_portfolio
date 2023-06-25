@@ -2,13 +2,10 @@
 
 @section('content')
 
-    <div class="container">
+    <div class="mt-16 container-fluid">
 
-        <div class=" pt-16 w-100">
-            <h1 class="text-deep-green"><b>{{$organisation->name}}</b></h1>
-            <p class="alert alert-info show">
-                Review and manage the institutional settings and members. If you are not an institutional administrator, you can identify the administrators on this page in order to contact them with any requests.
-            </p>
+        <div class="w-100 mb-4">
+            <h1 class="text-deep-green"><b>{{$organisation->name}} - Information</b></h1>
         </div>
 
         <ul class="nav nav-tabs mt-4" id="org-tabs" role="tablist">

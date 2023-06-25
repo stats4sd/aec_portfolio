@@ -2,23 +2,20 @@
 
 @section('content')
 
-    <div class="mt-16" id="dashboard">
+    <div class="mt-16 container-fluid" id="dashboard">
 
-        <div class="container-fluid">
+        <h1 class="font-weight-bold text-deep-green mb-4">{{ $organisation->name }} - Summary</h1>
 
-            <h1 class="font-weight-bold text-bright-green mb-4">{{ $organisation->name }}</h1>
-
-            <v-app>
-                <Suspense>
-                    <main-dashboard
-                        :user="{{ Auth::user() }}"
-                        :organisation="{{ $organisation->toJson() }}"
-                        :regions="{{ $regions }}"
-                        :countries="{{ $countries }}"
-                    />
-                </Suspense>
-            </v-app>
-        </div>
+        <v-app>
+            <Suspense>
+                <main-dashboard
+                    :user="{{ Auth::user() }}"
+                    :organisation="{{ $organisation->toJson() }}"
+                    :regions="{{ $regions }}"
+                    :countries="{{ $countries }}"
+                />
+            </Suspense>
+        </v-app>
 
     </div>
 @endsection
