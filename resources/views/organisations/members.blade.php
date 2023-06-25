@@ -1,5 +1,5 @@
-<div class="row pt-4 pl-4">
-    <div class="card col-12">
+<div class="pt-4">
+    <div class="card">
         <div class="card-header">
         <h2>Institution Members</h2>
         </div>

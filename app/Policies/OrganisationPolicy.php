@@ -37,7 +37,10 @@ class OrganisationPolicy
      */
     public function update(User $user, Organisation $organisation): bool
     {
-        return ($user->can('maintain institutions'));
+        return
+            $user->can('maintain institutions')
+            || ($user->hasPermissionTo('edit own institution'))
+            ;
     }
 
     /**
