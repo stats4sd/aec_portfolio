@@ -82,7 +82,6 @@ Route::group([
 
         Route::crud('portfolio', PortfolioCrudController::class);
 
-
         Route::crud('project', ProjectCrudController::class);
         Route::get('project', [ProjectController::class, 'index']);
         Route::get('project/{project}/re-assess', [ProjectCrudController::class, 'reAssess']);

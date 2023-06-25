@@ -24,6 +24,15 @@
                     :clearable="true"
                 />
 
+                <v-select
+                    style="width: 250px"
+                    class="mr-4"
+                    v-model="portfolioFilter"
+                    :options="portfolios"
+                    placeholder="Filter By Portfolio"
+                    :clearable="true"
+                />
+
             </div>
             <div class="d-flex align-items-center mt-4">
 
@@ -50,7 +59,7 @@
 
 
             <div class="d-flex mb-4">
-                <button class="btn btn-primary mr-4">Add Initiative</button>
+                <a href="/admin/project/create" class="btn btn-primary mr-4">Add Initiative</a>
                 <button class="btn btn-success">Import Initiatives</button>
             </div>
 
@@ -68,7 +77,7 @@
 import 'vue-select/dist/vue-select.css';
 import vSelect from 'vue-select'
 
-import {computed, ref, watch} from "vue";
+import {computed, ref, watch, onMounted} from "vue";
 import InitiativeListCard from "./InitiativeListCard.vue";
 
 
@@ -112,6 +121,18 @@ watch(sortBy, (newSortBy) => {
 // status filter
 const redlineStatusFilter = ref('');
 const principleStatusFilter = ref('');
+const portfolioFilter = ref('');
+
+const portfolios = computed(() => {
+    return props.initiatives.map(initiative => initiative.portfolio.name)
+        .reduce((cumulative, current) => {
+            if (cumulative.includes(current)) {
+                return cumulative;
+            }
+            cumulative.push(current)
+            return cumulative
+        }, [])
+})
 
 const filterOptions = ref([
     {
@@ -156,9 +177,31 @@ const filteredInitiatives = computed(() => {
 
             return true;
         })
+        .filter(initiative => {
+            if (portfolioFilter.value) {
+                return initiative.portfolio.name === portfolioFilter.value
+            }
+
+            return true;
+        })
 })
 
 function resetFilters() {
 }
+
+// handle portfolio from url
+onMounted(() => {
+
+    const querypairs = window.location.search.substring(1);
+    const test = new URLSearchParams(querypairs)
+    console.log(test)
+
+    test.forEach((value, key) => {
+        if(key === 'portfolio') {
+            portfolioFilter.value = value;
+        }
+    })
+
+})
 
 </script>

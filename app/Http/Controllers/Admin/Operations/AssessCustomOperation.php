@@ -55,7 +55,7 @@ trait AssessCustomOperation
      */
     public function assessCustom($id)
     {
-        $this->crud->hasAccessOrFail('assess');
+        $this->crud->hasAccessOrFail('assessCustom');
         // $this->crud->setOperation('Assess');
 
         $id = $this->crud->getCurrentEntryId() ?? $id;

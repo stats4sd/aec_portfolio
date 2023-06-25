@@ -22,11 +22,11 @@
                         {{ $portfolio->name }}
                     </td>
                     <td>{{ $portfolio->projects->count() }}</td>
-                    <td>{{ $portfolio->projects->filter(fn(\App\Models\Project $initiative): bool => $initiative->latest_assessment->completed_at)->count() }}</td>
+                    <td>{{ $portfolio->projects->filter(fn(\App\Models\Project $initiative): bool => $initiative->latest_assessment->completed_at !== null)->count() }}</td>
                     <td>
                         <div class="btn-group">
 
-                            <a href="{{ url('admin/project') }}" class="btn btn-success btn-sm">SHOW INITIATIVES</a>
+                            <a href="{{ url("admin/project?portfolio=$portfolio->name") }}" class="btn btn-success btn-sm">SHOW INITIATIVES</a>
                             @if(Auth::user()->can('maintain portfolios'))
                                 <a href="{{ route('portfolio.edit', [$organisation, $portfolio]) }}" class="btn btn-info btn-sm">EDIT</a>
                                 <button class="btn btn-danger btn-sm remove-button" data-portfolio="{{ $portfolio->id }}" data-toggle="modal" data-target="#removePortfolioModal{{ $portfolio->id }}">REMOVE</button>
