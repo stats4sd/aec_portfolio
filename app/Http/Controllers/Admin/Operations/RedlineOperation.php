@@ -6,7 +6,6 @@ use App\Enums\AssessmentStatus;
 use App\Models\Assessment;
 use App\Models\AssessmentRedLine;
 use App\Models\Principle;
-use App\Models\PrincipleProject;
 use App\Models\Project;
 use App\Models\RedLine;
 use Illuminate\Http\Request;
@@ -15,13 +14,7 @@ use Illuminate\Validation\ValidationException;
 
 trait RedlineOperation
 {
-    /**
-     * Define which routes are needed for this operation.
-     *
-     * @param string $segment Name of the current entity (singular). Used as first URL segment.
-     * @param string $routeName Prefix of the route name.
-     * @param string $controller Name of the current CrudController.
-     */
+
     protected function setupRedlineRoutes($segment, $routeName, $controller)
     {
         // logger("RedlineOperation.setupRedlineRoutes()");
@@ -102,7 +95,7 @@ trait RedlineOperation
 
 
         // custom handling of redline-project relationship data
-        foreach (Redline::all() as $redline) {
+        foreach (RedLine::all() as $redline) {
             if ($request->has('redline_value_' . $redline->id)) {
 
                 // Need to call save() on the AssessmentRedline model directly in order to save the update via the Revisionable trait:
@@ -121,7 +114,6 @@ trait RedlineOperation
 
         if ($request->redlines_complete) {
             if ($latestAssessment->failingRedlines()->count() > 0) {
-                dd('hello');
                 $latestAssessment->redline_status = AssessmentStatus::Failed;
             } else {
                 $latestAssessment->redline_status = AssessmentStatus::Complete;

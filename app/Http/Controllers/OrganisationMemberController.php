@@ -5,14 +5,12 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Models\Organisation;
-use Illuminate\Http\Request;
 use App\Models\OrganisationMember;
 use Spatie\Permission\Models\Role;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Database\Eloquent\Builder;
 use App\Http\Requests\OrganisationMemberStoreRequest;
 use App\Http\Requests\OrganisationMemberUpdateRequest;
-use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 class OrganisationMemberController extends Controller
 {
@@ -34,14 +32,6 @@ class OrganisationMemberController extends Controller
     }
 
 
-    /**
-     * Attach users to the organisation, or send email invites to non-users.
-     * New Members are automatically not admins.
-     *
-     * @param OrganisationMemberStoreRequest $request
-     * @param Organisation $organisation
-     * @return void
-     */
     public function store(OrganisationMemberStoreRequest $request, Organisation $organisation)
     {
         $this->authorize('create', OrganisationMember::class);
@@ -77,13 +67,6 @@ class OrganisationMemberController extends Controller
     }
 
 
-    /**
-     * Update the access level for existing organisation member
-     *
-     * @param OrganisationMemberUpdateRequest $request
-     * @param Organisation $organisation
-     * @param User $user
-     */
     public function update(OrganisationMemberUpdateRequest $request, Organisation $organisation, User $user)
     {
         $this->authorize('update', OrganisationMember::class);
@@ -100,13 +83,6 @@ class OrganisationMemberController extends Controller
     }
 
 
-    /**
-     * Remove a user from the organisation.
-     *
-     * @param Organisation $organisation
-     * @param User $user
-     * @return void
-     */
     public function destroy(Organisation $organisation, User $user)
     {
         $this->authorize('delete', OrganisationMember::class);

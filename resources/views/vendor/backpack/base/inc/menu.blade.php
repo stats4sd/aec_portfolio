@@ -12,8 +12,8 @@
 </ul>
 <!-- ========== End of top menu left items ========== -->
 
-<ul class="nav navbar-nav ml-auto mr-auto d-flex flex-">
-    <li class="nav-item mx-3 font-weight-bold"><a class="nav-link text-deep-green" href="{{ backpack_url('generic-dashboard?level=institution') }}">Dashboard</a>
+<ul class="nav navbar-nav ml-auto mr-auto d-flex">
+    <li class="nav-item mx-3 font-weight-bold"><a class="nav-link text-deep-green" href="{{ backpack_url('dashboard') }}">Dashboard</a>
         </li>
     <li class="nav-item mx-3 font-weight-bold"><a class="nav-link text-deep-green" href="{{ backpack_url('portfolio') }}">Portfolios</a>
         </li>

@@ -1,12 +1,8 @@
 <template>
 
-    <!-- Question: how to set a bigger width? I tried class "w-100" but it does not work... -->
-    <div class="container pt-3">
-
     <!-- dashboard filters -->
     <!-- Question: How to have a better look and feel for table...? -->
     <table class="table table-bordered">
-
         <tr>
         <td>
             <table>
@@ -90,7 +86,7 @@
                 <tr>
                     <td></td>
                     <td align="center">
-                        <input type="hidden" v-model="formData['organisation']">
+                        <input type="hidden" v-model="formData['organisation_id']">
                         <button @click="validateCriteria" class="btn btn-primary">Submit</button>
                     </td>
                     <td></td>
@@ -101,8 +97,6 @@
         </tr>
 
     </table>
-
-
 
     <!-- status summary -->
     <table class="table" v-if="statusSummary != null">
@@ -124,7 +118,6 @@
         </tbody>
 
     </table>
-
 
     <!-- red lines summary -->
     <table class="table" v-if="redlinesSummary != null">
@@ -150,7 +143,6 @@
 
     </table>
 
-
     <!-- principles summary: sort by -->
     <table class="table" v-if="yoursPrinciplesSummarySorted != null">
         <thead>
@@ -168,7 +160,6 @@
         </thead>
     </table>
 
-
     <!-- principles summary -->
 	<table class="table" v-if="yoursPrinciplesSummarySorted != null">
         <thead>
@@ -181,8 +172,7 @@
 		<tr>
 		<td colspan="2">
 			<div class="demo-container-1">
-				<div id="chart1" class="demo-placeholder"></div>
-			</div>
+				<div id="chart1" class="demo-placeholder"></div></div>
 		</td>
 		<td>
 			<div class="demo-container-2">
@@ -195,9 +185,6 @@
 		</td>
 		</tr>
 	</table>
-
-
-    </div>
 
 </template>
 
@@ -261,7 +248,7 @@ export default {
     mounted() {
         // set default values
         this.formData['portfolio'] = 0;
-        this.formData['organisation'] = this.organisation.id;
+        this.formData['organisation_id'] = this.organisation.id;
         this.formData['projectStartFrom'] = '2020';
         this.formData['projectStartTo'] = '2030';
         this.formData['budgetFrom'] = '100000';
@@ -294,7 +281,7 @@ export default {
             // alert("validateCriteria()");
 
             var message = "";
-            message += "Organisation: " + this.formData['organisation'] + "\n";
+            message += "Organisation: " + this.formData['organisation_id'] + "\n";
             message += "Portfolio: " + this.formData['portfolio'] + "\n";
             message += "Region: " + this.formData['region'] + "\n";
             message += "Country: " + this.formData['country'] + "\n";

@@ -127,7 +127,7 @@ class Assessment extends Model
         return $this->hasMany(PrincipleAssessment::class);
     }
 
-    public function getTotalPossibleAttribute(): int
+    public function getTotalPossibleAttribute(): ?int
     {
         if ($this->failingRedlines()->count() > 0) {
             return 0;
@@ -140,10 +140,12 @@ class Assessment extends Model
 
             return $nonNaPrinciples->count() * 2;
         }
+
+        return null;
     }
 
 
-    public function getTotalAttribute(): int
+    public function getTotalAttribute(): ?int
     {
         if ($this->failingRedlines()->count() > 0) {
             return 0;
@@ -155,11 +157,13 @@ class Assessment extends Model
             return $principles->filter(fn($pr) => !$pr->pivot->is_na)->sum(fn($pr) => $pr->pivot->rating);
 
         }
+
+        return null;
     }
 
     public function getOverallScoreAttribute(): ?int
     {
-        if ($this->failingRedlines()->count() > 0) {
+        if ($this->failingRedlines->count() > 0) {
             return 0;
         }
 

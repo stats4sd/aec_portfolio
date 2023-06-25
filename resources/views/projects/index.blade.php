@@ -7,8 +7,11 @@
          <initiatives-list
                 :initiatives="{{ $projects->toJson() }}"
                 :has-additional-assessment="{{ $has_additional_assessment ? 'true' : 'false' }}"
-            >
-
+            />
     </div>
 
+@endsection
+
+@section('after_scripts')
+    @vite('resources/js/initiatives.js')
 @endsection

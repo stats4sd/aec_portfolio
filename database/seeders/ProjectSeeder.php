@@ -36,7 +36,7 @@ class ProjectSeeder extends Seeder
      */
     public function run(): void
     {
-        $organisations = Organisation::factory()->count(10)->create();
+        $organisations = Organisation::factory()->count(5)->create();
 
         foreach ($organisations as $organisation) {
 
@@ -49,13 +49,13 @@ class ProjectSeeder extends Seeder
                     'portfolio_id' => $portfolio->id,
                     'organisation_id' => $organisation->id
                 ])
-                    ->count(random_int(0, 50))
+                    ->count(random_int(30, 60))
                     ->create();
             }
         }
 
 
-        $redlines = Redline::all();
+        $redlines = RedLine::all();
         $principles = Principle::all();
         $regions = Region::with('countries')->get();
 
@@ -101,7 +101,7 @@ class ProjectSeeder extends Seeder
                 continue;
             }
 
-            $assessment->redlines()->sync($redlinesToAdd);
+            $assessment->redLines()->sync($redlinesToAdd);
 
             // if redlines are failed
             if ($assessment->failingRedlines()->count() !== 0) {

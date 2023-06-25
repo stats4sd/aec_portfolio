@@ -2,21 +2,23 @@
 
 namespace App\Http\Controllers\Admin;
 
+use Backpack\CRUD\app\Http\Controllers\Operations\DeleteOperation;
+use Backpack\CRUD\app\Http\Controllers\Operations\ListOperation;
+use Backpack\CRUD\app\Http\Controllers\Operations\UpdateOperation;
 use Widget;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Backpack\CRUD\app\Http\Controllers\CrudController;
 use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
-use Backpack\PermissionManager\app\Http\Requests\UserStoreCrudRequest as StoreRequest;
 use Backpack\PermissionManager\app\Http\Requests\UserUpdateCrudRequest as UpdateRequest;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class UserCrudController extends CrudController
 {
-    use \Backpack\CRUD\app\Http\Controllers\Operations\ListOperation;
-    use \Backpack\CRUD\app\Http\Controllers\Operations\UpdateOperation { update as traitUpdate; }
-    use \Backpack\CRUD\app\Http\Controllers\Operations\DeleteOperation { destroy as traitDestroy; }
+    use ListOperation;
+    use UpdateOperation { update as traitUpdate; }
+    use DeleteOperation { destroy as traitDestroy; }
 
     use AuthorizesRequests;
 
@@ -113,18 +115,16 @@ class UserCrudController extends CrudController
         return view('users.show', ['user' => $user]);
     }
 
-    /**
-     * Define what happens when the Delete operation is loaded.
-     */
+
     public function destroy($id)
     {
         $this->authorize('delete', User::find($id));
 
         $this->crud->hasAccessOrFail('delete');
-    
+
         return $this->crud->delete($id);
     }
- 
+
     public function setupUpdateOperation()
     {
         $this->authorize('update', CRUD::getCurrentEntry());
@@ -133,11 +133,6 @@ class UserCrudController extends CrudController
         $this->crud->setValidation(UpdateRequest::class);
     }
 
-    /**
-     * Update the specified resource in the database.
-     *
-     * @return \Illuminate\Http\RedirectResponse
-     */
     public function update()
     {
         $this->authorize('update', CRUD::getCurrentEntry());
@@ -149,9 +144,7 @@ class UserCrudController extends CrudController
         return $this->traitUpdate();
     }
 
-    /**
-     * Handle password input fields.
-     */
+
     protected function handlePasswordInput($request)
     {
         // Remove fields not present on the user.

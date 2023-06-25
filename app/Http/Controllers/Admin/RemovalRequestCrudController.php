@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers\Admin;
 
+use Backpack\CRUD\app\Http\Controllers\Operations\ListOperation;
+use Backpack\CRUD\app\Http\Controllers\Operations\ShowOperation;
 use Carbon\Carbon;
-use App\Models\Project;
-use App\Models\Assessment;
 use App\Models\Organisation;
 use App\Models\RemovalRequest;
 use App\Mail\DataRemovalReminder;
@@ -14,43 +14,25 @@ use App\Models\OrganisationMember;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\DataRemovalFinalConfirmed;
-use App\Http\Requests\RemovalRequestRequest;
 use Backpack\CRUD\app\Http\Controllers\CrudController;
 use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
 
-/**
- * Class RemovalRequestCrudController
- * @package App\Http\Controllers\Admin
- * @property-read \Backpack\CRUD\app\Library\CrudPanel\CrudPanel $crud
- */
 class RemovalRequestCrudController extends CrudController
 {
-    use \Backpack\CRUD\app\Http\Controllers\Operations\ListOperation;
-    use \Backpack\CRUD\app\Http\Controllers\Operations\ShowOperation;
+    use ListOperation;
+    use ShowOperation;
 
-    /**
-     * Configure the CrudPanel object. Apply settings to all operations.
-     * 
-     * @return void
-     */
     public function setup()
     {
         CRUD::setModel(\App\Models\RemovalRequest::class);
         CRUD::setRoute(config('backpack.base.route_prefix') . '/removal-request');
         CRUD::setEntityNameStrings('removal request', 'removal requests');
     }
-
-    /**
-     * Define what happens when the List operation is loaded.
-     * 
-     * @see  https://backpackforlaravel.com/docs/crud-operation-list-entries
-     * @return void
-     */
     protected function setupListOperation()
     {
         // add custom buttons
 
-        // Although we have a daily schedule job to send data removal reminder email, 
+        // Although we have a daily schedule job to send data removal reminder email,
         // we keep the Remind button here in case we need to resend reminder email to requester.
         // This is common that people claim they have not received email and ask the sender to re-send...
         $this->crud->addButtonFromView('line', 'remind-data-removal', 'remind-data-removal', 'start');
@@ -59,7 +41,7 @@ class RemovalRequestCrudController extends CrudController
         $this->crud->addButtonFromView('line', 'perform-data-removal', 'perform-data-removal', 'start');
 
         CRUD::column('organisation.name')->label('Organisation');
-        CRUD::column('requester.name')->label('Requester');;
+        CRUD::column('requester.name')->label('Requester');
         CRUD::column('status');
         CRUD::column('requested_at');
     }
@@ -138,7 +120,7 @@ class RemovalRequestCrudController extends CrudController
 
         Mail::to($toRecipients)->queue(new DataRemovalCompleted($removalRequest));
 
-        
+
         $organisationId = $removalRequest->organisation_id;
 
         $userIds = OrganisationMember::select('user_id')->where('organisation_id', $organisationId)->get()->pluck('user_id');
@@ -159,9 +141,7 @@ class RemovalRequestCrudController extends CrudController
         $value = $array . '';
 
         // replace [] to ()
-        $result = str_replace('[', '(', str_replace(']', ')', $value));
-
-        return $result;
+        return str_replace('[', '(', str_replace(']', ')', $value));
     }
 
 }

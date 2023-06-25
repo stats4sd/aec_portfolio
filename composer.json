@@ -20,6 +20,7 @@
         "spatie/browsershot": "^3.57",
         "stats4sd/laravel-backpack-section-title": "dev-backpack-5",
         "stats4sd/laravel-file-util": "dev-laravel-9-support",
+        "stats4sd/laravel-sql-views": "dev-add-procs-and-functions",
         "staudenmeir/belongs-to-through": "^2.12",
         "symfony/http-client": "^6.2",
         "symfony/mailgun-mailer": "^6.1"
@@ -27,6 +28,7 @@
     "require-dev": {
         "backpack/generators": "^3.3",
         "barryvdh/laravel-ide-helper": "^2.10",
+        "barryvdh/laravel-debugbar": "^3.8",
         "fakerphp/faker": "^1.9.1",
         "laravel/pint": "^1.0",
         "laravel/sail": "^1.0.1",
@@ -78,6 +80,10 @@
         {
             "type": "composer",
             "url": "https://repo.backpackforlaravel.com/"
+        },
+        {
+            "type": "path",
+            "url": "/Users/dave/Projects/Packages/laravel-sql-views/"
         }
     ],
     "minimum-stability": "stable",

@@ -17,6 +17,8 @@ return new class extends Migration
             $table->unsignedBigInteger('dashboard_others_id')->index();
             $table->string('status')->nullable();
             $table->string('message')->nullable();
+            $table->unsignedBigInteger('total_count')->nullable();
+            $table->unsignedBigInteger('total_budget')->nullable();
             $table->text('status_summary')->nullable();
             $table->text('red_lines_summary')->nullable();
             $table->text('principles_summary_yours')->nullable();

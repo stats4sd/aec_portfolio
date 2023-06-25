@@ -1,38 +1,20 @@
-<?php
-
-use Illuminate\Database\Migrations\Migration;
-use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Schema;
-
-return new class extends Migration
-{
-    /**
-     * Run the migrations.
-     *
-     * @return void
-     */
-    public function up()
-    {
-        // For correct indentation in MySQL stored procedure to be created,
-        // MySQL program source code needs to be stored in below format
-
-        $procedure =
-"
 DROP PROCEDURE IF EXISTS `generate_dashboard_summary`;
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `generate_dashboard_summary`(
+CREATE PROCEDURE `generate_dashboard_summary` (
 	IN dashboardYoursId INT,
 	IN dashboardOthersId INT,
 	IN organisationId INT,
 	IN portfolioId INT,
-	IN regionId INT,
-	IN countryId INT,
+	IN regionIds INT,
+	IN countryIds INT,
 	IN projectStartFrom INT,
 	IN projectStartTo INT,
 	IN budgetFrom INT,
 	IN budgetTo INT,
 	OUT status INT,
 	OUT message VARCHAR(1000),
+	OUT totalCount BIGINT,
+	OUT totalBudget BIGINT,
 	OUT statusSummary VARCHAR(16383),
 	OUT redlinesSummary VARCHAR(16383),
 	OUT yoursPrinciplesSummary VARCHAR(16383),
@@ -150,20 +132,28 @@ BEGIN
     	SET @SQLText = CONCAT(@SQLText, ' AND p.portfolio_id = ', portfolioId);
     END IF;
 
-    IF projectStartFrom IS NOT NULL AND projectStartTo IS NOT NULL THEN
-		SET @SQLText = CONCAT(@SQLText, ' AND YEAR(p.start_date) BETWEEN ', projectStartFrom , ' AND ', projectStartTo);
+    IF projectStartFrom IS NOT NULL THEN
+		SET @SQLText = CONCAT(@SQLText, ' AND YEAR(p.start_date) >= ', projectStartFrom);
     END IF;
 
-    IF budgetFrom IS NOT NULL AND budgetTo IS NOT NULL THEN
-    	SET @SQLText = CONCAT(@SQLText, ' AND p.budget BETWEEN ', budgetFrom, ' AND ', budgetTo);
+	IF projectStartTo IS NOT NULL THEN
+		SET @SQLText = CONCAT(@SQLText, ' AND YEAR(p.start_date) <= ', projectStartTo);
     END IF;
 
-    IF regionId IS NOT NULL THEN
-    	SET @SQLText = CONCAT(@SQLText, ' AND pr.region_id = ', regionId);
+    IF budgetFrom IS NOT NULL THEN
+    	SET @SQLText = CONCAT(@SQLText, ' AND p.budget >= ', budgetFrom);
     END IF;
 
-    IF countryId IS NOT NULL THEN
-    	SET @SQLText = CONCAT(@SQLText, ' AND cp.country_id = ', countryId);
+    IF budgetTo IS NOT NULL THEN
+    	SET @SQLText = CONCAT(@SQLText, ' AND p.budget <= ', budgetTo);
+    END IF;
+
+    IF regionIds IS NOT NULL THEN
+    	SET @SQLText = CONCAT(@SQLText, ' AND pr.region_id IN (', regionIds, ')');
+    END IF;
+
+    IF countryIds IS NOT NULL THEN
+    	SET @SQLText = CONCAT(@SQLText, ' AND cp.country_id IN (', countryIds, ')');
     END IF;
 
     -- debug message
@@ -207,20 +197,28 @@ BEGIN
 
 
     -- criteria
-    IF projectStartFrom IS NOT NULL AND projectStartTo IS NOT NULL THEN
-		SET @SQLText = CONCAT(@SQLText, ' AND YEAR(p.start_date) BETWEEN ', projectStartFrom , ' AND ', projectStartTo);
+    IF projectStartFrom IS NOT NULL THEN
+		SET @SQLText = CONCAT(@SQLText, ' AND YEAR(p.start_date) >= ', projectStartFrom);
     END IF;
 
-    IF budgetFrom IS NOT NULL AND budgetTo IS NOT NULL THEN
-    	SET @SQLText = CONCAT(@SQLText, ' AND p.budget BETWEEN ', budgetFrom, ' AND ', budgetTo);
+	IF projectStartTo IS NOT NULL THEN
+		SET @SQLText = CONCAT(@SQLText, ' AND YEAR(p.start_date) <= ', projectStartTo);
     END IF;
 
-    IF regionId IS NOT NULL THEN
-    	SET @SQLText = CONCAT(@SQLText, ' AND pr.region_id = ', regionId);
+    IF budgetFrom IS NOT NULL THEN
+    	SET @SQLText = CONCAT(@SQLText, ' AND p.budget >= ', budgetFrom);
     END IF;
 
-    IF countryId IS NOT NULL THEN
-    	SET @SQLText = CONCAT(@SQLText, ' AND cp.country_id = ', countryId);
+    IF budgetTo IS NOT NULL THEN
+    	SET @SQLText = CONCAT(@SQLText, ' AND p.budget <= ', budgetTo);
+    END IF;
+
+    IF regionIds IS NOT NULL THEN
+    	SET @SQLText = CONCAT(@SQLText, ' AND pr.region_id IN (', regionIds, ')');
+    END IF;
+
+    IF countryIds IS NOT NULL THEN
+    	SET @SQLText = CONCAT(@SQLText, ' AND cp.country_id IN (', countryIds, ')');
     END IF;
 
     -- execute dynamic SQL
@@ -347,11 +345,12 @@ BEGIN
 
 
 		-- construct status summary
-		SET statusSummary = CONCAT('[{\"status\":\"Created\",\"number\":', ssCreatedCount, ',\"percent\":', ssCreatedPercent, ',\"budget\":\"', FORMAT(ssCreatedBudget, 0), '\"},',
+		SET statusSummary = CONCAT('[',
 							 '{\"status\":\"Passed all redlines\",\"number\":', ssPassedAllCount, ',\"percent\":', ssPassedAllPercent, ',\"budget\":\"', FORMAT(ssPassedAllBudget, 0), '\"},',
-							 '{\"status\":\"Failed at least 1 redline\",\"number\":', ssFailedAnyCount, ',\"percent\":', ssFailedAnyPercent, ',\"budget\":\"', FORMAT(ssFailedAnyBudget, 0), '\"},',
 							 '{\"status\":\"Fully assessed\",\"number\":', ssFullyAssessedCount, ',\"percent\":', ssFullyAssessedPercent, ',\"budget\":\"', FORMAT(ssFullyAssessedBudget, 0), '\"}]');
 
+        SET totalCount = ssCreatedCount;
+		SET totalBudget = ssCreatedBudget;
 
 
 		-- -------------------------
@@ -456,8 +455,15 @@ BEGIN
 
 				DELETE FROM dashboard_result WHERE dashboard_id = dashboardYoursId;
 
-				INSERT INTO dashboard_result (dashboard_id, dashboard_others_id, status, message, status_summary, red_lines_summary, created_at, updated_at)
-				VALUE (dashboardYoursId, dashboardOthersId, status, message, statusSummary, redlinesSummary, NOW(), NOW());
+				INSERT INTO dashboard_result SET
+				                              dashboard_id = dashboardYoursId,
+				                              dashboard_others_id = dashboardOthersId,
+				                              status = status,
+				                              message = message,
+				                              status_summary = statusSummary,
+				                              red_lines_summary = redlinesSummary,
+				                              created_at = NOW(),
+				                              updated_at = NOW();
 			END IF;
 
 
@@ -503,8 +509,19 @@ BEGIN
 				-- STORING DASHBOARD RESULT
 				-- -------------------------
 
-				INSERT INTO dashboard_result (dashboard_id, dashboard_others_id, status, message, status_summary, red_lines_summary, principles_summary_yours, principles_summary_others, created_at, updated_at)
-				VALUE (dashboardYoursId, dashboardOthersId, status, message, statusSummary, redlinesSummary, yoursPrinciplesSummary, othersPrinciplesSummary, NOW(), NOW());
+				INSERT INTO dashboard_result SET
+				                                 dashboard_id = dashboardYoursId,
+				                                 dashboard_others_id = dashboardOthersId,
+				                                 status = status,
+				                                 message = message,
+				                                 total_count = totalCount,
+				                                 total_budget = totalBudget,
+				                                 status_summary = statusSummary,
+				                                 red_lines_summary = redlinesSummary,
+				                                 principles_summary_yours = yoursPrinciplesSummary,
+				                                 principles_summary_others = othersPrinciplesSummary,
+				                                 created_at = NOW(),
+				                                 updated_at = NOW();
 
 			END IF;
 
@@ -513,20 +530,3 @@ BEGIN
 	END IF;
 
 END
-";
-
-        DB::unprepared($procedure);
-    }
-
-    /**
-     * Reverse the migrations.
-     *
-     * @return void
-     */
-    public function down()
-    {
-        $procedure = "DROP PROCEDURE IF EXISTS `generate_dashboard_summary` ";
-
-        DB::unprepared($procedure);
-    }
-};

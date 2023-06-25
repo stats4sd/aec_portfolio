@@ -69,12 +69,18 @@ Route::group([
     Route::delete('organisation/{organisation}/members/{user}', [OrganisationMemberController::class, 'destroy'])->name('organisationmembers.destroy');
 
     Route::get('organisation/{organisation}/portfolio', [OrganisationController::class, 'portfolio'])->name('organisation.portfolio');
-    Route::get('organisation/{organisation}/export', [OrganisationController::class, 'export'])->name('organisation.export');
+
+     Route::get('organisation/export-all', [OrganisationController::class, 'exportAll'])->name('organisation.export-all');
+
+     Route::get('organisation/export-merged', [OrganisationController::class, 'mergeAll']);
 
         // routes that require a selected organisation
     Route::group([
         'middleware' => ['org.selected'],
     ], function () {
+
+        Route::get('organisation/export', [OrganisationController::class, 'export'])->name('organisation.export');
+
         Route::crud('portfolio', PortfolioCrudController::class);
 
 
@@ -88,7 +94,9 @@ Route::group([
         Route::get('assessment/{assessment}/assess', [AssessmentController::class, 'assess']);
         Route::post('assessment/{assessment}/finalise', [AssessmentController::class, 'finaliseAssessment']);
 
-        Route::get('generic-dashboard', [GenericDashboardController::class, 'show']);
+        Route::get('generic-dashboard', [GenericDashboardController::class, 'new']);
+        Route::get('dashboard', [GenericDashboardController::class, 'show']);
+
         Route::post('generic-dashboard/enquire', [GenericDashboardController::class, 'enquire']);
 
         Route::crud('additional-criteria', AdditionalCriteriaCrudController::class);

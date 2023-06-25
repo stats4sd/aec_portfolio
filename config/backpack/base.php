@@ -1,6 +1,6 @@
 <?php
 
-return [
+return array(
 
     /*
     |--------------------------------------------------------------------------
@@ -41,7 +41,7 @@ return [
     // ------
 
     // CSS files that are loaded in all pages, using Laravel's asset() helper
-    'styles' => [
+    'styles' => array(
         'css/app.css',
 
         // Here's what's inside the bundle:
@@ -59,12 +59,12 @@ return [
 
         // Example (load font-awesome instead of line-awesome):
         // 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.2/css/all.min.css',
-    ],
+    ),
 
     // CSS files that are loaded in all pages, using Laravel's mix() helper
-    'mix_styles' => [ // file_path => manifest_directory_path
+    'mix_styles' => array( // file_path => manifest_directory_path
         // 'css/app.css' => '',
-    ],
+    ),
 
     // ------
     // HEADER
@@ -86,7 +86,7 @@ return [
     // ----
 
     // Body element classes.
-    'body_class' => 'app aside-menu-fixed sidebar-lg-show',
+    'body_class' => 'app aside-menu-fixed sidebar-hidden',
     // Try sidebar-hidden, sidebar-fixed, sidebar-compact, sidebar-lg-show
 
     // Sidebar element classes.
@@ -118,7 +118,7 @@ return [
     // -------
 
     // JS files that are loaded in all pages, using Laravel's asset() helper
-    'scripts' => [
+    'scripts' => array(
         // Backstrap includes jQuery, Bootstrap, CoreUI, PNotify, Popper
         'packages/backpack/base/js/bundle.js',
         'js/app.js',
@@ -136,12 +136,12 @@ return [
         // 'https://unpkg.com/vue@2.4.4/dist/vue.min.js',
         // 'https://unpkg.com/react@16/umd/react.production.min.js',
         // 'https://unpkg.com/react-dom@16/umd/react-dom.production.min.js',
-    ],
+    ),
 
     // JS files that are loaded in all pages, using Laravel's mix() helper
-    'mix_scripts' => [// file_path => manifest_directory_path
+    'mix_scripts' => array(// file_path => manifest_directory_path
         // 'js/app.js' => '',
-    ],
+    ),
 
     // -------------
     // CACHE-BUSTING
@@ -219,11 +219,11 @@ return [
 
     // The classes for the middleware to check if the visitor is an admin
     // Can be a single class or an array of classes
-    'middleware_class' => [
+    'middleware_class' => array(
         App\Http\Middleware\CheckIfAdmin::class,
         \Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull::class,
         // \Backpack\CRUD\app\Http\Middleware\UseBackpackAuthGuardInsteadOfDefaultAuthGuard::class,
-    ],
+    ),
 
     // Alias for that middleware
     'middleware_key' => 'admin',
@@ -294,4 +294,4 @@ return [
     */
 
     'license_code' => env('BACKPACK_LICENSE', false),
-];
+);

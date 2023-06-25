@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Assessment;
 use App\Models\Country;
-use App\Models\CountryProject;
 use App\Models\Organisation;
 use App\Models\Portfolio;
 use App\Models\Project;
@@ -12,150 +12,134 @@ use App\Models\Region;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
 
 class GenericDashboardController extends Controller
 {
 
+    // TEMP
+    // TODO: OLD ONE TO BE REMOVED
+    public function new(Request $request)
+    {
+        $data = $this->getData($request);
+
+        $data['portfolios'] = $data['organisation']['portfolios'];
+
+        return view('generic-dashboard.new-dashboard', $data);
+    }
+
     public function show(Request $request)
     {
-        // find all portfolios belong to selected organisation
-        $portfolios = Portfolio::orderBy('id')->get();
+        $data = $this->getData($request);
+        return view('generic-dashboard.dashboard', $data);
+    }
 
-        // find all project Ids belongs to selected organisation
-        $projectIds = Project::select('id')->pluck('id')->toArray();
+    public function getData(Request $request)
+    {
 
-        // find all regions with projects that belong to selected organisation
-        $regionIds = ProjectRegion::whereIn('project_id', $projectIds)->get()->pluck('region_id')->toArray();
-        $countryIds = CountryProject::whereIn('project_id', $projectIds)->get()->pluck('country_id')->toArray();
+        $org = Organisation::with([
+            'portfolios.projects' => [
+                'regions',
+                'countries',
+            ]
+        ])->find(Session::get('selectedOrganisationId'));
 
-        // find all regions with projects that belong to selected organisation
-        $regions = Region::whereIn('regions.id', $regionIds)
-            ->with('countries', function(HasMany $query) use ($countryIds) {
-                $query->whereIn('countries.id', $countryIds);
-            })
-            ->get();
+        $regions = $org->portfolios
+            ->map(fn(Portfolio $portfolio): Collection => $portfolio
+                ->projects
+                ->map(fn(Project $project): Collection => $project
+                    ->regions
+                )
+            )
+            ->flatten()
+            ->unique('id')
+            ->values();
 
-        // find all coutnries with projects that belong to selected organisation
-        $countrieIds = CountryProject::whereIn('project_id', $projectIds)->get()->pluck('country_id')->toArray();
+        $countries = $org->portfolios
+            ->map(fn(Portfolio $portfolio): Collection => $portfolio
+                ->projects
+                ->map(fn(Project $project): Collection => $project
+                    ->countries
+                )
+            )
+            ->flatten()
+            ->unique()
+            ->values();
 
-        // find all countries with projects that belong to selected organisation
-        $countries = Country::whereIn('id', $countrieIds)->get();
 
-        return view('generic-dashboard.new-dashboard', [
-            'organisation' => Organisation::find(Session::get('selectedOrganisationId')),
-            'portfolios' => $portfolios,
+        return [
+            'organisation' => $org,
             'regions' => $regions,
             'countries' => $countries,
-        ]);
+        ];
     }
 
     public function enquire(Request $request)
     {
-        // logger("GenericDashboardController.enquire()");
-
-        // logger($request);
-
         // get system time as unique dashboard Id
         $current_timestamp = Carbon::now()->timestamp;
 
         // variables for stored procedure input parameters
         $dashboardYoursId = $current_timestamp;
         $dashboardOthersId = $current_timestamp + 1;
-        $organisationId = $request['organisation'];
-        $portfolioId = $request['portfolio'];
-        $regionId = $request['region'];
-        $countryId = $request['country'];
-        $projectStartFrom = $request['projectStartFrom'];
-        $projectStartTo = $request['projectStartTo'];
-        $budgetFrom = $request['budgetFrom'];
-        $budgetTo = $request['budgetTo'];
-        $chkRegion = $request['chkRegion'];
-        $chkCountry = $request['chkCountry'];
-        $chkProjectStart = $request['chkProjectStart'];
-        $chkBudget = $request['chkBudget'];
-        $sortBy = $request['sortBy'];
+        $organisationId = $request['organisation_id'];
 
 
-        logger($dashboardYoursId);
-        logger($dashboardOthersId);
-        logger($organisationId);
-        logger($portfolioId);
-        logger($regionId);
-        logger($countryId);
-        logger($projectStartFrom);
-        logger($projectStartTo);
-        logger($budgetFrom);
-        logger($budgetTo);
-        logger($chkRegion);
-        logger($chkCountry);
-        logger($chkProjectStart);
-        logger($chkBudget);
-        logger($sortBy);
+        // nullable items are cast to "null" string for inclusion into SQL query
+        $portfolioId = $request['portfolio']['id'] ?? 'null';
+        $regionIds = $request['regions'] ? collect($request['regions'])->pluck('id')->join(', ') : 'null';
+        $countryIds = $request['countries'] ? collect($request['countries'])->pluck('id')->join(', ') : 'null';
+        $projectStartFrom = $request['startDate'] ?? 'null';
+        $projectStartTo = $request['endDate'] ?? 'null';
+        $budgetFrom = $request['minBudget'] ?? 'null';
+        $budgetTo = $request['maxBudget'] ?? 'null';
 
+        $sortBy = $request['sortBy'] ?? '1';
 
         // constrcuct dynamic SQL
-        $sql = '';
-        $sql = $sql . 'CALL generate_dashboard_summary(';
-        $sql = $sql . $dashboardYoursId . ', ';
-        $sql = $sql . $dashboardOthersId . ', ';
-        $sql = $sql . $organisationId . ', ';
-
-        // portfolio Id 0 means all portfolios
-        if ($portfolioId == '0') {
-            $sql = $sql . 'null, ';
-        } else {
-            $sql = $sql . $portfolioId . ', ';
-        }
-
-        if ($chkRegion == '1') {
-            $sql = $sql . $regionId . ', ';
-        } else {
-            $sql = $sql . 'null, ';
-        }
-
-        if ($chkCountry == '1') {
-            $sql = $sql . $countryId . ', ';
-        } else {
-            $sql = $sql . 'null, ';
-        }
-
-        if ($chkProjectStart == '1') {
-            $sql = $sql . $projectStartFrom . ', ';
-            $sql = $sql . $projectStartTo . ', ';
-        } else {
-            $sql = $sql . 'null, ';
-            $sql = $sql . 'null, ';
-        }
-
-        if ($chkBudget == '1') {
-            $sql = $sql . $budgetFrom . ', ';
-            $sql = $sql . $budgetTo . ', ';
-        } else {
-            $sql = $sql . 'null, ';
-            $sql = $sql . 'null, ';
-        }
-
-        $sql = $sql . '@status, @message, @statusSummary, @redlinesSummary, @yoursPrinciplesSummary, @othersPrinciplesSummary)';
-
-        // logger($sql);
-
+        $sql = "CALL generate_dashboard_summary(
+            {$dashboardYoursId},
+            {$dashboardOthersId},
+            {$organisationId},
+            {$portfolioId},
+            {$regionIds},
+            {$countryIds},
+            {$projectStartFrom},
+            {$projectStartTo},
+            {$budgetFrom},
+            {$budgetTo},
+            @status,
+            @message,
+            @totalCount,
+            @totalBudget,
+            @statusSummary,
+            @redlinesSummary,
+            @yoursPrinciplesSummary,
+            @othersPrinciplesSummary)
+            ";
 
         // call stored procedure to get dashboard summary data
         // DB::select("CALL generate_dashboard_summary(998, 999, 9, 20, null, null, null, null, null, null, @status, @message, @statusSummary, @redlinesSummary, @yoursPrinciplesSummary, @othersPrinciplesSummary)");
         DB::select($sql);
 
-        $results = DB::select('select @status as status, @message as message, @statusSummary as statusSummary, @redlinesSummary as redlinesSummary, @yoursPrinciplesSummary as yoursPrinciplesSummary, @othersPrinciplesSummary as othersPrinciplesSummary');
-
-        logger($results);
+        $results = DB::select('select
+        @status as status,
+        @message as message,
+        @totalCount as totalCount,
+        @totalBudget as totalBudget,
+        @statusSummary as statusSummary,
+        @redlinesSummary as redlinesSummary,
+        @yoursPrinciplesSummary as yoursPrinciplesSummary,
+        @othersPrinciplesSummary as othersPrinciplesSummary');
 
         $status = $results[0]->status;
         $message = $results[0]->message;
 
 
         // error handling if status is not 0
-        if ($status != "0") {
+        if ($status !== 0) {
             $jsonRes = [];
 
             $jsonRes['status'] = $status;
@@ -164,10 +148,10 @@ class GenericDashboardController extends Controller
             $jsonRes['redlinesSummary'] = null;
             $jsonRes['yoursPrinciplesSummarySorted'] = null;
             $jsonRes['othersPrinciplesSummarySorted'] = null;
+            $jsonRes['dashboardYoursId'] = $dashboardYoursId;
 
             return $jsonRes;
         }
-
 
         // convert string to JSON
         $statusSummary = json_decode($results[0]->statusSummary, true);
@@ -181,19 +165,17 @@ class GenericDashboardController extends Controller
         $othersPrinciplesSummarySorted = [];
 
 
-
-
         // highest to lowest score (highest green)
         if ($sortBy == 1) {
             // sort by green, yellow, red
 
             // sort by green first
-            usort($yoursPrinciplesSummarySorted, function($a, $b) {
+            usort($yoursPrinciplesSummarySorted, function ($a, $b) {
                 return $a['green'] <= $b['green'];
             });
 
             // then sort by yellow
-            usort($yoursPrinciplesSummarySorted, function($a, $b) {
+            usort($yoursPrinciplesSummarySorted, function ($a, $b) {
                 if ($a['green'] != $b['green']) {
                     return false;
                 } else {
@@ -202,7 +184,7 @@ class GenericDashboardController extends Controller
             });
 
             // finally sort by red
-            usort($yoursPrinciplesSummarySorted, function($a, $b) {
+            usort($yoursPrinciplesSummarySorted, function ($a, $b) {
                 if ($a['green'] != $b['green']) {
                     return false;
                 } else {
@@ -214,17 +196,17 @@ class GenericDashboardController extends Controller
                 }
             });
 
-        // lowest to highest score (highest red)
+            // lowest to highest score (highest red)
         } else if ($sortBy == 2) {
             // sort by red, yellow, green
 
             // sort by red first
-            usort($yoursPrinciplesSummarySorted, function($a, $b) {
+            usort($yoursPrinciplesSummarySorted, function ($a, $b) {
                 return $a['red'] <= $b['red'];
             });
 
             // then sort by yellow
-            usort($yoursPrinciplesSummarySorted, function($a, $b) {
+            usort($yoursPrinciplesSummarySorted, function ($a, $b) {
                 if ($a['red'] != $b['red']) {
                     return false;
                 } else {
@@ -233,7 +215,7 @@ class GenericDashboardController extends Controller
             });
 
             // finally sort by green
-            usort($yoursPrinciplesSummarySorted, function($a, $b) {
+            usort($yoursPrinciplesSummarySorted, function ($a, $b) {
                 if ($a['red'] != $b['red']) {
                     return false;
                 } else {
@@ -245,7 +227,7 @@ class GenericDashboardController extends Controller
                 }
             });
 
-        // default (order by principle number)
+            // default (order by principle number)
         } else if ($sortBy == 3) {
             // the original returned principles summary is sorted by principle number already, no additional work required here
 
@@ -262,17 +244,42 @@ class GenericDashboardController extends Controller
         }
 
 
+        // add overall score from PHP side because this is already calculated on the Assessment Model.
+        $allAssessments = Assessment::with('principles', 'failingRedlines')->whereIn('id', DB::table('dashboard_assessment')
+            ->select('assessment_id')
+            ->where('dashboard_id', $dashboardYoursId))
+            ->get();
+
+        $assessmentScore = $allAssessments->sum(fn(Assessment $assessment) => $assessment->overall_score)
+             / $allAssessments->where('completed_at', '!=', null)->count();
+
+
+        $aeBudget = round($results[0]->totalBudget * ( $assessmentScore / 100), 0);
+
+        $assessmentScore = round($assessmentScore, 1);
+
         // construct JSON response
         $jsonRes = [];
 
         $jsonRes['status'] = $status;
         $jsonRes['message'] = $message;
+        $jsonRes['totalCount'] = $results[0]->totalCount;
+        $jsonRes['totalBudget'] = $results[0]->totalBudget;
+        $jsonRes['assessmentScore'] = $assessmentScore;
+        $jsonRes['aeBudget'] = $aeBudget;
         $jsonRes['statusSummary'] = $statusSummary;
         $jsonRes['redlinesSummary'] = $redlinesSummary;
         $jsonRes['yoursPrinciplesSummarySorted'] = $yoursPrinciplesSummarySorted;
         $jsonRes['othersPrinciplesSummarySorted'] = $othersPrinciplesSummarySorted;
 
+        // TEMP
+        $jsonRes['dashboardYoursId'] = $dashboardYoursId;
+
         return $jsonRes;
+
+        // TODO: separate 'overall' from other redline summary lines
+        // TODO: fix formatting for redlines;
+        // Consider 'yours' vs ' others'?
     }
 
 }
