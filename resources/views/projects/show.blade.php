@@ -231,7 +231,7 @@
     @vite('resources/js/app.js')
     <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js" charset="utf-8"></script>
 
-    <script src="{{asset('js/radarChart.js')}}"></script>
+    @vite('js/radarChart.js')
     <script>
 
         /* Radar chart design created by Nadieh Bremer - VisualCinnamon.com */

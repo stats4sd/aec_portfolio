@@ -9,7 +9,7 @@
 @section('after_scripts')
     <!-- D3.js -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js" charset="utf-8"></script>
-    <script src="{{asset('js/radarChart.js')}}"></script>
+    @vite('js/radarChart.js')
 
 
     <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
