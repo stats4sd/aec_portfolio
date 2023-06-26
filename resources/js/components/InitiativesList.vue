@@ -1,10 +1,42 @@
 <template>
 
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="font-weight-bold text-deep-green my-0">
+            {{ organisation.name }} - Initiatives
+        </h1>
+    </div>
     <!-- filters -->
     <div class="d-flex justify-content-between flex-column flex-lg-row">
-        <div class="d-flex flex-column align-items-start mb-3">
+        <div class="d-flex flex-column mb-0 w-100">
+            <div class="d-flex align-items-center justify-content-start">
 
-            <div class="d-flex align-items-center flex-column flex-md-row">
+                <div class="d-flex align-items-center">
+                    <b class="mr-8 text-right" style="width: 30px;">Sort:</b>
+                    <v-select
+                        style="width: 150px"
+                        v-model="sortBy"
+                        :options="sortOptions"
+                        :reduce="(option) => option.id"
+                        :clearable="false"
+                    >
+                    </v-select>
+
+                    <h3 class="my-0 mx-4 btn btn-outline-info" @click="sortDir = -sortDir">
+                        <i
+                            class="la"
+                            :class="sortDir === 1 ? 'la-arrow-up' : 'la-arrow-down'"
+                        ></i> Sort {{ sortDir === 1 ? 'Ascending' : 'Descending' }}
+                    </h3>
+
+                </div>
+
+                <div class="flex-grow-1 justify-content-end d-flex">
+                    <a href="/admin/project/create" class="btn btn-primary mr-2 ml-auto">Add Initiative</a>
+                    <button class="btn btn-success mr-2">Import Initiatives</button>
+                    <a href="/admin/organisation/export" class="btn btn-info">Export All Initiative Data</a>
+                </div>
+            </div>
+            <div class="d-flex align-items-center flex-column flex-md-row mt-4">
                 <b class="mr-8" style="width: 30px;">Filters:</b>
                 <v-select
                     style="width: 250px"
@@ -33,43 +65,19 @@
                     :clearable="true"
                 />
 
+                <div class="flex-grow-1">
+                    <input style="min-width: 250px" class="form-control" placeholder="Search Initiatives By Name" v-model="searchString"/>
+                </div>
+
             </div>
-            <div class="d-flex align-items-center mt-4">
-
-                <b class="mr-8" style="width: 30px;">Sort:</b>
-                <v-select
-                    style="width: 150px"
-                    v-model="sortBy"
-                    :options="sortOptions"
-                    :reduce="(option) => option.id"
-                    :clearable="false"
-                >
-                </v-select>
-
-                <h3 class="my-0 mx-4 btn btn-outline-info" @click="sortDir = -sortDir">
-                    <i
-                        class="la"
-                        :class="sortDir === 1 ? 'la-arrow-up' : 'la-arrow-down'"
-                    ></i> Sort {{ sortDir === 1 ? 'Ascending' : 'Descending' }}
-                </h3>
-            </div>
-        </div>
-
-        <div>
-
-            <div class="d-flex mb-0 btn-group">
-                <a href="/admin/project/create" class="btn btn-primary rounded-0">Add Initiative</a>
-                <button class="btn btn-success rounded-0">Import Initiatives</button>
-            </div>
-            <a href="/admin/organisation/export" class="btn btn-info w-100 rounded-0">Export All Initiative Data</a>
-
-            <div class="font-sm mt-4">
-                <span>Showing 1 to {{ filteredInitiatives.length }} of {{ filteredInitiatives.length }} entries</span>
-                <button class="btn btn-link" @click="resetFilters">Reset</button>
+            <div class="d-flex justify-content-end align-items-center mt-3">
+                <div class="d-flex align-items-center">
+                    <div class="font-sm">Showing 1 to {{ filteredInitiatives.length }} of {{ filteredInitiatives.length }} entries</div>
+                    <button class="btn btn-link" @click="resetFilters">Reset</button>
+                </div>
             </div>
         </div>
     </div>
-
 
     <InitiativeListCard v-for="initiative in filteredInitiatives" :key="initiative.id" :initiative="initiative" :has-additional-assessment="hasAdditionalAssessment"/>
 
@@ -84,6 +92,7 @@ import InitiativeListCard from "./InitiativeListCard.vue";
 
 
 const props = defineProps({
+    organisation: Object,
     initiatives: Object,
     hasAdditionalAssessment: Boolean,
 });
@@ -186,6 +195,14 @@ const filteredInitiatives = computed(() => {
 
             return true;
         })
+        .filter(initiative => {
+
+            if (searchString.value !== '') {
+                return initiative.name.toLowerCase().includes(searchString.value.toLowerCase())
+            }
+
+            return true
+        })
 })
 
 function resetFilters() {
@@ -205,5 +222,9 @@ onMounted(() => {
     })
 
 })
+
+//  search
+const searchString = ref('')
+
 
 </script>
