@@ -9,7 +9,7 @@
     <div class="container mt-16">
 
 
-        <a href="{{ url('admin/organisation/show') }}">&lt- Back to Members List</a>
+        <a href="{{ url('admin/organisation/show#members') }}">&lt- Back to Members List</a>
         <div class="card">
             <div class="card-header">
                 <b>Add new members to {{ $organisation->name }}</b>

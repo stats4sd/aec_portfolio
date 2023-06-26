@@ -141,9 +141,9 @@
 
                 <div v-if="(filters.minBudget || filters.maxBudget) && !minBudgetError && !maxBudgetError" class="mr-3 mb-1">
                     <span class="px-2">BUDGET:</span>
-                    <span class="badge-pill badge-info" v-if="filters.minBudget && !filters.maxBudget"> USD {{ filters.minBudget }} or higher</span>
-                    <span class="badge-pill badge-info" v-if="!filters.minBudget && filters.maxBudget"> USD {{ filters.maxBudget }} or lower</span>
-                    <span class="badge-pill badge-info" v-if="filters.minBudget && filters.maxBudget"> USD {{ filters.minBudget }} - {{ filters.maxBudget }}</span>
+                    <span class="badge-pill badge-info" v-if="filters.minBudget && !filters.maxBudget"> {{ organisation.currency }} {{ filters.minBudget }} or higher</span>
+                    <span class="badge-pill badge-info" v-if="!filters.minBudget && filters.maxBudget"> {{ organisation.currency }} {{ filters.maxBudget }} or lower</span>
+                    <span class="badge-pill badge-info" v-if="filters.minBudget && filters.maxBudget"> {{ organisation.currency }} {{ filters.minBudget }} - {{ filters.maxBudget }}</span>
                 </div>
             </div>
             <div class="btn btn-warning text-dark" @click="resetFilters" v-if="anyFilters">Reset Filters</div>
@@ -219,7 +219,7 @@
                             <ul class="list-group list-group-flush">
                                 <li class="list-group-item d-flex font-lg">
                                     <span class="w-50 text-right pr-4">Total Budget</span>
-                                    <span class="font-weight-bold ">{{ formatBudget(summary.totalBudget) }} USD</span>
+                                    <span class="font-weight-bold ">{{ formatBudget(summary.totalBudget) }} {{ organisation.currency }}</span>
                                 </li>
                             </ul>
                         </div>
@@ -240,7 +240,7 @@
                             <ul class="list-group list-group-flush">
                                 <li class="list-group-item d-flex font-lg">
                                     <span class="w-50 text-right pr-4">AE-focused Budget</span>
-                                    <span class="font-weight-bold ">{{ formatBudget(summary.aeBudget) }}USD</span>
+                                    <span class="font-weight-bold ">{{ formatBudget(summary.aeBudget) }} {{ organisation.currency }}</span>
                                 </li>
                             </ul>
                         </div>

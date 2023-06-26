@@ -17,7 +17,6 @@
         </tr>
         </thead>
         <tbody>
-        @if(Auth::user()->can('view institutional members'))
             @foreach($organisation->users as $user)
                 <tr>
                     <td>
@@ -33,7 +32,6 @@
                     @endif
                 </tr>
             @endforeach
-        @endif
         </tbody>
     </table>
     <hr/>

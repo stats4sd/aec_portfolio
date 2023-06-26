@@ -70,7 +70,7 @@
             </div>
 
             <div class="col-md-6 px-12 py-4 h-100">
-                <h4 class="mb-4">COMMNENTS AND EXAMPLES</h4>
+                <h4 class="mb-4">COMMENTS AND EXAMPLES</h4>
 
                 <div>
                     <v-textarea

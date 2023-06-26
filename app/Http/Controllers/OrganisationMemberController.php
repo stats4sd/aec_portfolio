@@ -46,7 +46,7 @@ class OrganisationMemberController extends Controller
             $organisation->sendInvites($data['emails'], $data['role_id']);
         }
 
-        return redirect()->url('/admin/organisation/show#members');
+        return redirect('/admin/organisation/show#members');
     }
 
 
@@ -79,7 +79,7 @@ class OrganisationMemberController extends Controller
         // add new role
         $user->assignRole($data['new_system_role']);
 
-        return redirect()->url('/admin/organisation/show#members');
+        return redirect('/admin/organisation/show#members');
     }
 
 
@@ -97,7 +97,7 @@ class OrganisationMemberController extends Controller
             \Alert::add('success', 'User ' . $user->name . ' successfully removed from the institution')->flash();
         }
 
-        return redirect()->url('/admin/organisation/show#members');
+        return redirect('/admin/organisation/show#members');
     }
 
 
@@ -108,7 +108,7 @@ class OrganisationMemberController extends Controller
 
         $selectedOrganisationId = Session::get('selectedOrganisationId');
 
-        return redirect()->url('/admin/organisation/show#members');
+        return redirect('/admin/organisation/show#members');
 
     }
 }
