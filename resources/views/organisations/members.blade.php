@@ -8,7 +8,6 @@
     <table class="table table-striped">
         <thead>
         <tr>
-            <th scope="col">Avatar</th>
             <th scope="col">Name</th>
             <th scope="col">Email</th>
             <th scope="col">Role</th>
@@ -21,9 +20,6 @@
         @if(Auth::user()->can('view institutional members'))
             @foreach($organisation->users as $user)
                 <tr>
-                    <td>
-                        <img src="{{ $user->avatar_url }}" alt="{{ $user->name }} avatar" height="50px">
-                    </td>
                     <td>
                         {{ $user->name }}
                     </td>

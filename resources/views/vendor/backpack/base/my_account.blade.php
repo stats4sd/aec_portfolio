@@ -10,10 +10,10 @@
 @endsection
 
 @php
-  $breadcrumbs = [
-      trans('backpack::crud.admin') => url(config('backpack.base.route_prefix'), 'dashboard'),
-      trans('backpack::base.my_account') => false,
-  ];
+    $breadcrumbs = [
+        trans('backpack::crud.admin') => url(config('backpack.base.route_prefix'), 'dashboard'),
+        trans('backpack::base.my_account') => false,
+    ];
 @endphp
 
 @section('header')
@@ -28,27 +28,54 @@
     <div class="row">
 
         @if (session('success'))
-        <div class="col-lg-8">
-            <div class="alert alert-success">
-                {{ session('success') }}
+            <div class="col-lg-8">
+                <div class="alert alert-success">
+                    {{ session('success') }}
+                </div>
             </div>
-        </div>
         @endif
 
         @if ($errors->count())
-        <div class="col-lg-8">
-            <div class="alert alert-danger">
-                <ul class="mb-1">
-                    @foreach ($errors->all() as $e)
-                    <li>{{ $e }}</li>
-                    @endforeach
-                </ul>
+            <div class="col-lg-8">
+                <div class="alert alert-danger">
+                    <ul class="mb-1">
+                        @foreach ($errors->all() as $e)
+                            <li>{{ $e }}</li>
+                        @endforeach
+                    </ul>
+                </div>
             </div>
-        </div>
         @endif
 
         {{-- UPDATE INFO FORM --}}
         <div class="col-lg-8">
+
+            <div class="card padding-10">
+                <div class="card-header">
+                    My Institution and Role
+                </div>
+                <div class="card-body backpack-profile-form bold-labels">
+                    <div class="row">
+                        <div class="col-md-3 font-weight-bold text-right pr-4">
+                            Institution:
+                        </div>
+                        <div class="col-md-6">
+                            {{ \App\Models\Organisation::find(Session::get('selectedOrganisationId'))->name }}
+                        </div>
+                    </div>
+                    <div class="row">
+
+                        <div class="col-md-3 font-weight-bold text-right pr-4">
+                            User Role:
+                        </div>
+                        <div class="col-md-6">
+                            {{ auth()->user()->getRoleNames()[0] }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
             <form class="form" action="{{ route('backpack.account.info.store') }}" method="post">
 
                 {!! csrf_field() !!}
@@ -134,14 +161,37 @@
                     </div>
 
                     <div class="card-footer">
-                            <button type="submit" class="btn btn-success"><i class="la la-save"></i> {{ trans('backpack::base.change_password') }}</button>
-                            <a href="{{ backpack_url() }}" class="btn">{{ trans('backpack::base.cancel') }}</a>
+                        <button type="submit" class="btn btn-success"><i class="la la-save"></i> {{ trans('backpack::base.change_password') }}</button>
+                        <a href="{{ backpack_url() }}" class="btn">{{ trans('backpack::base.cancel') }}</a>
                     </div>
 
                 </div>
 
             </form>
         </div>
+
+        <div class="col-lg-8">
+            <div class="card padding-10">
+
+                <div class="card-header d-flex align-items-flex-end justify-content-between">
+                    <div>
+                        <b><a href="./my-role/request-to-leave">Request to leave an institution</a></b>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        @if ( auth()->user()?->hasRole('Institutional Admin') )
+            <div class="col-lg-8">
+                <div class="card padding-10">
+                    <div class="card-header d-flex align-items-flex-end justify-content-between">
+                        <div>
+                            <b><a href="./my-role/request-to-remove-everything">Request to remove everything for institution</a></b>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        @endif
 
     </div>
 @endsection

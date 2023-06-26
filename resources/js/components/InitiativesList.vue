@@ -25,7 +25,7 @@
                 />
 
                 <v-select
-                    style="width: 250px"
+                    style="width: 350px"
                     class="mr-4"
                     v-model="portfolioFilter"
                     :options="portfolios"
@@ -57,15 +57,16 @@
 
         <div>
 
-
-            <div class="d-flex mb-4 btn-group">
-                <a href="/admin/project/create" class="btn btn-primary">Add Initiative</a>
-                <button class="btn btn-success">Import Initiatives</button>
-                <a href="/admin/organisation/export" class="btn btn-info">Export All Initiative Data</a>
+            <div class="d-flex mb-0 btn-group">
+                <a href="/admin/project/create" class="btn btn-primary rounded-0">Add Initiative</a>
+                <button class="btn btn-success rounded-0">Import Initiatives</button>
             </div>
+            <a href="/admin/organisation/export" class="btn btn-info w-100 rounded-0">Export All Initiative Data</a>
 
-            <span>Showing 1 to {{ filteredInitiatives.length }} of {{ filteredInitiatives.length }} entries</span>
-            <button class="btn btn-link" @click="resetFilters">Reset</button>
+            <div class="font-sm mt-4">
+                <span>Showing 1 to {{ filteredInitiatives.length }} of {{ filteredInitiatives.length }} entries</span>
+                <button class="btn btn-link" @click="resetFilters">Reset</button>
+            </div>
         </div>
     </div>
 
@@ -198,7 +199,7 @@ onMounted(() => {
     console.log(test)
 
     test.forEach((value, key) => {
-        if(key === 'portfolio') {
+        if (key === 'portfolio') {
             portfolioFilter.value = value;
         }
     })

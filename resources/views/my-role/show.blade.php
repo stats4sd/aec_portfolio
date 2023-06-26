@@ -25,7 +25,7 @@
     <div class="col-12 col-xl-12 card">
         <div class="card-header d-flex align-items-flex-end justify-content-between">
             <div>
-                <h2><b><a href="./my-role/request-to-leave">Request to leave an institution</a></b></h2>
+                <b><a href="./my-role/request-to-leave">Request to leave an institution</a></b>
             </div>
         </div>
     </div>
@@ -34,7 +34,7 @@
     <div class="col-12 col-xl-12 card">
         <div class="card-header d-flex align-items-flex-end justify-content-between">
             <div>
-                <h2><b><a href="./my-role/request-to-remove-everything">Request to remove everything for institution</a></b></h2>
+                <b><a href="./my-role/request-to-remove-everything">Request to remove everything for institution</a></b>
             </div>
         </div>
     </div>
