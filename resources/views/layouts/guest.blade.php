@@ -11,7 +11,7 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap">
 
     <!-- Styles -->
-    <link rel="stylesheet" href="{{ asset('css/app.css') }}">
+    @vite('css/app.css')
 
     <style type="text/css" media="screen">
         html,
@@ -47,7 +47,7 @@
     </style>
 
     <!-- Scripts -->
-    <script src="{{ asset('js/app.js') }}" defer></script>
+    @vite('js/app.js')
 </head>
 <body>
 <div class="d-flex flex-column justify-content-center w-100 pt-0 h-100">
