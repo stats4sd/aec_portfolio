@@ -11,7 +11,7 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap">
 
     <!-- Styles -->
-    @vite('css/app.css')
+    @vite('resources/css/app.scss')
 
     <style type="text/css" media="screen">
         html,
@@ -47,7 +47,7 @@
     </style>
 
     <!-- Scripts -->
-    @vite('js/app.js')
+    @vite('resources/js/app.js')
 </head>
 <body>
 <div class="d-flex flex-column justify-content-center w-100 pt-0 h-100">

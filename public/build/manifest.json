@@ -11,33 +11,33 @@
     "file": "assets/materialdesignicons-webfont.4c94f0d2.woff",
     "src": "node_modules/@mdi/font/fonts/materialdesignicons-webfont.woff"
   },
+  "node_modules/@mdi/font/fonts/materialdesignicons-webfont.ttf": {
+    "file": "assets/materialdesignicons-webfont.a99c2edf.ttf",
+    "src": "node_modules/@mdi/font/fonts/materialdesignicons-webfont.ttf"
+  },
   "node_modules/line-awesome/dist/line-awesome/fonts/la-brands-400.eot": {
     "file": "assets/la-brands-400.c0e32387.eot",
     "src": "node_modules/line-awesome/dist/line-awesome/fonts/la-brands-400.eot"
-  },
-  "node_modules/line-awesome/dist/line-awesome/fonts/la-regular-400.eot": {
-    "file": "assets/la-regular-400.7dc456f0.eot",
-    "src": "node_modules/line-awesome/dist/line-awesome/fonts/la-regular-400.eot"
   },
   "node_modules/line-awesome/dist/line-awesome/fonts/la-solid-900.eot": {
     "file": "assets/la-solid-900.8a57f8a9.eot",
     "src": "node_modules/line-awesome/dist/line-awesome/fonts/la-solid-900.eot"
   },
-  "node_modules/@mdi/font/fonts/materialdesignicons-webfont.ttf": {
-    "file": "assets/materialdesignicons-webfont.a99c2edf.ttf",
-    "src": "node_modules/@mdi/font/fonts/materialdesignicons-webfont.ttf"
+  "node_modules/line-awesome/dist/line-awesome/fonts/la-regular-400.eot": {
+    "file": "assets/la-regular-400.7dc456f0.eot",
+    "src": "node_modules/line-awesome/dist/line-awesome/fonts/la-regular-400.eot"
   },
   "node_modules/line-awesome/dist/line-awesome/fonts/la-brands-400.woff2": {
     "file": "assets/la-brands-400.ff70c9bc.woff2",
     "src": "node_modules/line-awesome/dist/line-awesome/fonts/la-brands-400.woff2"
   },
-  "node_modules/line-awesome/dist/line-awesome/fonts/la-regular-400.woff2": {
-    "file": "assets/la-regular-400.51ca2c00.woff2",
-    "src": "node_modules/line-awesome/dist/line-awesome/fonts/la-regular-400.woff2"
-  },
   "node_modules/line-awesome/dist/line-awesome/fonts/la-solid-900.woff2": {
     "file": "assets/la-solid-900.10a68e01.woff2",
     "src": "node_modules/line-awesome/dist/line-awesome/fonts/la-solid-900.woff2"
+  },
+  "node_modules/line-awesome/dist/line-awesome/fonts/la-regular-400.woff2": {
+    "file": "assets/la-regular-400.51ca2c00.woff2",
+    "src": "node_modules/line-awesome/dist/line-awesome/fonts/la-regular-400.woff2"
   },
   "node_modules/line-awesome/dist/line-awesome/fonts/la-brands-400.woff": {
     "file": "assets/la-brands-400.14c63377.woff",
@@ -71,13 +71,13 @@
     "file": "assets/la-regular-400.884ce19c.svg",
     "src": "node_modules/line-awesome/dist/line-awesome/fonts/la-regular-400.svg"
   },
-  "node_modules/line-awesome/dist/line-awesome/fonts/la-brands-400.svg": {
-    "file": "assets/la-brands-400.4da18191.svg",
-    "src": "node_modules/line-awesome/dist/line-awesome/fonts/la-brands-400.svg"
-  },
   "node_modules/line-awesome/dist/line-awesome/fonts/la-solid-900.svg": {
     "file": "assets/la-solid-900.0ce0cc40.svg",
     "src": "node_modules/line-awesome/dist/line-awesome/fonts/la-solid-900.svg"
+  },
+  "node_modules/line-awesome/dist/line-awesome/fonts/la-brands-400.svg": {
+    "file": "assets/la-brands-400.4da18191.svg",
+    "src": "node_modules/line-awesome/dist/line-awesome/fonts/la-brands-400.svg"
   },
   "resources/js/app.js": {
     "file": "assets/app.5ec54321.js",
@@ -190,13 +190,13 @@
     "file": "assets/assess.d35471eb.css",
     "src": "resources/js/assess.css"
   },
-  "vue-select.css": {
-    "file": "assets/vue-select.b0fac2a1.css",
-    "src": "vue-select.css"
-  },
   "resources/js/dashboard.css": {
     "file": "assets/dashboard.075dd9fa.css",
     "src": "resources/js/dashboard.css"
+  },
+  "vue-select.css": {
+    "file": "assets/vue-select.b0fac2a1.css",
+    "src": "vue-select.css"
   },
   "index.css": {
     "file": "assets/index.1160f007.css",

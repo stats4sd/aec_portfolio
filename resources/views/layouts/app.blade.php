@@ -11,10 +11,10 @@
         <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap">
 
         <!-- Styles -->
-        @vite('css/app.css')
+        @vite('resources/css/app.scss')
 
         <!-- Scripts -->
-        @vite('js/app.js')
+        @vite('resources/js/app.js')
     </head>
     <body class="font-sans antialiased">
         <div class="min-h-screen bg-gray-100">
