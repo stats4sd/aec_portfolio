@@ -22,7 +22,6 @@ class TestSeeder extends Seeder
         $user = User::factory()->create(['name' => 'Site Manager', 'email' => 'site_manager@example.com']);
         $user->assignRole('Site Manager');
 
-        // TODO: assign institutional users to an organisation
         $user1 = User::factory()->create(['name' => 'Institutional Admin', 'email' => 'ins_admin@example.com']);
         $user1->assignRole('Institutional Admin');
 

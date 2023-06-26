@@ -330,6 +330,19 @@ class ProjectCrudController extends CrudController
 
         $this->data['title'] = 'Import ' . $this->crud->entity_name . ' from excel file';
 
+         $this->crud->addField([
+            'name' => 'import-template',
+            'type' => 'section-title',
+            'view_namespace' => 'stats4sd.laravel-backpack-section-title::fields',
+            'title'  => 'Import Initiatives from Excel File',
+            'content' => '
+            Instead of manually entering details for individual initiatives, you may choose to import them in bulk, and then add additional details using the edit feature within the platform. To ensure a successful import, please download the template provided below, and ensure your Excel file is in the correct format. The template file includes an example initiative.
+            <br/><br/>
+            <a href="' . url($this->crud->route.'/import-template') . '" class="btn btn-link" data-button-type="import-template"><i class="la la-download"></i> Download Template for Imports</a></br>
+
+            '
+        ]);
+
 
         $this->crud->addField([
             'name' => 'portfolio',

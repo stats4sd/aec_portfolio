@@ -32,7 +32,7 @@
 
                 <div class="flex-grow-1 justify-content-end d-flex">
                     <a href="/admin/project/create" class="btn btn-primary mr-2 ml-auto">Add Initiative</a>
-                    <button class="btn btn-success mr-2">Import Initiatives</button>
+                    <a href="/admin/project/import" class="btn btn-success mr-2">Import Initiatives</a>
                     <a href="/admin/organisation/export" class="btn btn-info">Export All Initiative Data</a>
                 </div>
             </div>
