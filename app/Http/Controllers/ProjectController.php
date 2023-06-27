@@ -14,14 +14,26 @@ class ProjectController extends Controller
      */
     public function index()
     {
-        $projects = Project::with('portfolio.organisation', 'assessments')
+        $projects = Project::with([
+            'portfolio' => [
+                'organisation'
+            ],
+            'assessments' => [
+                'principles',
+                'failingRedlines',
+                'additionalCriteria',
+            ],
+        ])
             ->get()
             ->map(fn(Project $project) => $project->append('latest_assessment'));
 
-        $hasAdditionalAssessment = $projects->first()?->organisation->additionalCriteria->count() > 0;
+
+        $org = Organisation::find(Session::get('selectedOrganisationId'));
+
+        $hasAdditionalAssessment = $org->additionalCriteria->count() > 0;
 
         return view('projects.index', [
-            'organisation' => Organisation::find(Session::get('selectedOrganisationId')),
+            'organisation' => $org,
             'projects' => $projects,
             'has_additional_assessment' => $hasAdditionalAssessment,
         ]);

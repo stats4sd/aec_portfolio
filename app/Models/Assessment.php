@@ -176,7 +176,7 @@ class Assessment extends Model
 
             $total = $nonNaPrinciples->sum(fn($pr) => $pr->pivot->rating);
 
-            return round($total / $totalPossible * 100, 1);
+            return round($total / $totalPossible * 100, 0);
         }
 
         return null;
