@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Project;
 use Carbon\Carbon;
 use FreeCurrencyApi\FreeCurrencyApi\FreeCurrencyApiClient;
+use Illuminate\Support\Facades\Http;
 
 class FreeCurrencyApiHelper
 {
@@ -21,12 +22,14 @@ class FreeCurrencyApiHelper
         }
 
         else {
-            $client = self::getApiClient();
 
             // if the project starts in the future, use today's date.
             $date = (new Carbon($project->start_date))->isBefore(Carbon::now()) ? $project->start_date : Carbon::now()->toDateString();
 
-            $response = $client->historical([
+            $response = Http::withHeaders([
+                'apiKey' => config('services.currency.api-key')
+            ])
+            ->get('https://api.freecurrencyapi.com/v1/historical', [
                 'base_currency' => $project->currency,
                 'currencies' => $project->organisation->currency,
                 'date_from' => $date,
