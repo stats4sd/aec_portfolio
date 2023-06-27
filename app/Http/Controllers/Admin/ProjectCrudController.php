@@ -177,7 +177,14 @@ class ProjectCrudController extends CrudController
             ->type('section-title')
             ->view_namespace('stats4sd.laravel-backpack-section-title::fields')
             ->title('Currency and Budget')
-            ->content("$selectedOrganisation->name uses $selectedOrganisation->currency as the default currency. You may change the currency for this initiative if you wish. For analysis, the budget will be converted into $selectedOrganisation->currency using the exchange rates from either the start date of the initiative (if in the past), or today (if the initiative has not yet started)");
+            ->content("$selectedOrganisation->name uses $selectedOrganisation->currency as the default currency. You may change the currency for this initiative if you wish. For analysis, the budget will be converted into $selectedOrganisation->currency.
+            <br/><br/>
+            The Platform can automatically convert the most common currencies using the exchange rate for the insitiative's start date (or today, if the initiative start is in the future).
+            <br/><br/>
+            For less commonly used currencies, or if you know the exchange rate to use, you can enter a custom exchange rate below.
+             <br/><br/>
+            <div class='btn btn-link'><i class='la la-info-circle'></i> Which currencies can be automatically converted?</div>
+ ");
 
         CRUD::field('currency')
             ->wrapper(['class' => 'form-group col-sm-3 required'])
@@ -186,6 +193,14 @@ class ProjectCrudController extends CrudController
         CRUD::field('budget')
             ->wrapper(['class' => 'form-group col-sm-9 required'])
             ->hint('Enter the overall budget for the project');
+
+
+        CRUD::field('exchange_rate')
+            ->label('Enter the exchange rate to be used:')
+            ->hint('1 of this initiative\'s currency = XXX ' . $selectedOrganisation->currency . '.')
+            ->type('number');
+
+
 
 
         CRUD::field('funding_sources_title')

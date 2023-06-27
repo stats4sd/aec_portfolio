@@ -7,7 +7,7 @@ use App\Enums\GeographicalReach;
 use App\Http\Controllers\Admin\Operations\RedlineOperation;
 use App\Services\OrganisationService;
 use App\Services\XeCurrency;
-use App\Services\XeCurrencyHelper;
+use App\Services\FreeCurrencyApiHelper;
 use Backpack\CRUD\app\Models\Traits\CrudTrait;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -27,10 +27,6 @@ class Project extends Model
         'start_date' => 'date',
         'end_date' => 'date',
     ];
-
-//    protected $appends = [
-//        'latest_assessment',
-//    ];
 
     protected static function booted()
     {
@@ -57,11 +53,8 @@ class Project extends Model
         });
 
         static::saving(function (Project $project) {
-           $project->budget_org = XeCurrencyHelper::convert(
-               budget: $project->budget,
-               currencyFrom: $project->currency,
-               currencyTo: $project->organisation->currency,
-           );
+           $project->budget_org = FreeCurrencyApiHelper::convert($project);
+           dd('oop');
         });
 
         static::addGlobalScope('organisation', function (Builder $builder) {
@@ -119,5 +112,4 @@ class Project extends Model
     {
         return $this->hasMany(CustomScoreTag::class);
     }
-
 }
