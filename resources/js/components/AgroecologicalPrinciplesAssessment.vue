@@ -61,7 +61,7 @@
         />
 
 
-        <form method="POST" :action="`/admin/assessment/${assessment.id}/finalise`" class="mt-4" >
+        <form method="POST" :action="`/admin/assessment/${assessment.id}/finalise`" class="mt-4">
             <input type="hidden" name="_token" :value="csrf">
             <button
                 class="btn"
@@ -80,16 +80,14 @@
         width="80vw"
         :scrollable="true"
     >
-        <v-card>
-            <PrincipleAssessmentModal
-                v-if="selectedPrincipleAssessment"
-                :principle-assessment="selectedPrincipleAssessment"
-                @discard="discard"
-                @close="modalIsOpen = false"
-                @next="next"
-                @update_rating="updateRating"
-            />
-        </v-card>
+        <PrincipleAssessmentModal
+            v-if="selectedPrincipleAssessment"
+            :principle-assessment="selectedPrincipleAssessment"
+            @discard="discard"
+            @close="modalIsOpen = false"
+            @next="next"
+            @update_rating="updateRating"
+        />
 
     </v-dialog>
 </template>
