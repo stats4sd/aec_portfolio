@@ -245,18 +245,22 @@ BEGIN
     -- -------------------------
 
 
-    SELECT COUNT(*) INTO ssOtherProjectCount from dashboard_project where dashboard_id = dashboardOthersId;
-    SELECT COUNT(DISTINCT (projects.organisation_id))
-    INTO ssOtherOrganisationCount
-    FROM dashboard_project
-             LEFT JOIN projects on projects.id = dashboard_project.project_id;
+    -- This section takes the runtime from ~150ms to ~2.5s. Is there a way of optimising this?
 
-    -- Must have 10 or more projects
-    IF (ssOtherProjectCount < 10 OR ssOtherOrganisationCount < 3) THEN
-        SET tooFewOtherProjects = 1;
-    ELSE
-        SET tooFewOtherProjects = 0;
-    END IF;
+#     SELECT COUNT(*) INTO ssOtherProjectCount from dashboard_project where dashboard_id = dashboardOthersId;
+#     SELECT COUNT(DISTINCT (projects.organisation_id))
+#     INTO ssOtherOrganisationCount
+#     FROM dashboard_project
+#              LEFT JOIN projects on projects.id = dashboard_project.project_id;
+#
+#     -- Must have 10 or more projects
+#     IF (ssOtherProjectCount < 10 OR ssOtherOrganisationCount < 3) THEN
+#         SET tooFewOtherProjects = 1;
+#     ELSE
+         SET tooFewOtherProjects = 0;
+#     END IF;
+
+
 
 
     -- -------------------------
