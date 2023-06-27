@@ -183,7 +183,62 @@ class ProjectCrudController extends CrudController
             <br/><br/>
             For less commonly used currencies, or if you know the exchange rate to use, you can enter a custom exchange rate below.
              <br/><br/>
-            <div class='btn btn-link'><i class='la la-info-circle'></i> Which currencies can be automatically converted?</div>
+            <div class='btn btn-link' id='currencyListLabel' data-toggle='modal' data-target='#currencyList'><i class='la la-info-circle'></i> Which currencies can be automatically converted?</div>
+
+            <div class='modal fade' id='currencyList' tabindex=' - 1' aria-labelledby='currencyListLabel' aria-hidden='true'>
+              <div class='modal-dialog'>
+                <div class='modal-content'>
+                  <div class='modal-header'>
+                    <h5 class='modal-title' id='exampleModalLabel'>Currencies</h5>
+                    <button type='button' class='close' data-dismiss='modal' aria-label='Close'>
+                      <span aria-hidden='true'>&times;</span>
+                    </button>
+                  </div>
+                  <div class='modal-body'>
+                    The platform currently has exchange rate information available for the following currencies:
+                    <ul>
+                        <li>EUR	Euro</li>
+                        <li>USD	(US Dollar)</li>
+                        <li>JPY	(Japanese Yen)</li>
+                        <li>BGN	(Bulgarian Lev)</li>
+                        <li>CZK	(Czech Republic Koruna)</li>
+                        <li>DKK	(Danish Krone)</li>
+                        <li>GBP	(British Pound Sterling)</li>
+                        <li>HUF	(Hungarian Forint)</li>
+                        <li>PLN	(Polish Zloty)</li>
+                        <li>RON	(Romanian Leu)</li>
+                        <li>SEK	(Swedish Krona)</li>
+                        <li>CHF	(Swiss Franc)</li>
+                        <li>ISK	(Icelandic Króna)</li>
+                        <li>NOK	(Norwegian Krone)</li>
+                        <li>HRK	(Croatian Kuna)</li>
+                        <li>RUB	(Russian Ruble)</li>
+                        <li>TRY	(Turkish Lira)</li>
+                        <li>AUD	(Australian Dollar)</li>
+                        <li>BRL	(Brazilian Real)</li>
+                        <li>CAD	(Canadian Dollar)</li>
+                        <li>CNY	(Chinese Yuan)</li>
+                        <li>HKD	(Hong Kong Dollar)</li>
+                        <li>IDR	(Indonesian Rupiah)</li>
+                        <li>ILS	(Israeli New Sheqel)</li>
+                        <li>INR	(Indian Rupee)</li>
+                        <li>KRW	(South Korean Won)</li>
+                        <li>MXN	(Mexican Peso)</li>
+                        <li>MYR	(Malaysian Ringgit)</li>
+                        <li>NZD	(New Zealand Dollar)</li>
+                        <li>PHP	(Philippine Peso)</li>
+                        <li>SGD	(Singapore Dollar)</li>
+                        <li>THB	(Thai Baht)</li>
+                        <li>ZAR	(South African Rand)</li>
+                    </ul>
+                  </div>
+                  <div class='modal-footer'>
+                    <button type='button' class='btn btn - secondary' data-dismiss='modal'>Close</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
  ");
 
         CRUD::field('currency')
@@ -345,15 +400,15 @@ class ProjectCrudController extends CrudController
 
         $this->data['title'] = 'Import ' . $this->crud->entity_name . ' from excel file';
 
-         $this->crud->addField([
+        $this->crud->addField([
             'name' => 'import-template',
             'type' => 'section-title',
             'view_namespace' => 'stats4sd.laravel-backpack-section-title::fields',
-            'title'  => 'Import Initiatives from Excel File',
+            'title' => 'Import Initiatives from Excel File',
             'content' => '
             Instead of manually entering details for individual initiatives, you may choose to import them in bulk, and then add additional details using the edit feature within the platform. To ensure a successful import, please download the template provided below, and ensure your Excel file is in the correct format. The template file includes an example initiative.
             <br/><br/>
-            <a href="' . url($this->crud->route.'/import-template') . '" class="btn btn-link" data-button-type="import-template"><i class="la la-download"></i> Download Template for Imports</a></br>
+            <a href="' . url($this->crud->route . '/import-template') . '" class="btn btn-link" data-button-type="import-template"><i class="la la-download"></i> Download Template for Imports</a></br>
 
             '
         ]);
