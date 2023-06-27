@@ -17,7 +17,7 @@ class AssessmentController extends Controller
     public function finaliseAssessment(Assessment $assessment)
     {
         if ($assessment->principleAssessments->every(fn($pa) => $pa->complete)) {
-            $assessment->assessment_status = AssessmentStatus::Complete;
+            $assessment->principle_status = AssessmentStatus::Complete;
             $assessment->save();
 
             Alert::success('The Principles Assessment for ' . $assessment->project->name . ' is now complete.')->flash();

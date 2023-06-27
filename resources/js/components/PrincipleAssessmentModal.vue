@@ -126,12 +126,12 @@
 </template>
 
 <script setup>
-import {computed, ref, defineEmits, nextTick} from "vue";
+import {computed, ref, defineEmits, nextTick, onMounted} from "vue";
 
 
 const props = defineProps({
     principleAssessment: Object,
-    isOpen: Boolean,
+    closing: Boolean,
 })
 
 const principle = computed(() => props.principleAssessment.principle ?? null)
@@ -172,7 +172,6 @@ async function save(nextAction) {
 
     if (has_rating) {
         emit('update_rating', props.principleAssessment)
-
     }
 
     const res = await axios.patch(`/principle-assessment/${props.principleAssessment.id}`, props.principleAssessment)
@@ -180,6 +179,13 @@ async function save(nextAction) {
     emit(nextAction)
 
 }
+
+// slider appears to be '0' on null, but actually requrires moving up and back to 0 to be considered not null.
+onMounted(() => {
+    if(props.principleAssessment.rating === null) {
+        props.principleAssessment.rating = 0;
+    }
+})
 
 
 </script>
