@@ -83,7 +83,7 @@
                     <h6>Presence of Examples / Indicators for {{ principle.name }}</h6>
                     <p>Below are some common examples of {{ principle.name }} within a project. Tick the ones that are present within the project. You may also add additional examples below to further support the rating given.</p>
 
-                    <div v-for="tag in principle.score_tags" class="checkbox-group">
+                    <div v-for="tag in principle.score_tags" class="checkbox-group mb-2 example-list">
                         <v-checkbox
                             v-model="principleAssessment.score_tag_ids"
                             :value="tag.id"
