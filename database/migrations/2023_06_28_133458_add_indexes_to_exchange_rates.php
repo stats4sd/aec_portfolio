@@ -11,13 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('exchange_rates', function (Blueprint $table) {
-            $table->id();
-            $table->string('base_currency_id');
-            $table->string('conversion_currency_id');
-            $table->decimal('rate', 10, 5);
-            $table->date('date');
-            $table->timestamps();
+        Schema::table('exchange_rates', function (Blueprint $table) {
+            $table->index('base_currency_id');
+            $table->index('conversion_currency_id');
         });
     }
 
@@ -26,6 +22,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('exchange_rates');
+        Schema::table('exchange_rates', function (Blueprint $table) {
+            //
+        });
     }
 };

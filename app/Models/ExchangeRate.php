@@ -4,8 +4,22 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class ExchangeRate extends Model
 {
-    use HasFactory;
+    protected $guarded = [];
+
+
+    public function baseCurrency(): BelongsTo
+    {
+        return $this->belongsTo(Currency::class, 'base_currency_id');
+    }
+
+    public function conversionCurrency(): BelongsTo
+    {
+        return $this->belongsTo(Currency::class, 'conversion_currency_id');
+    }
+
+
 }

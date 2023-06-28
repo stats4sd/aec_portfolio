@@ -2,6 +2,8 @@
 
 namespace App\Jobs;
 
+use App\Models\Currency;
+use App\Models\ExchangeRate;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -12,6 +14,7 @@ use Illuminate\Queue\Middleware\RateLimited;
 use Illuminate\Queue\Middleware\ThrottlesExceptions;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 
 class GetHistoricExchangeRates implements ShouldQueue
 {
@@ -20,7 +23,7 @@ class GetHistoricExchangeRates implements ShouldQueue
     /**
      * Create a new job instance.
      */
-    public function __construct(public string $currency, public int $year)
+    public function __construct(public Currency $currency, public int $year)
     {
         //
     }
@@ -30,8 +33,8 @@ class GetHistoricExchangeRates implements ShouldQueue
     {
         return [
             new RateLimited('exchange_rates'),
-            new ThrottlesExceptions(2, 1),
-            ];
+            //new ThrottlesExceptions(1, 1),
+        ];
     }
 
     /**
@@ -47,14 +50,34 @@ class GetHistoricExchangeRates implements ShouldQueue
             'apiKey' => config('services.currency.api-key')
         ])
             ->get('https://api.freecurrencyapi.com/v1/historical', [
-                'base_currency' => $this->currency,
+                'base_currency' => $this->currency->id,
                 'date_from' => $startDate,
                 'date_to' => $endDate,
             ])
-        ->throw()
-        ->json();
+            ->throw()
+            ->json();
 
 
+        $rates = [];
+
+        foreach ($response['data'] as $date => $values) {
+
+            foreach ($values as $key => $value) {
+
+                // ignore 1-1 conversions.
+                if ($key !== $this->currency->id) {
+                    $rates[] = [
+                        'base_currency_id' => $this->currency->id,
+                        'conversion_currency_id' => $key,
+                        'date' => $date,
+                        'rate' => $value,
+                    ];
+                }
+            }
+        }
+
+        $this->currency->exchangeRates()->createMany($rates);
 
     }
+
 }

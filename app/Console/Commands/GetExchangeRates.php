@@ -3,11 +3,12 @@
 namespace App\Console\Commands;
 
 use App\Jobs\GetHistoricExchangeRates;
+use App\Models\Currency;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Http;
 
-class getExchangeRates extends Command
+class GetExchangeRates extends Command
 {
     /**
      * The name and signature of the console command.
@@ -29,14 +30,12 @@ class getExchangeRates extends Command
     public function handle()
     {
 
-        $years = range(2000, 2005);
-
-        $currencies = ['EUR', 'USD'];
+        $years = range(2022, 2023);
+        $currencies = Currency::all();
 
         foreach($currencies as $currency) {
             foreach($years as $year) {
                 GetHistoricExchangeRates::dispatch($currency, $year);
-
                 $this->comment('dispatched job for ' . $currency . ' and ' . $year);
             }
         }
