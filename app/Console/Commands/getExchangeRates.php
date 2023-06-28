@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Jobs\GetHistoricExchangeRates;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Http;
@@ -27,16 +28,21 @@ class getExchangeRates extends Command
      */
     public function handle()
     {
-        $response = Http::withHeaders([
-            'apiKey' => config('services.currency.api-key')
-        ])
-            ->get('https://api.freecurrencyapi.com/v1/historical', [
-                'base_currency' => 'EUR',
-                'date_from' => '2000-01-01',
-                'date_to' => '2002-01-01',
-            ]);
 
+        $years = range(2000, 2005);
 
-        dd($response->json());
+        $currencies = ['EUR', 'USD'];
+
+        foreach($currencies as $currency) {
+            foreach($years as $year) {
+                GetHistoricExchangeRates::dispatch($currency, $year);
+
+                $this->comment('dispatched job for ' . $currency . ' and ' . $year);
+            }
+        }
+
+        $this->info('done!');
+
     }
+
 }
