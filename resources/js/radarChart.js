@@ -8,6 +8,7 @@
 ////////////////// VisualCinnamon.com ///////////////////
 /////////// Inspired by the code of alangrafu ///////////
 /////////////////////////////////////////////////////////
+console.log('spider');
 
 window.spiderChart = function SpiderChart(id, data, options) {
 	var cfg = {
