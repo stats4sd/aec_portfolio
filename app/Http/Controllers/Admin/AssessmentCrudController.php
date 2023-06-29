@@ -268,7 +268,7 @@ class AssessmentCrudController extends CrudController
             ->type('section-title')
             ->view_namespace('stats4sd.laravel-backpack-section-title::fields')
             ->content('
-                Once you have completed the review of each red flag,  and are satisfied that the above entries are correct, please tick this box to confirm the review.<br/>
+                Once you have completed the review of each red flag, and are satisfied that the above entries are correct, please tick this box to confirm the review.<br/>
                 <i>(Note: You may still edit this review after marking it as complete)</i>
                 ');
 
