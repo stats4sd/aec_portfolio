@@ -48,7 +48,7 @@ Route::group([
     Route::crud('organisation-crud', OrganisationCrudController::class);
 
 
-    Route::crud('red-line', RedLineCrudController::class);
+    Route::crud('red-flag', RedLineCrudController::class);
     Route::crud('principle', PrincipleCrudController::class);
     Route::crud('score-tag', ScoreTagCrudController::class);
 
