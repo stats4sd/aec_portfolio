@@ -54,7 +54,7 @@
                         <div class="col-12 col-lg-6">
                             <div class="d-flex justify-content-between mt-3 w-100">
                                 <div class="w-50">
-                                    <span class="font-weight-bold text-grey">REDLINES</span><br/>
+                                    <span class="font-weight-bold text-grey">RED FLAGS</span><br/>
                                     <span class="font-weight-bold">{{ initiative.latest_assessment.redline_status }}</span>
                                 </div>
                                 <div class="w-50">
@@ -63,7 +63,7 @@
                                         class="btn text-light w-100"
                                         :class="initiative.latest_assessment.redline_status === 'Complete' ? 'btn-info' : 'btn-success'"
                                     >
-                                        {{ initiative.latest_assessment.redline_status === 'Complete' ? 'Edit Redline Assessment' : 'Assess Redlines' }}
+                                        {{ initiative.latest_assessment.redline_status === 'Complete' ? 'Edit Red Flag Assessment' : 'Assess Red Flags' }}
                                     </a>
                                 </div>
                             </div>
@@ -80,7 +80,7 @@
                                         :class="initiative.latest_assessment.redline_status === 'Complete' ? (initiative.latest_assessment.principle_status === 'Complete' ? 'btn-info' : 'btn-success') : 'btn-info disabled'"
 
                                     >
-                                        {{ initiative.latest_assessment.principle_status === 'Complete' ? 'Edit Principle Assessment' : 'Assess Redlines' }}
+                                        {{ initiative.latest_assessment.principle_status === 'Complete' ? 'Edit Principle Assessment' : 'Assess Red Flags' }}
                                     </a>
                                 </div>
                             </div>
@@ -135,7 +135,7 @@ const nextAction = computed(() => {
 
     if (redlineStatus !== "Complete") {
         return {
-            label: "Assess Redlines",
+            label: "Assess Red Flags",
             url: `/admin/assessment/${props.initiative.latest_assessment.id}/redline`
         }
     }
