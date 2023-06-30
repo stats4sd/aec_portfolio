@@ -31,7 +31,7 @@ class Assessment extends Model
     {
         // if redlines are not complete, use that status
         if($this->redline_status !== AssessmentStatus::Complete->value) {
-            return "Redlines " . $this->redline_status;
+            return "Red Flags " . $this->redline_status;
         }
 
         if($this->additionalCriteria->count() === 0 || $this->principle_status !== AssessmentStatus::Complete->value) {
@@ -176,7 +176,7 @@ class Assessment extends Model
 
             $total = $nonNaPrinciples->sum(fn($pr) => $pr->pivot->rating);
 
-            return round($total / $totalPossible * 100, 1);
+            return round($total / $totalPossible * 100, 0);
         }
 
         return null;

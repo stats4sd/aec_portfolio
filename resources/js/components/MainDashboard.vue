@@ -261,7 +261,7 @@
                     <table class="table" v-if="summary.redlinesSummary != null">
 
                         <thead class="text-center">
-                        <th>Red Lines</th>
+                        <th>Red Flags</th>
                         <th>Yours</th>
                         <th>Others</th>
                         </thead>
@@ -276,6 +276,17 @@
                         </tr>
                         </tbody>
 
+                    </table>
+
+                    <table class="table" v-if="summary.statusSummary != null">
+                        <tbody class="text-center">
+                        <tr v-for='summaryLine in summary.statusSummary'>
+                            <td v-if="summaryLine.status == 'Passed all red flags'" class="list-group-item d-flex font-lg text-deep-green">
+                                <span class="w-50 text-right pr-4">{{ summaryLine.status }}</span>
+                                <span class="font-weight-bold ">{{ summaryLine.number }} ({{ summaryLine.percent }}%)</span>
+                            </td>
+                        </tr>
+                        </tbody>
                     </table>
 
                 </div>

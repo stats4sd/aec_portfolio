@@ -226,11 +226,11 @@ class AssessmentCrudController extends CrudController
             ->type('section-title')
             ->view_namespace('stats4sd.laravel-backpack-section-title::fields')
             ->title(function ($entry) {
-                return "Assess Redlines for " . $entry->project->name;
+                return "Assess Red Flags for " . $entry->project->name;
             })
             ->content('
-                    Listed below is the set of red lines to check for each project.<br/><br/>
-                    These are the Red Line elements, which are counter-productive or harmful to the values and principles of agroecology. If any one of these is present in the project being rated, then the Agroecology Overall Score is 0.
+                    Listed below is the set of red flags to check for each project.<br/><br/>
+                    These are the Red Flag elements, which are counter-productive or harmful to the values and principles of agroecology. If any one of these is present in the project being rated, then the Agroecology Overall Score is 0.
                           ');
 
         // We cannot use the relationship with subfields field here, because we do not want the user to be able to unassign any redlines from the project.
@@ -268,20 +268,20 @@ class AssessmentCrudController extends CrudController
             ->type('section-title')
             ->view_namespace('stats4sd.laravel-backpack-section-title::fields')
             ->content('
-                Once you have completed the review of each redline, and are satisfied that the above entries are correct, please tick this box to confirm the review.<br/>
+                Once you have completed the review of each red flag, and are satisfied that the above entries are correct, please tick this box to confirm the review.<br/>
                 <i>(Note: You may still edit this review after marking it as complete)</i>
                 ');
 
 
         CRUD::field('redlines_complete')
             ->type('boolean')
-            ->label('I confirm the Redlines assessment is complete')
+            ->label('I confirm the Red Flags assessment is complete')
             ->default($entry->redline_status === AssessmentStatus::Complete->value);
 
         CRUD::field('redlines_incomplete')
             ->type('boolean')
-            ->label('I confirm the Redlines assessment is complete')
-            ->hint('You must assign a value (or mark as NA) for every redline above before marking the redline assessment as complete.')
+            ->label('I confirm the Red Flags assessment is complete')
+            ->hint('You must assign a value (or mark as NA) for every red flag above before marking the red flag assessment as complete.')
             ->attributes([
                 'disabled' => 'disabled',
             ]);

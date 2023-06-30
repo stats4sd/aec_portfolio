@@ -51,21 +51,23 @@
         </div>
         <p class="ml-auto mr-auto">Once you have completed all {{ principleAssessments.length }} principles, you may mark the assessment as complete below.</p>
     </div>
-    <div class="ml-auto mr-auto d-flex flex-column align-items-center">
+    <div class="ml-auto mr-auto d-flex flex-column align-items-center mt-4">
         <v-checkbox
             label="I confirm this assessment is complete and correct to the best of my knowledge."
             density="compact"
             hide-details="always"
             :disabled="!allComplete"
-            v-model="assessment.complete"
+            v-model="assessmentComplete"
         />
 
-        <form method="POST" :action="`/admin/assessment/${assessment.id}/finalise`">
+
+        <form method="POST" :action="`/admin/assessment/${assessment.id}/finalise`" class="mt-4">
             <input type="hidden" name="_token" :value="csrf">
             <button
                 class="btn"
-                :class="assessment.complete ? 'btn-success' : 'btn-secondary'"
+                :class="assessmentComplete ? 'btn-success' : 'btn-secondary'"
                 type="submit"
+                :disabled="!assessmentComplete"
             >
                 Finalise Assessment
             </button>
@@ -76,19 +78,17 @@
     <v-dialog
         v-model="modalIsOpen"
         width="80vw"
+        max-width="1500px"
         :scrollable="true"
     >
-        <v-card>
-            <PrincipleAssessmentModal
-                v-if="selectedPrincipleAssessment"
-                :principle-assessment="selectedPrincipleAssessment"
-                :is-open="modalIsOpen"
-                @discard="discard"
-                @close="modalIsOpen = false"
-                @next="next"
-                @update_rating="updateRating"
-            />
-        </v-card>
+        <PrincipleAssessmentModal
+            v-if="selectedPrincipleAssessment"
+            :principle-assessment="selectedPrincipleAssessment"
+            @discard="discard"
+            @close="modalIsOpen = false"
+            @next="next"
+            @update_rating="updateRating"
+        />
 
     </v-dialog>
 </template>
@@ -139,10 +139,8 @@ function next() {
     const index = principleAssessments.value.indexOf(selectedPrincipleAssessment.value)
 
     // if we've reached the end...
-    if (index >= selectedPrincipleAssessment.value.length) {
-        alert('complete')
+    if (index + 1 >= principleAssessments.value.length) {
         modalIsOpen.value = false
-
         return
     }
 
@@ -152,6 +150,8 @@ function next() {
 
 // handle completion
 const allComplete = computed(() => principleAssessments.value.every(pa => pa.complete))
+const assessmentComplete = ref(props.assessment.complete)
+
 
 function updateRating(principleAssessment) {
     const index = principleAssessments.value.findIndex(item => item.id === principleAssessment.id)

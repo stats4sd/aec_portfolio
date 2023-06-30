@@ -42,8 +42,8 @@
                     style="width: 250px"
                     class="mr-4 mb-3 mb-md-0"
                     v-model="redlineStatusFilter"
-                    :options="makeFilterOptions('Redlines')"
-                    placeholder="Filter By Redline Status"
+                    :options="makeFilterOptions('Red Flags')"
+                    placeholder="Filter By Red Flag Status"
                     :clearable="true"
                 />
 

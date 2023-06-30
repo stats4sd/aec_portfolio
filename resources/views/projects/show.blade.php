@@ -31,10 +31,10 @@
                         <td>{{ $entry->start_date->toDateString() }}</td>
                     </tr>
                     @if($entry->end_date)
-                    <tr>
-                        <td class="text-right pr-4 mr-2">End Date:</td>
-                        <td>{{ $entry->end_date->toDateString() }}</td>
-                    </tr>
+                        <tr>
+                            <td class="text-right pr-4 mr-2">End Date:</td>
+                            <td>{{ $entry->end_date->toDateString() }}</td>
+                        </tr>
                     @endif
                     <tr>
                         <td class="text-right pr-4 mr-2">Geographic Reach:</td>
@@ -42,21 +42,21 @@
                     </tr>
                     @if($entry->continents)
                         <tr>
-                        <td class="text-right pr-4 mr-2">Continent/s:</td>
-                        <td>{{ $entry->continents->pluck('name')->join(', ') }}</td>
-                    </tr>
+                            <td class="text-right pr-4 mr-2">Continent/s:</td>
+                            <td>{{ $entry->continents->pluck('name')->join(', ') }}</td>
+                        </tr>
                     @endif
                     @if($entry->regions)
                         <tr>
-                        <td class="text-right pr-4 mr-2">Region/s:</td>
-                        <td>{{ $entry->regions->pluck('name')->join(', ') }}</td>
-                    </tr>
+                            <td class="text-right pr-4 mr-2">Region/s:</td>
+                            <td>{{ $entry->regions->pluck('name')->join(', ') }}</td>
+                        </tr>
                     @endif
                     @if($entry->countries)
-                    <tr>
-                        <td class="text-right pr-4 mr-2">Country/ies:</td>
-                        <td>{{ $entry->countries->pluck('name')->join(', ') }}</td>
-                    </tr>
+                        <tr>
+                            <td class="text-right pr-4 mr-2">Country/ies:</td>
+                            <td>{{ $entry->countries->pluck('name')->join(', ') }}</td>
+                        </tr>
                     @endif
                     @if($entry->sub_regions)
                         <tr>
@@ -231,8 +231,8 @@
     @vite('resources/js/app.js')
     <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js" charset="utf-8"></script>
 
-    @vite('js/radarChart.js')
-    <script>
+    @vite('resources/js/radarChart.js')
+    <script type="module">
 
         /* Radar chart design created by Nadieh Bremer - VisualCinnamon.com */
 
@@ -241,8 +241,8 @@
         //////////////////////////////////////////////////////////////
 
         var margin = {top: 100, right: 100, bottom: 100, left: 100},
-            width = document.getElementById('radarChart').offsetWidth - margin.right - margin.left
-        height = Math.min(width, window.innerHeight - margin.top - margin.bottom - 20);
+            width = document.getElementById('radarChart').offsetWidth - margin.right - margin.left,
+            height = Math.min(width, window.innerHeight - margin.top - margin.bottom - 20);
 
         console.log('witdh', width);
         //////////////////////////////////////////////////////////////

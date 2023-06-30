@@ -41,10 +41,10 @@ BEGIN
     DECLARE rsRedLineCount INT;
     DECLARE rsRedLineId INT;
     DECLARE rsRedLineName VARCHAR(16383);
-    DECLARE rsYourPercentage INT;
-    DECLARE rsOthersPercentage INT;
-    DECLARE rsYoursOverallPercentage FLOAT;
-    DECLARE rsOthersOverallPercentage FLOAT;
+    DECLARE rsYourPercentage FLOAT;
+    DECLARE rsOthersPercentage FLOAT;
+    DECLARE rsYourFinalPercentage FLOAT;
+    DECLARE rsOthersFinalPercentage FLOAT;
 
     -- variables for principles summary
     DECLARE psPrincipleCount INT;
@@ -245,18 +245,33 @@ BEGIN
     -- -------------------------
 
 
-    SELECT COUNT(*) INTO ssOtherProjectCount from dashboard_project where dashboard_id = dashboardOthersId;
-    SELECT COUNT(DISTINCT (projects.organisation_id))
-    INTO ssOtherOrganisationCount
-    FROM dashboard_project
-             LEFT JOIN projects on projects.id = dashboard_project.project_id;
+    -- This section takes the runtime from ~150ms to ~2.5s. Is there a way of optimising this?
 
-    -- Must have 10 or more projects
-    IF (ssOtherProjectCount < 10 OR ssOtherOrganisationCount < 3) THEN
-        SET tooFewOtherProjects = 1;
-    ELSE
-        SET tooFewOtherProjects = 0;
-    END IF;
+#     SELECT COUNT(*) INTO ssOtherProjectCount from dashboard_project where dashboard_id = dashboardOthersId;
+
+#     SELECT COUNT(DISTINCT (projects.organisation_id))
+#     INTO ssOtherOrganisationCount
+#     FROM dashboard_project
+#              LEFT JOIN projects on projects.id = dashboard_project.project_id;
+#
+
+    -- find number of projects
+    SELECT COUNT(DISTINCT project_id) AS number_of_project FROM dashboard_project WHERE dashboard_id = dashboardOthersId;
+
+    -- find number of organisations
+    SELECT COUNT(DISTINCT p.organisation_id) AS number_of_organisation
+    FROM dashboard_project AS dp, projects AS p
+    WHERE dp.project_id = p.id
+    AND dp.dashboard_id = dashboardOthersId;
+
+#     -- Must have 10 or more projects
+#     IF (ssOtherProjectCount < 10 OR ssOtherOrganisationCount < 3) THEN
+#         SET tooFewOtherProjects = 1;
+#     ELSE
+         SET tooFewOtherProjects = 0;
+#     END IF;
+
+
 
 
     -- -------------------------
@@ -384,7 +399,7 @@ BEGIN
 
         -- construct status summary
         SET statusSummary = CONCAT('[',
-                                   '{\"status\":\"Passed all redlines\",\"number\":', ssPassedAllCount, ',\"percent\":', ssPassedAllPercent, ',\"budget\":\"', FORMAT(ssPassedAllBudget, 0), '\"},',
+                                   '{\"status\":\"Passed all red flags\",\"number\":', ssPassedAllCount, ',\"percent\":', ssPassedAllPercent, ',\"budget\":\"', FORMAT(ssPassedAllBudget, 0), '\"},',
                                    '{\"status\":\"Fully assessed\",\"number\":', ssFullyAssessedCount, ',\"percent\":', ssFullyAssessedPercent, ',\"budget\":\"', FORMAT(ssFullyAssessedBudget, 0), '\"}]');
 
         SET totalCount = ssCreatedCount;
@@ -418,7 +433,7 @@ BEGIN
 
             -- generate redlines summary (yours)
             INSERT INTO dashboard_red_line (dashboard_id, red_line_id, percentage)
-            SELECT dashboardYoursId, red_line_id, 100 - ROUND((SUM(value) / COUNT(*) * 100), 0) AS percentage
+            SELECT dashboardYoursId, red_line_id, 100 - ROUND((SUM(value) / COUNT(*) * 100), 2) AS percentage
             FROM assessment_red_line
             WHERE assessment_id IN
                   (SELECT assessment_id FROM dashboard_assessment WHERE dashboard_id = dashboardYoursId)
@@ -428,20 +443,12 @@ BEGIN
 
             -- generate redlines summary (others)
             INSERT INTO dashboard_red_line (dashboard_id, red_line_id, percentage)
-            SELECT dashboardOthersId, red_line_id, 100 - ROUND((SUM(value) / COUNT(*) * 100), 0) AS percentage
+            SELECT dashboardOthersId, red_line_id, 100 - ROUND((SUM(value) / COUNT(*) * 100), 2) AS percentage
             FROM assessment_red_line
             WHERE assessment_id IN
                   (SELECT assessment_id FROM dashboard_assessment WHERE dashboard_id = dashboardOthersId)
             GROUP BY red_line_id
             ORDER BY red_line_id;
-
-
-            -- find yours overall percentage and others overall percentage
-            SELECT ROUND(AVG(ta.percentage), 1) AS yours_overall, ROUND(AVG(tb.percentage), 1) AS others_overall
-            INTO rsYoursOverallPercentage, rsOthersOverallPercentage
-            FROM (SELECT * FROM dashboard_red_line WHERE dashboard_id = dashboardYoursId) AS ta,
-                 (SELECT * FROM dashboard_red_line WHERE dashboard_id = dashboardOthersId) AS tb
-            WHERE ta.red_line_id = tb.red_line_id;
 
 
             -- construct red lines summary
@@ -457,12 +464,25 @@ BEGIN
                 -- fetch one record from cursor
                 FETCH rsCursor INTO rsRedLineId, rsRedLineName, rsYourPercentage, rsOthersPercentage;
 
+                -- special handling to avoid rounded value from 99.5 to 99.99 to a misleading 100
+                IF rsYourPercentage BETWEEN 99.5 AND 99.99 THEN
+                	SET rsYourFinalPercentage = 99.9;
+                ELSE
+                	SET rsYourFinalPercentage = ROUND(rsYourPercentage, 0);
+                END IF;
+
+                IF rsOthersPercentage BETWEEN 99.5 AND 99.99 THEN
+                	SET rsOthersFinalPercentage = 99.9;
+                ELSE
+                	SET rsOthersFinalPercentage = ROUND(rsOthersPercentage, 0);
+                END IF;
+
                 -- exit loop if it is end of cursor
                 IF rsDone THEN
                     LEAVE rs_read_loop;
                 END IF;
 
-                SET redlinesSummary = CONCAT(redlinesSummary, '{\"id\":', rsRedLineId, ',\"name\":\"', rsRedLineName, '\",\"yours\":', rsYourPercentage, ',\"others\":', rsOthersPercentage, '},');
+                SET redlinesSummary = CONCAT(redlinesSummary, '{\"id\":', rsRedLineId, ',\"name\":\"', rsRedLineName, '\",\"yours\":', rsYourFinalPercentage, ',\"others\":', rsOthersFinalPercentage, '},');
 
                 -- end loop
             END LOOP rs_read_loop;
@@ -470,8 +490,8 @@ BEGIN
             -- close cursor
             CLOSE rsCursor;
 
-            -- add overall percentage
-            SET redlinesSummary = CONCAT(redlinesSummary, '{\"id\":-1,\"name\":\"Overall\", \"yours\":', rsYoursOverallPercentage, ',\"others\":', rsOthersOverallPercentage, '}');
+			-- remove the last comma
+			SET redlinesSummary = SUBSTR(redlinesSummary, 1, LENGTH(redlinesSummary) - 1);
 
             SET redlinesSummary = CONCAT(redlinesSummary, ']');
 
