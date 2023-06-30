@@ -93,6 +93,7 @@ Route::group([
         Route::crud('assessment', AssessmentCrudController::class);
         Route::get('assessment/{assessment}/show', [ProjectCrudController::class, 'showAssessment']);
         Route::get('assessment/{assessment}/assess', [AssessmentController::class, 'assess']);
+        Route::get('assessment/{assessment}/assess-custom', [AssessmentController::class, 'assessCustom']);
         Route::post('assessment/{assessment}/finalise', [AssessmentController::class, 'finaliseAssessment']);
 
         Route::get('generic-dashboard', [GenericDashboardController::class, 'new']);

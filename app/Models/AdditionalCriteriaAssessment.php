@@ -27,6 +27,12 @@ class AdditionalCriteriaAssessment extends Model
     }
 
 
+    public function getCompleteAttribute(): bool
+    {
+        return $this->is_na || $this->rating !== null;
+    }
+
+
     public function assessment(): BelongsTo
     {
         return $this->belongsTo(Assessment::class);

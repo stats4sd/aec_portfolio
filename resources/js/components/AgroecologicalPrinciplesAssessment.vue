@@ -102,16 +102,24 @@ import PrincipleAssessmentModal from "./PrincipleAssessmentModal.vue";
 const csrf = document.querySelector('meta[name="csrf-token"]').getAttribute('content')
 
 const props = defineProps({
+    assessmentType: String,
     assessment: Object,
 })
 
-async function getPrincipleAssessments() {
-    const res = await axios.get(`/assessment/${props.assessment.id}/principle-assessments/`);
+async function getAssessments(url) {
+    const res = await axios.get(url);
     return res.data
 }
 
-// get principle Assessments
-const res = await getPrincipleAssessments()
+// get principle or additional Assessments
+let url = `/assessment/${props.assessment.id}/principle-assessments/`
+
+if (props.assessmentType === "additional") {
+    url = `/assessment/${props.assessment.id}/additional-assessments`
+}
+
+const res = await getAssessments(url);
+
 let principleAssessments = ref(res);
 
 // select + edit principle assessments
