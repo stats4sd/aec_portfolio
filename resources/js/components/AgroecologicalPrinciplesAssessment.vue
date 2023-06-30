@@ -78,6 +78,7 @@
     <v-dialog
         v-model="modalIsOpen"
         width="80vw"
+        max-width="1500px"
         :scrollable="true"
     >
         <PrincipleAssessmentModal
