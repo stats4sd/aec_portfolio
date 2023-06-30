@@ -21,5 +21,6 @@ class DatabaseSeeder extends Seeder
         $this->call(DashboardRatingSeeder::class);
         $this->call(ProjectSeeder::class);
         $this->call(ScoreTagsTableSeeder::class);
+        $this->call(ExchangeRatesTableSeeder::class);
     }
 }
