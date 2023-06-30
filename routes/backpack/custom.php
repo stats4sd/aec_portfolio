@@ -81,6 +81,9 @@ Route::group([
         Route::get('organisation/export', [OrganisationController::class, 'export'])->name('organisation.export');
 
         Route::crud('portfolio', PortfolioCrudController::class);
+        Route::get('portfolio', function() {
+            return redirect("admin/organisation/show");
+        })->name('portfolio.index');
 
         Route::crud('project', ProjectCrudController::class);
         Route::get('project', [ProjectController::class, 'index']);
@@ -98,6 +101,10 @@ Route::group([
         Route::post('generic-dashboard/enquire', [GenericDashboardController::class, 'enquire']);
 
         Route::crud('additional-criteria', AdditionalCriteriaCrudController::class);
+        Route::get('additional-criteria', function() {
+            return redirect("admin/organisation/show#additional-criteria");
+        })->name('additional-criteria.index');
+
         Route::get('my-role', [MyRoleController::class, 'show']);
         Route::get('my-role/request-to-leave', [MyRoleController::class, 'requestToLeave']);
         Route::post('my-role/confirm-to-leave', [MyRoleController::class, 'confirmToLeave']);
