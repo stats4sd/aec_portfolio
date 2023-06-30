@@ -19,11 +19,11 @@ class ExchangeRateController
             $validated['date'] = Carbon::now()->subDay()->toDateString();
         }
 
-        dd($validated['date']);
+
 
         return ExchangeRate::where('date', $validated['date'])
             ->where('base_currency_id', $validated['base_currency_id'])
-            ->where('conversion_currency_id', $validated['conversion_currency_id'])
+            ->where('target_currency_id', $validated['target_currency_id'])
             ->first();
 
 

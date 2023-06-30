@@ -24,7 +24,7 @@ class ExchangeRateRetrivalReqeust extends FormRequest
         return [
             'date' => 'nullable',
             'base_currency_id' => 'required',
-            'conversion_currency_id' => 'required',
+            'target_currency_id' => 'required',
         ];
     }
 }

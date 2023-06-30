@@ -53,8 +53,9 @@ class Project extends Model
         });
 
         static::saving(function (Project $project) {
-           $project->budget_org = FreeCurrencyApiHelper::convert($project);
-           dd('oop');
+
+            // in case the exchange_rate has changed, re-calculate the budget_org
+           $project->budget_org = $project->budget * $project->exchange_rate;
         });
 
         static::addGlobalScope('organisation', function (Builder $builder) {

@@ -4,6 +4,7 @@ namespace App\Jobs;
 
 use App\Models\Currency;
 use App\Models\ExchangeRate;
+use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -46,6 +47,13 @@ class GetHistoricExchangeRates implements ShouldQueue
         $startDate = $this->year . '-01-01';
         $endDate = ($this->year + 1) . '-01-01';
 
+        // if processing the current year, only ask for info up till yesterday (The API cannot get the value for 'today').
+        if ($this->year === Carbon::now()->year) {
+            $endDate = Carbon::now()->subDay()->toDateString();
+        }
+
+
+        // api call
         $response = Http::withHeaders([
             'apiKey' => config('services.currency.api-key')
         ])
@@ -64,15 +72,13 @@ class GetHistoricExchangeRates implements ShouldQueue
 
             foreach ($values as $key => $value) {
 
-                // ignore 1-1 conversions.
-                if ($key !== $this->currency->id) {
-                    $rates[] = [
-                        'base_currency_id' => $this->currency->id,
-                        'conversion_currency_id' => $key,
-                        'date' => $date,
-                        'rate' => $value,
-                    ];
-                }
+                $rates[] = [
+                    'base_currency_id' => $this->currency->id,
+                    'target_currency_id' => $key,
+                    'date' => $date,
+                    'rate' => $value,
+                ];
+
             }
         }
 

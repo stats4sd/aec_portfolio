@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::table('exchange_rates', function (Blueprint $table) {
             $table->index('base_currency_id');
-            $table->index('conversion_currency_id');
+            $table->index('target_currency_id');
         });
     }
 

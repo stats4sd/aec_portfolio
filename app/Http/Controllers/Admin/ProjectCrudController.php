@@ -273,6 +273,7 @@ class ProjectCrudController extends CrudController
             ->label('... or enter the exchange rate to be used:')
             ->hint('1 of this initiative\'s currency = XXX ' . $selectedOrganisation->currency . '.')
             ->type('number')
+            ->attributes(['step' => 'any'])
             ->wrapper(['class' => 'form-group col-sm-8']);
 
 

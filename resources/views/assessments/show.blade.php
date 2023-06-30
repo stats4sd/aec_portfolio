@@ -22,6 +22,10 @@
                         <td>{{ $entry->currency }} {{ $entry->budget }}</td>
                     </tr>
                     <tr>
+                        <td class="text-right pr-4 mr-2">Budget in {{ $entry->organisation->currency }}:</td>
+                        <td>{{ $entry->organisation->currency }} {{ $entry->budget_org }}</td>
+                    </tr>
+                    <tr>
                         <td class="text-right pr-4 mr-2">Start Date:</td>
                         <td>{{ $entry->start_date->toDateString() }}</td>
                     </tr>

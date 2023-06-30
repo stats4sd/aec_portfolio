@@ -16,9 +16,9 @@ class ExchangeRate extends Model
         return $this->belongsTo(Currency::class, 'base_currency_id');
     }
 
-    public function conversionCurrency(): BelongsTo
+    public function targetCurrency(): BelongsTo
     {
-        return $this->belongsTo(Currency::class, 'conversion_currency_id');
+        return $this->belongsTo(Currency::class, 'target_currency_id');
     }
 
 

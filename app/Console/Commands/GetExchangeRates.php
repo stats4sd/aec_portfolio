@@ -22,7 +22,7 @@ class GetExchangeRates extends Command
      *
      * @var string
      */
-    protected $description = 'Get exchange rates for a currency for 2000 - 2010';
+    protected $description = 'Add jobs to the queue to get *all* historical exchanges rates';
 
     /**
      * Execute the console command.
@@ -30,13 +30,23 @@ class GetExchangeRates extends Command
     public function handle()
     {
 
-        $years = range(2022, 2023);
+        if(!$this->confirm('This will add hundreds of jobs to the queue, to retrieve the exchanges rates between 32 currencies for every day from Jan 01 2000 to the current day. Are you sure you want to do this?')) {
+            $this->info('Aborting!');
+            return;
+        }
+
+
+        $today = Carbon::now();
+        $thisYear = $today->year;
+
+        $years = range(2000, $thisYear);
+
         $currencies = Currency::all();
 
         foreach($currencies as $currency) {
             foreach($years as $year) {
                 GetHistoricExchangeRates::dispatch($currency, $year);
-                $this->comment('dispatched job for ' . $currency . ' and ' . $year);
+                $this->comment('dispatched job for the currency ' . $currency . ' and the year ' . $year);
             }
         }
 

@@ -7,11 +7,10 @@ async function getConversionRatio(currency, baseCurrency, date) {
 
     const result = await axios.post('/exchange-rate', {
         date: date,
-        base_currency_id: currency,
-        conversion_currency_id: baseCurrency,
+        base_currency_id: baseCurrency,
+        target_currency_id: currency,
     });
 
-    console.log(result.data)
     return result.data
 
 }
@@ -19,34 +18,30 @@ async function getConversionRatio(currency, baseCurrency, date) {
 async function getExchangeRate() {
     if (currencyField.value === null || currencyField.value === '') {
         alert('Please enter the currency');
-        exit;
+        return
     }
-
-    console.log(currencyField.value)
-    console.log(orgCurrencyField.value)
-    console.log(startDateField.value)
 
     const result = await getConversionRatio(currencyField.value, orgCurrencyField.value, startDateField.value)
 
 
-    if(result) {
-        exchangeRateField.value = result.rate
-        exchangeRateField.unrequire()
+    if (result) {
+        console.log('result', result)
+        console.log(Number(result.rate))
+        exchangeRateField.input.value = Number(result.rate)
+
+        exchangeRateField.input.classList.add('border-success');
+        exchangeRateField.input.classList.add('bg-light-success');
+
     } else {
-        alert('The exchange rate for the currency used is not available on the platform. Please enter the exchange rate manually')
-        exchangeRateField.require()
+        await swal.fire(
+            'Exchange Rate Not Found',
+            `Exchange rate for ${currencyField.value} to ${orgCurrencyField.value} could not be retrieved automatically. Please enter the exchange rate to be used manually.`,
+            'warning'
+        )
+        exchangeRateField.input.classList.remove('border-success');
+        exchangeRateField.input.classList.remove('bg-light-success');
+
     }
 
-
-
-}
-
-
-function getDateString(date) {
-    let currentDay = String(date.getDate()).padStart(2, '0');
-    let currentMonth = String(date.getMonth() + 1).padStart(2, "0");
-    let currentYear = date.getFullYear();
-
-    return `${currentDay}-${currentMonth}-${currentYear}`;
 
 }

@@ -17,9 +17,9 @@ class Currency extends Model
         return $this->hasMany(ExchangeRate::class, 'base_currency_id');
     }
 
-    public function conversionRates(): HasMany
+    public function targetRates(): HasMany
     {
-        return $this->hasMany(ExchangeRate::class, 'conversion_currency_id');
+        return $this->hasMany(ExchangeRate::class, 'target_currency_id');
     }
 
 
