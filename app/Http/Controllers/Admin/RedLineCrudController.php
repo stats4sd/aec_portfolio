@@ -31,8 +31,8 @@ class RedLineCrudController extends CrudController
     public function setup()
     {
         CRUD::setModel(\App\Models\RedLine::class);
-        CRUD::setRoute(config('backpack.base.route_prefix') . '/red-line');
-        CRUD::setEntityNameStrings('red line', 'red lines');
+        CRUD::setRoute(config('backpack.base.route_prefix') . '/red-flag');
+        CRUD::setEntityNameStrings('red flag', 'red flags');
 
         CRUD::set('import.importer', RedLineImport::class);
     }

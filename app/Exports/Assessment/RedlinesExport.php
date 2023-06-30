@@ -34,7 +34,7 @@ class RedlinesExport implements FromCollection, WithHeadings, WithTitle, WithStr
                     'initiative_name' => $project->name,
                     'red_flag' => $redline->name,
                     'present' => $redline->pivot->value,
-                    'redline_assessment_status' => $project->latest_assessment->redline_status,
+                    'red_flag_assessment_status' => $project->latest_assessment->redline_status,
                 ]);
             });
         });
@@ -52,12 +52,12 @@ class RedlinesExport implements FromCollection, WithHeadings, WithTitle, WithStr
             'initiative_name',
             'red_flag',
             'present',
-            'redline_assessment_status',
+            'red_flag_assessment_status',
         ];
     }
 
     public function title(): string
     {
-        return 'redflag_assessment';
+        return 'red_flag_assessment';
     }
 }

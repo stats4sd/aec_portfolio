@@ -31,7 +31,7 @@ class Assessment extends Model
     {
         // if redlines are not complete, use that status
         if($this->redline_status !== AssessmentStatus::Complete->value) {
-            return "Redlines " . $this->redline_status;
+            return "Red Flags " . $this->redline_status;
         }
 
         if($this->additionalCriteria->count() === 0 || $this->principle_status !== AssessmentStatus::Complete->value) {
