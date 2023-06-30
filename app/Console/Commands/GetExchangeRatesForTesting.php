@@ -15,14 +15,14 @@ class GetExchangeRatesForTesting extends Command
      *
      * @var string
      */
-    protected $signature = 'app:get-test-exchange-rates';
+    protected $signature = 'app:get-test-exchange-rates {year}';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Add jobs to the queue to get historical exchange rates for 2023 only.';
+    protected $description = 'Add jobs to the queue to get historical exchange rates for one year only.';
 
     /**
      * Execute the console command.
@@ -30,13 +30,14 @@ class GetExchangeRatesForTesting extends Command
     public function handle()
     {
 
+        $year = $this->argument('year');
+
         $currencies = Currency::all();
 
         foreach ($currencies as $currency) {
-            GetHistoricExchangeRates::dispatch($currency, 2023);
-            $this->comment('dispatched job for ' . $currency . ' and the year 2023');
+            GetHistoricExchangeRates::dispatch($currency, $year);
+            $this->comment('dispatched job for ' . $currency . ' and the year ' . $year);
         }
-
 
         $this->info('done!');
 
