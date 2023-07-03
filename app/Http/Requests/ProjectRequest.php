@@ -35,6 +35,7 @@ class ProjectRequest extends FormRequest
             'description' => 'nullable|string',
             'budget' => 'required|integer|gte:0',
             'currency' => 'required|max:3',
+            'exchange_rate' => 'required|numeric',
             'uses_only_own_funds' => 'required|boolean',
             'main_recipient_id' => 'nullable',
             'main_recipient' => 'required',

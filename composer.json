@@ -11,6 +11,7 @@
         "backpack/pro": "*",
         "backpack/revise-operation": "^1.0",
         "doctrine/dbal": "^3.0",
+        "everapi/freecurrencyapi-php": "dev-master",
         "guzzlehttp/guzzle": "^7.0.1",
         "laravel/framework": "^10.0",
         "laravel/telescope": "^4.14",
@@ -82,6 +83,6 @@
             "url": "https://repo.backpackforlaravel.com/"
         }
     ],
-    "minimum-stability": "stable",
+    "minimum-stability": "dev",
     "prefer-stable": true
 }

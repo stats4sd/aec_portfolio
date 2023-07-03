@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ExchangeRateController;
 use App\Http\Controllers\OrganisationController;
 use App\Http\Controllers\PrincipleAssessmentController;
 use Illuminate\Support\Facades\Route;
@@ -22,3 +23,6 @@ Route::apiResource('principle-assessment', PrincipleAssessmentController::class)
 Route::get('assessment/{assessment}/principle-assessments', [PrincipleAssessmentController::class, 'index']);
 
 require __DIR__.'/auth.php';
+
+
+Route::post('exchange-rate', [ExchangeRateController::class, 'index']);
