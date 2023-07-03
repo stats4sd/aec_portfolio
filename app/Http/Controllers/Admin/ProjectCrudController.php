@@ -142,6 +142,9 @@ class ProjectCrudController extends CrudController
 
     protected function setupCreateOperation()
     {
+        Widget::add()->type('script')
+            ->content('assets/js/admin/forms/project_create.js');
+
         $this->authorize('create', Project::class);
 
         CRUD::setValidation(ProjectRequest::class);
@@ -172,6 +175,15 @@ class ProjectCrudController extends CrudController
         CRUD::field('code')->hint('The code should uniquely identify the project within your institution\'s porfolio. Leave blank for an auto-generated code.');
         CRUD::field('description')->hint('This is optional, but will help to provide context for the AE assessment');
 
+        CRUD::field('initiative-timing-title')
+            ->type('section-title')
+            ->view_namespace('stats4sd.laravel-backpack-section-title::fields')
+            ->title('Initiative Timing');
+
+
+        CRUD::field('start_date')->type('date_picker')->label('Enter the start date for the project.');
+        CRUD::field('end_date')->type('date_picker')->label('Enter the end date for the project.')
+            ->hint('This is optional');
 
         CRUD::field('currency-info')
             ->type('section-title')
@@ -242,20 +254,36 @@ class ProjectCrudController extends CrudController
  ");
 
         CRUD::field('currency')
-            ->wrapper(['class' => 'form-group col-sm-3 required'])
+            ->wrapper(['class' => 'form-group col-sm-4 required'])
             ->attributes(['class' => 'form-control text-right'])
             ->hint('Enter the 3-digit code for the currency, e.g. "EUR", or "USD"');
+
         CRUD::field('budget')
-            ->wrapper(['class' => 'form-group col-sm-9 required'])
+            ->wrapper(['class' => 'form-group col-sm-8 required'])
             ->hint('Enter the overall budget for the project');
 
 
+        CRUD::field('get_exchange_rate_button')
+            ->type('custom_html')
+            ->wrapper(['class' => 'form-group col-sm-4'])
+            ->value('
+                <div class="d-flex flex-column align-items-center">
+
+                <label>Automatically get exchange rate...</label>
+                <div class="btn btn-primary" onclick="getExchangeRate()">Get Exchange Rate</div>
+</div>
+            ');
+
+        CRUD::field('org_currency')
+            ->type('hidden')
+            ->value($selectedOrganisation->currency);
+
         CRUD::field('exchange_rate')
-            ->label('Enter the exchange rate to be used:')
+            ->label('... or enter the exchange rate to be used:')
             ->hint('1 of this initiative\'s currency = XXX ' . $selectedOrganisation->currency . '.')
-            ->type('number');
-
-
+            ->type('number')
+            ->attributes(['step' => 'any'])
+            ->wrapper(['class' => 'form-group col-sm-8']);
 
 
         CRUD::field('funding_sources_title')
@@ -304,16 +332,6 @@ class ProjectCrudController extends CrudController
             ->label('Please enter the main recipient of the funds for this initiative')
             ->hint('E.g., the institution or entity that directly receives the majority of the funds for this initiative');
 
-
-        CRUD::field('initiative-timing-title')
-            ->type('section-title')
-            ->view_namespace('stats4sd.laravel-backpack-section-title::fields')
-            ->title('Initiative Timing');
-
-
-        CRUD::field('start_date')->type('date_picker')->label('Enter the start date for the project.');
-        CRUD::field('end_date')->type('date_picker')->label('Enter the end date for the project.')
-            ->hint('This is optional');
 
         CRUD::field('geo-title')
             ->type('section-title')

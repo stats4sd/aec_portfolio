@@ -31,6 +31,7 @@
         "flot": "^4.2.3",
         "noty": "^3.2.0-beta-deprecated",
         "puppeteer": "^20.2.0",
+        "sweetalert2": "^11.7.12",
         "vite-plugin-vuetify": "^1.0.2",
         "vue": "^3.2.37",
         "vue-chartjs": "^5.2.0",

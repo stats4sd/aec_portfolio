@@ -86,16 +86,18 @@
                             <h4 class="mt-8 mb-4">Filter by Initiative Budget</h4>
                             <div class="d-flex align-items-center justify-content-between mb-8">
                                 <div class="pr-8 pr-xl-16">
-                                    <b>MINIMUM BUDGET:</b>
-                                    <input
-                                        class="bg-white d-block py-1"
-                                        v-model="filters.minBudget"
+                                    <b>MINIMUM BUDGET ({{ organisation.currency }}):</b>
+                                    <div class="d-flex align-items-center">
 
-                                    />
+                                        <input
+                                            class="bg-white d-block py-1 ml-2"
+                                            v-model="filters.minBudget"
+                                        />
+                                    </div>
                                     <p class="help-block text-error" style="height: 1em;" v-if="minBudgetError || maxBudgetError">{{ minBudgetError }}</p>
                                 </div>
                                 <div class="w-50">
-                                    <b>MAXIMUM BUDGET:</b>
+                                    <b>MAXIMUM BUDGET ({{ organisation.currency }}):</b>
                                     <input
                                         class="bg-white d-block py-1"
                                         v-model="filters.maxBudget"

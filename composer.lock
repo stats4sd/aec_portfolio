@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "dbff125ab017c6608bdbf24a004f0b24",
+    "content-hash": "e41ff43ed57bb3bc2934779a5bbc0a01",
     "packages": [
         {
             "name": "backpack/crud",
@@ -1362,6 +1362,66 @@
                 }
             ],
             "time": "2023-01-14T14:17:03+00:00"
+        },
+        {
+            "name": "everapi/freecurrencyapi-php",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/everapihq/freecurrencyapi-php.git",
+                "reference": "61514ca4124b6c5e4de823a546fe08a3dd8c3c9e"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/everapihq/freecurrencyapi-php/zipball/61514ca4124b6c5e4de823a546fe08a3dd8c3c9e",
+                "reference": "61514ca4124b6c5e4de823a546fe08a3dd8c3c9e",
+                "shasum": ""
+            },
+            "require": {
+                "guzzlehttp/guzzle": "^7.4",
+                "php": "^8.0"
+            },
+            "require-dev": {
+                "friendsofphp/php-cs-fixer": "^3.0",
+                "pestphp/pest": "^1.20",
+                "spatie/ray": "^1.28"
+            },
+            "default-branch": true,
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "FreeCurrencyApi\\FreeCurrencyApi\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Dominik Kukacka",
+                    "email": "office@everapi.com",
+                    "role": "Developer"
+                }
+            ],
+            "description": "A PHP wrapper for the freecurrencyapi.com API",
+            "homepage": "https://github.com/everapihq/freecurrencyapi-php",
+            "keywords": [
+                "api",
+                "currency api",
+                "exchange rates data",
+                "foreign exchange rates API",
+                "free currency api ",
+                "free currency conversion API",
+                "freecurrencyapi-php",
+                "freecurrencyapi.com",
+                "rates API"
+            ],
+            "support": {
+                "issues": "https://github.com/everapihq/freecurrencyapi-php/issues",
+                "source": "https://github.com/everapihq/freecurrencyapi-php/tree/master"
+            },
+            "time": "2023-05-26T09:26:01+00:00"
         },
         {
             "name": "ezyang/htmlpurifier",
@@ -11871,7 +11931,7 @@
         }
     ],
     "aliases": [],
-    "minimum-stability": "stable",
+    "minimum-stability": "dev",
     "stability-flags": {
         "stats4sd/laravel-backpack-section-title": 20,
         "stats4sd/laravel-file-util": 20

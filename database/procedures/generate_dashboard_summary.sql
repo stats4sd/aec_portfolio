@@ -145,11 +145,11 @@ BEGIN
     END IF;
 
     IF budgetFrom IS NOT NULL THEN
-        SET @SQLText = CONCAT(@SQLText, ' AND p.budget >= ', budgetFrom);
+        SET @SQLText = CONCAT(@SQLText, ' AND p.budget_org >= ', budgetFrom);
     END IF;
 
     IF budgetTo IS NOT NULL THEN
-        SET @SQLText = CONCAT(@SQLText, ' AND p.budget <= ', budgetTo);
+        SET @SQLText = CONCAT(@SQLText, ' AND p.budget_org <= ', budgetTo);
     END IF;
 
     IF regionIds IS NOT NULL THEN
@@ -212,11 +212,11 @@ BEGIN
     END IF;
 
     IF budgetFrom IS NOT NULL THEN
-        SET @SQLText = CONCAT(@SQLText, ' AND p.budget >= ', budgetFrom);
+        SET @SQLText = CONCAT(@SQLText, ' AND p.budget_org >= ', budgetFrom);
     END IF;
 
     IF budgetTo IS NOT NULL THEN
-        SET @SQLText = CONCAT(@SQLText, ' AND p.budget <= ', budgetTo);
+        SET @SQLText = CONCAT(@SQLText, ' AND p.budget_org <= ', budgetTo);
     END IF;
 
     IF regionIds IS NOT NULL THEN
@@ -280,7 +280,7 @@ BEGIN
 
 
     -- CREATED PROJECTS
-    SELECT COUNT(*), IFNULL(SUM(budget), 0)
+    SELECT COUNT(*), IFNULL(SUM(budget_org), 0)
     INTO ssCreatedCount, ssCreatedBudget
     FROM projects
     WHERE id IN
@@ -313,7 +313,7 @@ BEGIN
               HAVING SUM(value) = 0) AS passed_all_red_lines;
 
         -- find budget that passed all red lines
-        SELECT IFNULL(SUM(budget), 0)
+        SELECT IFNULL(SUM(budget_org), 0)
         INTO ssPassedAllBudget
         FROM projects
         WHERE id IN
@@ -342,7 +342,7 @@ BEGIN
               HAVING SUM(value) > 0) AS failed_any_red_lines;
 
         -- find budget that failed at least one red line
-        SELECT IFNULL(SUM(budget), 0)
+        SELECT IFNULL(SUM(budget_org), 0)
         INTO ssFailedAnyBudget
         FROM projects
         WHERE id IN
@@ -369,7 +369,7 @@ BEGIN
               (SELECT assessment_id FROM dashboard_assessment WHERE dashboard_id = dashboardYoursId);
 
         -- budget for fully assessed projects
-        SELECT IFNULL(SUM(budget), 0)
+        SELECT IFNULL(SUM(budget_org), 0)
         INTO ssFullyAssessedBudget
         FROM projects
         WHERE id IN

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ExchangeRateController;
 use App\Http\Controllers\AdditionalAssessmentController;
 use App\Http\Controllers\OrganisationController;
 use App\Http\Controllers\PrincipleAssessmentController;
@@ -22,6 +23,9 @@ Route::put('organisation/update', [OrganisationController::class, 'update'])->na
 Route::apiResource('principle-assessment', PrincipleAssessmentController::class);
 Route::get('assessment/{assessment}/principle-assessments', [PrincipleAssessmentController::class, 'index']);
 Route::get('assessment/{assessment}/additional-assessments', [AdditionalAssessmentController::class, 'index']);
+
+
+Route::post('exchange-rate', [ExchangeRateController::class, 'index']);
 
 
 require __DIR__.'/auth.php';
