@@ -3,7 +3,7 @@ orgCurrencyField = crud.field('org_currency')
 startDateField = crud.field('start_date')
 exchangeRateField = crud.field('exchange_rate')
 
-async function getConversionRatio(currency, baseCurrency, date) {
+async function getConversionRatio(baseCurrency, currency, date) {
 
     const result = await axios.post('/exchange-rate', {
         date: date,
