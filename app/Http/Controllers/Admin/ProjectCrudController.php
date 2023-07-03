@@ -172,6 +172,15 @@ class ProjectCrudController extends CrudController
         CRUD::field('code')->hint('The code should uniquely identify the project within your institution\'s porfolio. Leave blank for an auto-generated code.');
         CRUD::field('description')->hint('This is optional, but will help to provide context for the AE assessment');
 
+        CRUD::field('initiative-timing-title')
+            ->type('section-title')
+            ->view_namespace('stats4sd.laravel-backpack-section-title::fields')
+            ->title('Initiative Timing');
+
+
+        CRUD::field('start_date')->type('date_picker')->label('Enter the start date for the project.');
+        CRUD::field('end_date')->type('date_picker')->label('Enter the end date for the project.')
+            ->hint('This is optional');
 
         CRUD::field('currency-info')
             ->type('section-title')
@@ -304,16 +313,6 @@ class ProjectCrudController extends CrudController
             ->label('Please enter the main recipient of the funds for this initiative')
             ->hint('E.g., the institution or entity that directly receives the majority of the funds for this initiative');
 
-
-        CRUD::field('initiative-timing-title')
-            ->type('section-title')
-            ->view_namespace('stats4sd.laravel-backpack-section-title::fields')
-            ->title('Initiative Timing');
-
-
-        CRUD::field('start_date')->type('date_picker')->label('Enter the start date for the project.');
-        CRUD::field('end_date')->type('date_picker')->label('Enter the end date for the project.')
-            ->hint('This is optional');
 
         CRUD::field('geo-title')
             ->type('section-title')
