@@ -147,10 +147,10 @@ trait AssessCustomOperation
 
 
         if ($request->assessment_complete) {
-            $latestAssessment->assessment_status = AssessmentStatus::Complete;
+            $latestAssessment->additional_status = AssessmentStatus::Complete;
             $latestAssessment->completed_at = Carbon::now()->format('Y-m-d');
         } else {
-            $latestAssessment->assessment_status = AssessmentStatus::InProgress;
+            $latestAssessment->additional_status = AssessmentStatus::InProgress;
         }
 
         $latestAssessment->save();
