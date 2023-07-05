@@ -222,11 +222,12 @@ function resetFilters() {
     principleStatusFilter.value = '';
     portfolioFilter.value = '';
     searchString.value = '';
+
+    handlePortfolioFromUrl();
 }
 
 // handle portfolio from url
-onMounted(() => {
-
+function handlePortfolioFromUrl() {
     const querypairs = window.location.search.substring(1);
     const test = new URLSearchParams(querypairs)
     console.log(test)
@@ -236,7 +237,11 @@ onMounted(() => {
             portfolioFilter.value = value;
         }
     })
+}
 
+
+onMounted(() => {
+    handlePortfolioFromUrl();
 })
 
 
