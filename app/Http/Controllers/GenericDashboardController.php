@@ -96,7 +96,8 @@ class GenericDashboardController extends Controller
         $budgetFrom = $request['minBudget'] ?? 'null';
         $budgetTo = $request['maxBudget'] ?? 'null';
 
-        $sortBy = $request['sortBy'] ?? '1';
+        // sort principles by principle number by default
+        $sortBy = $request['sortBy'] ?? '3';
 
         // constrcuct dynamic SQL
         $sql = "CALL generate_dashboard_summary(
