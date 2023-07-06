@@ -261,13 +261,29 @@ class GenericDashboardController extends Controller
             ->where('dashboard_id', $dashboardYoursId))
             ->get();
 
-        $assessmentScore = $allAssessments->sum(fn(Assessment $assessment) => $assessment->overall_score)
-            / $allAssessments->where('completed_at', '!=', null)->count();
+        $noOfInitiativeCompletedAssessment = $allAssessments->where('completed_at', '!=', null)->count();
 
+        // initialise variables
+        $assessmentScore = 'N/A';
+        $aeBudget = 'N/A';
 
-        $aeBudget = round($results[0]->totalBudget * ($assessmentScore / 100), 0);
+        // error handling to avoid division by zero error
+        if ($noOfInitiativeCompletedAssessment == 0) {
 
-        $assessmentScore = round($assessmentScore, 1);
+            $status = 2001;
+            $message = 'There is no fully assessed initiative';
+
+        } else {
+
+            // calculate overall score and AE budget if number of fully assess initiative is bigger than zero
+            $assessmentScore = $allAssessments->sum(fn(Assessment $assessment) => $assessment->overall_score)
+                / $noOfInitiativeCompletedAssessment;
+
+            $aeBudget = round($results[0]->totalBudget * ($assessmentScore / 100), 0);
+
+            $assessmentScore = round($assessmentScore, 1);
+
+        }
 
         // construct JSON response
         $jsonRes = [];

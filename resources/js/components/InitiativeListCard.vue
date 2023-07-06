@@ -80,7 +80,7 @@
                                         :class="initiative.latest_assessment.redline_status === 'Complete' ? (initiative.latest_assessment.principle_status === 'Complete' ? 'btn-info' : 'btn-success') : 'btn-info disabled'"
 
                                     >
-                                        {{ initiative.latest_assessment.principle_status === 'Complete' ? 'Edit Principle Assessment' : 'Assess Red Flags' }}
+                                        {{ initiative.latest_assessment.principle_status === 'Complete' ? 'Edit Principle Assessment' : 'Assess Principles' }}
                                     </a>
                                 </div>
                             </div>

@@ -153,6 +153,10 @@
         </div>
     </div>
 
+    <div v-if="summary.status != 0" class="alert alert-warning text-dark">
+        {{ summary.message }}
+    </div>
+
     <div v-if="summary.tooFewOtherProjects" class="alert alert-warning text-dark">
         NOTE: The chosen filters have resulted in a comparison dataset too small to guarantee anonymity, so the "other instutitions" results will not be shown.
     </div>
