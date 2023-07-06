@@ -24,9 +24,10 @@ class ProjectController extends Controller
                 'additionalCriteria',
             ],
         ])
+            // by default, initaitives are sorted by name in ascending order
+            ->orderBy('name', 'asc')
             ->get()
             ->map(fn(Project $project) => $project->append('latest_assessment'));
-
 
         $org = Organisation::find(Session::get('selectedOrganisationId'));
 
