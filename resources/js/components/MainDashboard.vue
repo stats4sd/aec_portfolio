@@ -442,10 +442,10 @@ function formatBudget(amount) {
 watch(filters.value, (newValue, oldValue) => {
     if (newValue.portfolio == null) {
         // after clicking "Reset" button
-        console.log("watch() triggered, no need to call getData()");
+        // console.log("watch() triggered, no need to call getData()");
     } else {
         // when user select a portfolio, get summary data for the selected portfolio
-        console.log("watch() triggered, call getData()");
+        // console.log("watch() triggered, call getData()");
         getData();
     }
 })
