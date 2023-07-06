@@ -427,20 +427,29 @@ const summary = ref({
 })
 
 async function getData() {
-
     let data = {...filters.value}
 
     data.organisation_id = props.organisation.id
 
     const res = await axios.post("/admin/generic-dashboard/enquire", data)
     summary.value = res.data
-
-
 }
 
 function formatBudget(amount) {
     return amount ? amount.toLocaleString() : '';
 }
+
+watch(filters.value, (newValue, oldValue) => {
+    if (newValue.portfolio == null) {
+        // after clicking "Reset" button
+        console.log("watch() triggered, no need to call getData()");
+    } else {
+        // when user select a portfolio, get summary data for the selected portfolio
+        console.log("watch() triggered, call getData()");
+        getData();
+    }
+})
+
 
 
 // **************** ChartJS ****************
