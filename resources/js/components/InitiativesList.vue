@@ -31,9 +31,9 @@
                 </div>
 
                 <div class="flex-grow-1 justify-content-end d-flex">
-                    <a href="/admin/project/create" class="btn btn-primary mr-2 ml-auto">Add Initiative</a>
-                    <a href="/admin/project/import" class="btn btn-success mr-2">Import Initiatives</a>
-                    <a href="/admin/organisation/export" class="btn btn-info">Export All Initiative Data</a>
+                    <a v-if="showAddButton" href="/admin/project/create" class="btn btn-primary mr-2 ml-auto">Add Initiative</a>
+                    <a v-if="showImportButton" href="/admin/project/import" class="btn btn-success mr-2">Import Initiatives</a>
+                    <a v-if="showExportButton" href="/admin/organisation/export" class="btn btn-info">Export All Initiative Data</a>
                 </div>
             </div>
             <div class="d-flex align-items-center flex-column flex-md-row mt-4">
@@ -95,6 +95,9 @@ const props = defineProps({
     organisation: Object,
     initiatives: Object,
     hasAdditionalAssessment: Boolean,
+    showAddButton: Boolean,
+    showImportButton: Boolean,
+    showExportButton: Boolean,
 });
 
 // Sorting
