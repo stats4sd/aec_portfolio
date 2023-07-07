@@ -21,7 +21,7 @@
                     </div>
                 </div>
                 <div class="col-12 col-lg-3 d-flex align-items-center justify-content-end">
-                    <a :href='nextAction.url' class="btn btn-success mr-2" v-if="nextAction">
+                    <a :href='nextAction.url' class="btn mr-2" :class="enableAssessButton ? 'btn-success' : 'btn-info disabled'" v-if="nextAction">
                         {{ nextAction.label }}
                     </a>
                     <div class="btn btn-info" @click="toggleExpand" data-toggle="collapse" :data-target="'.initiative-collapse_'+initiative.id">
@@ -46,8 +46,10 @@
                                     <span class="font-weight-bold">{{ initiative.portfolio.name }}</span>
                                 </div>
                             </div>
-                            <a class="btn btn-primary" :href="`/admin/project/${initiative.id}/edit`">Edit Initiative Details</a>
-                            <a class="btn btn-success" :href="`/admin/project/${initiative.id}/show`">Show Initiative Information</a>
+
+                            <a class="btn btn-primary" :class="[ enableEditButton ? '' : 'disabled']" :href="`/admin/project/${initiative.id}/edit`">Edit Initiative Details</a>
+
+                            <a class="btn btn-success" :class="[ enableShowButton ? '' : 'disabled']" :href="`/admin/project/${initiative.id}/show`">Show Initiative Information</a>
 
                         </div>
 
@@ -61,7 +63,8 @@
                                     <a
                                         :href="`/admin/assessment/${initiative.latest_assessment.id}/redline`"
                                         class="btn text-light w-100"
-                                        :class="initiative.latest_assessment.redline_status === 'Complete' ? 'btn-info' : 'btn-success'"
+                                        :class="enableAssessButton ? (initiative.latest_assessment.redline_status === 'Complete' ? 'btn-info' : 'btn-success') : 'btn-info disabled'"
+
                                     >
                                         {{ initiative.latest_assessment.redline_status === 'Complete' ? 'Edit Red Flag Assessment' : 'Assess Red Flags' }}
                                     </a>
@@ -77,7 +80,7 @@
                                     <a
                                         :href="`/admin/assessment/${initiative.latest_assessment.id}/assess`"
                                         class="btn text-light w-100"
-                                        :class="initiative.latest_assessment.redline_status === 'Complete' ? (initiative.latest_assessment.principle_status === 'Complete' ? 'btn-info' : 'btn-success') : 'btn-info disabled'"
+                                        :class="enableAssessButton ? (initiative.latest_assessment.redline_status === 'Complete' ? (initiative.latest_assessment.principle_status === 'Complete' ? 'btn-info' : 'btn-success') : 'btn-info disabled') : 'btn-info disabled'"
 
                                     >
                                         {{ initiative.latest_assessment.principle_status === 'Complete' ? 'Edit Principle Assessment' : 'Assess Principles' }}
@@ -94,7 +97,7 @@
                                     <a
                                         :href="`/admin/assessment/${initiative.latest_assessment.id}/assess-custom`"
                                         class="btn text-light w-100"
-                                        :class="initiative.latest_assessment.redline_status === 'Complete' ? (initiative.latest_assessment.additional_status === 'Complete' ? 'btn-info' : 'btn-success') : 'btn-info disabled'"
+                                        :class="enableAssessButton ? (initiative.latest_assessment.redline_status === 'Complete' ? (initiative.latest_assessment.additional_status === 'Complete' ? 'btn-info' : 'btn-success') : 'btn-info disabled') : 'btn-info disabled'"
 
                                     >
                                         {{ initiative.latest_assessment.additional_status === 'Complete' ? 'Edit Additional Criteria Assessment' : 'Assess Additional Criteria' }}
@@ -115,6 +118,9 @@ import {computed, ref} from "vue";
 const props = defineProps({
     initiative: Object,
     hasAdditionalAssessment: Boolean,
+    enableEditButton: Boolean,
+    enableShowButton: Boolean,
+    enableAssessButton: Boolean,
 })
 
 const expanded = ref(false)

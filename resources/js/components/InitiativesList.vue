@@ -79,7 +79,8 @@
         </div>
     </div>
 
-    <InitiativeListCard v-for="initiative in filteredInitiatives" :key="initiative.id" :initiative="initiative" :has-additional-assessment="hasAdditionalAssessment"/>
+    <InitiativeListCard v-for="initiative in filteredInitiatives" :key="initiative.id" :initiative="initiative" :has-additional-assessment="hasAdditionalAssessment" :enable-edit-button="enableEditButton" :enable-show-button="enableShowButton" :enable-assess-button="enableAssessButton"
+    />
 
 </template>
 
@@ -98,6 +99,9 @@ const props = defineProps({
     showAddButton: Boolean,
     showImportButton: Boolean,
     showExportButton: Boolean,
+    enableEditButton: Boolean,
+    enableShowButton: Boolean,
+    enableAssessButton: Boolean,
 });
 
 // Sorting

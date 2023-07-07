@@ -47,6 +47,22 @@ class ProjectController extends Controller
             $showExportButton = true;
         }
 
+        $enableEditButton = false;
+        $enableShowButton = false;
+        $enableAssessButton = false;
+
+        if (Auth::user()->can('maintain projects')) {
+            $enableEditButton = true;
+        }
+
+        if (Auth::user()->can('view projects')) {
+            $enableShowButton = true;
+        }
+
+        if (Auth::user()->can('assess project')) {
+            $enableAssessButton = true;
+        }
+
         return view('projects.index', [
             'organisation' => $org,
             'projects' => $projects,
@@ -54,6 +70,9 @@ class ProjectController extends Controller
             'show_add_button' => $showAddButton,
             'show_import_button' => $showImportButton,
             'show_export_button' => $showExportButton,
+            'enable_edit_button' => $enableEditButton,
+            'enable_show_button' => $enableShowButton,
+            'enable_assess_button' => $enableAssessButton,
         ]);
     }
 
