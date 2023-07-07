@@ -56,8 +56,8 @@
 
 
         <div class="form-group d-flex justify-content-end mt-16">
-            <button type="cancel" class="btn btn-secondary mr-4">Discard Changes</button>
-            <button type="submit" class="btn btn-primary">Save</button>
+            <button type="cancel" class="btn btn-secondary mr-4" {{ Auth::user()->can('edit own institution') ? '' : 'disabled' }}>Discard Changes</button>
+            <button type="submit" class="btn btn-primary {{ Auth::user()->can('edit own institution') ? '' : 'disabled' }}">Save</button>
         </div>
     </form>
 </div>
