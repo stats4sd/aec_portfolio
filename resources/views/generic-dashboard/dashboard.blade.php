@@ -6,9 +6,12 @@
 
         <div class="d-flex justify-content-between">
             <h1 class="font-weight-bold text-deep-green mb-4">{{ $organisation->name }} - Summary</h1>
+
+            @if(Auth::user()->can('download project-level data'))
             <div>
                 <a class="btn btn-info" href="{{ url('/admin/organisation/export') }}">Export All Initiative Data</a>
             </div>
+            @endif
         </div>
 
         <v-app>
