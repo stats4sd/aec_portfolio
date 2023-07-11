@@ -420,7 +420,7 @@ BEGIN
 
         IF rsRedLineCount = 0 THEN
             SET status = 1002;
-            SET message = 'There is no red line reviewed';
+            SET message = 'There is no red flag reviewed';
 
             DELETE FROM dashboard_result WHERE dashboard_id = dashboardYoursId;
 
