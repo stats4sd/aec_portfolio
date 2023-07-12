@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Organisation;
 use App\Models\Project;
+use App\Models\Organisation;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 
 class ProjectController extends Controller
@@ -33,10 +34,45 @@ class ProjectController extends Controller
 
         $hasAdditionalAssessment = $org->additionalCriteria->count() > 0;
 
+        $showAddButton = false;
+        $showImportButton = false;
+        $showExportButton = false;
+
+        if (Auth::user()->can('maintain projects')) {
+            $showAddButton = true;
+            $showImportButton = true;
+        }
+
+        if (Auth::user()->can('download project-level data')) {
+            $showExportButton = true;
+        }
+
+        $enableEditButton = false;
+        $enableShowButton = false;
+        $enableAssessButton = false;
+
+        if (Auth::user()->can('maintain projects')) {
+            $enableEditButton = true;
+        }
+
+        if (Auth::user()->can('view projects')) {
+            $enableShowButton = true;
+        }
+
+        if (Auth::user()->can('assess project')) {
+            $enableAssessButton = true;
+        }
+
         return view('projects.index', [
             'organisation' => $org,
             'projects' => $projects,
             'has_additional_assessment' => $hasAdditionalAssessment,
+            'show_add_button' => $showAddButton,
+            'show_import_button' => $showImportButton,
+            'show_export_button' => $showExportButton,
+            'enable_edit_button' => $enableEditButton,
+            'enable_show_button' => $enableShowButton,
+            'enable_assess_button' => $enableAssessButton,
         ]);
     }
 
