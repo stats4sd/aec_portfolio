@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\AssessmentStatus;
 use App\Models\Assessment;
 use App\Models\Country;
 use App\Models\Organisation;
@@ -262,7 +263,7 @@ class GenericDashboardController extends Controller
             ->where('dashboard_id', $dashboardYoursId))
             ->get();
 
-        $noOfInitiativeCompletedAssessment = $allAssessments->where('completed_at', '!=', null)->count();
+        $noOfInitiativeCompletedAssessment = $allAssessments->where('principle_status', '=', AssessmentStatus::Complete->value)->count();
 
         // initialise variables
         $assessmentScore = 'N/A';
