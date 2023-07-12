@@ -86,28 +86,29 @@ class ProjectCrudController extends CrudController
             $this->data['entry'] = $this->crud->getEntryWithLocale($id);
         }
 
-        $this->data['entry']->load([
+        $this->data = self::getShowData($this->data);
+
+        // load the view from /resources/views/vendor/backpack/crud/ if it exists, otherwise load the one in the package
+        return view($this->crud->getShowView(), $this->data);
+    }
+
+    public static function getShowData(array $data)
+    {
+        $data['entry']->load([
             'assessments' => [
                 'failingRedLines'
             ],
         ]);
 
-
-        $this->data['crud'] = $this->crud;
-        $this->data['title'] = $this->crud->getTitle() ?? trans('backpack::crud.preview') . ' ' . $this->crud->entity_name;
-
-
         // #### ADD SPIDER CHART DATA ###
-        $this->data['spiderData'] = $this->data['entry']->assessments->last()->principleAssessments->map(function ($principleProject) {
+        $data['spiderData'] = $data['entry']->assessments->last()->principleAssessments->map(function ($principleProject) {
             return [
                 'axis' => $principleProject->principle->name,
                 'value' => $principleProject->rating,
             ];
         });
 
-
-        // load the view from /resources/views/vendor/backpack/crud/ if it exists, otherwise load the one in the package
-        return view($this->crud->getShowView(), $this->data);
+        return $data;
     }
 
 

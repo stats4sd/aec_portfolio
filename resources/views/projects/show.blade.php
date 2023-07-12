@@ -11,7 +11,7 @@
 
         <form method="POST" action="/admin/generatePdf">
             @csrf
-            <input type="submit" value="Generate PDF">
+            <input class="no-print" type="submit" value="Generate PDF">
         </form>
 
         <div class="row mt-3 mb-4">
@@ -97,6 +97,7 @@
 
             <div class="col-12 col-md-6">
                 <div id="radarChart"></div>
+                <div id="radarChartWidth"></div>
             </div>
         </div>
         <div class="row">
@@ -248,7 +249,10 @@
             width = document.getElementById('radarChart').offsetWidth - margin.right - margin.left,
             height = Math.min(width, window.innerHeight - margin.top - margin.bottom - 20);
 
-        console.log('witdh', width);
+
+
+        document.getElementById('radarChartWidth').innerHTML = 'Width = ' + width;
+
         //////////////////////////////////////////////////////////////
         ////////////////////////// Data //////////////////////////////
         //////////////////////////////////////////////////////////////

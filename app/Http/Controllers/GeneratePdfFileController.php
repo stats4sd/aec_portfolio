@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Storage;
 use Spatie\Browsershot\Browsershot;
 
 class GeneratePdfFileController extends Controller
@@ -21,7 +22,13 @@ class GeneratePdfFileController extends Controller
             $htmlContent = file_get_contents($url, false, $context);
 
             // pass HTML body content to Browsershot, output as PDF
-            $pdf = Browsershot::html($htmlContent)->pdf();
+            $pdf = Browsershot::html($htmlContent)
+                ->landscape()
+                ->margins(10, 10, 10, 10, "mm")
+                ->save(storage_path('app/output.pdf'));
+
+            return redirect(Storage::url('output.pdf'));
+
 
             // return PDF file to browser
             $headers = ['Content-Type' => 'application/pdf'];
