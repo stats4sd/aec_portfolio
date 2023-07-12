@@ -2,7 +2,7 @@
 
 @section('content')
 
-    <a href="{{backpack_url('project')}}" class="btn btn-link">Back to initiatives list</a>
+    <a href="{{backpack_url('project')}}" class="btn btn-link no-print">Back to initiatives list</a>
 
     <div class="container mt-4">
 
@@ -15,7 +15,7 @@
         </form>
 
         <div class="row mt-3 mb-4">
-            <div class="col-12 col-lg-6 pt-4 mt-4 d-flex align-items-center">
+            <div class="col-12 col-lg-6 print-4 pt-4 mt-4 d-flex align-items-center">
 
                 <table class="table table-borderless">
                     <tr>
@@ -95,7 +95,7 @@
                 </table>
             </div>
 
-            <div class="col-12 col-lg-6">
+            <div class="col-12 col-lg-6 print-8">
                 <div id="radarChart"></div>
             </div>
         </div>

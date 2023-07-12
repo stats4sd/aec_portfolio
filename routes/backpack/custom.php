@@ -120,6 +120,10 @@ Route::group([
 
         Route::post('generatePdf', [GeneratePdfFileController::class, 'generatePdfFile']);
 
+        // download files
+        Route::get('files/{filename}', [GeneratePdfFileController::class, 'download'])
+        ->where('path', '.*');
+
         Route::crud('additional-criteria-score-tag', AdditionalCriteriaScoreTagCrudController::class);
 
     });
