@@ -33,6 +33,7 @@ class TestSeeder extends Seeder
 
         $institution = Organisation::create([
             'name' => 'Test Institution 1',
+            'has_additional_criteria' => 0,
         ]);
 
         $portfolio = $institution->portfolios()->create([

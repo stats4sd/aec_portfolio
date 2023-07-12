@@ -84,6 +84,7 @@
         <PrincipleAssessmentModal
             v-if="selectedPrincipleAssessment"
             :principle-assessment="selectedPrincipleAssessment"
+            :assessment-type="assessmentType"
             @discard="discard"
             @close="modalIsOpen = false"
             @next="next"

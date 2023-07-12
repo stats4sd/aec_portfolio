@@ -21,6 +21,8 @@ Route::put('organisation/update', [OrganisationController::class, 'update'])->na
 // `API` calls for Vue components
 
 Route::apiResource('principle-assessment', PrincipleAssessmentController::class);
+Route::apiResource('additional-assessment', AdditionalAssessmentController::class);
+
 Route::get('assessment/{assessment}/principle-assessments', [PrincipleAssessmentController::class, 'index']);
 Route::get('assessment/{assessment}/additional-assessments', [AdditionalAssessmentController::class, 'index']);
 

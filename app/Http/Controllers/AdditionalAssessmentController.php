@@ -17,9 +17,10 @@ class AdditionalAssessmentController extends Controller
     {
         $query = AdditionalCriteriaAssessment::with(
             'assessment',
-            'additionalCriteria.additionalCriteriaScoreTags',
-            'additionalCriteriaScoreTags',
-            'additionalCriteriaCustomScoreTags'
+            'principle',
+            'additionalCriteria.scoreTags',
+            'scoreTags',
+            'customScoreTags'
         );
 
         if ($assessment) {
@@ -28,32 +29,35 @@ class AdditionalAssessmentController extends Controller
 
         return $query->get()
             ->map(function (AdditionalCriteriaAssessment $additionalCriteriaAssessment) {
-                $additionalCriteriaAssessment->score_tag_ids = $additionalCriteriaAssessment->additionalCriteriaScoreTags->pluck('id');
+                $additionalCriteriaAssessment->score_tag_ids = $additionalCriteriaAssessment->scoreTags->pluck('id');
                 return $additionalCriteriaAssessment;
             });
     }
 
-    public function update(AdditionalCriteriaAssessmentRequest $request, AdditionalCriteriaAssessment $additionalCriteriaAssessment)
+    public function update(AdditionalCriteriaAssessmentRequest $request, AdditionalCriteriaAssessment $additional_assessment)
     {
+
         // handle main info
-        $additionalCriteriaAssessment->update($request->validated());
+        $additional_assessment->update($request->validated());
 
         // handle score tags + custom score tags relationships
-        $syncTags = collect($request->input('score_tag_ids'))->mapWithKeys(fn($tag) => [$tag => ['assessment_id' => $additionalCriteriaAssessment->assessment_id]]);
+        $syncTags = collect($request->input('score_tag_ids'))->mapWithKeys(fn($tag) => [$tag => ['assessment_id' => $additional_assessment->assessment_id]]);
 
-        $additionalCriteriaAssessment->additionalCriteriaScoreTags()->sync($syncTags);
+        $additional_assessment->scoreTags()->sync($syncTags);
 
         $requestCustomTags = collect($request->input('custom_score_tags'))->filter(fn(array $tag): bool => $tag['name'] !== null && $tag['name'] !== '');
 
         // delete custom score tags that are not in the request
-        foreach ($additionalCriteriaAssessment->additionalCriteriaCustomScoreTags as $customScoreTag) {
+        foreach ($additional_assessment->customScoreTags as $customScoreTag) {
             if ($requestCustomTags->pluck('id')->doesntContain($customScoreTag->id)) {
                 $customScoreTag->delete();
             } else {
                 $updated = $requestCustomTags->firstWhere('id', $customScoreTag->id);
 
                 $customScoreTag->update([
-                    'name' => $updated['name']
+                    'name' => $updated['name'],
+                    'assessment_id' => $additional_assessment->assessment_id,
+
                 ]);
             }
         }
@@ -61,15 +65,15 @@ class AdditionalAssessmentController extends Controller
         // create new tags
         foreach ($requestCustomTags as $custom_score_tag) {
             if (!isset($custom_score_tag['id'])) {
-                $additionalCriteriaAssessment->additionalCriteriaCustomScoreTags()->create([
+                $additional_assessment->customScoreTags()->create([
                     'name' => $custom_score_tag['name'],
-                    'assessment_id' => $additionalCriteriaAssessment->assessment_id,
+                    'assessment_id' => $additional_assessment->assessment_id,
                 ]);
             }
         }
 
 
-        return $additionalCriteriaAssessment;
+        return $additional_assessment;
     }
 
 

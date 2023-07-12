@@ -135,6 +135,7 @@ import {computed, ref, defineEmits, nextTick, onMounted} from "vue";
 
 const props = defineProps({
     principleAssessment: Object,
+    assessmentType: String,
     closing: Boolean,
 })
 
@@ -178,18 +179,25 @@ async function save(nextAction) {
         emit('update_rating', props.principleAssessment)
     }
 
-    const res = await axios.patch(`/principle-assessment/${props.principleAssessment.id}`, props.principleAssessment)
+    let url = `/principle-assessment/${props.principleAssessment.id}`
 
-    emit(nextAction)
+    // check if we are saving a principle-assessment or additional-criteria-assessment
+    if (props.assessmentType === "additional") {
+        url = `/additional-assessment/${props.principleAssessment.id}`
+    }
 
-}
+        const res = await axios.patch(url, props.principleAssessment)
+
+        emit(nextAction)
+
+    }
 
 // slider appears to be '0' on null, but actually requrires moving up and back to 0 to be considered not null.
-onMounted(() => {
-    if (props.principleAssessment.rating === null) {
-        props.principleAssessment.rating = 0;
-    }
-})
+    onMounted(() => {
+        if (props.principleAssessment.rating === null) {
+            props.principleAssessment.rating = 0;
+        }
+    })
 
 
 </script>

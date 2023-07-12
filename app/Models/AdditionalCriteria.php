@@ -57,15 +57,15 @@ class AdditionalCriteria extends Model
         return $this->hasMany(AdditionalCriteriaAssessment::class);
     }
 
-    public function additionalCriteriaScoreTags(): HasMany
+    public function scoreTags(): HasMany
     {
-        return $this->hasMany(AdditionalCriteriaScoreTag::class);
+        return $this->hasMany(AdditionalCriteriaScoreTag::class, 'additional_criteria_id');
     }
 
-    public function additionalCriteriaCustomScoreTags(): HasMany
-    {
-        return $this->hasMany(AdditionalCriteriaCustomScoreTag::class);
-    }
+//    public function customScoreTags(): HasMany
+//    {
+//        return $this->hasMany(AdditionalCriteriaCustomScoreTag::class, 'additional_criteria_id');
+//    }
 
 
 }

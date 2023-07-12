@@ -120,7 +120,7 @@ trait AssessCustomOperation
                 $sync = collect($sync)->combine($syncPivot);
 
 
-                $criteriaAssessment->additionalCriteriaScoreTags()->sync($sync->toArray());
+                $criteriaAssessment->scoreTags()->sync($sync->toArray());
             }
 
             $custom_score_tags = json_decode($request->input("customScoreTags" . $assessmentCriterionId), true);
@@ -140,8 +140,8 @@ trait AssessCustomOperation
                 }
 
                 // purge and recreate all custom score tags (easier than checking to see if we should delete individual ones)
-                $criteriaAssessment->additionalCriteriaCustomScoreTags()->delete();
-                $criteriaAssessment->additionalCriteriaCustomScoreTags()->createMany($custom_score_tags);
+                $criteriaAssessment->customScoreTags()->delete();
+                $criteriaAssessment->customScoreTags()->createMany($custom_score_tags);
             }
         }
 
