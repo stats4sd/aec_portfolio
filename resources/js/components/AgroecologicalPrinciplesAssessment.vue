@@ -61,7 +61,7 @@
         />
 
 
-        <form method="POST" :action="`/admin/assessment/${assessment.id}/finalise`" class="mt-4">
+        <form method="POST" :action="`/admin/${assessmentType}/${assessment.id}/finalise`" class="mt-4">
             <input type="hidden" name="_token" :value="csrf">
             <button
                 class="btn"
@@ -126,16 +126,6 @@ let principleAssessments = ref(res);
 // select + edit principle assessments
 let selectedPrincipleAssessment = ref({})
 let modalIsOpen = ref(false)
-
-onMounted(() => {
-    test()
-})
-
-function test() {
-    // selectedPrincipleAssessment.value = principleAssessments.value[0]
-    // modalIsOpen.value = true;
-    console.log('hi');
-}
 
 async function discard() {
     principleAssessments.value = await getPrincipleAssessments()

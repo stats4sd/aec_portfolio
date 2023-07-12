@@ -12,7 +12,7 @@
         <div class="row" id="aePrinciplesAssessment">
             <v-app>
                 <Suspense>
-                    <agroecological-principles-assessment :assessment="{{ $assessment->toJson() }}"/>
+                    <agroecological-principles-assessment assessment-type="assessment" :assessment="{{ $assessment->toJson() }}"/>
                 </Suspense>
             </v-app>
         </div>

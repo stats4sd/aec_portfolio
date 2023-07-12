@@ -20,6 +20,10 @@ class AdditionalCriteriaAssessment extends Model
     protected $table = 'additional_criteria_assessment';
     protected $guarded = ['id'];
 
+    protected $appends = [
+        'complete'
+    ];
+
     public function identifiableName(): string
     {
         // MAYBE: Adapt this to include the number of assessment for projects with multiple assessments?
