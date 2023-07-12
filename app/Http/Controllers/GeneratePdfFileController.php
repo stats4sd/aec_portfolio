@@ -26,9 +26,9 @@ class GeneratePdfFileController extends Controller
 
         // pass HTML body content to Browsershot, output as PDF
         Browsershot::html($htmlContent)
-            ->landscape()
-            ->margins(0, 0, 0, 0)
-            ->waitUntilNetworkIdle()
+//            ->landscape()
+//            ->margins(0, 0, 0, 0)
+//            ->waitUntilNetworkIdle()
             ->save(Storage::path("$path.pdf"));
 
         return redirect(Storage::url("$path.pdf"));
