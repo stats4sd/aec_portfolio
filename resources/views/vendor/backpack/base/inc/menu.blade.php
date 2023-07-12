@@ -36,6 +36,17 @@
         <!-- Topbar. Contains the right part -->
         @include(backpack_view('inc.topbar_right_content'))
 
+
+        <li class="nav-item pr-4">
+            <a class="nav-link d-flex justify-content-between align-items-center"
+               href="https://www.youtube.com/playlist?list=PLK5PktXR1tmPMHKN6PnfY4jz9Cj_7L1E_"
+               target="_blank"
+            >
+                <i class="la la-question-circle font-3xl pr-2"></i>
+                <span>Video Guides</span>
+            </a>
+        </li>
+
         <li class="nav-item pr-4">
             <a class="nav-link d-flex justify-content-between align-items-center"
                href="{{ route('backpack.account.info') }}"
