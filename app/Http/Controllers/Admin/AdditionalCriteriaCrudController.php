@@ -20,6 +20,7 @@ use Backpack\Pro\Http\Controllers\Operations\InlineCreateOperation;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Facades\Session;
+use Prologue\Alerts\Facades\Alert;
 
 class AdditionalCriteriaCrudController extends CrudController
 {
@@ -167,6 +168,18 @@ class AdditionalCriteriaCrudController extends CrudController
                 });
             },
         ]);
+    }
+
+    public function destroy($id)
+    {
+        $criterium = AdditionalCriteria::find($id);
+        $this->authorize('update', $criterium->institution);
+
+        $this->crud->hasAccessOrFail('delete');
+
+        Alert::add('success', "$criterium->name was successfully deleted")->flash();
+
+        return back();
     }
 
 }

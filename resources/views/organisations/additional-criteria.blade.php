@@ -28,7 +28,7 @@
                         <a href="{{ route('additional-criteria.show', $additionalCriteria) }}" class="btn btn-success btn-sm">REVIEW</a>
                         @if(Auth::user()->can('maintain portfolios'))
                             <a href="{{ route('additional-criteria.edit', [$organisation, $additionalCriteria]) }}" class="btn btn-info btn-sm">EDIT</a>
-                            <button class="btn btn-danger btn-sm remove-button" data-portfolio="{{ $additionalCriteria->id }}" data-toggle="modal" data-target="#removePortfolioModal{{ $additionalCriteria->id }}">REMOVE</button>
+                            <button class="btn btn-danger btn-sm remove-button" data-portfolio="{{ $additionalCriteria->id }}" data-toggle="modal" data-target="#removeAdditionalCriteriaModal{{ $additionalCriteria->id }}">REMOVE</button>
                         @endif
                     </div>
                 </td>
@@ -46,22 +46,22 @@
 
 @push('after_scripts')
     @foreach($organisation->additionalCriteria as $additionalCriteria)
-        <div class="modal fade" id="removePortfolioModal{{ $additionalCriteria->id }}" tabindex="-1" role="dialog" aria-labelledby="removeUserModalLabel{{ $additionalCriteria->id }}" aria-hidden="true">
+        <div class="modal fade" id="removeAdditionalCriteriaModal{{ $additionalCriteria->id }}" tabindex="-1" role="dialog" aria-labelledby="removeAdditionalCriteriaModalLabel{{ $additionalCriteria->id }}" aria-hidden="true">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="removeUserModalLabel{{ $additionalCriteria->id }}">Remove {{ $additionalCriteria->email }} from {{ $organisation->name }}</h5>
+                        <h5 class="modal-title" id="removeAdditionalCriteriaModalLabel{{ $additionalCriteria->id }}">Remove {{ $additionalCriteria->email }} from {{ $organisation->name }}</h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
                     <div class="modal-body">
                         Are you sure you wish to remove {{ $additionalCriteria->name }} from {{ $organisation->name }}?<br/><br/>
-                        <span class="font-weight-bold text-danger">This will delete all initiatives that are part of this portfolio!</span>
+                        <span class="font-weight-bold text-danger">This may result in data loss if there are existing initiatives which have been assessed using this criterium!</span>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                        <form action="{{ route('portfolio.destroy', [$additionalCriteria]) }}" method="POST">
+                        <form action="{{ route('additional-criteria.destroy', [$additionalCriteria]) }}" method="POST">
                             @csrf
                             @method('delete')
                             <button type="submit" class="btn btn-primary">Confirm Remove</button>
