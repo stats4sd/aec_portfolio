@@ -42,7 +42,6 @@ class ProjectImport implements ToModel, WithHeadingRow, SkipsEmptyRows, WithCalc
 
     public function model(array $row)
     {
-
         // skip instructions and example row from template;
         if (isset($row['code']) && in_array($row['code'], $this->ignoreCodes, true)) {
             return null;
@@ -59,6 +58,11 @@ class ProjectImport implements ToModel, WithHeadingRow, SkipsEmptyRows, WithCalc
             $endDate = Date::excelToDateTimeObject($row['end_date']);
         }
 
+        if ($row['uses_only_own_funds'] == 'Yes') {
+            $usesOnlyOwnFunds = 1;
+        } else {
+            $usesOnlyOwnFunds = 0;
+        }
 
         return new Project([
             'portfolio_id' => $this->portfolio->id,
@@ -67,7 +71,10 @@ class ProjectImport implements ToModel, WithHeadingRow, SkipsEmptyRows, WithCalc
             'name' => $row['name'],
             'description' => $row['description'] ?? null,
             'currency' => $row['currency'],
+            'exchange_rate' => $row['exchange_rate'],
             'budget' => $row['budget'],
+            'uses_only_own_funds' => $usesOnlyOwnFunds,
+            'main_recipient' => $row['main_recipient'],
             'start_date' => $startDate,
             'end_date' => $endDate,
             'geographic_reach' => $row['geographic_reach'],
@@ -94,13 +101,33 @@ class ProjectImport implements ToModel, WithHeadingRow, SkipsEmptyRows, WithCalc
                 'name' => 'something for required',
                 'budget'  => 1234,
                 'currency' => 'TTT',
+                'exchange_rate' => 1,
+                'uses_only_own_funds' => 1,
+                'main_recipient' => 'SELF',
                 'start_date' => '1900-01-01',
                 'geographic_reach' => GeographicalReach::Global->name,
+                'continents' => 'DUMMY',
+                'regions' => 'DUMMY',
+                'countries' => 'DUMMY',
             ];
         }
 
         $data['portfolio_id'] = $this->portfolio->id;
         $data['organisation_id'] = $this->portfolio->organisation_id;
+
+        if ($data['uses_only_own_funds'] == 'Yes') {
+            $data['uses_only_own_funds'] = 1;
+        } else {
+            $data['uses_only_own_funds'] = 0;
+        }
+
+        // add DUMMY to continents, regions and countries.
+        // This is to fake the validation rules as they are required.
+        // Continents, regions and countries will be empty for the imported initiative.
+        // User can edit the imported initiative and fill in them in front end.
+        $data['continents'] = 'DUMMY';
+        $data['regions'] = 'DUMMY';
+        $data['countries'] = 'DUMMY';
 
         return $data;
     }
