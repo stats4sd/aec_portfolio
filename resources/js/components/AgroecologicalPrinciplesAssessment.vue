@@ -61,7 +61,7 @@
         />
 
 
-        <form method="POST" :action="`/admin/assessment/${assessment.id}/finalise`" class="mt-4">
+        <form method="POST" :action="`/admin/${assessmentType}/${assessment.id}/finalise`" class="mt-4">
             <input type="hidden" name="_token" :value="csrf">
             <button
                 class="btn"
@@ -84,6 +84,7 @@
         <PrincipleAssessmentModal
             v-if="selectedPrincipleAssessment"
             :principle-assessment="selectedPrincipleAssessment"
+            :assessment-type="assessmentType"
             @discard="discard"
             @close="modalIsOpen = false"
             @next="next"
@@ -102,31 +103,29 @@ import PrincipleAssessmentModal from "./PrincipleAssessmentModal.vue";
 const csrf = document.querySelector('meta[name="csrf-token"]').getAttribute('content')
 
 const props = defineProps({
+    assessmentType: String,
     assessment: Object,
 })
 
-async function getPrincipleAssessments() {
-    const res = await axios.get(`/assessment/${props.assessment.id}/principle-assessments/`);
+async function getAssessments(url) {
+    const res = await axios.get(url);
     return res.data
 }
 
-// get principle Assessments
-const res = await getPrincipleAssessments()
+// get principle or additional Assessments
+let url = `/assessment/${props.assessment.id}/principle-assessments/`
+
+if (props.assessmentType === "additional") {
+    url = `/assessment/${props.assessment.id}/additional-assessments`
+}
+
+const res = await getAssessments(url);
+
 let principleAssessments = ref(res);
 
 // select + edit principle assessments
 let selectedPrincipleAssessment = ref({})
 let modalIsOpen = ref(false)
-
-onMounted(() => {
-    test()
-})
-
-function test() {
-    // selectedPrincipleAssessment.value = principleAssessments.value[0]
-    // modalIsOpen.value = true;
-    console.log('hi');
-}
 
 async function discard() {
     principleAssessments.value = await getPrincipleAssessments()

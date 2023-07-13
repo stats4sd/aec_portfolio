@@ -420,7 +420,7 @@ BEGIN
 
         IF rsRedLineCount = 0 THEN
             SET status = 1002;
-            SET message = 'There is no red line reviewed';
+            SET message = 'There is no red flag reviewed';
 
             DELETE FROM dashboard_result WHERE dashboard_id = dashboardYoursId;
 
@@ -499,6 +499,11 @@ BEGIN
             -- -------------------------
             -- PRINCIPLES SUMMARY
             -- -------------------------
+
+            -- in table dashboard_assessment, remove latest assessment records if assessment.redline_status is not Complete
+            CALL remove_incomplete_dashboard_assessment(dashboardYoursId);
+            CALL remove_incomplete_dashboard_assessment(dashboardOthersId);
+
 
             SELECT COUNT(*)
             INTO psPrincipleCount

@@ -35,6 +35,7 @@
                             </v-slider>
 
                             <v-checkbox
+                                v-if="principle.can_be_na==1"
                                 class="my-4"
                                 v-model="principleAssessment.is_na"
                                 :label="`If ${principle.name.toLowerCase()} is not applicable for this project, tick this box.`">
@@ -135,6 +136,7 @@ import {computed, ref, defineEmits, nextTick, onMounted} from "vue";
 
 const props = defineProps({
     principleAssessment: Object,
+    assessmentType: String,
     closing: Boolean,
 })
 
@@ -172,24 +174,28 @@ function discard() {
 
 async function save(nextAction) {
 
-    props.principleAssessment.complete = has_rating;
-
-    if (has_rating) {
-        emit('update_rating', props.principleAssessment)
+    // slider appears to be '0' on null, but actually requires moving up and back to 0 to be considered not null.
+    if (props.principleAssessment.rating === null) {
+        props.principleAssessment.rating = 0;
     }
 
-    const res = await axios.patch(`/principle-assessment/${props.principleAssessment.id}`, props.principleAssessment)
+    props.principleAssessment.complete = true;
+
+    emit('update_rating', props.principleAssessment)
+
+    await axios.patch(`/principle-assessment/${props.principleAssessment.id}`, props.principleAssessment)
+    let url = `/principle-assessment/${props.principleAssessment.id}`
+
+    // check if we are saving a principle-assessment or additional-criteria-assessment
+    if (props.assessmentType === "additional") {
+        url = `/additional-assessment/${props.principleAssessment.id}`
+    }
+
+        const res = await axios.patch(url, props.principleAssessment)
 
     emit(nextAction)
 
 }
-
-// slider appears to be '0' on null, but actually requrires moving up and back to 0 to be considered not null.
-onMounted(() => {
-    if (props.principleAssessment.rating === null) {
-        props.principleAssessment.rating = 0;
-    }
-})
 
 
 </script>

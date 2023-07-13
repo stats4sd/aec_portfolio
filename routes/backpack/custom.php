@@ -68,11 +68,11 @@ Route::group([
     Route::put('organisation/{organisation}/members/{user}', [OrganisationMemberController::class, 'update'])->name('organisationmembers.update');
     Route::delete('organisation/{organisation}/members/{user}', [OrganisationMemberController::class, 'destroy'])->name('organisationmembers.destroy');
 
-     Route::get('organisation/export-all', [OrganisationController::class, 'exportAll'])->name('organisation.export-all');
+    Route::get('organisation/export-all', [OrganisationController::class, 'exportAll'])->name('organisation.export-all');
 
-     Route::get('organisation/export-merged', [OrganisationController::class, 'mergeAll']);
+    Route::get('organisation/export-merged', [OrganisationController::class, 'mergeAll']);
 
-        // routes that require a selected organisation
+    // routes that require a selected organisation
     Route::group([
         'middleware' => ['org.selected'],
     ], function () {
@@ -81,7 +81,7 @@ Route::group([
         Route::get('organisation/export', [OrganisationController::class, 'export'])->name('organisation.export');
 
         Route::crud('portfolio', PortfolioCrudController::class);
-        Route::get('portfolio', function() {
+        Route::get('portfolio', function () {
             return redirect("admin/organisation/show");
         })->name('portfolio.index');
 
@@ -93,7 +93,11 @@ Route::group([
         Route::crud('assessment', AssessmentCrudController::class);
         Route::get('assessment/{assessment}/show', [ProjectCrudController::class, 'showAssessment']);
         Route::get('assessment/{assessment}/assess', [AssessmentController::class, 'assess']);
+        Route::get('assessment/{assessment}/assess-custom', [AssessmentController::class, 'assessCustom']);
         Route::post('assessment/{assessment}/finalise', [AssessmentController::class, 'finaliseAssessment']);
+
+        Route::post('additional/{assessment}/finalise', [AssessmentController::class, 'finaliseAssessmentCustom']);
+
 
         Route::get('generic-dashboard', [GenericDashboardController::class, 'new']);
         Route::get('dashboard', [GenericDashboardController::class, 'show']);
@@ -101,7 +105,7 @@ Route::group([
         Route::post('generic-dashboard/enquire', [GenericDashboardController::class, 'enquire']);
 
         Route::crud('additional-criteria', AdditionalCriteriaCrudController::class);
-        Route::get('additional-criteria', function() {
+        Route::get('additional-criteria', function () {
             return redirect("admin/organisation/show#additional-criteria");
         })->name('additional-criteria.index');
 
