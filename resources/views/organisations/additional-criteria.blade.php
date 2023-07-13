@@ -27,7 +27,7 @@
 
                         <a href="{{ route('additional-criteria.show', $additionalCriteria) }}" class="btn btn-success btn-sm">REVIEW</a>
                         @if(Auth::user()->can('maintain portfolios'))
-                            <a href="{{ route('additional-criteria.edit', [$organisation, $additionalCriteria]) }}" class="btn btn-info btn-sm">EDIT</a>
+                            <a href="{{ route('additional-criteria.edit', [$additionalCriteria]) }}" class="btn btn-info btn-sm">EDIT</a>
                             <button class="btn btn-danger btn-sm remove-button" data-portfolio="{{ $additionalCriteria->id }}" data-toggle="modal" data-target="#removePortfolioModal{{ $additionalCriteria->id }}">REMOVE</button>
                         @endif
                     </div>
