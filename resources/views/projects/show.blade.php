@@ -2,20 +2,20 @@
 
 @section('content')
 
-    <a href="{{backpack_url('project')}}" class="btn btn-link">Back to initiatives list</a>
+    <a href="{{backpack_url('project')}}" class="btn btn-link no-print">Back to initiatives list</a>
 
     <div class="container mt-4">
 
         <h1>Initiative Review Page</h1>
         <h2>{{ $entry->organisation->name }} - {{ $entry->name }}</h2>
 
-        <form method="POST" action="/admin/generatePdf">
+        <form method="POST" action="{{ backpack_url("project/$entry->id/generate-pdf") }}">
             @csrf
-            <input type="submit" value="Generate PDF">
+            <input class="no-print" type="submit" value="Generate PDF">
         </form>
 
         <div class="row mt-3 mb-4">
-            <div class="col-12 col-md-6 col-lg-6 pt-4 mt-4 d-flex align-items-center">
+            <div class="col-12 col-lg-6 print-4 pt-4 mt-4 d-flex align-items-center">
 
                 <table class="table table-borderless">
                     <tr>
@@ -95,7 +95,7 @@
                 </table>
             </div>
 
-            <div class="col-12 col-md-6">
+            <div class="col-12 col-lg-6 print-8">
                 <div id="radarChart"></div>
             </div>
         </div>
@@ -248,7 +248,12 @@
             width = document.getElementById('radarChart').offsetWidth - margin.right - margin.left,
             height = Math.min(width, window.innerHeight - margin.top - margin.bottom - 20);
 
-        console.log('witdh', width);
+
+        // set minimum width;
+        if(width < 250) {
+            width = 250;
+            height = 250;
+        }
         //////////////////////////////////////////////////////////////
         ////////////////////////// Data //////////////////////////////
         //////////////////////////////////////////////////////////////

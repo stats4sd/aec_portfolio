@@ -2,42 +2,51 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Project;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 use Spatie\Browsershot\Browsershot;
 
 class GeneratePdfFileController extends Controller
 {
 
-    public function generatePdfFile(Request $request) {
+    public function generatePdfFile(Request $request, string $name = null)
+    {
         // get the URL that sent PDF generation request
         $url = $request->header('referer');
 
-        try
-        {
-            // visit URL with logged in session, get HTML body content
-            $opts = ['http' => ['header'=> 'Cookie: ' . $_SERVER['HTTP_COOKIE']."\r\n"]];
-            $context = stream_context_create($opts);
-            $htmlContent = file_get_contents($url, false, $context);
+        // visit URL with logged in session, get HTML body content
+        $opts = ['http' => ['header' => 'Cookie: ' . $_SERVER['HTTP_COOKIE'] . "\r\n"]];
+        $context = stream_context_create($opts);
+        $htmlContent = file_get_contents($url, false, $context);
 
-            // pass HTML body content to Browsershot, output as PDF
-            $pdf = Browsershot::html($htmlContent)->pdf();
+        $path = $name ?? Auth::id() . '__' . Carbon::now()->timestamp;
 
-            // return PDF file to browser
-            $headers = ['Content-Type' => 'application/pdf'];
+        // pass HTML body content to Browsershot, output as PDF
+        Browsershot::html($htmlContent)
+//            ->landscape()
+//            ->margins(0, 0, 0, 0)
+//            ->waitUntilNetworkIdle()
+            ->save(Storage::path("prints/$path.pdf"));
 
-            return response()->stream(function () use ($pdf) {
-                echo $pdf;
-            }, Response::HTTP_OK, $headers);
+        return redirect(Storage::url("prints/$path.pdf"));
 
-        }
-        catch(\Exception $e)
-        {
-            logger($e->getMessage());
 
-            return false;
-        }
+    }
 
+    public function generateInitiativeSummary(Project $project)
+    {
+        $filename = $project->name . '-summary-' . Carbon::now()->toDateString();
+
+        return $this->generatePdfFile(request(), $filename);
+    }
+
+    public function download(string $filename)
+    {
+        return Storage::download($filename);
     }
 
 }

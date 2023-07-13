@@ -123,6 +123,11 @@ Route::group([
         Route::get('data-removal/{removeRequest}/perform', [RemovalRequestCrudController::class, 'perform']);
 
         Route::post('generatePdf', [GeneratePdfFileController::class, 'generatePdfFile']);
+        Route::post('project/{project}/generate-pdf', [GeneratePdfFileController::class, 'generateInitiativeSummary']);
+
+        // download files
+        Route::get('files/{filename}', [GeneratePdfFileController::class, 'download'])
+        ->where('filename', '.*');
 
         Route::crud('additional-criteria-score-tag', AdditionalCriteriaScoreTagCrudController::class);
 

@@ -28,6 +28,8 @@ class Kernel extends ConsoleKernel
         $schedule->command('cache:prune-stale-tags')->hourly();
 
         $schedule->command('senddataremovalreminderemail')->dailyAt('00:11');
+
+        $schedule->command('app:remove-old-pdf-prints')->weeklyOn('sunday', '01:00');
     }
 
     /**
