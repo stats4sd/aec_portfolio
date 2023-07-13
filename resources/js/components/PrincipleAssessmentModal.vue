@@ -34,7 +34,7 @@
                                 </template>
                             </v-slider>
 
-                            <v-checkbox
+                            <v-checkbox v-if="principle.can_be_na==1"
                                 class="my-4"
                                 v-model="principleAssessment.is_na"
                                 :label="`If ${principle.name.toLowerCase()} is not applicable for this project, tick this box.`">
