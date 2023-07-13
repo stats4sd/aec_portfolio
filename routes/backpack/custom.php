@@ -123,7 +123,7 @@ Route::group([
 
         // download files
         Route::get('files/{filename}', [GeneratePdfFileController::class, 'download'])
-        ->where('path', '.*');
+        ->where('filename', '.*');
 
         Route::crud('additional-criteria-score-tag', AdditionalCriteriaScoreTagCrudController::class);
 
