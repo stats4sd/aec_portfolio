@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Http\Controllers\AdditionalAssessmentController;
 use Backpack\CRUD\app\Models\Traits\CrudTrait;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
@@ -19,11 +20,21 @@ class AdditionalCriteriaAssessment extends Model
     protected $table = 'additional_criteria_assessment';
     protected $guarded = ['id'];
 
+    protected $appends = [
+        'complete'
+    ];
+
     public function identifiableName(): string
     {
         // MAYBE: Adapt this to include the number of assessment for projects with multiple assessments?
         return $this->assessment->project->name
             . ' - ' . $this->additionalCriteria->name;
+    }
+
+
+    public function getCompleteAttribute(): bool
+    {
+        return $this->is_na || $this->rating !== null;
     }
 
 
@@ -37,13 +48,19 @@ class AdditionalCriteriaAssessment extends Model
         return $this->belongsTo(AdditionalCriteria::class);
     }
 
-    public function additionalCriteriaScoreTags(): BelongsToMany
+    // for harmonised UI (principle === additional criteria)
+    public function principle(): BelongsTo
+    {
+        return $this->belongsTo(AdditionalCriteria::class, 'additional_criteria_id');
+    }
+
+    public function scoreTags(): BelongsToMany
     {
         return $this->belongsToMany(AdditionalCriteriaScoreTag::class)
             ->withPivot('assessment_id');
     }
 
-    public function additionalCriteriaCustomScoreTags(): HasMany
+    public function customScoreTags(): HasMany
     {
         return $this->hasMany(AdditionalCriteriaCustomScoreTag::class);
     }

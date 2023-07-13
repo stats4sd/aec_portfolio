@@ -11,8 +11,7 @@
                     <div class="col-md-6 px-12 py-4 h-100">
                         <div>
                             <h4>RATING</h4>
-                            <p class="pb-8 mb-4">Drag the slider to choose the rating for {{ principle.name }}. Refer to
-                                the definitions below if you are unsure.</p>
+                            <p class="pb-8 mb-4">Drag the slider to choose the rating for {{ principle.name }}. Refer to the definitions below if you are unsure.</p>
                             <v-slider
                                 v-model="principleAssessment.rating"
                                 :min="0"
@@ -35,13 +34,13 @@
                                 </template>
                             </v-slider>
 
-                            <v-checkbox v-if="principle.can_be_na==1"
-                                        class="my-4"
-                                        v-model="principleAssessment.is_na"
-                                        :label="`If ${principle.name.toLowerCase()} is not applicable for this project, tick this box.`">
+                            <v-checkbox
+                                v-if="principle.can_be_na==1"
+                                class="my-4"
+                                v-model="principleAssessment.is_na"
+                                :label="`If ${principle.name.toLowerCase()} is not applicable for this project, tick this box.`">
                             </v-checkbox>
-                            <p class="alert alert-info" v-if="principleAssessment.is_na">You may still add a comment to
-                                explain why {{ principle.name }} is not applicable for this project.</p>
+                            <p class="alert alert-info" v-if="principleAssessment.is_na">You may still add a comment to explain why {{ principle.name }} is not applicable for this project.</p>
                         </div>
 
                         <div class="card bg-bright-green text-white rounded-b-xl rounded-t-xl mb-16">
@@ -84,9 +83,7 @@
 
                         <div>
                             <h6>Presence of Examples // Indicators for {{ principle.name }}</h6>
-                            <p>Below are some common examples of {{ principle.name }} within a project. Tick the ones
-                                that are present within the project. You may also add additional examples below to
-                                further support the rating given.</p>
+                            <p>Below are some common examples of {{ principle.name }} within a project. Tick the ones that are present within the project. You may also add additional examples below to further support the rating given.</p>
 
                             <div v-for="tag in principle.score_tags" class="checkbox-group mb-2 example-list">
                                 <v-checkbox
@@ -100,8 +97,7 @@
                         </div>
 
                         <div class="mt-8">
-                            <div v-for="(tag, index) in principleAssessment.custom_score_tags"
-                                 class="d-flex form-group">
+                            <div v-for="(tag, index) in principleAssessment.custom_score_tags" class="d-flex form-group">
 
                                 <v-text-field
                                     ref="tagNameRefs"
@@ -135,11 +131,12 @@
 </template>
 
 <script setup>
-import {computed, ref, defineEmits, nextTick, onMounted, watch} from "vue";
+import {computed, ref, defineEmits, nextTick, onMounted} from "vue";
 
 
 const props = defineProps({
     principleAssessment: Object,
+    assessmentType: String,
     closing: Boolean,
 })
 
@@ -187,6 +184,14 @@ async function save(nextAction) {
     emit('update_rating', props.principleAssessment)
 
     await axios.patch(`/principle-assessment/${props.principleAssessment.id}`, props.principleAssessment)
+    let url = `/principle-assessment/${props.principleAssessment.id}`
+
+    // check if we are saving a principle-assessment or additional-criteria-assessment
+    if (props.assessmentType === "additional") {
+        url = `/additional-assessment/${props.principleAssessment.id}`
+    }
+
+        const res = await axios.patch(url, props.principleAssessment)
 
     emit(nextAction)
 

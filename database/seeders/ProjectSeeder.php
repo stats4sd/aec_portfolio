@@ -36,7 +36,7 @@ class ProjectSeeder extends Seeder
      */
     public function run(): void
     {
-        $organisations = Organisation::factory()->count(5)->create();
+        $organisations = Organisation::factory(['has_additional_criteria' => 0])->count(5)->create();
 
         foreach ($organisations as $organisation) {
 
