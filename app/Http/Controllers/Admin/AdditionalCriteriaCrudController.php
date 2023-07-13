@@ -120,7 +120,7 @@ class AdditionalCriteriaCrudController extends CrudController
             ->view_namespace('stats4sd.laravel-backpack-section-title::fields');
 
 
-        CRUD::field('additionalCriteriaScoreTags')
+        CRUD::field('scoreTags')
             ->label('Add Examples / Indicators')
             ->type('relationship')
             ->subfields([
