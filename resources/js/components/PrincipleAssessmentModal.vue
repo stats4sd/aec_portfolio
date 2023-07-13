@@ -11,7 +11,8 @@
                     <div class="col-md-6 px-12 py-4 h-100">
                         <div>
                             <h4>RATING</h4>
-                            <p class="pb-8 mb-4">Drag the slider to choose the rating for {{ principle.name }}. Refer to the definitions below if you are unsure.</p>
+                            <p class="pb-8 mb-4">Drag the slider to choose the rating for {{ principle.name }}. Refer to
+                                the definitions below if you are unsure.</p>
                             <v-slider
                                 v-model="principleAssessment.rating"
                                 :min="0"
@@ -35,11 +36,12 @@
                             </v-slider>
 
                             <v-checkbox v-if="principle.can_be_na==1"
-                                class="my-4"
-                                v-model="principleAssessment.is_na"
-                                :label="`If ${principle.name.toLowerCase()} is not applicable for this project, tick this box.`">
+                                        class="my-4"
+                                        v-model="principleAssessment.is_na"
+                                        :label="`If ${principle.name.toLowerCase()} is not applicable for this project, tick this box.`">
                             </v-checkbox>
-                            <p class="alert alert-info" v-if="principleAssessment.is_na">You may still add a comment to explain why {{ principle.name }} is not applicable for this project.</p>
+                            <p class="alert alert-info" v-if="principleAssessment.is_na">You may still add a comment to
+                                explain why {{ principle.name }} is not applicable for this project.</p>
                         </div>
 
                         <div class="card bg-bright-green text-white rounded-b-xl rounded-t-xl mb-16">
@@ -82,7 +84,9 @@
 
                         <div>
                             <h6>Presence of Examples // Indicators for {{ principle.name }}</h6>
-                            <p>Below are some common examples of {{ principle.name }} within a project. Tick the ones that are present within the project. You may also add additional examples below to further support the rating given.</p>
+                            <p>Below are some common examples of {{ principle.name }} within a project. Tick the ones
+                                that are present within the project. You may also add additional examples below to
+                                further support the rating given.</p>
 
                             <div v-for="tag in principle.score_tags" class="checkbox-group mb-2 example-list">
                                 <v-checkbox
@@ -96,7 +100,8 @@
                         </div>
 
                         <div class="mt-8">
-                            <div v-for="(tag, index) in principleAssessment.custom_score_tags" class="d-flex form-group">
+                            <div v-for="(tag, index) in principleAssessment.custom_score_tags"
+                                 class="d-flex form-group">
 
                                 <v-text-field
                                     ref="tagNameRefs"
@@ -130,7 +135,7 @@
 </template>
 
 <script setup>
-import {computed, ref, defineEmits, nextTick, onMounted} from "vue";
+import {computed, ref, defineEmits, nextTick, onMounted, watch} from "vue";
 
 
 const props = defineProps({
@@ -172,24 +177,20 @@ function discard() {
 
 async function save(nextAction) {
 
-    props.principleAssessment.complete = has_rating;
-
-    if (has_rating) {
-        emit('update_rating', props.principleAssessment)
+    // slider appears to be '0' on null, but actually requires moving up and back to 0 to be considered not null.
+    if (props.principleAssessment.rating === null) {
+        props.principleAssessment.rating = 0;
     }
 
-    const res = await axios.patch(`/principle-assessment/${props.principleAssessment.id}`, props.principleAssessment)
+    props.principleAssessment.complete = true;
+
+    emit('update_rating', props.principleAssessment)
+
+    await axios.patch(`/principle-assessment/${props.principleAssessment.id}`, props.principleAssessment)
 
     emit(nextAction)
 
 }
-
-// slider appears to be '0' on null, but actually requrires moving up and back to 0 to be considered not null.
-onMounted(() => {
-    if (props.principleAssessment.rating === null) {
-        props.principleAssessment.rating = 0;
-    }
-})
 
 
 </script>
