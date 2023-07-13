@@ -9,7 +9,7 @@
         <h1>Initiative Review Page</h1>
         <h2>{{ $entry->organisation->name }} - {{ $entry->name }}</h2>
 
-        <form method="POST" action="/admin/generatePdf">
+        <form method="POST" action="{{ backpack_url("project/$entry->id/generate-pdf") }}">
             @csrf
             <input class="no-print" type="submit" value="Generate PDF">
         </form>

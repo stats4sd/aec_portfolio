@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Project;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -12,7 +13,7 @@ use Spatie\Browsershot\Browsershot;
 class GeneratePdfFileController extends Controller
 {
 
-    public function generatePdfFile(Request $request)
+    public function generatePdfFile(Request $request, string $name = null)
     {
         // get the URL that sent PDF generation request
         $url = $request->header('referer');
@@ -22,7 +23,7 @@ class GeneratePdfFileController extends Controller
         $context = stream_context_create($opts);
         $htmlContent = file_get_contents($url, false, $context);
 
-        $path = Auth::id() . '__' . Carbon::now()->timestamp;
+        $path = $name ?? Auth::id() . '__' . Carbon::now()->timestamp;
 
         // pass HTML body content to Browsershot, output as PDF
         Browsershot::html($htmlContent)
@@ -34,6 +35,13 @@ class GeneratePdfFileController extends Controller
         return redirect(Storage::url("$path.pdf"));
 
 
+    }
+
+    public function generateInitiativeSummary(Project $project)
+    {
+        $filename = $project->name . '-summary-' . Carbon::now()->toDateString();
+
+        return $this->generatePdfFile(request(), $filename);
     }
 
     public function download(string $filename)
