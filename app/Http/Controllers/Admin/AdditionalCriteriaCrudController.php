@@ -175,7 +175,7 @@ class AdditionalCriteriaCrudController extends CrudController
         $criterium = AdditionalCriteria::find($id);
         $this->authorize('update', $criterium->institution);
 
-        $this->crud->hasAccessOrFail('delete');
+        $criterium->delete();
 
         Alert::add('success', "$criterium->name was successfully deleted")->flash();
 
