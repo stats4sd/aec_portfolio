@@ -31,9 +31,9 @@
                 </div>
 
                 <div class="flex-grow-1 justify-content-end d-flex">
-                    <a href="/admin/project/create" class="btn btn-primary mr-2 ml-auto">Add Initiative</a>
-                    <a href="/admin/project/import" class="btn btn-success mr-2">Import Initiatives</a>
-                    <a href="/admin/organisation/export" class="btn btn-info">Export All Initiative Data</a>
+                    <a v-if="showAddButton" href="/admin/project/create" class="btn btn-primary mr-2 ml-auto">Add Initiative</a>
+                    <a v-if="showImportButton" href="/admin/project/import" class="btn btn-success mr-2">Import Initiatives</a>
+                    <a v-if="showExportButton" href="/admin/organisation/export" class="btn btn-info">Export All Initiative Data</a>
                 </div>
             </div>
             <div class="d-flex align-items-center flex-column flex-md-row mt-4">
@@ -79,7 +79,8 @@
         </div>
     </div>
 
-    <InitiativeListCard v-for="initiative in filteredInitiatives" :key="initiative.id" :initiative="initiative" :has-additional-assessment="hasAdditionalAssessment"/>
+    <InitiativeListCard v-for="initiative in filteredInitiatives" :key="initiative.id" :initiative="initiative" :has-additional-assessment="hasAdditionalAssessment" :enable-edit-button="enableEditButton" :enable-show-button="enableShowButton" :enable-assess-button="enableAssessButton"
+    />
 
 </template>
 
@@ -95,6 +96,12 @@ const props = defineProps({
     organisation: Object,
     initiatives: Object,
     hasAdditionalAssessment: Boolean,
+    showAddButton: Boolean,
+    showImportButton: Boolean,
+    showExportButton: Boolean,
+    enableEditButton: Boolean,
+    enableShowButton: Boolean,
+    enableAssessButton: Boolean,
 });
 
 // Sorting
@@ -113,6 +120,7 @@ const sortOptions = ref([
     }
 ])
 
+// default value for sortBy and sortDir, which is sorted by name in ascending order
 const sortBy = ref('name')
 const sortDir = ref(1)
 
@@ -123,8 +131,8 @@ const propComparator = (propName, sortDir) =>
 watch(sortDir, (newSortDir) => {
     props.initiatives.sort(propComparator(sortBy.value, newSortDir))
 })
+
 watch(sortBy, (newSortBy) => {
-    console.log('hi');
     props.initiatives.sort(propComparator(newSortBy, sortDir.value))
 })
 
@@ -133,6 +141,9 @@ watch(sortBy, (newSortBy) => {
 const redlineStatusFilter = ref('');
 const principleStatusFilter = ref('');
 const portfolioFilter = ref('');
+
+// keyword search filter
+const searchString = ref('')
 
 const portfolios = computed(() => {
     return props.initiatives.map(initiative => initiative.portfolio.name)
@@ -174,43 +185,56 @@ function makeFilterOptions(string) {
 }
 
 const filteredInitiatives = computed(() => {
-    return props.initiatives.filter(initiative => {
-        if (redlineStatusFilter.value) {
-            return initiative.latest_assessment.redline_status === redlineStatusFilter.value.value
-        }
+    // just mentioning variables, computed() function will be triggered when their value changed
+    sortBy.value;
+    sortDir.value;
 
-        return true;
-    })
-        .filter(initiative => {
-            if (principleStatusFilter.value) {
-                return initiative.latest_assessment.principle_status === principleStatusFilter.value.value
-            }
+    // declare temporary variables for filtering
+    let tempInitiatives;
+    tempInitiatives = props.initiatives;
 
-            return true;
-        })
-        .filter(initiative => {
-            if (portfolioFilter.value) {
-                return initiative.portfolio.name === portfolioFilter.value
-            }
+    // apply filter for red flag status
+    if (redlineStatusFilter.value) {
+        tempInitiatives = tempInitiatives.filter(
+            initiative => initiative.latest_assessment.redline_status === redlineStatusFilter.value.value
+        )
+    }
 
-            return true;
-        })
-        .filter(initiative => {
+    // apply filter for principle status
+    if (principleStatusFilter.value) {
+        tempInitiatives = tempInitiatives.filter(
+            initiative => initiative.latest_assessment.principle_status === principleStatusFilter.value.value
+        )
+    }
 
-            if (searchString.value !== '') {
-                return initiative.name.toLowerCase().includes(searchString.value.toLowerCase())
-            }
+    // apply filter for portfolio
+    if (portfolioFilter.value) {
+        tempInitiatives = tempInitiatives.filter(
+            initiative => initiative.portfolio.name === portfolioFilter.value
+        )
+    }
 
-            return true
-        })
+    // apply filter for keyword
+    if (searchString.value !== '') {
+        tempInitiatives = tempInitiatives.filter(
+            initiative => initiative.name.toLowerCase().includes(searchString.value.toLowerCase())
+        )
+    }
+
+    return tempInitiatives;
 })
 
 function resetFilters() {
+    redlineStatusFilter.value = '';
+    principleStatusFilter.value = '';
+    portfolioFilter.value = '';
+    searchString.value = '';
+
+    handlePortfolioFromUrl();
 }
 
 // handle portfolio from url
-onMounted(() => {
-
+function handlePortfolioFromUrl() {
     const querypairs = window.location.search.substring(1);
     const test = new URLSearchParams(querypairs)
     console.log(test)
@@ -220,11 +244,12 @@ onMounted(() => {
             portfolioFilter.value = value;
         }
     })
+}
 
+
+onMounted(() => {
+    handlePortfolioFromUrl();
 })
-
-//  search
-const searchString = ref('')
 
 
 </script>
