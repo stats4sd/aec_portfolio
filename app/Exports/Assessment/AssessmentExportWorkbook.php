@@ -18,6 +18,7 @@ class AssessmentExportWorkbook implements WithMultipleSheets
             new InitiativesExport($this->organisation),
             new RedlinesExport($this->organisation),
             new PrincipleExport($this->organisation),
+            new AdditionalCriteriaExport($this->organisation),
             new RegionProjectExport($this->organisation),
             new CountryProjectExport($this->organisation),
         ];
