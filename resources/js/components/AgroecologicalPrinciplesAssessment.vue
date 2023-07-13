@@ -138,9 +138,6 @@ function next() {
 
     const index = principleAssessments.value.indexOf(selectedPrincipleAssessment.value)
 
-    // mark the current one as complete
-    principleAssessments.value[index].complete = true;
-
     // if we've reached the end...
     if (index + 1 >= principleAssessments.value.length) {
         modalIsOpen.value = false
