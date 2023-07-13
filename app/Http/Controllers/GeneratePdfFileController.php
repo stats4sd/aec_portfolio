@@ -30,9 +30,9 @@ class GeneratePdfFileController extends Controller
 //            ->landscape()
 //            ->margins(0, 0, 0, 0)
 //            ->waitUntilNetworkIdle()
-            ->save(Storage::path("$path.pdf"));
+            ->save(Storage::path("prints/$path.pdf"));
 
-        return redirect(Storage::url("$path.pdf"));
+        return redirect(Storage::url("prints/$path.pdf"));
 
 
     }
