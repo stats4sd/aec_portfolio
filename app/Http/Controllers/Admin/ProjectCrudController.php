@@ -72,18 +72,21 @@ class ProjectCrudController extends CrudController
 
     public function show($id)
     {
-        $this->authorize('view', Project::find($id));
+        //$this->authorize('view', Project::find($id));
 
-        $this->crud->hasAccessOrFail('show');
+        //$this->crud->hasAccessOrFail('show');
 
         // get entry ID from Request (makes sure its the last ID for nested resources)
         $id = $this->crud->getCurrentEntryId() ?? $id;
 
         // get the info for that entry (include softDeleted items if the trait is used)
         if ($this->crud->get('show.softDeletes') && in_array('Illuminate\Database\Eloquent\SoftDeletes', class_uses($this->crud->model))) {
-            $this->data['entry'] = $this->crud->getModel()->withTrashed()->findOrFail($id);
+            $this->data['entry'] = $this->crud->getModel()
+                ->withoutGlobalScopes('organisation')
+                ->withTrashed()
+                ->findOrFail($id);
         } else {
-            $this->data['entry'] = $this->crud->getEntryWithLocale($id);
+            $this->data['entry'] = Project::withoutGlobalScopes(['organisation'])->find($id);
         }
 
         $this->data = self::getShowData($this->data);

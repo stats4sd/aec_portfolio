@@ -23,4 +23,11 @@ return [
     'currency' => [
         'api-key' => env('CURRENCY_API_KEY'),
     ],
+
+    'browsershot' => [
+        'auth' => [
+            'email' => env('ADMIN_EMAIL'),
+            'password' => env('ADMIN_PASSWORD'),
+        ],
+    ],
 ];

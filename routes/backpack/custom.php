@@ -134,4 +134,10 @@ Route::group([
     });
 
 
-}); // this should be the absolute last line of this file
+});
+
+// for use with Browsershot:
+
+Route::get('project/{id}/show-as-pdf', [ProjectCrudController::class, 'show'])
+    ->middleware('auth.basic')
+    ->name('project.show-as-pdf');
