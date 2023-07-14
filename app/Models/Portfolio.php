@@ -32,8 +32,6 @@ class Portfolio extends Model
 
         // attach event handler, on deleting of a portfolio
 	    static::deleting(function($portfolio) {
-	        \Log::info('Portfolio Deleting Event:' . $portfolio);
-
             // delete all projects that belong to this portfolio
             foreach ($portfolio->projects as $project) {
                 $project->delete();

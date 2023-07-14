@@ -51,6 +51,15 @@
 
                             <a class="btn btn-success" :class="[ enableShowButton ? '' : 'disabled']" :href="`/admin/project/${initiative.id}/show`">Show Initiative Information</a>
 
+                            <!-- TODO: which path to delete an initiative...? And what kind of button we should use to prompt user for confirmation...? -->
+                            <a class="btn btn-danger" :class="[ enableEditButton ? '' : 'disabled']" :href="`/admin/project/${initiative.id}/destroy`">Remove Initiative</a>
+
+                            <form action="{{ route('project.destroy', [$project]) }}" method="POST">
+                                @csrf
+                                @method('delete')
+                                <button type="submit" class="btn btn-primary">Confirm Remove</button>
+                            </form>
+
                         </div>
 
                         <div class="col-12 col-lg-6">
