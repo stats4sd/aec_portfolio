@@ -23,8 +23,8 @@ class AdditionalCriteriaExport implements FromCollection, WithHeadings, WithTitl
         return AdditionalCriteriaAssessment::with([
             'assessment.project.portfolio',
             'additionalCriteria',
-            'additionalCriteriaScoreTags',
-            'additionalCriteriaCustomScoreTags',
+            'scoreTags',
+            'customScoreTags',
         ])
             ->withoutGlobalScopes(['organisation'])
             ->whereHas('assessment', function (Builder $query) {
@@ -44,8 +44,8 @@ class AdditionalCriteriaExport implements FromCollection, WithHeadings, WithTitl
                 'is_na' => $additionalCriteriaAssessment->is_na,
                 'rating' => $additionalCriteriaAssessment->rating,
                 'comments' => $additionalCriteriaAssessment->rating_comment,
-                'indicators_present' => $additionalCriteriaAssessment->additionalCriteriaScoreTags->pluck('name')->join(', '),
-                'additional_indicators' => $additionalCriteriaAssessment->additionalCriteriaCustomScoreTags->pluck('name')->join(', '),
+                'indicators_present' => $additionalCriteriaAssessment->scoreTags->pluck('name')->join(', '),
+                'additional_indicators' => $additionalCriteriaAssessment->customScoreTags->pluck('name')->join(', '),
             ]));
     }
 
