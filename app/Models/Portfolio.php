@@ -2,15 +2,16 @@
 
 namespace App\Models;
 
-use Backpack\CRUD\app\Models\Traits\CrudTrait;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Backpack\CRUD\app\Models\Traits\CrudTrait;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Portfolio extends Model
 {
-    use CrudTrait, HasFactory;
+    use CrudTrait, HasFactory, SoftDeletes;
 
     /*
     |--------------------------------------------------------------------------
@@ -27,6 +28,18 @@ class Portfolio extends Model
         static::addGlobalScope('organisation',  function(Builder $query) {
             $query->where('organisation_id', Session::get('selectedOrganisationId'));
         });
+
+
+        // attach event handler, on deleting of a portfolio
+	    static::deleting(function($portfolio) {
+	        \Log::info('Portfolio Deleting Event:' . $portfolio);
+
+            // delete all projects that belong to this portfolio
+            foreach ($portfolio->projects as $project) {
+                $project->delete();
+            }
+	    });
+
     }
 
 
