@@ -14,12 +14,19 @@ class AssessmentExportWorkbook implements WithMultipleSheets
 
     public function sheets(): array
     {
-        return [
+        $sheets = [
             new InitiativesExport($this->organisation),
             new RedlinesExport($this->organisation),
             new PrincipleExport($this->organisation),
-            new RegionProjectExport($this->organisation),
-            new CountryProjectExport($this->organisation),
         ];
+
+        if ($this->organisation->has_additional_criteria) {
+            $sheets[] = new AdditionalCriteriaExport($this->organisation);
+        }
+
+        $sheets[] = new RegionProjectExport($this->organisation);
+        $sheets[] = new CountryProjectExport($this->organisation);
+
+        return $sheets;
     }
 }
