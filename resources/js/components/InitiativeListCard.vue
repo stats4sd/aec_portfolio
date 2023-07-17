@@ -51,14 +51,7 @@
 
                             <a class="btn btn-success" :class="[ enableShowButton ? '' : 'disabled']" :href="`/admin/project/${initiative.id}/show`">Show Initiative Information</a>
 
-                            <!-- TODO: which path to delete an initiative...? And what kind of button we should use to prompt user for confirmation...? -->
-                            <a class="btn btn-danger" :class="[ enableEditButton ? '' : 'disabled']" :href="`/admin/project/${initiative.id}/destroy`">Remove Initiative</a>
-
-                            <form action="{{ route('project.destroy', [$project]) }}" method="POST">
-                                @csrf
-                                @method('delete')
-                                <button type="submit" class="btn btn-primary">Confirm Remove</button>
-                            </form>
+                            <button class="btn btn-danger" @click="removeInitiative();">Remove Initiative</button>
 
                         </div>
 
@@ -122,7 +115,8 @@
 </template>
 <script setup>
 
-import {computed, ref} from "vue";
+import {computed, defineEmits, ref} from "vue";
+import Swal from "sweetalert2";
 
 const props = defineProps({
     initiative: Object,
@@ -133,6 +127,8 @@ const props = defineProps({
 })
 
 const expanded = ref(false)
+
+const emit = defineEmits(['remove_initiative'])
 
 function toggleExpand() {
     expanded.value = !expanded.value
@@ -175,6 +171,32 @@ const nextAction = computed(() => {
     }
 
 })
+
+
+async function removeInitiative() {
+    let choice = await Swal.fire({
+        title: 'Are you sure?',
+        text: "You won't be able to revert this!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, delete it!'
+    });
+
+    if (choice.isConfirmed) {
+        // remove initiative via ajax request
+        // let result = await axios.delete(`/admin/project/${props.initiative.id}`);
+
+        new Noty({
+            type: "success",
+            text: 'Some notification text',
+        }).show();
+
+        emit('remove_initiative', props.initiative)
+    }
+
+}
 
 
 </script>

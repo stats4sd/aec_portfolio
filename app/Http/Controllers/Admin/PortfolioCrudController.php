@@ -93,7 +93,11 @@ class PortfolioCrudController extends CrudController
 
         $this->crud->hasAccessOrFail('delete');
 
-        return $this->crud->delete($id);
+        $this->crud->delete($id);
+
+        \Alert::add('success', 'You have successfully deleted a portfolio')->flash();
+
+        return back();
     }
 
     /**

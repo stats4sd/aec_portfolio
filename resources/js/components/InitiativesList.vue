@@ -79,7 +79,14 @@
         </div>
     </div>
 
-    <InitiativeListCard v-for="initiative in filteredInitiatives" :key="initiative.id" :initiative="initiative" :has-additional-assessment="hasAdditionalAssessment" :enable-edit-button="enableEditButton" :enable-show-button="enableShowButton" :enable-assess-button="enableAssessButton"
+    <InitiativeListCard v-for="initiative in filteredInitiatives" 
+        :key="initiative.id" 
+        :initiative="initiative" 
+        :has-additional-assessment="hasAdditionalAssessment" 
+        :enable-edit-button="enableEditButton" 
+        :enable-show-button="enableShowButton" 
+        :enable-assess-button="enableAssessButton"
+        @remove_initiative="removeInitiative"
     />
 
 </template>
@@ -246,6 +253,26 @@ function handlePortfolioFromUrl() {
     })
 }
 
+function removeInitiative(initiative) {
+    console.log(initiative);
+
+    console.log(initiative.id);
+
+    let tempArray = props.initiatives.map(initiative=>initiative.id);
+
+    console.log(tempArray);
+
+    // let index = props.initiatives.indexOf(initiative);
+    let index = tempArray.indexOf(initiative.id);
+
+    console.log(index);
+
+    let newArray = [...props.initiatives.splice(index, 1)];
+
+    props.initiatives = null;
+
+    props.initiatives = [...newArray];
+}
 
 onMounted(() => {
     handlePortfolioFromUrl();
