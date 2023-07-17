@@ -18,7 +18,6 @@ class AdditionalAssessmentController extends Controller
         $query = AdditionalCriteriaAssessment::with(
             'assessment',
             'principle.scoreTags',
-            'additionalCriteria.scoreTags',
             'scoreTags',
             'customScoreTags'
         );
