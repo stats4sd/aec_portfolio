@@ -1,8 +1,5 @@
 var allRedlines = document.querySelectorAll("[data-required-wrapper='1']")
 
-console.log('hi', allRedlines.values())
-
-
 // do the initial check for completeness
 checkComplete()
 
@@ -15,8 +12,6 @@ for (const radioField of allRedlines.values()) {
         checkComplete()
     })
 
-    console.log('hi')
-    console.log(crud.field(radioField.getAttribute('bp-field-name')).value);
 }
 
 
@@ -33,5 +28,30 @@ function checkComplete() {
     } else {
         crud.field('redlines_complete').show()
         crud.field('redlines_incomplete').hide()
+
+        // enable or disable principle assessment link
+        const passed = checkPassed(values)
+        const nextButton = document.getElementById('start-principle-assessment-button')
+
+        if(passed) {
+
+            nextButton.classList.add('active')
+            nextButton.classList.add('btn-success')
+            nextButton.classList.remove('btn-secondary')
+
+
+        } else {
+            nextButton.classList.remove('active')
+            nextButton.classList.add('btn-secondary')
+            nextButton.classList.remove('btn-success')
+        }
     }
+}
+
+function checkPassed(values) {
+    if(values.includes('1')) {
+        return false;
+    }
+
+    return true;
 }
