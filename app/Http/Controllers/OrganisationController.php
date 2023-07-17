@@ -20,6 +20,9 @@ class OrganisationController extends Controller
 
     public function show()
     {
+        // clear the user selected portfolio
+        Session::forget('selectedPortfolio');
+
         $organisation = Organisation::find(Session::get('selectedOrganisationId'))->load('portfolios.projects');
 
         return view('organisations.show', ['organisation' => $organisation]);
