@@ -13,6 +13,7 @@ use Backpack\CRUD\app\Http\Controllers\Operations\UpdateOperation;
 use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Facades\Session;
+use Prologue\Alerts\Facades\Alert;
 
 
 class PortfolioCrudController extends CrudController
@@ -89,11 +90,17 @@ class PortfolioCrudController extends CrudController
      */
     public function destroy($id)
     {
-        $this->authorize('delete', Portfolio::find($id));
+        $portfolio = Portfolio::find($id);
+
+        $this->authorize('delete', $portfolio);
 
         $this->crud->hasAccessOrFail('delete');
 
-        return $this->crud->delete($id);
+        $portfolio->delete();
+
+        Alert::add('success', "$portfolio->name was successfully deleted")->flash();
+
+        return back();
     }
 
     /**

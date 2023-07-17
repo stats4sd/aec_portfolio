@@ -117,6 +117,7 @@ trait RedlineOperation
         if ($request->redlines_complete) {
             if ($latestAssessment->failingRedlines()->count() > 0) {
                 $latestAssessment->redline_status = AssessmentStatus::Failed;
+                $latestAssessment->principle_status = AssessmentStatus::Complete;
                 $latestAssessment->completed_at = Carbon::now();
             } else {
                 $latestAssessment->redline_status = AssessmentStatus::Complete;
