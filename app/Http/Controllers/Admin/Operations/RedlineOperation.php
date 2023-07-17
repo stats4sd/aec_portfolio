@@ -127,16 +127,8 @@ trait RedlineOperation
 
         $latestAssessment->save();
 
-        // use save action to determine redirect
-
-
-        if($request->input('_save_action') === 'assessment') {
-            $redirect = backpack_url("assessment/$latestAssessment->id/assess");
-        } else {
-            $redirect = backpack_url('project');
-        }
-
-
-        return redirect($redirect);
+        dd($request->all());
+        // use redirect from request to determine redirect
+        return redirect(backpack_url($request->input('redirect') ?? 'project'));
     }
 }

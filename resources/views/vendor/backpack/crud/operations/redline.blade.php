@@ -73,7 +73,7 @@
 
                 <div class="form-group" id="saveActions">
 
-                    <input type="hidden" id="_save_action" name="_save_action">
+                    <input type="hidden" id="_redirect" name="_redirect" value="project">
 
 
                     <a href="{{ url($crud->route) }}" class="btn btn-default">
@@ -81,13 +81,13 @@
                         <span>Cancel</span>
                     </a>
 
-                    <button type="submit" class="btn btn-primary" data-value="save_and_return_to_projects">
-                        <span class="la la-save" role="presentation" aria-hidden="true" onclick="startAssessment('project')"></span>
+                    <button type="submit" class="btn btn-primary" data-value="save_and_return_to_projects" onclick="startAssessment('project')">
+                        <span class="la la-save" role="presentation" aria-hidden="true"></span>
                         <span>Save and Return</span>
                     </button>
 
                     <div id="start-principle-assessment-button" class="btn btn-secondary active"
-                         data-value="save_and_start_assessment" onclick="startAssessment('assessment')" disabled>
+                         data-value="save_and_start_assessment" onclick="startAssessment('{{"assessment/".$entry->getKey()."/assess"}}')" disabled>
                         <span class="la la-arrow-right" role="presentation" aria-hidden="true"></span>
                         <span>Save and Start Principle Assessment</span>
                     </div>
@@ -122,10 +122,11 @@
         }
 
         function startAssessment(redirect) {
-            var form = document.getElementById('redlines-form')
-            var saveElement = document.getElementById('_save_action')
 
-            saveElement.value = redirect
+            var form = document.getElementById('redlines-form')
+            var redirectElement = document.getElementById('_redirect')
+
+            redirectElement.value = redirect
 
             form.requestSubmit()
 
