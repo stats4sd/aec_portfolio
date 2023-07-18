@@ -6,8 +6,6 @@
     </div>
 
     <div class="card-body">
-        <form>
-
             <div class="form-group row mt-16">
                 <label for="input_name" class="col-sm-4 col-form-label text-right pr-2">Institution Name</label>
                 <div class="col-sm-8">
@@ -155,9 +153,9 @@
             <div class="form-group d-flex justify-content-end mt-16"
                  v-if="canEdit">
                 <button type="cancel" class="btn btn-secondary mr-4">Discard Changes</button>
-                <button type="submit" class="btn btn-primary" @click="save">Save</button>
+                <button class="btn btn-primary" @click="save">Save</button>
             </div>
-        </form>
+
     </div>
 
 </template>
