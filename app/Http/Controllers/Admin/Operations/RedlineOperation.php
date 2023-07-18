@@ -127,7 +127,6 @@ trait RedlineOperation
 
         $latestAssessment->save();
 
-        dd($request->all());
         // use redirect from request to determine redirect
         return redirect(backpack_url($request->input('redirect') ?? 'project'));
     }
