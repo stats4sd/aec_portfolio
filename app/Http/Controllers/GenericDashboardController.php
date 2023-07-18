@@ -73,7 +73,7 @@ class GenericDashboardController extends Controller
         $categories = $org->portfolios
             ->map(fn(Portfolio $portfolio): Collection => $portfolio
                 ->projects
-                ->map(fn(Project $project): InitiativeCategory => $project
+                ->map(fn(Project $project): ?InitiativeCategory => $project
                     ->initiativeCategory
                 )
             )
