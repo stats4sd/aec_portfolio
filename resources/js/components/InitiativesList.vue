@@ -185,6 +185,9 @@ function makeFilterOptions(string) {
 }
 
 const filteredInitiatives = computed(() => {
+    console.log("filteredInitiatives()");
+    latestStatus();
+
     // just mentioning variables, computed() function will be triggered when their value changed
     sortBy.value;
     sortDir.value;
@@ -250,6 +253,17 @@ function handlePortfolioFromUrl() {
             portfolioFilter.value = value;
         }
     })
+}
+
+
+function latestStatus() {
+    console.log("latestStatus()...");
+    console.log("sortBy.value: " + sortBy.value);
+    console.log("sortDir.value: " + sortDir.value);
+    console.log("redlineStatusFilter.value: " + redlineStatusFilter.value);
+    console.log("principleStatusFilter.value: " + principleStatusFilter.value);
+    console.log("portfolioFilter.value: " + portfolioFilter.value);
+    console.log("searchString.value: " + searchString.value);
 }
 
 
