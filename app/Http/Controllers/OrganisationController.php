@@ -49,15 +49,15 @@ class OrganisationController extends Controller
     {
         $organisation = Organisation::find(Session::get('selectedOrganisationId'));
 
-
         $validated = $request->validated();
+
         if (!$request->has('has_additional_criteria')) {
             $validated['has_additional_criteria'] = false;
         }
 
         $organisation->update($validated);
 
-        return $organisation;
+        return $organisation->id;
     }
 
     public function export()

@@ -168,9 +168,13 @@ onMounted(() => {
 async function save() {
 
     try {
-        const result = await axios.put(props.updateRoute, institution.value)
+        const result = await axios.post(props.updateRoute, institution.value)
+
+        console.log(result)
     } catch (error) {
-        errors.value = error.response?.data.errors ?? null
+
+        console.log(error)
+        errors.value = error.response?.data.errors ?? {}
     }
 
     new Noty({

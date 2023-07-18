@@ -52,14 +52,16 @@
             @endif
             <div class="tab-pane fade show active" role="tabpanel" aria-labelledby="settings-tab" id="settings">
                 <div id="org-settings">
-                    <institution-settings
-                        :init-institution="{{ $organisation }}"
-                        :institution-types="{{ $institutionTypes->toJson() }}"
-                        :geographic-reaches="{{ json_encode($geographicReaches) }}"
-                        :countries="{{ $countries->toJson() }}"
-                        update-route="{{ route('organisation.self.update') }}"
-                        :user="{{ Auth::user()->withPermissionNames() }}"
-                    />
+                    <Suspense>
+                        <institution-settings
+                            :init-institution="{{ $organisation }}"
+                            :institution-types="{{ $institutionTypes->toJson() }}"
+                            :geographic-reaches="{{ json_encode($geographicReaches) }}"
+                            :countries="{{ $countries->toJson() }}"
+                            update-route="{{ route('organisation.self.update') }}"
+                            :user="{{ Auth::user()->withPermissionNames() }}"
+                        />
+                    </Suspense>
                 </div>
             </div>
         </div>
