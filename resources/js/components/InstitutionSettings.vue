@@ -3,7 +3,6 @@
 
         <h2>Institution Details</h2>
         <p class="help-block">Add or edit the relevant information for the institution.</p>
-
     </div>
 
     <div class="card-body">
@@ -16,6 +15,7 @@
                            class="form-control"
                            id="input_name"
                            v-model="institution.name"
+                           :disabled="!canEdit"
                     >
                     <span class="text-danger emphasis show" role="alert" v-if="errors.hasOwnProperty('name')">
                             <strong v-for="error in errors.name">{{ error }}</strong><br/>
@@ -27,7 +27,14 @@
                 <label for="input_currency" class="col-sm-4 col-form-label text-right pr-2">Main Currency (3-letter
                     code)</label>
                 <div class="col-sm-8 col-lg-4">
-                    <input name="currency" class="form-control" id="input_currency" v-model="institution.currency">
+                    <input
+                        name="currency"
+                        class="form-control"
+                        id="input_currency"
+                        v-model="institution.currency"
+                        :disabled="!canEdit"
+
+                    >
                     <span class="text-danger emphasis show" role="alert" v-if="errors.hasOwnProperty('currency')">
                             <strong v-for="error in errors.currency">{{ error }}</strong><br/>
                         </span>
@@ -39,12 +46,20 @@
             <div class="form-group row">
                 <div class="col-sm-8 offset-sm-4">
                     <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="additional_criteria_check"
-                               name="has_additional_criteria" v-model="institution.has_additional_criteria" :value="1">
+                        <input
+                            class="form-check-input"
+                            type="checkbox"
+                            id="additional_criteria_check"
+                            name="has_additional_criteria"
+                            v-model="institution.has_additional_criteria"
+                            :value="1"
+                            :disabled="!canEdit"
+                        >
                         <label class="form-check-label" for="additional_criteria_check">
                             This Institution uses additional assessment criteria
                         </label>
-                        <span class="text-danger emphasis show" role="alert" v-if="errors.hasOwnProperty('has_additional_criteria')">
+                        <span class="text-danger emphasis show" role="alert"
+                              v-if="errors.hasOwnProperty('has_additional_criteria')">
                             <strong v-for="error in errors.has_additional_criteria">{{ error }}</strong><br/>
                         </span>
                     </div>
@@ -70,9 +85,11 @@
                         :options="institutionTypes"
                         label="name"
                         :reduce="institutionType => institutionType.id"
+                        :disabled="!canEdit"
 
                     />
-                    <span class="text-danger emphasis show" role="alert" v-if="errors.hasOwnProperty('institution_type_id')">
+                    <span class="text-danger emphasis show" role="alert"
+                          v-if="errors.hasOwnProperty('institution_type_id')">
                             <strong v-for="error in errors.institution_type_id">{{ error }}</strong><br/>
                         </span>
                     <small id="institution_type_help" class="form-text font-sm">This can be used as an additional
@@ -89,9 +106,10 @@
                            class="form-control"
                            id="institution_type_other"
                            v-model="institution.institution_type_other"
-                           :disabled="institution.institution_type_id !== 5"
+                           :disabled="institution.institution_type_id !== 5 || !canEdit"
                     >
-                    <span class="text-danger emphasis show" role="alert" v-if="errors.hasOwnProperty('institution_type_other')">
+                    <span class="text-danger emphasis show" role="alert"
+                          v-if="errors.hasOwnProperty('institution_type_other')">
                         <strong v-for="error in errors.institution_type_other">{{ error }}</strong><br/>
                     </span>
                 </div>
@@ -106,8 +124,10 @@
                         id="input_geographic_reach"
                         v-model="institution.geographic_reach"
                         :options="geographicReaches"
+                        :disabled="!canEdit"
                     />
-                    <span class="text-danger emphasis show" role="alert" v-if="errors.hasOwnProperty('geographic_reach')">
+                    <span class="text-danger emphasis show" role="alert"
+                          v-if="errors.hasOwnProperty('geographic_reach')">
                             <strong v-for="error in errors.geographic_reach">{{ error }}</strong><br/>
                     </span>
                 </div>
@@ -124,6 +144,7 @@
                         label="name"
                         :reduce="country => country.id"
                         v-model="institution.hq_country"
+                        :disabled="!canEdit"
                     />
                     <span class="text-danger emphasis show" role="alert" v-if="errors.hasOwnProperty('hq_country')">
                             <strong v-for="error in errors.hq_country">{{ error }}</strong><br/>
@@ -132,7 +153,7 @@
             </div>
 
             <div class="form-group d-flex justify-content-end mt-16"
-                 v-if="user.permission_names.includes('edit own institution')">
+                 v-if="canEdit">
                 <button type="cancel" class="btn btn-secondary mr-4">Discard Changes</button>
                 <button type="submit" class="btn btn-primary" @click="save">Save</button>
             </div>
@@ -143,7 +164,7 @@
 
 <script setup>
 
-import {onMounted, ref} from "vue";
+import {onMounted, ref, computed} from "vue";
 import 'vue-select/dist/vue-select.css';
 import vSelect from 'vue-select'
 
@@ -159,6 +180,8 @@ const props = defineProps({
 
 const errors = ref({})
 const institution = ref({});
+
+const canEdit = computed(() => props.user.permission_names.includes('edit own institution'))
 
 
 onMounted(() => {
