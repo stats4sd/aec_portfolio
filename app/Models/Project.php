@@ -12,6 +12,7 @@ use Backpack\CRUD\app\Models\Traits\CrudTrait;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
@@ -112,5 +113,10 @@ class Project extends Model
     public function customScoreTags()
     {
         return $this->hasMany(CustomScoreTag::class);
+    }
+
+    public function initiativeCategory(): BelongsTo
+    {
+        return $this->belongsTo(InitiativeCategory::class);
     }
 }

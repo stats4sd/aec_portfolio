@@ -57,6 +57,18 @@
                                 multiple="true"
                                 :clearable="true"
                             />
+                            <hr/>
+                            <h4>Filter by Initiative Category</h4>
+                            <b>Categories</b>
+                            <v-select
+                                v-model="filters.categories"
+                                class="bg-white"
+                                :options="categories"
+                                label="name"
+                                placeholder="SELECT CATEGORIES"
+                                multiple="true"
+                                :clearable="true"
+                            />
                         </div>
                         <div class="col-lg-6 col-12 px-12 mt-lg-0 mt-8">
                             <h4 class="mb-4">Filter by Start Date</h4>
@@ -94,7 +106,8 @@
                                             v-model="filters.minBudget"
                                         />
                                     </div>
-                                    <p class="help-block text-error" style="height: 1em;" v-if="minBudgetError || maxBudgetError">{{ minBudgetError }}</p>
+                                    <p class="help-block text-error" style="height: 1em;"
+                                       v-if="minBudgetError || maxBudgetError">{{ minBudgetError }}</p>
                                 </div>
                                 <div class="w-50">
                                     <b>MAXIMUM BUDGET ({{ organisation.currency }}):</b>
@@ -102,7 +115,8 @@
                                         class="bg-white d-block py-1"
                                         v-model="filters.maxBudget"
                                     />
-                                    <p class="help-block text-error" style="height: 1em;" v-if="minBudgetError || maxBudgetError">{{ maxBudgetError }}</p>
+                                    <p class="help-block text-error" style="height: 1em;"
+                                       v-if="minBudgetError || maxBudgetError">{{ maxBudgetError }}</p>
                                 </div>
                             </div>
                         </div>
@@ -136,16 +150,27 @@
                 </div>
                 <div v-if="filters.startDate || filters.endDate" class="mr-3 mb-1">
                     <span class="px-2">DATES:</span>
-                    <span class="badge-pill badge-info" v-if="filters.startDate && !filters.endDate"> {{ filters.startDate }} onwards</span>
-                    <span class="badge-pill badge-info" v-if="! filters.startDate && filters.endDate"> {{ filters.startDate }} and earlier</span>
-                    <span class="badge-pill badge-info" v-if="filters.startDate && filters.endDate">{{ filters.startDate }} - {{ filters.endDate }}</span>
+                    <span class="badge-pill badge-info"
+                          v-if="filters.startDate && !filters.endDate"> {{ filters.startDate }} onwards</span>
+                    <span class="badge-pill badge-info"
+                          v-if="! filters.startDate && filters.endDate"> {{ filters.startDate }} and earlier</span>
+                    <span class="badge-pill badge-info" v-if="filters.startDate && filters.endDate">{{
+                            filters.startDate
+                        }} - {{ filters.endDate }}</span>
                 </div>
 
-                <div v-if="(filters.minBudget || filters.maxBudget) && !minBudgetError && !maxBudgetError" class="mr-3 mb-1">
+                <div v-if="(filters.minBudget || filters.maxBudget) && !minBudgetError && !maxBudgetError"
+                     class="mr-3 mb-1">
                     <span class="px-2">BUDGET:</span>
-                    <span class="badge-pill badge-info" v-if="filters.minBudget && !filters.maxBudget"> {{ organisation.currency }} {{ filters.minBudget }} or higher</span>
-                    <span class="badge-pill badge-info" v-if="!filters.minBudget && filters.maxBudget"> {{ organisation.currency }} {{ filters.maxBudget }} or lower</span>
-                    <span class="badge-pill badge-info" v-if="filters.minBudget && filters.maxBudget"> {{ organisation.currency }} {{ filters.minBudget }} - {{ filters.maxBudget }}</span>
+                    <span class="badge-pill badge-info" v-if="filters.minBudget && !filters.maxBudget"> {{
+                            organisation.currency
+                        }} {{ filters.minBudget }} or higher</span>
+                    <span class="badge-pill badge-info" v-if="!filters.minBudget && filters.maxBudget"> {{
+                            organisation.currency
+                        }} {{ filters.maxBudget }} or lower</span>
+                    <span class="badge-pill badge-info" v-if="filters.minBudget && filters.maxBudget"> {{
+                            organisation.currency
+                        }} {{ filters.minBudget }} - {{ filters.maxBudget }}</span>
                 </div>
             </div>
             <div class="btn btn-warning text-dark" @click="resetFilters" v-if="anyFilters">Reset Filters</div>
@@ -158,7 +183,8 @@
     </div>
 
     <div v-if="summary.tooFewOtherProjects" class="alert alert-warning text-dark">
-        NOTE: The chosen filters have resulted in a comparison dataset too small to guarantee anonymity, so the "other instutitions" results will not be shown.
+        NOTE: The chosen filters have resulted in a comparison dataset too small to guarantee anonymity, so the "other
+        instutitions" results will not be shown.
     </div>
 
     <ul class="nav nav-tabs mt-4" role="tablist">
@@ -217,7 +243,9 @@
                                     v-for="summaryLine in summary.statusSummary"
                                     class="list-group-item d-flex font-lg text-deep-green">
                                     <span class="w-50 text-right pr-4">{{ summaryLine.status }}</span>
-                                    <span class="font-weight-bold ">{{ summaryLine.number }} ({{ summaryLine.percent }}%)</span>
+                                    <span class="font-weight-bold ">{{ summaryLine.number }} ({{
+                                            summaryLine.percent
+                                        }}%)</span>
                                 </li>
                             </ul>
                         </div>
@@ -225,7 +253,9 @@
                             <ul class="list-group list-group-flush">
                                 <li class="list-group-item d-flex font-lg">
                                     <span class="w-50 text-right pr-4">Total Budget</span>
-                                    <span class="font-weight-bold ">{{ formatBudget(summary.totalBudget) }} {{ organisation.currency }}</span>
+                                    <span class="font-weight-bold ">{{
+                                            formatBudget(summary.totalBudget)
+                                        }} {{ organisation.currency }}</span>
                                 </li>
                             </ul>
                         </div>
@@ -246,7 +276,9 @@
                             <ul class="list-group list-group-flush">
                                 <li class="list-group-item d-flex font-lg">
                                     <span class="w-50 text-right pr-4">AE-focused Budget</span>
-                                    <span class="font-weight-bold ">{{ formatBudget(summary.aeBudget) }} {{ organisation.currency }}</span>
+                                    <span class="font-weight-bold ">{{
+                                            formatBudget(summary.aeBudget)
+                                        }} {{ organisation.currency }}</span>
                                 </li>
                             </ul>
                         </div>
@@ -274,10 +306,15 @@
 
                         <tbody class="text-center">
                         <tr v-for='redlinesSummaryRecord in summary.redlinesSummary'>
-                            <td :class="[ redlinesSummaryRecord.yours === 100 ? 'table-success' : 'table-warning' ]">{{ redlinesSummaryRecord.name }}</td>
-                            <td :class="[ redlinesSummaryRecord.yours === 100 ? 'table-success' : 'table-warning' ]">{{ redlinesSummaryRecord.yours }}%</td>
+                            <td :class="[ redlinesSummaryRecord.yours === 100 ? 'table-success' : 'table-warning' ]">
+                                {{ redlinesSummaryRecord.name }}
+                            </td>
+                            <td :class="[ redlinesSummaryRecord.yours === 100 ? 'table-success' : 'table-warning' ]">
+                                {{ redlinesSummaryRecord.yours }}%
+                            </td>
                             <td v-if="!summary.tooFewOtherProjects"
-                                :class="[ redlinesSummaryRecord.yours === 100 ? 'table-success' : 'table-warning' ]">{{ redlinesSummaryRecord.others }}%
+                                :class="[ redlinesSummaryRecord.yours === 100 ? 'table-success' : 'table-warning' ]">
+                                {{ redlinesSummaryRecord.others }}%
                             </td>
                         </tr>
                         </tbody>
@@ -287,9 +324,12 @@
                     <table class="table" v-if="summary.statusSummary != null">
                         <tbody class="text-center">
                         <tr v-for='summaryLine in summary.statusSummary'>
-                            <td v-if="summaryLine.status == 'Passed all red flags'" class="list-group-item d-flex font-lg text-deep-green">
+                            <td v-if="summaryLine.status == 'Passed all red flags'"
+                                class="list-group-item d-flex font-lg text-deep-green">
                                 <span class="w-50 text-right pr-4">{{ summaryLine.status }}</span>
-                                <span class="font-weight-bold ">{{ summaryLine.number }} ({{ summaryLine.percent }}%)</span>
+                                <span class="font-weight-bold ">{{ summaryLine.number }} ({{
+                                        summaryLine.percent
+                                    }}%)</span>
                             </td>
                         </tr>
                         </tbody>
@@ -316,7 +356,9 @@
                             <Bar v-if="!summary.tooFewOtherProjects" :data="chartDataOthers" :options="chartOptions"/>
 
                             <div v-else class="d-flex flex-column justify-content-center h-100">
-                                <div class="alert alert-info text-dark">There are too few initiatives or institutions within the current set of filters to display anonymized results.</div>
+                                <div class="alert alert-info text-dark">There are too few initiatives or institutions
+                                    within the current set of filters to display anonymized results.
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -357,8 +399,11 @@ const props = defineProps({
     countries: {
         type: Array,
         default: () => [],
-    }
-
+    },
+    categories: {
+        type: Array,
+        default: () => [],
+    },
 })
 
 const portfolios = computed(() => {
@@ -373,6 +418,7 @@ const filters = ref({
     portfolio: null,
     regions: null,
     countries: null,
+    categories: null,
     startDate: null,
     endDate: null,
     minBudget: null,
@@ -453,7 +499,6 @@ watch(filters.value, (newValue, oldValue) => {
         getData();
     }
 })
-
 
 
 // **************** ChartJS ****************

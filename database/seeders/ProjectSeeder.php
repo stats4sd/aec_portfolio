@@ -36,7 +36,7 @@ class ProjectSeeder extends Seeder
      */
     public function run(): void
     {
-        $organisations = Organisation::factory(['has_additional_criteria' => 0])->count(5)->create();
+        $organisations = Organisation::factory(['has_additional_criteria' => 0])->count(2)->create();
 
         foreach ($organisations as $organisation) {
 
@@ -49,7 +49,7 @@ class ProjectSeeder extends Seeder
                     'portfolio_id' => $portfolio->id,
                     'organisation_id' => $organisation->id
                 ])
-                    ->count(random_int(30, 60))
+                    ->count(random_int(20, 50))
                     ->create();
             }
         }

@@ -45,3 +45,18 @@ async function getExchangeRate() {
 
 
 }
+
+
+function checkInitiativeCategoryOtherField() {
+    if (crud.field('initiativeCategory').value === '5') {
+        crud.field('initiative_category_other').enable()
+    } else {
+        crud.field('initiative_category_other').disable()
+    }
+}
+
+// only enable "category other" field if 'other' is selected
+checkInitiativeCategoryOtherField();
+crud.field('initiativeCategory').onChange(function (field) {
+    checkInitiativeCategoryOtherField()
+})

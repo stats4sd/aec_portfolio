@@ -33,6 +33,8 @@ class ProjectRequest extends FormRequest
             'name' => 'required|string',
             'code' => ['nullable', 'string', new UniqueProjectCode],
             'description' => 'nullable|string',
+            'initiativeCategory' => 'required|exists:initiative_categories,id',
+            'initiative_category_otther' => 'nullable',
             'budget' => 'required|integer|gte:0',
             'currency' => 'required|max:3',
             'exchange_rate' => 'required|numeric',

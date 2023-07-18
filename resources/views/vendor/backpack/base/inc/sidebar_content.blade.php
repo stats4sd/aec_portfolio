@@ -134,3 +134,5 @@ E.g., Centralise instituion selection to a single feature instead of distributin
     <li class="nav-item"><a class="nav-link" href="{{ backpack_url('removal-request') }}"><i class="nav-icon la la-trash-alt"></i> Removal Requests</a></li>
     <hr/>
 @endif
+
+<li class="nav-item"><a class="nav-link" href="{{ backpack_url('initiative-category') }}"><i class="nav-icon la la-question"></i> Initiative categories</a></li>

@@ -21,6 +21,7 @@
                     :organisation="{{ $organisation->toJson() }}"
                     :regions="{{ $regions }}"
                     :countries="{{ $countries }}"
+                    :categories="{{ $categories }}"
                 />
             </Suspense>
         </v-app>
