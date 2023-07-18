@@ -16,15 +16,20 @@
                         </div>
                         <div class="w-50">
                             <span class="font-weight-bold text-grey">SCORE</span><br/>
-                            <span class="font-xl text-bright-green font-weight-bold" v-if="initiative.latest_assessment.overall_score !== null">{{ initiative.latest_assessment.overall_score }}%</span>
+                            <span class="font-xl text-bright-green font-weight-bold"
+                                  v-if="initiative.latest_assessment.overall_score !== null">{{
+                                    initiative.latest_assessment.overall_score
+                                }}%</span>
                         </div>
                     </div>
                 </div>
                 <div class="col-12 col-lg-3 d-flex align-items-center justify-content-end">
-                    <a :href='nextAction.url' class="btn mr-2" :class="enableAssessButton ? 'btn-success' : 'btn-info disabled'" v-if="nextAction">
+                    <a :href='nextAction.url' class="btn mr-2"
+                       :class="enableAssessButton ? 'btn-success' : 'btn-info disabled'" v-if="nextAction">
                         {{ nextAction.label }}
                     </a>
-                    <div class="btn btn-info" @click="toggleExpand" data-toggle="collapse" :data-target="'.initiative-collapse_'+initiative.id">
+                    <div class="btn btn-info" @click="toggleExpand" data-toggle="collapse"
+                         :data-target="'.initiative-collapse_'+initiative.id">
                         <i class="la"
                            :class="expanded ? 'la-caret-down' : 'la-caret-right'"></i>
                     </div>
@@ -47,11 +52,13 @@
                                 </div>
                             </div>
 
-                            <a class="btn btn-primary" :class="[ enableEditButton ? '' : 'disabled']" :href="`/admin/project/${initiative.id}/edit`">Edit Initiative Details</a>
+                            <a class="btn btn-primary mr-2" :class="[ enableEditButton ? '' : 'disabled']"
+                               :href="`/admin/project/${initiative.id}/edit`">Edit Details</a>
 
-                            <a class="btn btn-success" :class="[ enableShowButton ? '' : 'disabled']" :href="`/admin/project/${initiative.id}/show`">Show Initiative Information</a>
+                            <a class="btn btn-success mr-2" :class="[ enableShowButton ? '' : 'disabled']"
+                               :href="`/admin/project/${initiative.id}/show`">Show Information</a>
 
-                            <button class="btn btn-danger" @click="removeInitiative();">Remove Initiative</button>
+                            <button class="btn btn-danger" @click="removeInitiative();">Delete</button>
 
                         </div>
 
@@ -59,7 +66,9 @@
                             <div class="d-flex justify-content-between mt-3 w-100">
                                 <div class="w-50">
                                     <span class="font-weight-bold text-grey">RED FLAGS</span><br/>
-                                    <span class="font-weight-bold">{{ initiative.latest_assessment.redline_status }}</span>
+                                    <span class="font-weight-bold">{{
+                                            initiative.latest_assessment.redline_status
+                                        }}</span>
                                 </div>
                                 <div class="w-50">
                                     <a
@@ -68,7 +77,9 @@
                                         :class="enableAssessButton ? (initiative.latest_assessment.redline_status === 'Complete' ? 'btn-info' : 'btn-success') : 'btn-info disabled'"
 
                                     >
-                                        {{ initiative.latest_assessment.redline_status === 'Complete' ? 'Edit Red Flag Assessment' : 'Assess Red Flags' }}
+                                        {{
+                                            initiative.latest_assessment.redline_status === 'Complete' ? 'Edit Red Flag Assessment' : 'Assess Red Flags'
+                                        }}
                                     </a>
                                 </div>
                             </div>
@@ -76,7 +87,9 @@
                             <div class="d-flex justify-content-between mt-3 w-100">
                                 <div class="w-50">
                                     <span class="font-weight-bold text-grey">PRINCIPLES</span><br/>
-                                    <span class="font-weight-bold">{{ initiative.latest_assessment.principle_status }}</span>
+                                    <span class="font-weight-bold">{{
+                                            initiative.latest_assessment.principle_status
+                                        }}</span>
                                 </div>
                                 <div class="w-50">
                                     <a
@@ -85,7 +98,9 @@
                                         :class="enableAssessButton ? (initiative.latest_assessment.redline_status === 'Complete' ? (initiative.latest_assessment.principle_status === 'Complete' ? 'btn-info' : 'btn-success') : 'btn-info disabled') : 'btn-info disabled'"
 
                                     >
-                                        {{ initiative.latest_assessment.principle_status === 'Complete' ? 'Edit Principle Assessment' : 'Assess Principles' }}
+                                        {{
+                                            initiative.latest_assessment.principle_status === 'Complete' ? 'Edit Principle Assessment' : 'Assess Principles'
+                                        }}
                                     </a>
                                 </div>
                             </div>
@@ -93,7 +108,9 @@
                             <div v-if="hasAdditionalAssessment" class="d-flex justify-content-between mt-3 w-100">
                                 <div class="w-50">
                                     <span class="font-weight-bold text-grey">ADDITIONAL CRITERIA</span><br/>
-                                    <span class="font-weight-bold">{{ initiative.latest_assessment.additional_status }}</span>
+                                    <span class="font-weight-bold">{{
+                                            initiative.latest_assessment.additional_status
+                                        }}</span>
                                 </div>
                                 <div class="w-50">
                                     <a
@@ -102,7 +119,9 @@
                                         :class="enableAssessButton ? (initiative.latest_assessment.redline_status === 'Complete' ? (initiative.latest_assessment.additional_status === 'Complete' ? 'btn-info' : 'btn-success') : 'btn-info disabled') : 'btn-info disabled'"
 
                                     >
-                                        {{ initiative.latest_assessment.additional_status === 'Complete' ? 'Edit Additional Criteria Assessment' : 'Assess Additional Criteria' }}
+                                        {{
+                                            initiative.latest_assessment.additional_status === 'Complete' ? 'Edit Additional Criteria Assessment' : 'Assess Additional Criteria'
+                                        }}
                                     </a>
                                 </div>
                             </div>
@@ -166,7 +185,7 @@ const nextAction = computed(() => {
     }
 
     return {
-        label: "Show Initiative Information",
+        label: "Show information",
         url: `/admin/project/${props.initiative.id}/show`,
     }
 
@@ -186,11 +205,12 @@ async function removeInitiative() {
 
     if (choice.isConfirmed) {
         // remove initiative via ajax request
-        // let result = await axios.delete(`/admin/project/${props.initiative.id}`);
+        let result = await axios.delete(`/admin/project/${props.initiative.id}`);
+
 
         new Noty({
             type: "success",
-            text: 'Some notification text',
+            text: `You have successfully deleted the initiative ${props.initiative.name}`,
         }).show();
 
         emit('remove_initiative', props.initiative)
