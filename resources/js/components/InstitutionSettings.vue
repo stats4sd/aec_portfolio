@@ -40,7 +40,7 @@
                 <div class="col-sm-8 offset-sm-4">
                     <div class="form-check">
                         <input class="form-check-input" type="checkbox" id="additional_criteria_check"
-                               name="has_additional_criteria" v-model="institution.has_additional_criteria">
+                               name="has_additional_criteria" v-model="institution.has_additional_criteria" :value="1">
                         <label class="form-check-label" for="additional_criteria_check">
                             This Institution uses additional assessment criteria
                         </label>
