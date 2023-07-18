@@ -19,9 +19,9 @@ class ProjectFactory extends Factory
     {
         $initiativeCategory = $this->faker->randomElement(InitiativeCategory::all()->pluck('id')->toArray());
         if($initiativeCategory === 5) {
-            $initiativeCategoryOther = $this->faker->text(),
+            $initiativeCategoryOther = $this->faker->text();
         } else {
-            $initiativeCategoryOther = null,
+            $initiativeCategoryOther = null;
         }
 
         return [

@@ -17,11 +17,11 @@ class DatabaseSeeder extends Seeder
         $this->call(RoleSeeder::class);
         $this->call(RedLinesTableSeeder::class);
         $this->call(PrinciplesTableSeeder::class);
+        $this->call(InitiativeCategorySeeder::class);
         $this->call(TestSeeder::class);
         $this->call(DashboardRatingSeeder::class);
         $this->call(ProjectSeeder::class);
         $this->call(ScoreTagsTableSeeder::class);
         $this->call(ExchangeRatesTableSeeder::class);
-        $this->call(InitiativeCategorySeeder::class);
     }
 }
