@@ -26,7 +26,7 @@ class OrganisationRequest extends FormRequest
             'name' => 'required|max:255',
             'currency' => 'required|max:3',
             'has_additional_criteria' => 'sometimes|nullable|bool',
-            'institutionType' => 'required|exists:institution_types,id',
+            'institution_type_id' => 'nullable|exists:institution_types,id',
             'institution_type_other' => 'sometimes|nullable',
             'geographic_reach' => 'sometimes|nullable',
         ];

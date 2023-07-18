@@ -19,6 +19,7 @@ class DatabaseSeeder extends Seeder
         $this->call(RedLinesTableSeeder::class);
         $this->call(PrinciplesTableSeeder::class);
         $this->call(InitiativeCategorySeeder::class);
+        $this->call(InstitutionTypeSeeder::class);
         $this->call(TestSeeder::class);
         $this->call(DashboardRatingSeeder::class);
         $this->call(ProjectSeeder::class);
