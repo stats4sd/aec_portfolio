@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Enums\AssessmentStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
@@ -131,5 +132,10 @@ class Organisation extends Model
             DB::insert('insert into role_invites (email, role_id, inviter_id, token, created_at, updated_at) values (?, ?, ?, ?, NOW(), NOW())',
                 [$email, $roleId, auth()->user()->id, $invite->token]);
         }
+    }
+
+    public function institutionType(): BelongsTo
+    {
+        return $this->belongsTo(InstitutionType::class);
     }
 }
