@@ -87,6 +87,7 @@ Route::group([
 
         Route::crud('project', ProjectCrudController::class);
         Route::get('project', [ProjectController::class, 'index']);
+        Route::get('project/reset', [ProjectController::class, 'reset']);
         Route::get('project/{project}/re-assess', [ProjectCrudController::class, 'reAssess']);
 
 

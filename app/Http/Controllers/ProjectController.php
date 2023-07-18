@@ -124,6 +124,29 @@ class ProjectController extends Controller
         ]);
     }
 
+
+    /**
+     * Reset sorting, filters and keyword search of initiatives page in session,
+     * then redirect to initaitve page to show all initiatives
+     */
+    public function reset(Request $request)
+    {
+        logger("ProjectController.reset()...");
+
+        // TODO: 
+        // sortBy = Name
+        // sortDir = 1 (Ascending)
+        // redlineStatusFilter = null
+        // principleStatusFilter = null
+        // portfolioFilter = null
+        // searchString = null
+
+        // remove user selected portfolio
+        Session::forget("selectedPortfolio");
+
+        return redirect('/admin/project');
+    }
+
     /**
      * Show the form for creating a new resource.
      */

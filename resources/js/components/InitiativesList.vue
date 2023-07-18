@@ -225,12 +225,18 @@ const filteredInitiatives = computed(() => {
 })
 
 function resetFilters() {
+    // TODO:
+    // go to reset page, remove all session variables, then redirect to initiative page
+    window.location = "/admin/project/reset"
+
+/*
     redlineStatusFilter.value = '';
     principleStatusFilter.value = '';
     portfolioFilter.value = '';
     searchString.value = '';
 
     handlePortfolioFromUrl();
+*/
 }
 
 // handle portfolio from url
