@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Enums\GeographicalReach;
+use App\Models\Organisation;
 use App\Models\Portfolio;
 use App\Http\Requests\PortfolioRequest;
 use Backpack\CRUD\app\Http\Controllers\CrudController;
@@ -12,6 +14,7 @@ use Backpack\CRUD\app\Http\Controllers\Operations\ShowOperation;
 use Backpack\CRUD\app\Http\Controllers\Operations\UpdateOperation;
 use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Session;
 use Prologue\Alerts\Facades\Alert;
 
@@ -21,8 +24,12 @@ class PortfolioCrudController extends CrudController
     use ListOperation;
     use CreateOperation;
     use UpdateOperation;
-    use DeleteOperation { destroy as traitDestroy; }
-    use ShowOperation { show as traitShow; }
+    use DeleteOperation {
+        destroy as traitDestroy;
+    }
+    use ShowOperation {
+        show as traitShow;
+    }
 
     use AuthorizesRequests;
 
@@ -66,10 +73,28 @@ class PortfolioCrudController extends CrudController
 
         CRUD::setValidation(PortfolioRequest::class);
 
-        $selectedOrganisationId = Session::get('selectedOrganisationId');
-        CRUD::field('organisation_id')->type('hidden')->default($selectedOrganisationId);
+        $selectedOrganisation = Organisation::find(Session::get('selectedOrganisationId'));
 
-        CRUD::field('name');
+        CRUD::field('organisation_id')->type('hidden')->default($selectedOrganisation->id);
+
+        CRUD::field('name')->label('Enter the name of the portfolio');
+
+
+        CRUD::field('currency-info')
+            ->type('section-title')
+            ->view_namespace('stats4sd.laravel-backpack-section-title::fields')
+            ->title('Currency and Budget')
+            ->content("$selectedOrganisation->name uses $selectedOrganisation->currency as the default currency. When you create initiatives, you will be given the option to choose any currency for the initiative budget, and to find or enter the correct exchange rate. For portfolios, please enter the total budget using the institution's default currency of $selectedOrganisation->currency");
+
+        CRUD::field('budget')
+            ->prefix($selectedOrganisation->currency)
+            ->hint('Enter the overall budget for the portfolio');
+
+        CRUD::field('geographic_reach')
+            ->type('select2_from_array')
+            ->options(Arr::mapWithKeys(GeographicalReach::cases(), fn($enum) => [$enum->value => $enum->value]));
+
+
     }
 
     /**

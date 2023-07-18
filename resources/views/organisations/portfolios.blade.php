@@ -9,6 +9,8 @@
         <thead>
         <tr>
             <th scope="col">Portfolio Name</th>
+            <th scope="col">Budget</th>
+            <th scope="col">Geographic Reach</th>
             <th scope="col"># of Initiatives</th>
             <th scope="col"># of Fully Assessed Initiatives</th>
             <th scope="col">Actions</th>
@@ -21,6 +23,8 @@
                     <td>
                         {{ $portfolio->name }}
                     </td>
+                    <td>{{ $organisation->currency }} {{ $portfolio->budget }}</td>
+                    <td>{{ $portfolio->geographic_reach }}</td>
                     <td>{{ $portfolio->projects->count() }}</td>
                     <td>{{ $portfolio->projects->filter(fn(\App\Models\Project $initiative): bool => $initiative->latest_assessment->completed_at !== null)->count() }}</td>
                     <td>
