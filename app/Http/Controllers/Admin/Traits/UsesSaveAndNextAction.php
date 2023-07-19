@@ -65,20 +65,23 @@ trait UsesSaveAndNextAction
 
     public function addSaveAndReturnToProjectListAction(): void
     {
-
-        // These buttons are only used for the redirect action after save. The other properties are hard-coded into the redline.blade.php view.
         $this->crud->addSaveAction([
             'name' => 'save_and_return_to_projects',
             'redirect' => function ($crud, $request, $itemId){
                 return backpack_url('project');
-            },
-        ]);
+            }, // what's the redirect URL, where the user will be taken after saving?
 
-        $this->crud->addSaveAction([
-            'name' => 'save_and_start_assessment',
-            'redirect' => function($crud, $request, $itemId) {
-                return backpack_url("assessment/$itemId/assess");
-            },
+            // OPTIONAL:
+            'button_text' => 'Save and Return', // override text appearing on the button
+            // You can also provide translatable texts, for example:
+            // 'button_text' => trans('backpack::crud.save_action_one'),
+            'visible' => function ($crud) {
+                return true;
+            }, // customize when this save action is visible for the current operation
+            'referrer_url' => function ($crud, $request, $itemId) {
+                return $crud->route;
+            }, // override http_referrer_url
+            'order' => 1, // change the order save actions are in
         ]);
     }
 }

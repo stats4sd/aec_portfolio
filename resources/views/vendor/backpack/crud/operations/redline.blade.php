@@ -35,9 +35,9 @@
             <form
                 id="redlines-form"
                 method="post"
-                  action="{{ url($crud->route.'/'.$entry->getKey()).'/redline' }}"
-                  @if ($crud->hasUploadFields('update', $entry->getKey()))
-                      enctype="multipart/form-data"
+                action="{{ url($crud->route.'/'.$entry->getKey()).'/redline' }}"
+                @if ($crud->hasUploadFields('update', $entry->getKey()))
+                    enctype="multipart/form-data"
                 @endif
             >
                 {!! csrf_field() !!}
@@ -73,7 +73,7 @@
 
                 <div class="form-group" id="saveActions">
 
-                    <input type="hidden" id="_redirect" name="_redirect" value="project">
+                    <input type="hidden" id="_redirect" name="_redirect">
 
 
                     <a href="{{ url($crud->route) }}" class="btn btn-default">
@@ -81,13 +81,15 @@
                         <span>Cancel</span>
                     </a>
 
-                    <button type="submit" class="btn btn-primary" data-value="save_and_return_to_projects" onclick="startAssessment('project')">
+                    <button type="submit" class="btn btn-primary" data-value="save_and_return_to_projects"
+                            onclick="startAssessment('project')">
                         <span class="la la-save" role="presentation" aria-hidden="true"></span>
                         <span>Save and Return</span>
                     </button>
 
-                    <div id="start-principle-assessment-button" class="btn btn-secondary active"
-                         data-value="save_and_start_assessment" onclick="startAssessment('{{"assessment/".$entry->getKey()."/assess"}}')" disabled>
+                    <div id="start-principle-assessment-button" class="btn btn-secondary"
+                         data-value="save_and_start_assessment"
+                         onclick="startAssessment('{{"assessment/".$entry->getKey()."/assess"}}')" disabled>
                         <span class="la la-arrow-right" role="presentation" aria-hidden="true"></span>
                         <span>Save and Start Principle Assessment</span>
                     </div>
@@ -122,6 +124,11 @@
         }
 
         function startAssessment(redirect) {
+
+            // if the form is not complete, do nothing;
+            if (crud.field('redlines_complete').value !== '1') {
+                return;
+            }
 
             var form = document.getElementById('redlines-form')
             var redirectElement = document.getElementById('_redirect')

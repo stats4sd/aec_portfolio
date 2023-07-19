@@ -5,14 +5,14 @@ checkComplete()
 
 
 for (const radioField of allRedlines.values()) {
-
-
     // on change, check all the others to see if they are completed.
     radioField.addEventListener('change', e => {
         checkComplete()
     })
-
 }
+
+// check for completeness + passed when the complete checkbox is updated.
+crud.field('redlines_complete').onChange((field) => checkComplete())
 
 
 function checkComplete() {
@@ -21,7 +21,6 @@ function checkComplete() {
         values.push(crud.field(innerField.getAttribute('bp-field-name')).value)
     }
 
-    console.log(values);
     if (values.includes('')) {
         crud.field('redlines_complete').hide()
         crud.field('redlines_incomplete').show()
@@ -49,6 +48,12 @@ function checkComplete() {
 }
 
 function checkPassed(values) {
+
+    // also return false if the user has not confirmed the assessment as complete
+    if(crud.field('redlines_complete').value !== '1') {
+        return false;
+    }
+
     if(values.includes('1')) {
         return false;
     }
