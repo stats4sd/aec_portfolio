@@ -264,6 +264,8 @@ function latestStatus() {
     console.log("principleStatusFilter.value: " + principleStatusFilter.value);
     console.log("portfolioFilter.value: " + portfolioFilter.value);
     console.log("searchString.value: " + searchString.value);
+
+    // TODO: send ajax call to SessionController.store
 }
 
 

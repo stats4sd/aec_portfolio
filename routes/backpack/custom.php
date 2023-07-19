@@ -90,6 +90,8 @@ Route::group([
         Route::get('project/reset', [ProjectController::class, 'reset']);
         Route::get('project/{project}/re-assess', [ProjectCrudController::class, 'reAssess']);
 
+        Route::get('session/store', [SessionController::class, 'store']);
+
 
         Route::crud('assessment', AssessmentCrudController::class);
         Route::get('assessment/{assessment}/show', [ProjectCrudController::class, 'showAssessment']);
