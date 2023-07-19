@@ -4,6 +4,7 @@ namespace Database\Factories;
 
 use App\Enums\AssessmentStatus;
 use App\Enums\GeographicalReach;
+use App\Models\InitiativeCategory;
 use App\Models\Organisation;
 use App\Models\Portfolio;
 use App\Models\Project;
@@ -16,10 +17,19 @@ class ProjectFactory extends Factory
 
     public function definition(): array
     {
+        $initiativeCategory = $this->faker->randomElement(InitiativeCategory::all()->pluck('id')->toArray());
+        if($initiativeCategory === 5) {
+            $initiativeCategoryOther = $this->faker->text();
+        } else {
+            $initiativeCategoryOther = null;
+        }
+
         return [
             'name' => $this->faker->bs(),
             'code' => $this->faker->word(),
             'description' => $this->faker->text(),
+            'initiative_category_id' => $initiativeCategory,
+            'initiative_category_other' => $initiativeCategoryOther,
             'budget' => $this->faker->randomNumber(),
             'created_at' => Carbon::now(),
             'updated_at' => Carbon::now(),

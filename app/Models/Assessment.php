@@ -30,11 +30,16 @@ class Assessment extends Model
     public function getAssessmentStatusAttribute(): string
     {
         // if redlines are not complete, use that status
-        if($this->redline_status !== AssessmentStatus::Complete->value) {
+        if ($this->redline_status !== AssessmentStatus::Complete->value) {
             return "Red Flags " . $this->redline_status;
         }
 
-        if($this->additionalCriteria->count() === 0 || $this->principle_status !== AssessmentStatus::Complete->value) {
+        if (
+            // if principle status is not complete...
+            $this->principle_status !== AssessmentStatus::Complete->value ||
+            // or if additional criteria are not relevant...
+            !$this->project->organisation->has_additional_criteria || $this->additionalCriteria->count() === 0
+        ) {
             return "Principles " . $this->principle_status;
         }
 
@@ -57,16 +62,16 @@ class Assessment extends Model
                 $this->principleAssessments->reduce(fn($carry, $item) => $carry->merge($this->appendExtrasToRevision($item, 'principle')), collect([])),
                 $this->additionalCriteriaAssessment->reduce(fn($carry, $item) => $carry->merge($this->appendExtrasToRevision($item, 'additionalCriteria')), collect([])),
             ])
-            ->flatten();
+                ->flatten();
     }
 
     public function appendExtrasToRevision($item, $relation)
     {
-        return $item->revisionHistory->map(function(Revision $history) use ($item, $relation) {
-           $history->relation =  Str::lower(Arr::join(Str::ucsplit($relation), ' '));
-           $history->linkedItemName = $item->$relation?->name;
+        return $item->revisionHistory->map(function (Revision $history) use ($item, $relation) {
+            $history->relation = Str::lower(Arr::join(Str::ucsplit($relation), ' '));
+            $history->linkedItemName = $item->$relation?->name;
 
-           return $history;
+            return $history;
         });
     }
 

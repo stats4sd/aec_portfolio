@@ -26,6 +26,10 @@ class OrganisationRequest extends FormRequest
             'name' => 'required|max:255',
             'currency' => 'required|max:3',
             'has_additional_criteria' => 'sometimes|nullable|bool',
+            'institution_type_id' => 'nullable|exists:institution_types,id',
+            'institution_type_other' => 'sometimes|nullable',
+            'geographic_reach' => 'sometimes|nullable',
+            'hq_country' => 'nullable|exists:countries,id',
         ];
     }
 }

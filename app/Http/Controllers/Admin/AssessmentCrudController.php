@@ -274,8 +274,10 @@ class AssessmentCrudController extends CrudController
 
         CRUD::field('redlines_complete')
             ->type('boolean')
-            ->label('I confirm the Red Flags assessment is complete')
-            ->default($entry->redline_status === AssessmentStatus::Complete->value);
+            ->label('I confirm the Red Flags assessment is complete.')
+            ->default(
+                in_array($entry->redline_status,
+                    [AssessmentStatus::Complete->value, AssessmentStatus::Failed->value], false));
 
         CRUD::field('redlines_incomplete')
             ->type('boolean')
@@ -285,7 +287,8 @@ class AssessmentCrudController extends CrudController
                 'disabled' => 'disabled',
             ]);
 
-        $this->removeAllSaveActions();
-        $this->addSaveAndReturnToProjectListAction();
+        // save actions now hardcoded for redline operation
+//        $this->removeAllSaveActions();
+//        $this->addSaveAndReturnToProjectListAction();
     }
 }

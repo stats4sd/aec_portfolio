@@ -45,7 +45,7 @@ class GetHistoricExchangeRates implements ShouldQueue
     public function handle(): void
     {
         $startDate = $this->year . '-01-01';
-        $endDate = ($this->year + 1) . '-01-01';
+        $endDate = $this->year . '-12-31';
 
         // if processing the current year, only ask for info up till yesterday (The API cannot get the value for 'today').
         if ($this->year === Carbon::now()->year) {

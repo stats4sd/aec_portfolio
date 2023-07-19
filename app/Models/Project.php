@@ -10,6 +10,9 @@ use Illuminate\Support\Facades\Auth;
 use App\Services\OrganisationService;
 use App\Services\FreeCurrencyApiHelper;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -113,5 +116,10 @@ class Project extends Model
     public function customScoreTags()
     {
         return $this->hasMany(CustomScoreTag::class);
+    }
+
+    public function initiativeCategory(): BelongsTo
+    {
+        return $this->belongsTo(InitiativeCategory::class);
     }
 }
