@@ -11,6 +11,7 @@ use App\Http\Controllers\Admin\AdditionalCriteriaScoreTagCrudController;
 use App\Http\Controllers\Admin\AssessmentCrudController;
 use App\Http\Controllers\Admin\ContinentCrudController;
 use App\Http\Controllers\Admin\CountryCrudController;
+use App\Http\Controllers\Admin\UserFeedbackTypeCrudController;
 use App\Http\Controllers\Admin\InitiativeCategoryCrudController;
 use App\Http\Controllers\Admin\InstitutionTypeCrudController;
 use App\Http\Controllers\Admin\OrganisationCrudController;
@@ -23,6 +24,7 @@ use App\Http\Controllers\Admin\RemovalRequestCrudController;
 use App\Http\Controllers\Admin\RoleInviteCrudController;
 use App\Http\Controllers\Admin\ScoreTagCrudController;
 use App\Http\Controllers\Admin\UserCrudController;
+use App\Http\Controllers\Admin\UserFeedbackCrudController;
 use App\Http\Controllers\AssessmentController;
 use App\Http\Controllers\GeneratePdfFileController;
 use App\Http\Controllers\GenericDashboardController;
@@ -138,6 +140,10 @@ Route::group([
 
     Route::crud('initiative-category', InitiativeCategoryCrudController::class);
     Route::crud('institution-type', InstitutionTypeCrudController::class);
+    Route::crud('user-feedback', UserFeedbackCrudController::class);
+    Route::crud('feedback-type', UserFeedbackTypeCrudController::class);
+
+    Route::view('support', 'support');
 });
 
 Route::get('project/{id}/show-as-pdf', [ProjectCrudController::class, 'show'])
