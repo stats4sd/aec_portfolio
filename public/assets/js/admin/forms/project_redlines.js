@@ -32,7 +32,7 @@ function checkComplete() {
         const passed = checkPassed(values)
         const nextButton = document.getElementById('start-principle-assessment-button')
 
-        if(passed) {
+        if (passed) {
 
             nextButton.classList.add('active')
             nextButton.classList.add('btn-success')
@@ -50,30 +50,30 @@ function checkComplete() {
 function checkPassed(values) {
 
     // also return false if the user has not confirmed the assessment as complete
-    if(crud.field('redlines_complete').value !== '1') {
+    if (crud.field('redlines_complete').value !== '1') {
         return false;
     }
 
-    if(values.includes('1')) {
+    if (values.includes('1')) {
         return false;
     }
 
     return true;
 }
 
-        function startAssessment(button, redirect) {
+function startAssessment(button, redirect) {
 
-            // if the form is not complete / the button is not active, do nothing
-            if (!button.classList.contains('active')) {
-                return;
-            }
+    // if the form is not complete / the button is not active, do nothing
+    if (!button.classList.contains('active')) {
+        return;
+    }
 
-            var form = document.getElementById('redlines-form')
-            var redirectElement = document.getElementById('_redirect')
+    var form = document.getElementById('redlines-form')
+    var redirectElement = document.getElementById('_redirect')
 
-            redirectElement.value = redirect
+    redirectElement.value = redirect
 
-            form.requestSubmit()
+    form.requestSubmit()
 
 
-        }
+}
