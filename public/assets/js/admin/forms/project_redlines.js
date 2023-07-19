@@ -60,3 +60,20 @@ function checkPassed(values) {
 
     return true;
 }
+
+        function startAssessment(button, redirect) {
+
+            // if the form is not complete / the button is not active, do nothing
+            if (!button.classList.contains('active')) {
+                return;
+            }
+
+            var form = document.getElementById('redlines-form')
+            var redirectElement = document.getElementById('_redirect')
+
+            redirectElement.value = redirect
+
+            form.requestSubmit()
+
+
+        }

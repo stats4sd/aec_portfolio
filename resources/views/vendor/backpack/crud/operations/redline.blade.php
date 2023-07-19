@@ -73,7 +73,7 @@
 
                 <div class="form-group" id="saveActions">
 
-                    <input type="hidden" id="_redirect" name="_redirect">
+                    <input type="hidden" id="_redirect" name="_redirect" value="project">
 
 
                     <a href="{{ url($crud->route) }}" class="btn btn-default">
@@ -81,15 +81,15 @@
                         <span>Cancel</span>
                     </a>
 
-                    <button type="submit" class="btn btn-primary" data-value="save_and_return_to_projects"
-                            onclick="startAssessment('project')">
+                    <div class="btn btn-primary active" id="save-and-return-button" data-value="save_and_return_to_projects"
+                            onclick="startAssessment(this, 'project')">
                         <span class="la la-save" role="presentation" aria-hidden="true"></span>
                         <span>Save and Return</span>
-                    </button>
+                    </div>
 
                     <div id="start-principle-assessment-button" class="btn btn-secondary"
                          data-value="save_and_start_assessment"
-                         onclick="startAssessment('{{"assessment/".$entry->getKey()."/assess"}}')" disabled>
+                         onclick="startAssessment(this, '{{"assessment/".$entry->getKey()."/assess"}}')" disabled>
                         <span class="la la-arrow-right" role="presentation" aria-hidden="true"></span>
                         <span>Save and Start Principle Assessment</span>
                     </div>
@@ -123,22 +123,7 @@
             }
         }
 
-        function startAssessment(redirect) {
 
-            // if the form is not complete, do nothing;
-            if (crud.field('redlines_complete').value !== '1') {
-                return;
-            }
-
-            var form = document.getElementById('redlines-form')
-            var redirectElement = document.getElementById('_redirect')
-
-            redirectElement.value = redirect
-
-            form.requestSubmit()
-
-
-        }
     </script>
 
 @endpush
