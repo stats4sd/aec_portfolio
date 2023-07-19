@@ -43,7 +43,7 @@ class ProjectRequest extends FormRequest
             'main_recipient' => 'required',
             'start_date' => 'required',
             'end_date' => 'nullable|after:start_date',
-            'geographic_reach' => ['required', Rule::in(collect(GeographicalReach::cases())->pluck('name')->toArray())],
+            'geographic_reach' => ['required', Rule::in(collect(GeographicalReach::cases())->pluck('value')->toArray())],
             'continents' => 'required',
             'regions' => 'required',
             'countries' => 'required',

@@ -349,7 +349,7 @@ class ProjectCrudController extends CrudController
 
         CRUD::field('geographic_reach')
             ->type('select2_from_array')
-            ->options(Arr::mapWithKeys(GeographicalReach::cases(), fn($enum) => [$enum->name => $enum->value]));
+            ->options(Arr::mapWithKeys(GeographicalReach::cases(), fn($enum) => [$enum->value => $enum->value]));
 
         CRUD::field('continents')->type('relationship')
             ->label('Select the continent / continents that this project works in.')
