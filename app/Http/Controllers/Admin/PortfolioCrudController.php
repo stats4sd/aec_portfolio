@@ -124,7 +124,7 @@ class PortfolioCrudController extends CrudController
         $portfolio->delete();
 
         Alert::add('success', "$portfolio->name was successfully deleted")->flash();
-
+      
         return back();
     }
 

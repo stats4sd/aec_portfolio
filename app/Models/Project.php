@@ -2,25 +2,28 @@
 
 namespace App\Models;
 
+use Illuminate\Support\Str;
+use App\Services\XeCurrency;
 use App\Enums\AssessmentStatus;
 use App\Enums\GeographicalReach;
-use App\Http\Controllers\Admin\Operations\RedlineOperation;
+use Illuminate\Support\Facades\Auth;
 use App\Services\OrganisationService;
-use App\Services\XeCurrency;
 use App\Services\FreeCurrencyApiHelper;
-use Backpack\CRUD\app\Models\Traits\CrudTrait;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
-use Illuminate\Support\Str;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Backpack\CRUD\app\Models\Traits\CrudTrait;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Http\Controllers\Admin\Operations\RedlineOperation;
 
 class Project extends Model
 {
-    use CrudTrait, HasFactory;
+    use CrudTrait, HasFactory, SoftDeletes;
 
     protected $guarded = ['id'];
 

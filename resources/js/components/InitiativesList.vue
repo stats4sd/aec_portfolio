@@ -79,7 +79,14 @@
         </div>
     </div>
 
-    <InitiativeListCard v-for="initiative in filteredInitiatives" :key="initiative.id" :initiative="initiative" :has-additional-assessment="hasAdditionalAssessment" :enable-edit-button="enableEditButton" :enable-show-button="enableShowButton" :enable-assess-button="enableAssessButton"
+    <InitiativeListCard v-for="initiative in filteredInitiatives"
+        :key="initiative.id"
+        :initiative="initiative"
+        :has-additional-assessment="hasAdditionalAssessment"
+        :enable-edit-button="enableEditButton"
+        :enable-show-button="enableShowButton"
+        :enable-assess-button="enableAssessButton"
+        @remove_initiative="removeInitiative"
     />
 
 </template>
@@ -94,7 +101,7 @@ import InitiativeListCard from "./InitiativeListCard.vue";
 
 const props = defineProps({
     organisation: Object,
-    initiatives: Object,
+    initialInitiatives: Object,
     hasAdditionalAssessment: Boolean,
     showAddButton: Boolean,
     showImportButton: Boolean,
@@ -129,11 +136,11 @@ const propComparator = (propName, sortDir) =>
     (a, b) => a[propName] === b[propName] ? 0 : a[propName] < b[propName] ? -sortDir : sortDir
 
 watch(sortDir, (newSortDir) => {
-    props.initiatives.sort(propComparator(sortBy.value, newSortDir))
+    initiatives.value.sort(propComparator(sortBy.value, newSortDir))
 })
 
 watch(sortBy, (newSortBy) => {
-    props.initiatives.sort(propComparator(newSortBy, sortDir.value))
+    initiatives.value.sort(propComparator(newSortBy, sortDir.value))
 })
 
 
@@ -146,7 +153,7 @@ const portfolioFilter = ref('');
 const searchString = ref('')
 
 const portfolios = computed(() => {
-    return props.initiatives.map(initiative => initiative.portfolio.name)
+    return initiatives.value.map(initiative => initiative.portfolio.name)
         .reduce((cumulative, current) => {
             if (cumulative.includes(current)) {
                 return cumulative;
@@ -191,7 +198,7 @@ const filteredInitiatives = computed(() => {
 
     // declare temporary variables for filtering
     let tempInitiatives;
-    tempInitiatives = props.initiatives;
+    tempInitiatives = initiatives.value;
 
     // apply filter for red flag status
     if (redlineStatusFilter.value) {
@@ -246,8 +253,21 @@ function handlePortfolioFromUrl() {
     })
 }
 
+function removeInitiative(initiative) {
+
+    let tempArray = initiatives.value.map(initiative=>initiative.id);
+
+    // let index = initiatives.value.indexOf(initiative);
+    let index = tempArray.indexOf(initiative.id);
+
+
+    initiatives.value.splice(index, 1);
+}
+
+const initiatives = ref([])
 
 onMounted(() => {
+    initiatives.value = [...props.initialInitiatives]
     handlePortfolioFromUrl();
 })
 
