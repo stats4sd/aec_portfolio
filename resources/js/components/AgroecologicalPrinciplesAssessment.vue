@@ -6,15 +6,22 @@
                 <div class="mb-5">
 
 
-                    This is the main section of the review. Below are the 13 Agroecology Principles, and you should rate the project against each one.
+                    This is the main section of the review. Below are the 13 Agroecology Principles, and you should rate
+                    the project against each one.
                     <br/><br/>
                     For each principle, you should give:
 
                     <ul>
-                        <li>A rating: This is a number between 0 and 2, based on your appreciation of the value of the principle in the project design / activities, and following the Spectrum defined for each principle. Decimal digits are allowed.</li>
-                        <li>A comment: Please add any comments to help explain the rating, and about how the principle is seen within the project.</li>
+                        <li>A rating: This is a number between 0 and 2, based on your appreciation of the value of the
+                            principle in the project design / activities, and following the Spectrum defined for each
+                            principle. Decimal digits are allowed.
+                        </li>
+                        <li>A comment: Please add any comments to help explain the rating, and about how the principle
+                            is seen within the project.
+                        </li>
                     </ul>
-                    Each principle also lists a set of example activities relevant to that principle. Please tick all activities that are present in the project.
+                    Each principle also lists a set of example activities relevant to that principle. Please tick all
+                    activities that are present in the project.
                     <br/><br/>
                     <b class="text-deep-green">Click on a principle to begin:</b>
                 </div>
@@ -34,8 +41,11 @@
                                 >
                                     <span>{{ principleAssessment.principle.name }}</span>
                                     <div class="d-flex align-items-end">
-                                        <h5 class="py-0 m-0 pr-4" style="line-height: 1.3em;" v-if="principleAssessment.complete">
-                                            {{ principleAssessment.is_na ? 'N/A' : Math.round(principleAssessment.rating * 10) / 10 }}
+                                        <h5 class="py-0 m-0 pr-4" style="line-height: 1.3em;"
+                                            v-if="principleAssessment.complete">
+                                            {{
+                                                principleAssessment.is_na ? 'N/A' : Math.round(principleAssessment.rating * 10) / 10
+                                            }}
                                         </h5>
                                         <h3 class="p-0 m-0 d-flex">
                                             <i :class="principleAssessment.complete ? 'la la-check-circle' : 'la la-edit'"></i>
@@ -49,7 +59,8 @@
 
             </div>
         </div>
-        <p class="ml-auto mr-auto">Once you have completed all {{ principleAssessments.length }} principles, you may mark the assessment as complete below.</p>
+        <p class="ml-auto mr-auto">Once you have completed all {{ principleAssessments.length }} principles, you may
+            mark the assessment as complete below.</p>
     </div>
     <div class="ml-auto mr-auto d-flex flex-column align-items-center mt-4">
         <v-checkbox
@@ -60,18 +71,35 @@
             v-model="assessmentComplete"
         />
 
+        <div class="d-flex justify-content-around">
 
-        <form method="POST" :action="`/admin/${assessmentType}/${assessment.id}/finalise`" class="mt-4">
-            <input type="hidden" name="_token" :value="csrf">
-            <button
-                class="btn"
-                :class="assessmentComplete ? 'btn-success' : 'btn-secondary'"
-                type="submit"
-                :disabled="!assessmentComplete"
-            >
-                Finalise Assessment
-            </button>
-        </form>
+            <form method="POST" :action="`/admin/${assessmentType}/${assessment.id}/finalise`" class="mt-4">
+                <input type="hidden" name="_token" :value="csrf">
+                <input type="hidden" name="_redirect" value="/admin/project">
+                <button
+                    class="btn"
+                    :class="assessmentComplete ? 'btn-success' : 'btn-secondary'"
+                    type="submit"
+                    :disabled="!assessmentComplete"
+                >
+                    <span class="la la-save"></span> Finalise Assessment
+                </button>
+            </form>
+
+            <form method="POST" :action="`/admin/${assessmentType}/${assessment.id}/finalise`" class="mt-4 ml-4"
+                  v-if="assessment.has_additional_criteria">
+                <input type="hidden" name="_token" :value="csrf">
+                <input type="hidden" name="_redirect" :value="`/admin/assessment/${assessment.id}/assess-custom`">
+                <button
+                    class="btn"
+                    :class="assessmentComplete ? 'btn-success' : 'btn-secondary'"
+                    type="submit"
+                    :disabled="!assessmentComplete"
+                >
+                    <span class="la la-arrow-right"></span>  Finalise and begin Additional Assessment
+                </button>
+            </form>
+        </div>
     </div>
 
 

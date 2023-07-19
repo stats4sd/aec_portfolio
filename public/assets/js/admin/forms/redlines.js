@@ -12,6 +12,8 @@ function updateCount() {
     if(countRequired === countFinished) {
         crud.field('redlines_complete').show();
         crud.field('redlines_incomplete').hide();
+
+
     } else {
         crud.field('redlines_complete').hide();
         crud.field('redlines_incomplete').show();
@@ -28,4 +30,3 @@ document.querySelectorAll("[data-required='1']")
     })
 
 updateCount()
-

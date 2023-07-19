@@ -78,6 +78,7 @@ trait RedlineOperation
 
     public function postRedlineForm(Request $request)
     {
+
         if ($request->has('redlines_compelete') && $request->redlines_complete === 1) {
             foreach (RedLine::all() as $redline) {
                 if ($request->has('redline_value_' . $redline->id)) {
@@ -126,7 +127,7 @@ trait RedlineOperation
 
         $latestAssessment->save();
 
-
-        return redirect(backpack_url('project'));
+        // use redirect from request to determine redirect
+        return redirect(backpack_url($request->input('_redirect') ?? 'project'));
     }
 }

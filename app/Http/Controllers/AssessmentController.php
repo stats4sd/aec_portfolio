@@ -11,6 +11,8 @@ class AssessmentController extends Controller
 
     public function assess(Assessment $assessment)
     {
+        $assessment->has_additional_criteria = $assessment->project->organisation->has_additional_criteria;
+
         return view("crud::operations.assess", ['assessment' => $assessment]);
     }
 
@@ -26,10 +28,12 @@ class AssessmentController extends Controller
             $assessment->save();
 
             Alert::success('The Principles Assessment for ' . $assessment->project->name . ' is now complete.')->flash();
-            return redirect('/admin/project');
+
+            return redirect(request()->input('_redirect') ?? '/admin/project');
         }
 
         Alert::warning('It looks like the assessment is not yet complete. Please check you have given a rating to all applicable principles.')->flash();
+
         return back();
 
     }
