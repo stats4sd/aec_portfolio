@@ -17,6 +17,6 @@ class UserFeedbackType extends Model
 
     public function userFeedbacks(): HasMany
     {
-        return $this->hasMany(UserFeedback::class);
+        return $this->hasMany(UserFeedback::class, 'user_feedback_type_id');
     }
 }

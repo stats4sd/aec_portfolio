@@ -41,11 +41,11 @@ class UserFeedback extends Model implements HasMedia
 
     public function type(): BelongsTo
     {
-        return $this->belongsTo(UserFeedbackType::class);
+        return $this->belongsTo(UserFeedbackType::class, 'user_feedback_type_id');
     }
 
     public function comments(): HasMany
     {
-        return $this->hasMany(UserFeedbackComment::class);
+        return $this->hasMany(UserFeedbackComment::class, 'user_feedback_id');
     }
 }
