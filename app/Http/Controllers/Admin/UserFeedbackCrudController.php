@@ -87,9 +87,6 @@ class UserFeedbackCrudController extends CrudController
             [
                 'name' => 'message',
                 'type' => 'textarea',
-                'attributes' => [
-                    'readonly' =>
-                ]
             ],
         ]);
 
