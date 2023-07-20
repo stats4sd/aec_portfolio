@@ -17,51 +17,58 @@ class ProjectController extends Controller
      */
     public function index(Request $request)
     {
-        // extract portfolio from GET parameter
-        $paraPortfolio = $request->input('portfolio');
+        $paramPortfolioFilter = $request->input('portfolioFilter');
+        $paramProcessed = $request->input('processed');
 
-        // My Institution > click "SHOW INITIATIVES" button of a portfolio
-        // The corresponding portfolio is considered as user selected portfolio.
-        // When user clicks "Initiatives", initiative page will only show all initiatives of the selected portfolio.
-        // User can reset the selected portfolio by clicking "My Institution", as this action means user wants to 
-        // select another portfolio.
-        // 
-        // By the way, I would expect this handling may create user confusion.
-        // Some users may select a portfolio, then keep clicking "Initiatives" and asking where are my other initiatives...
+        if ($paramProcessed == null) {
+            logger("processed is null. Now we proceed to final processing");
 
-        if ($paraPortfolio == null) {
-            // keep log message for future debugging when necessary
-            // logger("URL does not have portfolio in GET parameter. Need to check whether user has selected a portfolio");
+            if ($paramPortfolioFilter != null) {
+                logger('$paramPortfolioFilter is not null');
+                logger("request come from My Institution > portfolio list > SHOW INITIATIVE button");
+                logger("reset all settings, store the selected portfolio in session, show all initiatives of this portfolio");
 
-            $selectedPortfolio = Session::get('selectedPortfolio');
-            // logger('selectedPortfolio: ' . Session::get('selectedPortfolio'));
-
-            if ($selectedPortfolio != '') {
-                // Note:
-                //
-                // 1. It may be a rare case that, user A selected portfolio X, stored it in session.
-                // Then user B removed portfolio X, so that portfolio X is not accessible anymore.
-                // In this case, portfolio filter will be filled with portfolio name, and there is no initiatives showed
-                // 
-                // 2. This is possible to check whether portfolio existence here. 
-                // But it becomes complicated when different institution can have the same portfolio name.
-                // Let's keep it simple here. As the worst case to search a non-exist portfolio is no initiative showed only
-
-                // logger("User has selected portfolio: " . $selectedPortfolio);
-                return redirect('/admin/project?portfolio=' . $selectedPortfolio);
-
-            // } else {
-            //     logger("User has not selected any portfolio, show all initiatives");
+                Session::put('sortBy', 'name');
+                Session::put('sortDir', '1');
+                Session::put('redlineStatusFilterLabel', '');
+                Session::put('redlineStatusFilterValue', '');
+                Session::put('principleStatusFilterLabel', '');
+                Session::put('principleStatusFilterValue', '');
+                Session::put('portfolioFilter', $paramPortfolioFilter);
+                Session::put('searchString', '');
+            } else {
+                logger("user clicks Initiatives to enter initiative page");
+                logger("show initiatives with all settings in session");
             }
 
-        } else {
-            // logger("URL has portfolio in GET parameter, store it in session. Show all initiatives of selected portfolio");
+            logger("get settings from session");
+
+            $sortBy = Session::get('sortBy') == null ? "name" : Session::get('sortBy');
+            $sortDir = Session::get('sortDir') == null ? "1" : Session::get('sortDir');
+            $portfolioFilter = Session::get('portfolioFilter');
+
+            $queryString = '?';
+            $queryString = $queryString . 'sortBy=' . $sortBy;
+            $queryString = $queryString . '&sortDir=' . $sortDir;
+            $queryString = $queryString . '&redlineStatusFilterLabel=' . Session::get('redlineStatusFilterLabel');
+            $queryString = $queryString . '&redlineStatusFilterValue=' . Session::get('redlineStatusFilterValue');
+            $queryString = $queryString . '&principleStatusFilterLabel=' . Session::get('principleStatusFilterLabel');
+            $queryString = $queryString . '&principleStatusFilterValue=' . Session::get('principleStatusFilterValue');
+            $queryString = $queryString . '&portfolioFilter=' . $portfolioFilter;
+            $queryString = $queryString . '&searchString=' . Session::get('searchString');
+            $queryString = $queryString . '&processed=1';
+
+            logger('$queryString: ' . $queryString);
+
+            return redirect('/admin/project' . $queryString);
             
-            // store user selected portfolio in session
-            Session::put('selectedPortfolio', $paraPortfolio);
-            // logger('selectedPortfolio: ' . Session::get('selectedPortfolio'));
+        } else {
+            logger("processed is not null. User has been redirected with final processing, do nothing");
         }
 
+
+        ////////////////////
+        
 
         $projects = Project::with([
             'portfolio' => [
@@ -124,28 +131,6 @@ class ProjectController extends Controller
         ]);
     }
 
-
-    /**
-     * Reset sorting, filters and keyword search of initiatives page in session,
-     * then redirect to initaitve page to show all initiatives
-     */
-    public function reset(Request $request)
-    {
-        logger("ProjectController.reset()...");
-
-        // TODO: 
-        // sortBy = Name
-        // sortDir = 1 (Ascending)
-        // redlineStatusFilter = null
-        // principleStatusFilter = null
-        // portfolioFilter = null
-        // searchString = null
-
-        // remove user selected portfolio
-        Session::forget("selectedPortfolio");
-
-        return redirect('/admin/project');
-    }
 
     /**
      * Show the form for creating a new resource.

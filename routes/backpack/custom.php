@@ -29,6 +29,7 @@ use App\Http\Controllers\OrganisationController;
 use App\Http\Controllers\OrganisationMemberController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\SelectedOrganisationController;
+use App\Http\Controllers\SessionController;
 
 
 Route::group([
@@ -87,10 +88,10 @@ Route::group([
 
         Route::crud('project', ProjectCrudController::class);
         Route::get('project', [ProjectController::class, 'index']);
-        Route::get('project/reset', [ProjectController::class, 'reset']);
         Route::get('project/{project}/re-assess', [ProjectCrudController::class, 'reAssess']);
 
-        Route::get('session/store', [SessionController::class, 'store']);
+        Route::post('session/store', [SessionController::class, 'store']);
+        Route::get('session/reset', [SessionController::class, 'reset']);
 
 
         Route::crud('assessment', AssessmentCrudController::class);

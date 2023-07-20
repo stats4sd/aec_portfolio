@@ -145,6 +145,9 @@ const portfolioFilter = ref('');
 // keyword search filter
 const searchString = ref('')
 
+// to indicate whether Vue component is initalised with settings stored in session
+let flagInitialised = 0;
+
 const portfolios = computed(() => {
     return props.initiatives.map(initiative => initiative.portfolio.name)
         .reduce((cumulative, current) => {
@@ -185,7 +188,7 @@ function makeFilterOptions(string) {
 }
 
 const filteredInitiatives = computed(() => {
-    console.log("filteredInitiatives()");
+    // store latest settings to session
     latestStatus();
 
     // just mentioning variables, computed() function will be triggered when their value changed
@@ -227,50 +230,100 @@ const filteredInitiatives = computed(() => {
     return tempInitiatives;
 })
 
+// reset all session variables, then redirect to initiative page
 function resetFilters() {
-    // TODO:
-    // go to reset page, remove all session variables, then redirect to initiative page
-    window.location = "/admin/project/reset"
-
-/*
-    redlineStatusFilter.value = '';
-    principleStatusFilter.value = '';
-    portfolioFilter.value = '';
-    searchString.value = '';
-
-    handlePortfolioFromUrl();
-*/
+    window.location = "/admin/session/reset"
 }
 
-// handle portfolio from url
-function handlePortfolioFromUrl() {
+
+// handle settings from url
+function handleSettingsFromUrl() {
+    let redlineStatusFilterLabel = '';
+    let redlineStatusFilterValue = '';
+    let principleStatusFilterLabel = '';
+    let principleStatusFilterValue = '';
+
     const querypairs = window.location.search.substring(1);
-    const test = new URLSearchParams(querypairs)
-    console.log(test)
+    const test = new URLSearchParams(querypairs);
+    console.log(test);
 
     test.forEach((value, key) => {
-        if (key === 'portfolio') {
+
+        // string type parameters work well, e.g. sortBy, portfolioFilter, searchString
+        // store selection box option JSON object as two string type parameters, i.e. label and value
+        // Question: how to make it work for integer type parameter?
+
+        if (key === 'sortBy') {
+            sortBy.value = value;
+        }
+
+        // TODO: sortDir button has not been set properly
+        if (key === 'sortDir') {
+            sortDir.value = value;
+        }
+
+        if (key === 'redlineStatusFilterLabel') {
+            redlineStatusFilterLabel = value;
+        }
+
+        if (key === 'redlineStatusFilterValue') {
+            redlineStatusFilterValue = value;
+        }
+
+        if (key === 'principleStatusFilterLabel') {
+            principleStatusFilterLabel = value;
+        }
+
+        if (key === 'principleStatusFilterValue') {
+            principleStatusFilterValue = value;
+        }
+
+        if (key === 'portfolioFilter') {
             portfolioFilter.value = value;
         }
+
+        if (key === 'searchString') {
+            searchString.value = value;
+        }
+
     })
+
+    // construct JSON object for redline status
+    if (redlineStatusFilterLabel != '' && redlineStatusFilterValue != '') {
+        let redlineStatusFilterOption = JSON.parse('{"label":"' + redlineStatusFilterLabel + '","value":"' + redlineStatusFilterValue + '"}');
+        redlineStatusFilter.value = redlineStatusFilterOption;
+    }
+
+    // construct JSON object for principle status
+    if (principleStatusFilterLabel != '' && principleStatusFilterValue != '') {
+        let principleStatusFilterOption = JSON.parse('{"label":"' + principleStatusFilterLabel + '","value":"' + principleStatusFilterValue + '"}');
+        principleStatusFilter.value = principleStatusFilterOption;
+    }
+
+    // set flag value to indicate Vue component has been initialised with settings stored in session
+    flagInitialised = 1;
 }
 
 
 function latestStatus() {
-    console.log("latestStatus()...");
-    console.log("sortBy.value: " + sortBy.value);
-    console.log("sortDir.value: " + sortDir.value);
-    console.log("redlineStatusFilter.value: " + redlineStatusFilter.value);
-    console.log("principleStatusFilter.value: " + principleStatusFilter.value);
-    console.log("portfolioFilter.value: " + portfolioFilter.value);
-    console.log("searchString.value: " + searchString.value);
-
-    // TODO: send ajax call to SessionController.store
+    if (flagInitialised == 1) {
+        // send ajax call to SessionController.store
+        const result = axios.post('/admin/session/store', {
+            sortBy: sortBy.value,
+            sortDir: sortDir.value,
+            redlineStatusFilterLabel: redlineStatusFilter.value == null ? '' : redlineStatusFilter.value.label,
+            redlineStatusFilterValue: redlineStatusFilter.value == null ? '' : redlineStatusFilter.value.value,
+            principleStatusFilterLabel: principleStatusFilter.value == null ? '' : principleStatusFilter.value.label,
+            principleStatusFilterValue: principleStatusFilter.value == null ? '' : principleStatusFilter.value.value,
+            portfolioFilter: portfolioFilter.value,
+            searchString: searchString.value,
+        });
+    }
 }
 
 
 onMounted(() => {
-    handlePortfolioFromUrl();
+    handleSettingsFromUrl();
 })
 
 
