@@ -24,8 +24,8 @@
                     <h3 class="my-0 mx-4 btn btn-outline-info" @click="sortDir = -sortDir">
                         <i
                             class="la"
-                            :class="sortDir === 1 ? 'la-arrow-up' : 'la-arrow-down'"
-                        ></i> Sort {{ sortDir === 1 ? 'Ascending' : 'Descending' }}
+                            :class="sortDir == 1 ? 'la-arrow-up' : 'la-arrow-down'"
+                        ></i> Sort {{ sortDir == 1 ? 'Ascending' : 'Descending' }}
                     </h3>
 
                 </div>
@@ -189,7 +189,7 @@ function makeFilterOptions(string) {
 
 const filteredInitiatives = computed(() => {
     // store latest settings to session
-    latestStatus();
+    storeLatestSettings();
 
     // just mentioning variables, computed() function will be triggered when their value changed
     sortBy.value;
@@ -235,7 +235,6 @@ function resetFilters() {
     window.location = "/admin/session/reset"
 }
 
-
 // handle settings from url
 function handleSettingsFromUrl() {
     let redlineStatusFilterLabel = '';
@@ -251,13 +250,12 @@ function handleSettingsFromUrl() {
 
         // string type parameters work well, e.g. sortBy, portfolioFilter, searchString
         // store selection box option JSON object as two string type parameters, i.e. label and value
-        // Question: how to make it work for integer type parameter?
+        // integer type parameter is handled in the same way as string type parameter
 
         if (key === 'sortBy') {
             sortBy.value = value;
         }
 
-        // TODO: sortDir button has not been set properly
         if (key === 'sortDir') {
             sortDir.value = value;
         }
@@ -304,8 +302,7 @@ function handleSettingsFromUrl() {
     flagInitialised = 1;
 }
 
-
-function latestStatus() {
+function storeLatestSettings() {
     if (flagInitialised == 1) {
         // send ajax call to SessionController.store
         const result = axios.post('/admin/session/store', {
@@ -321,10 +318,8 @@ function latestStatus() {
     }
 }
 
-
 onMounted(() => {
     handleSettingsFromUrl();
 })
-
 
 </script>
