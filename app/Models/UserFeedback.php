@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\Auth;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
@@ -23,7 +24,7 @@ class UserFeedback extends Model implements HasMedia
         static::addGlobalScope('owned', function (Builder $builder) {
 
             // if the current user can maintain users, they can see all feedback.
-            if(Auth::user()->can('maintain users')) {
+            if(Auth::user()->can('manage user feedback')) {
                 return;
             }
 
@@ -38,8 +39,13 @@ class UserFeedback extends Model implements HasMedia
         return $this->belongsTo(User::class);
     }
 
-    public function feedbackType(): BelongsTo
+    public function type(): BelongsTo
     {
         return $this->belongsTo(UserFeedbackType::class);
+    }
+
+    public function comments(): HasMany
+    {
+        return $this->hasMany(UserFeedbackComment::class);
     }
 }

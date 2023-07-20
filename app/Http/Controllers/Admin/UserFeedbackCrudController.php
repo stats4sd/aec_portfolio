@@ -16,8 +16,6 @@ class UserFeedbackCrudController extends CrudController
 {
     use \Backpack\CRUD\app\Http\Controllers\Operations\ListOperation;
     use \Backpack\CRUD\app\Http\Controllers\Operations\UpdateOperation;
-    use \Backpack\CRUD\app\Http\Controllers\Operations\DeleteOperation;
-    use \Backpack\CRUD\app\Http\Controllers\Operations\ShowOperation;
 
     /**
      * Configure the CrudPanel object. Apply settings to all operations.
@@ -40,13 +38,17 @@ class UserFeedbackCrudController extends CrudController
     protected function setupListOperation()
     {
 
+        CRUD::column('type.name');
         CRUD::column('user.email');
         CRUD::column('created_at');
-        CRUD::column('status');
+        CRUD::column('');
 
         CRUD::enableDetailsRow();
-
         CRUD::setDetailsRowView('user-feedback.details_row');
+
+        if(!Auth::user()->can('manage user feedback')) {
+            CRUD::denyAccess(['list', 'update']);
+        }
 
     }
 
@@ -55,20 +57,41 @@ class UserFeedbackCrudController extends CrudController
 
         CRUD::field('title')
             ->type('section-title')
-            ->title('Add Your Feedback')
-            ->content('Please enter the details below.<br/><br/>
-                    If you are reporting a bug, please tell us what page you were on, what you expected to happen, and what actually happened. If possible, please include a screenshot, as they are very helpful for us to identify the issue.
-                   <br/><br/>
-                   If you are making a suggestion, please let us know what feature or addition you would like to see. We may get in touch with you for more information. Please tell us if you do <span class="font-weight-bold">Not</span> want us to do that below.
-                    ')
+            ->title('Feedback Details')
             ->view_namespace('stats4sd.laravel-backpack-section-title::fields');
 
-        CRUD::field('user')->type('hidden')->value(Auth::id());
+        CRUD::field('user')->attributes(['disabled' => 'disabled']);
 
-        CRUD::field('feedbackType')->label('What type of feedback is this?');
-        CRUD::field('text')->type('text')->label('Describe the issue:');
-        CRUD::field('uploads')->type('upload_multiple')->label('If you have screenshots or supporting files, please upload them here.');
 
+        CRUD::field('userFeedbackType')->attributes(['disabled' => 'disabled']);
+        CRUD::field('message')->type('textarea')->attributes(['readonly' => 'readonly']);
+
+        CRUD::field('title')
+            ->type('section-title')
+            ->content('Add / edit manager comments below')
+            ->view_namespace('stats4sd.laravel-backpack-section-title::fields');
+
+        CRUD::field('comments')
+        ->subfields([
+            [
+                'name' => 'user',
+                'type' => 'relationship',
+                'default' => Auth::user(),
+                'attributes' => ['disabled' => 'disabled'],
+            ],
+            [
+                'name' => 'user_id',
+                'type' => 'hidden',
+                'default' => Auth::user()->id,
+            ],
+            [
+                'name' => 'message',
+                'type' => 'textarea',
+                'attributes' => [
+                    'readonly' =>
+                ]
+            ],
+        ]);
 
 
     }
