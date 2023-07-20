@@ -47,6 +47,7 @@ class OrganisationCrudController extends CrudController
 
         CRUD::setResponsiveTable(false);
         CRUD::column('name');
+        CRUD::column('institutionType');
         CRUD::column('projects')->type('relationship_count');
     }
 
@@ -57,8 +58,10 @@ class OrganisationCrudController extends CrudController
         }
 
         CRUD::field('name')->label('Enter the Institution name');
-        CRUD::field('name')->label('Enter the Institution\'s default currency')
+        CRUD::field('currency')->label('Enter the Institution\'s default currency')
         ->hint('This currency will be used for the summary dashboard. All initiative budgets for your institution will be converted into this currency');
+        CRUD::field('institutionType')->label('Select the type of institution.');
+        CRUD::field('institution_type_other')->label('Enter the "other" type of institution');
     }
 
     protected function setupUpdateOperation()

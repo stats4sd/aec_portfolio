@@ -177,6 +177,9 @@ class ProjectCrudController extends CrudController
 
         CRUD::field('name');
         CRUD::field('code')->hint('The code should uniquely identify the project within your institution\'s porfolio. Leave blank for an auto-generated code.');
+        CRUD::field('initiativeCategory')->label('Select the initiative category.')
+            ->hint('Select the one that best matches. If none of the options fit, select "other".');
+        CRUD::field('initiative_category_other')->label('Enter the "other" category of initiative.');
         CRUD::field('description')->hint('This is optional, but will help to provide context for the AE assessment');
 
         CRUD::field('initiative-timing-title')
@@ -346,7 +349,7 @@ class ProjectCrudController extends CrudController
 
         CRUD::field('geographic_reach')
             ->type('select2_from_array')
-            ->options(Arr::mapWithKeys(GeographicalReach::cases(), fn($enum) => [$enum->name => $enum->value]));
+            ->options(Arr::mapWithKeys(GeographicalReach::cases(), fn($enum) => [$enum->value => $enum->value]));
 
         CRUD::field('continents')->type('relationship')
             ->label('Select the continent / continents that this project works in.')

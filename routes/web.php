@@ -15,7 +15,7 @@ Route::get(config('backpack.base.route_prefix') . '/login', function () {
 });
 
 
-Route::put('organisation/update', [OrganisationController::class, 'update'])->name('organisation.self.update');
+Route::post('organisation/update', [OrganisationController::class, 'update'])->name('organisation.self.update');
 
 
 // `API` calls for Vue components

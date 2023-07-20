@@ -87,7 +87,7 @@ class ProjectController extends Controller
 
         $org = Organisation::find(Session::get('selectedOrganisationId'));
 
-        $hasAdditionalAssessment = $org->additionalCriteria->count() > 0;
+        $hasAdditionalAssessment = $org->additionalCriteria->count() > 0 && $org->has_additional_criteria;
 
         $showAddButton = false;
         $showImportButton = false;
@@ -172,11 +172,4 @@ class ProjectController extends Controller
         //
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Project $project)
-    {
-        //
-    }
 }

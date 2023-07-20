@@ -13,6 +13,7 @@ export default defineConfig({
                 'resources/js/radarChart.js',
                 'resources/js/dashboard.js',
                 'resources/js/initiatives.js',
+                'resources/js/institutions.js',
                 'resources/js/assess.js',
                 'resources/js/dashboard-temp.js',
             ],

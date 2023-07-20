@@ -11,6 +11,8 @@ use App\Http\Controllers\Admin\AdditionalCriteriaScoreTagCrudController;
 use App\Http\Controllers\Admin\AssessmentCrudController;
 use App\Http\Controllers\Admin\ContinentCrudController;
 use App\Http\Controllers\Admin\CountryCrudController;
+use App\Http\Controllers\Admin\InitiativeCategoryCrudController;
+use App\Http\Controllers\Admin\InstitutionTypeCrudController;
 use App\Http\Controllers\Admin\OrganisationCrudController;
 use App\Http\Controllers\Admin\PortfolioCrudController;
 use App\Http\Controllers\Admin\PrincipleCrudController;
@@ -138,9 +140,9 @@ Route::group([
     });
 
 
+    Route::crud('initiative-category', InitiativeCategoryCrudController::class);
+    Route::crud('institution-type', InstitutionTypeCrudController::class);
 });
-
-// for use with Browsershot:
 
 Route::get('project/{id}/show-as-pdf', [ProjectCrudController::class, 'show'])
     ->middleware('auth.basic')

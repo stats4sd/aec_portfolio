@@ -33,7 +33,10 @@ class TestSeeder extends Seeder
 
         $institution = Organisation::create([
             'name' => 'Test Institution 1',
+            'geographic_reach' => GeographicalReach::Global->value,
+            'currency' => 'EUR',
             'has_additional_criteria' => 0,
+            'description' => 'This is a test organisation',
         ]);
 
         $portfolio = $institution->portfolios()->create([

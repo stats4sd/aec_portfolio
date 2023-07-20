@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\AssessmentStatus;
 use App\Models\Assessment;
 use App\Models\Country;
+use App\Models\InitiativeCategory;
 use App\Models\Organisation;
 use App\Models\Portfolio;
 use App\Models\Project;
@@ -68,11 +70,22 @@ class GenericDashboardController extends Controller
             ->unique()
             ->values();
 
+        $categories = $org->portfolios
+            ->map(fn(Portfolio $portfolio): Collection => $portfolio
+                ->projects
+                ->map(fn(Project $project): ?InitiativeCategory => $project
+                    ->initiativeCategory
+                )
+            )
+            ->flatten()
+            ->unique()
+            ->values();
 
         return [
             'organisation' => $org,
             'regions' => $regions,
             'countries' => $countries,
+            'categories' => $categories,
         ];
     }
 
@@ -91,6 +104,7 @@ class GenericDashboardController extends Controller
         $portfolioId = $request['portfolio']['id'] ?? 'null';
         $regionIds = $request['regions'] ? "'" . collect($request['regions'])->pluck('id')->join(', ') . "'" : 'null';
         $countryIds = $request['countries'] ? "'" . collect($request['countries'])->pluck('id')->join(', ') . "'" : 'null';
+        $categoryIds = $request['categories'] ? "'" . collect($request['categories'])->pluck('id')->join(', ') . "'" : 'null';
         $projectStartFrom = $request['startDate'] ?? 'null';
         $projectStartTo = $request['endDate'] ?? 'null';
         $budgetFrom = $request['minBudget'] ?? 'null';
@@ -107,6 +121,7 @@ class GenericDashboardController extends Controller
             {$portfolioId},
             {$regionIds},
             {$countryIds},
+            {$categoryIds},
             {$projectStartFrom},
             {$projectStartTo},
             {$budgetFrom},
@@ -262,7 +277,7 @@ class GenericDashboardController extends Controller
             ->where('dashboard_id', $dashboardYoursId))
             ->get();
 
-        $noOfInitiativeCompletedAssessment = $allAssessments->where('completed_at', '!=', null)->count();
+        $noOfInitiativeCompletedAssessment = $allAssessments->where('principle_status', '=', AssessmentStatus::Complete->value)->count();
 
         // initialise variables
         $assessmentScore = 'N/A';

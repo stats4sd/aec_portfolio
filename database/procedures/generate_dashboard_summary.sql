@@ -7,6 +7,7 @@ CREATE PROCEDURE `generate_dashboard_summary`(
     IN portfolioId INT,
     IN regionIds VARCHAR(255),
     IN countryIds VARCHAR(255),
+    IN categoryIds VARCHAR(255),
     IN projectStartFrom INT,
     IN projectStartTo INT,
     IN budgetFrom INT,
@@ -160,6 +161,10 @@ BEGIN
         SET @SQLText = CONCAT(@SQLText, ' AND cp.country_id IN (', countryIds, ')');
     END IF;
 
+    IF categoryIds IS NOT NULL THEN
+        SET @SQLText = CONCAT(@SQLText, ' AND p.initiative_category_id IN (', categoryIds, ')');
+    END IF;
+
     -- debug message
     SELECT @SQLText FROM DUAL;
 
@@ -227,6 +232,10 @@ BEGIN
         SET @SQLText = CONCAT(@SQLText, ' AND cp.country_id IN (', countryIds, ')');
     END IF;
 
+    IF categoryIds IS NOT NULL THEN
+        SET @SQLText = CONCAT(@SQLText, ' AND p.initiative_category_id IN (', categoryIds, ')');
+    END IF;
+
     -- execute dynamic SQL
     PREPARE stmt FROM @SQLText;
     EXECUTE stmt;
@@ -256,22 +265,23 @@ BEGIN
 #
 
     -- find number of projects
-    SELECT COUNT(DISTINCT project_id) AS number_of_project FROM dashboard_project WHERE dashboard_id = dashboardOthersId;
+    SELECT COUNT(DISTINCT project_id) AS number_of_project
+    FROM dashboard_project
+    WHERE dashboard_id = dashboardOthersId;
 
     -- find number of organisations
     SELECT COUNT(DISTINCT p.organisation_id) AS number_of_organisation
-    FROM dashboard_project AS dp, projects AS p
+    FROM dashboard_project AS dp,
+         projects AS p
     WHERE dp.project_id = p.id
-    AND dp.dashboard_id = dashboardOthersId;
+      AND dp.dashboard_id = dashboardOthersId;
 
-#     -- Must have 10 or more projects
+    #     -- Must have 10 or more projects
 #     IF (ssOtherProjectCount < 10 OR ssOtherOrganisationCount < 3) THEN
 #         SET tooFewOtherProjects = 1;
 #     ELSE
-         SET tooFewOtherProjects = 0;
-#     END IF;
-
-
+    SET tooFewOtherProjects = 0;
+    #     END IF;
 
 
     -- -------------------------
@@ -399,8 +409,11 @@ BEGIN
 
         -- construct status summary
         SET statusSummary = CONCAT('[',
-                                   '{\"status\":\"Passed all red flags\",\"number\":', ssPassedAllCount, ',\"percent\":', ssPassedAllPercent, ',\"budget\":\"', FORMAT(ssPassedAllBudget, 0), '\"},',
-                                   '{\"status\":\"Fully assessed\",\"number\":', ssFullyAssessedCount, ',\"percent\":', ssFullyAssessedPercent, ',\"budget\":\"', FORMAT(ssFullyAssessedBudget, 0), '\"}]');
+                                   '{\"status\":\"Passed all red flags\",\"number\":', ssPassedAllCount,
+                                   ',\"percent\":', ssPassedAllPercent, ',\"budget\":\"', FORMAT(ssPassedAllBudget, 0),
+                                   '\"},',
+                                   '{\"status\":\"Fully assessed\",\"number\":', ssFullyAssessedCount, ',\"percent\":',
+                                   ssFullyAssessedPercent, ',\"budget\":\"', FORMAT(ssFullyAssessedBudget, 0), '\"}]');
 
         SET totalCount = ssCreatedCount;
         SET totalBudget = ssCreatedBudget;
@@ -424,7 +437,8 @@ BEGIN
 
             DELETE FROM dashboard_result WHERE dashboard_id = dashboardYoursId;
 
-            INSERT INTO dashboard_result (dashboard_id, dashboard_others_id, status, message, status_summary, created_at, updated_at)
+            INSERT INTO dashboard_result (dashboard_id, dashboard_others_id, status, message, status_summary,
+                                          created_at, updated_at)
                 VALUE (dashboardYoursId, dashboardOthersId, status, message, statusSummary, NOW(), NOW());
         END IF;
 
@@ -466,15 +480,15 @@ BEGIN
 
                 -- special handling to avoid rounded value from 99.5 to 99.99 to a misleading 100
                 IF rsYourPercentage BETWEEN 99.5 AND 99.99 THEN
-                	SET rsYourFinalPercentage = 99.9;
+                    SET rsYourFinalPercentage = 99.9;
                 ELSE
-                	SET rsYourFinalPercentage = ROUND(rsYourPercentage, 0);
+                    SET rsYourFinalPercentage = ROUND(rsYourPercentage, 0);
                 END IF;
 
                 IF rsOthersPercentage BETWEEN 99.5 AND 99.99 THEN
-                	SET rsOthersFinalPercentage = 99.9;
+                    SET rsOthersFinalPercentage = 99.9;
                 ELSE
-                	SET rsOthersFinalPercentage = ROUND(rsOthersPercentage, 0);
+                    SET rsOthersFinalPercentage = ROUND(rsOthersPercentage, 0);
                 END IF;
 
                 -- exit loop if it is end of cursor
@@ -482,7 +496,9 @@ BEGIN
                     LEAVE rs_read_loop;
                 END IF;
 
-                SET redlinesSummary = CONCAT(redlinesSummary, '{\"id\":', rsRedLineId, ',\"name\":\"', rsRedLineName, '\",\"yours\":', rsYourFinalPercentage, ',\"others\":', rsOthersFinalPercentage, '},');
+                SET redlinesSummary =
+                    CONCAT(redlinesSummary, '{\"id\":', rsRedLineId, ',\"name\":\"', rsRedLineName, '\",\"yours\":',
+                           rsYourFinalPercentage, ',\"others\":', rsOthersFinalPercentage, '},');
 
                 -- end loop
             END LOOP rs_read_loop;
@@ -490,8 +506,8 @@ BEGIN
             -- close cursor
             CLOSE rsCursor;
 
-			-- remove the last comma
-			SET redlinesSummary = SUBSTR(redlinesSummary, 1, LENGTH(redlinesSummary) - 1);
+            -- remove the last comma
+            SET redlinesSummary = SUBSTR(redlinesSummary, 1, LENGTH(redlinesSummary) - 1);
 
             SET redlinesSummary = CONCAT(redlinesSummary, ']');
 
@@ -509,7 +525,8 @@ BEGIN
             INTO psPrincipleCount
             FROM principle_assessment
             WHERE rating IS NOT NULL
-              AND assessment_id IN (SELECT assessment_id FROM dashboard_assessment WHERE dashboard_id = dashboardYoursId);
+              AND assessment_id IN
+                  (SELECT assessment_id FROM dashboard_assessment WHERE dashboard_id = dashboardYoursId);
 
             IF psPrincipleCount = 0 THEN
                 SET status = 1003;
@@ -518,14 +535,14 @@ BEGIN
                 DELETE FROM dashboard_result WHERE dashboard_id = dashboardYoursId;
 
                 INSERT INTO dashboard_result
-                SET dashboard_id = dashboardYoursId,
+                SET dashboard_id        = dashboardYoursId,
                     dashboard_others_id = dashboardOthersId,
-                    status = status,
-                    message = message,
-                    status_summary = statusSummary,
-                    red_lines_summary = redlinesSummary,
-                    created_at = NOW(),
-                    updated_at = NOW();
+                    status              = status,
+                    message             = message,
+                    status_summary      = statusSummary,
+                    red_lines_summary   = redlinesSummary,
+                    created_at          = NOW(),
+                    updated_at          = NOW();
             END IF;
 
 
@@ -538,8 +555,10 @@ BEGIN
                       FROM (SELECT principle_id, rating, COUNT(*) AS counter
                             FROM principle_assessment
                             WHERE rating IS NOT NULL
-                              AND assessment_id IN (SELECT assessment_id FROM dashboard_assessment WHERE dashboard_id = dashboardYoursId)
-                            GROUP BY principle_id, rating) AS ta, dashboard_rating AS tb
+                              AND assessment_id IN
+                                  (SELECT assessment_id FROM dashboard_assessment WHERE dashboard_id = dashboardYoursId)
+                            GROUP BY principle_id, rating) AS ta,
+                           dashboard_rating AS tb
                       WHERE ta.rating >= tb.min_rating
                         AND ta.rating < tb.max_rating
                       ORDER BY principle_id) AS principle_summary
@@ -553,8 +572,11 @@ BEGIN
                       FROM (SELECT principle_id, rating, COUNT(*) AS counter
                             FROM principle_assessment
                             WHERE rating IS NOT NULL
-                              AND assessment_id IN (SELECT assessment_id FROM dashboard_assessment WHERE dashboard_id = dashboardOthersId)
-                            GROUP BY principle_id, rating) AS ta, dashboard_rating AS tb
+                              AND assessment_id IN (SELECT assessment_id
+                                                    FROM dashboard_assessment
+                                                    WHERE dashboard_id = dashboardOthersId)
+                            GROUP BY principle_id, rating) AS ta,
+                           dashboard_rating AS tb
                       WHERE ta.rating >= tb.min_rating
                         AND ta.rating < tb.max_rating
                       ORDER BY principle_id) AS principle_summary
@@ -574,19 +596,19 @@ BEGIN
                 -- -------------------------
 
                 INSERT INTO dashboard_result
-                SET dashboard_id = dashboardYoursId,
-                    dashboard_others_id = dashboardOthersId,
-                    status = status,
-                    message = message,
-                    total_count = totalCount,
-                    total_budget = totalBudget,
-                    too_few_others = tooFewOtherProjects,
-                    status_summary = statusSummary,
-                    red_lines_summary = redlinesSummary,
-                    principles_summary_yours = yoursPrinciplesSummary,
+                SET dashboard_id              = dashboardYoursId,
+                    dashboard_others_id       = dashboardOthersId,
+                    status                    = status,
+                    message                   = message,
+                    total_count               = totalCount,
+                    total_budget              = totalBudget,
+                    too_few_others            = tooFewOtherProjects,
+                    status_summary            = statusSummary,
+                    red_lines_summary         = redlinesSummary,
+                    principles_summary_yours  = yoursPrinciplesSummary,
                     principles_summary_others = othersPrinciplesSummary,
-                    created_at = NOW(),
-                    updated_at = NOW();
+                    created_at                = NOW(),
+                    updated_at                = NOW();
 
             END IF;
 

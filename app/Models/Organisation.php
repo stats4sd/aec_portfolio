@@ -2,7 +2,10 @@
 
 namespace App\Models;
 
+use App\Enums\AssessmentStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -44,6 +47,15 @@ class Organisation extends Model
                 $query->where('users.id', Auth::id());
             });
         });
+
+        // If assessment_criteria are used, set additional_criteria status
+        static::saved(function (Organisation $organisation) {
+            if($organisation->has_additional_criteria) {
+                $organisation->assessments()->where('additional_status', AssessmentStatus::Na->value)
+                    ->orWhere('additional_status', null)
+                    ->update(['additional_status' => AssessmentStatus::NotStarted->value]);
+            }
+        });
     }
 
 
@@ -51,6 +63,11 @@ class Organisation extends Model
     {
         return $this->hasMany(Project::class)
             ->withoutGlobalScopes(['organisation']);
+    }
+
+    public function assessments(): HasManyThrough
+    {
+        return $this->hasManyThrough(Assessment::class, Project::class);
     }
 
     public function portfolios()
@@ -115,5 +132,10 @@ class Organisation extends Model
             DB::insert('insert into role_invites (email, role_id, inviter_id, token, created_at, updated_at) values (?, ?, ?, ?, NOW(), NOW())',
                 [$email, $roleId, auth()->user()->id, $invite->token]);
         }
+    }
+
+    public function institutionType(): BelongsTo
+    {
+        return $this->belongsTo(InstitutionType::class);
     }
 }
