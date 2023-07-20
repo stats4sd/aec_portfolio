@@ -3,14 +3,17 @@
 namespace App\Models;
 
 use Backpack\CRUD\app\Models\Traits\CrudTrait;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\Auth;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
 
-class UserFeedback extends Model
+class UserFeedback extends Model implements HasMedia
 {
-    use CrudTrait;
+    use CrudTrait, InteractsWithMedia;
 
     protected $table = 'user_feedbacks';
     protected $guarded = ['id'];

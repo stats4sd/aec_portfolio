@@ -2,7 +2,11 @@
     "name": "stats4sd/laravel-template",
     "type": "project",
     "description": "A Laravel Data Platform Template.",
-    "keywords": ["framework", "laravel", "template"],
+    "keywords": [
+        "framework",
+        "laravel",
+        "template"
+    ],
     "license": "MIT",
     "require": {
         "php": "^8.1",
@@ -19,6 +23,8 @@
         "maatwebsite/excel": "^3.1",
         "orangehill/iseed": "^3.0",
         "spatie/browsershot": "^3.57",
+        "spatie/laravel-medialibrary": "^10.0.0",
+        "spatie/laravel-medialibrary-pro": "^2.0.0",
         "stats4sd/laravel-backpack-section-title": "dev-backpack-5",
         "stats4sd/laravel-file-util": "dev-laravel-9-support",
         "stats4sd/laravel-sql-views": "^v1.1.0",
@@ -81,6 +87,10 @@
         {
             "type": "composer",
             "url": "https://repo.backpackforlaravel.com/"
+        },
+        {
+            "type": "composer",
+            "url": "https://satis.spatie.be"
         }
     ],
     "minimum-stability": "dev",

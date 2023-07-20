@@ -15,7 +15,6 @@ use Illuminate\Support\Facades\Auth;
 class UserFeedbackCrudController extends CrudController
 {
     use \Backpack\CRUD\app\Http\Controllers\Operations\ListOperation;
-    use \Backpack\CRUD\app\Http\Controllers\Operations\CreateOperation;
     use \Backpack\CRUD\app\Http\Controllers\Operations\UpdateOperation;
     use \Backpack\CRUD\app\Http\Controllers\Operations\DeleteOperation;
     use \Backpack\CRUD\app\Http\Controllers\Operations\ShowOperation;
@@ -51,13 +50,7 @@ class UserFeedbackCrudController extends CrudController
 
     }
 
-    /**
-     * Define what happens when the Create operation is loaded.
-     *
-     * @see https://backpackforlaravel.com/docs/crud-operation-create
-     * @return void
-     */
-    protected function setupCreateOperation()
+    protected function setupUpdateOperation()
     {
 
         CRUD::field('title')
@@ -80,14 +73,5 @@ class UserFeedbackCrudController extends CrudController
 
     }
 
-    /**
-     * Define what happens when the Update operation is loaded.
-     *
-     * @see https://backpackforlaravel.com/docs/crud-operation-update
-     * @return void
-     */
-    protected function setupUpdateOperation()
-    {
-        $this->setupCreateOperation();
-    }
+
 }

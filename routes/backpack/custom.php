@@ -33,6 +33,7 @@ use App\Http\Controllers\OrganisationController;
 use App\Http\Controllers\OrganisationMemberController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\SelectedOrganisationController;
+use App\Http\Controllers\UserFeedbackController;
 
 
 Route::group([
@@ -141,6 +142,7 @@ Route::group([
     Route::crud('initiative-category', InitiativeCategoryCrudController::class);
     Route::crud('institution-type', InstitutionTypeCrudController::class);
     Route::crud('user-feedback', UserFeedbackCrudController::class);
+    Route::post('user-feedback', [UserFeedbackController::class, 'store']);
     Route::crud('feedback-type', UserFeedbackTypeCrudController::class);
 
     Route::view('support', 'support');

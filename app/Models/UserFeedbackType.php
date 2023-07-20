@@ -11,7 +11,7 @@ class UserFeedbackType extends Model
 {
     use CrudTrait;
 
-    protected $table = 'feedback_types';
+    protected $table = 'user_feedback_types';
     protected $guarded = ['id'];
 
 

@@ -11,12 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('user_feedback', function (Blueprint $table) {
+        Schema::create('user_feedbacks', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->nullable()->constrained('users')->cascadeOnUpdate()->nullOnDelete();
             $table->foreignId('user_feedback_type_id')->nullable()->constrained('user_feedback_types')->cascadeOnUpdate()->nullOnDelete();
             $table->text('message');
-            $table->text('attachments');
+            $table->text('attachments')->nullable();
             $table->timestamps();
         });
     }

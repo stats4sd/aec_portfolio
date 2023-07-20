@@ -1,4 +1,6 @@
 @import url("https://fonts.googleapis.com/css?family=Hind");
+@import "../../vendor/spatie/laravel-medialibrary-pro/resources/js/media-library-pro-styles";
+
 @import "variables";
 
 @import "~@digitallyhappy/backstrap/src/scss/style";
@@ -7,6 +9,8 @@
 @import "~@digitallyhappy/backstrap/src/scss/_custom";
 @import "~line-awesome/dist/line-awesome/css/line-awesome.min.css";
 @import "~noty/src/noty";
+
+
 
 @import "backpack-form-tweaks";
 @import "redline-radios";

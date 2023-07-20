@@ -9,8 +9,7 @@
     <form action="{{ route('organisation.self.update') }}" method="POST">
         @method('PUT')
         @csrf
-
-                    @foreach ($errors->all() as $error)
+            @foreach ($errors->all() as $error)
                 <li>{{ $error }}</li>
             @endforeach
 
