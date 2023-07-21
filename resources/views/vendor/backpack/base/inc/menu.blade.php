@@ -56,6 +56,17 @@
             </a>
         </li>
 
+        @if(\App\Models\Organisation::count() > 1)
+        <li class="nav-item pr-4">
+            <a class="nav-link d-flex justify-content-between align-items-center"
+               href="{{ backpack_url('selected_organisation') }}"
+            >
+                <i class="la la-exclamation-circle font-3xl pr-2"></i>
+                <span>Change Institution</span>
+            </a>
+        </li>
+        @endif
+
         <!-- Logout button - tailored to use Laravel Breeze -->
         <li class="nav-item pr-4">
             <form method="POST" action={{ route('logout') }}>
