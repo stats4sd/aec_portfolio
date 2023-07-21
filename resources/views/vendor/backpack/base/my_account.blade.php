@@ -20,6 +20,10 @@
     <section class="content-header">
         <div class="container-fluid mb-3">
             <h1>{{ trans('backpack::base.my_account') }}</h1>
+            <h4>ROLE: {{ auth()->user()->getRoleNames()->join(', ') }}</h4>
+            @if(\App\Models\Organisation::count() < 2)
+                <h4>INSTITUTION: {{ \App\Models\Organisation::first()->name }}</h4>
+            @endif
         </div>
     </section>
 @endsection
@@ -47,34 +51,28 @@
             </div>
         @endif
 
-        {{-- UPDATE INFO FORM --}}
         <div class="col-lg-8">
 
-            <div class="card padding-10">
-                <div class="card-header">
-                    My Institution and Role
-                </div>
-                <div class="card-body backpack-profile-form bold-labels">
-                    <div class="row">
-                        <div class="col-md-3 font-weight-bold text-right pr-4">
-                            Institution:
-                        </div>
-                        <div class="col-md-6">
-                            {{ \App\Models\Organisation::find(Session::get('selectedOrganisationId'))->name }}
-                        </div>
+            @if(\App\Models\Organisation::count() > 1)
+                <div class="card padding-10">
+                    <div class="card-header">
+                        <h5>My Institution(s)</h5>
+                        <p>Below are all the institutions that you have access to. The highlighted one is currently selected, and every other page on the site will present information only for the chosen institution. To use the tool on behalf of a different institution, click on one of the other items in the list below.</p>
                     </div>
-                    <div class="row">
+                    <div class="card-body backpack-profile-form bold-labels">
+                        <div class="list-group list-group-flush">
 
-                        <div class="col-md-3 font-weight-bold text-right pr-4">
-                            User Role:
-                        </div>
-                        <div class="col-md-6">
-                            {{ auth()->user()->getRoleNames()[0] }}
+                            @foreach(\App\Models\Organisation::all() as $organisation)
+                                <button class="row list-group-item @if($organisation->id === (int) Session::get('selectedOrganisationId')) list-group-item-success @endif" type="button" onclick="submitForm(this)" id="{{$organisation->id}}">
+                                    <div class="col-12">
+                                        {{ $organisation->name }}
+                                    </div>
+                                </button>
+                            @endforeach
                         </div>
                     </div>
                 </div>
-            </div>
-
+            @endif
 
             <form class="form" action="{{ route('backpack.account.info.store') }}" method="post">
 
@@ -109,7 +107,9 @@
                     </div>
 
                     <div class="card-footer">
-                        <button type="submit" class="btn btn-success"><i class="la la-save"></i> {{ trans('backpack::base.save') }}</button>
+                        <button type="submit" class="btn btn-success">
+                            <i class="la la-save"></i> {{ trans('backpack::base.save') }}
+                        </button>
                         <a href="{{ backpack_url() }}" class="btn">{{ trans('backpack::base.cancel') }}</a>
                     </div>
                 </div>
@@ -161,7 +161,9 @@
                     </div>
 
                     <div class="card-footer">
-                        <button type="submit" class="btn btn-success"><i class="la la-save"></i> {{ trans('backpack::base.change_password') }}</button>
+                        <button type="submit" class="btn btn-success">
+                            <i class="la la-save"></i> {{ trans('backpack::base.change_password') }}
+                        </button>
                         <a href="{{ backpack_url() }}" class="btn">{{ trans('backpack::base.cancel') }}</a>
                     </div>
 
@@ -193,5 +195,24 @@
             </div>
         @endif
 
+        <form name="selectedOrganisationForm" action="{{ backpack_url('selected_organisation') }}" method="POST">
+            @csrf
+            @method('POST')
+            <input type="hidden" name="organisationId">
+            <input type="hidden" name="redirect" value="{{ backpack_url('edit-account-info') }}">
+        </form>
+
     </div>
 @endsection
+
+@section('after_scripts')
+    @vite('resources/js/app.js')
+
+    <script>
+
+        function submitForm(organisationButton) {
+            this.document.selectedOrganisationForm.organisationId.value = organisationButton.id;
+            this.document.selectedOrganisationForm.submit();
+        }
+
+    </script>
