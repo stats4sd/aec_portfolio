@@ -65,7 +65,7 @@ class ProjectCrudController extends CrudController
         CRUD::setEntityNameStrings('initiative', 'initiatives');
 
         CRUD::set('import.importer', ProjectWorkbookImport::class);
-        CRUD::set('import.template-path', 'AE Marker - Project Import Template.xlsx');
+        CRUD::set('import.template-path', 'Agroecology Funding Tool - Initiative Import Template.xlsx');
 
         CRUD::setShowView('projects.show');
     }

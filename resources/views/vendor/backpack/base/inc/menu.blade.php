@@ -54,7 +54,7 @@
                 <i class="la la-user-circle font-3xl pr-2"></i>
                 <span>My Account</span>
             </a>
-        </li>
+        </li>J
 
         <!-- Logout button - tailored to use Laravel Breeze -->
         <li class="nav-item pr-4">
