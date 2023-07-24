@@ -240,8 +240,25 @@ const filteredInitiatives = computed(() => {
 })
 
 // reset all session variables, then redirect to initiative page
-function resetFilters() {
-    window.location = "/admin/session/reset"
+async function resetFilters() {
+
+    try {
+
+        redlineStatusFilter.value = '';
+        principleStatusFilter.value = '';
+        portfolioFilter.value = '';
+        sortBy.value = 'Name';
+        sortDir.value = 1;
+        searchString.value = '';
+
+        const result = await axios.post("/admin/session/reset")
+
+    } catch (error) {
+        new Noty({
+            type: "danger",
+            text: "Something went wrong - the initiative filters could not be reset. Please reload the page and try again.",
+        })
+    }
 }
 
 // handle settings from url

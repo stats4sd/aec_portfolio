@@ -93,7 +93,7 @@ Route::group([
         Route::get('project/{project}/re-assess', [ProjectCrudController::class, 'reAssess']);
 
         Route::post('session/store', [SessionController::class, 'store']);
-        Route::get('session/reset', [SessionController::class, 'reset']);
+        Route::post('session/reset', [SessionController::class, 'reset']);
 
 
         Route::crud('assessment', AssessmentCrudController::class);
