@@ -99,6 +99,7 @@ import vSelect from 'vue-select'
 
 import {computed, ref, watch, onMounted} from "vue";
 import InitiativeListCard from "./InitiativeListCard.vue";
+import {watchDebounced} from "@vueuse/core";
 
 
 const props = defineProps({
@@ -196,9 +197,9 @@ function makeFilterOptions(string) {
     })
 }
 
+const initiatives = ref([])
+
 const filteredInitiatives = computed(() => {
-    // store latest settings to session
-    storeLatestSettings();
 
     // just mentioning variables, computed() function will be triggered when their value changed
     sortBy.value;
@@ -263,16 +264,11 @@ async function resetFilters() {
 
 // handle settings from url
 function handleSettingsFromUrl() {
-    let redlineStatusFilterLabel = '';
-    let redlineStatusFilterValue = '';
-    let principleStatusFilterLabel = '';
-    let principleStatusFilterValue = '';
 
-    const querypairs = window.location.search.substring(1);
-    const test = new URLSearchParams(querypairs);
-    console.log(test);
+    const queryPairs = window.location.search.substring(1);
+    const queryParams = new URLSearchParams(queryPairs);
 
-    test.forEach((value, key) => {
+    queryParams.forEach((value, key) => {
 
         // string type parameters work well, e.g. sortBy, portfolioFilter, searchString
         // store selection box option JSON object as two string type parameters, i.e. label and value
@@ -308,14 +304,27 @@ function handleSettingsFromUrl() {
     flagInitialised = 1;
 }
 
+// ##########################
+// Handle Session Storage
+// ##########################
+
+watchDebounced(filteredInitiatives, () => {
+    storeLatestSettings()
+}, {
+    debounce: 500,
+    maxWait: 5000
+})
+
+
 function storeLatestSettings() {
+    console.log('storing...')
     if (flagInitialised == 1) {
         // send ajax call to SessionController.store
         const result = axios.post('/admin/session/store', {
             sortBy: sortBy.value,
             sortDir: sortDir.value,
-            redlineStatusFilterValue: redlineStatusFilter.value == null ? '' : redlineStatusFilter.value.value,
-            principleStatusFilterValue: principleStatusFilter.value == null ? '' : principleStatusFilter.value.value,
+            redlineStatusFilterValue: redlineStatusFilter.value == null ? '' : redlineStatusFilter.value,
+            principleStatusFilterValue: principleStatusFilter.value == null ? '' : principleStatusFilter.value,
             portfolioFilter: portfolioFilter.value,
             searchString: searchString.value,
         });
@@ -330,7 +339,6 @@ function removeInitiative(initiative) {
     initiatives.value.splice(index, 1);
 }
 
-const initiatives = ref([])
 
 onMounted(() => {
 

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use http\Client\Response;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
 
@@ -29,7 +30,7 @@ class SessionController extends Controller
         Session::forget('portfolioFilter');
         Session::forget('searchString');
 
-        return redirect('/admin/project');
+        return response('Success', 200);
     }
 
 }
