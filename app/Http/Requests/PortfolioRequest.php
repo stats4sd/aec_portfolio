@@ -26,6 +26,7 @@ class PortfolioRequest extends FormRequest
     {
         return [
             'name' => 'required|max:255',
+            'description' => 'nullable',
             'currency' => 'nullable',
             'budget' => 'nullable|gte:0|max:18446744073709551615',
         ];

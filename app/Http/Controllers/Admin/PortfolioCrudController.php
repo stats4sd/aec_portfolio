@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Enums\GeographicalReach;
 use App\Models\Organisation;
 use App\Models\Portfolio;
 use App\Http\Requests\PortfolioRequest;
@@ -79,6 +78,7 @@ class PortfolioCrudController extends CrudController
 
         CRUD::field('name')->label('Enter the name of the portfolio');
 
+        CRUD::field('description')->label('Describe the portfolio')->hint('Please include key information about the portfolio, such as the key aims, geographic scope or beneficiary targets');
 
         CRUD::field('currency-info')
             ->type('section-title')
@@ -89,10 +89,6 @@ class PortfolioCrudController extends CrudController
         CRUD::field('budget')
             ->prefix($selectedOrganisation->currency)
             ->hint('Enter the overall budget for the portfolio');
-
-        CRUD::field('geographic_reach')
-            ->type('select2_from_array')
-            ->options(Arr::mapWithKeys(GeographicalReach::cases(), fn($enum) => [$enum->value => $enum->value]));
 
 
     }
