@@ -43,6 +43,7 @@
                     class="mr-4 mb-3 mb-md-0"
                     v-model="redlineStatusFilter"
                     :options="makeFilterOptions('Red Flags')"
+                    :reduce="option => option.value"
                     placeholder="Filter By Red Flag Status"
                     :clearable="true"
                 />
@@ -52,6 +53,7 @@
                     class="mr-4"
                     v-model="principleStatusFilter"
                     :options="makeFilterOptions('Principles')"
+                    :reduce="option => option.value"
                     placeholder="Filter By Assessment Status"
                     :clearable="true"
                 />
@@ -209,14 +211,14 @@ const filteredInitiatives = computed(() => {
     // apply filter for red flag status
     if (redlineStatusFilter.value) {
         tempInitiatives = tempInitiatives.filter(
-            initiative => initiative.latest_assessment.redline_status === redlineStatusFilter.value.value
+            initiative => initiative.latest_assessment.redline_status === redlineStatusFilter.value
         )
     }
 
     // apply filter for principle status
     if (principleStatusFilter.value) {
         tempInitiatives = tempInitiatives.filter(
-            initiative => initiative.latest_assessment.principle_status === principleStatusFilter.value.value
+            initiative => initiative.latest_assessment.principle_status === principleStatusFilter.value
         )
     }
 
@@ -267,20 +269,12 @@ function handleSettingsFromUrl() {
             sortDir.value = value;
         }
 
-        if (key === 'redlineStatusFilterLabel') {
-            redlineStatusFilterLabel = value;
-        }
-
         if (key === 'redlineStatusFilterValue') {
-            redlineStatusFilterValue = value;
-        }
-
-        if (key === 'principleStatusFilterLabel') {
-            principleStatusFilterLabel = value;
+            redlineStatusFilter.value = value;
         }
 
         if (key === 'principleStatusFilterValue') {
-            principleStatusFilterValue = value;
+            principleStatusFilter.value = value;
         }
 
         if (key === 'portfolioFilter') {
@@ -293,18 +287,6 @@ function handleSettingsFromUrl() {
 
     })
 
-    // construct JSON object for redline status
-    if (redlineStatusFilterLabel != '' && redlineStatusFilterValue != '') {
-        let redlineStatusFilterOption = JSON.parse('{"label":"' + redlineStatusFilterLabel + '","value":"' + redlineStatusFilterValue + '"}');
-        redlineStatusFilter.value = redlineStatusFilterOption;
-    }
-
-    // construct JSON object for principle status
-    if (principleStatusFilterLabel != '' && principleStatusFilterValue != '') {
-        let principleStatusFilterOption = JSON.parse('{"label":"' + principleStatusFilterLabel + '","value":"' + principleStatusFilterValue + '"}');
-        principleStatusFilter.value = principleStatusFilterOption;
-    }
-
     // set flag value to indicate Vue component has been initialised with settings stored in session
     flagInitialised = 1;
 }
@@ -315,9 +297,7 @@ function storeLatestSettings() {
         const result = axios.post('/admin/session/store', {
             sortBy: sortBy.value,
             sortDir: sortDir.value,
-            redlineStatusFilterLabel: redlineStatusFilter.value == null ? '' : redlineStatusFilter.value.label,
             redlineStatusFilterValue: redlineStatusFilter.value == null ? '' : redlineStatusFilter.value.value,
-            principleStatusFilterLabel: principleStatusFilter.value == null ? '' : principleStatusFilter.value.label,
             principleStatusFilterValue: principleStatusFilter.value == null ? '' : principleStatusFilter.value.value,
             portfolioFilter: portfolioFilter.value,
             searchString: searchString.value,

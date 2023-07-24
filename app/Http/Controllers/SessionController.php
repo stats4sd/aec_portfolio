@@ -12,9 +12,7 @@ class SessionController extends Controller
     public function store(Request $request) {
         Session::put('sortBy', $request->request->get('sortBy'));
         Session::put('sortDir', $request->request->get('sortDir'));
-        Session::put('redlineStatusFilterLabel', $request->request->get('redlineStatusFilterLabel'));
         Session::put('redlineStatusFilterValue', $request->request->get('redlineStatusFilterValue'));
-        Session::put('principleStatusFilterLabel', $request->request->get('principleStatusFilterLabel'));
         Session::put('principleStatusFilterValue', $request->request->get('principleStatusFilterValue'));
         Session::put('portfolioFilter', $request->request->get('portfolioFilter'));
         Session::put('searchString', $request->request->get('searchString'));
