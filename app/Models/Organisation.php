@@ -2,17 +2,19 @@
 
 namespace App\Models;
 
-use App\Enums\AssessmentStatus;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasManyThrough;
+use Carbon\Carbon;
 use Illuminate\Support\Str;
+use App\Enums\AssessmentStatus;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
+use App\Http\Requests\OrganisationRequest;
 use Backpack\CRUD\app\Models\Traits\CrudTrait;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 
 class Organisation extends Model
 {
@@ -29,6 +31,7 @@ class Organisation extends Model
 
     protected $casts = [
         'has_additional_criteria' => 'boolean',
+        'agreement_signed_at' => 'date'
     ];
 
     protected static function booted()
@@ -138,4 +141,10 @@ class Organisation extends Model
     {
         return $this->belongsTo(InstitutionType::class);
     }
+
+    public function signee(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'signee_id');
+    }
+
 }

@@ -58,7 +58,26 @@ class OrganisationController extends Controller
         $organisation->update($validated);
 
         return $organisation->id;
+        
     }
+
+//TODO
+    // public function update(OrganisationRequest $request, Organisation $organisation)
+    // {
+    //     $this->authorize('update', $organisation);
+
+    //     $validatedData = $request->validated();
+    //     if (isset($validatedData['agreement']) && !$organisation->agreement_signed_at) {
+    //         unset($validatedData['agreement']);
+    //         $validatedData['agreement_signed_at'] = Carbon::now();
+    //         $validatedData['signee_id'] = Auth::user()->id;
+    //     }
+
+    //     $organisation->update(array_filter($validatedData));
+
+    //     return redirect()->route('organisations.show', [$organisation]);
+    // }
+
 
     public function export()
     {

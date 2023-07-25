@@ -2,13 +2,14 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Collection;
-use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Traits\HasRoles;
 use Illuminate\Notifications\Notifiable;
+use Spatie\Permission\Models\Permission;
+use Illuminate\Database\Eloquent\Collection;
 use Backpack\CRUD\app\Models\Traits\CrudTrait;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
@@ -64,5 +65,11 @@ class User extends Authenticatable
             ->flatten()
             ->map(fn(Permission $permission): string => $permission->name);
         return $this;
+    }
+
+    /** Has the user signed data sharing agreements for any organisations? */
+    public function signed_organisations(): HasMany
+    {
+        return $this->hasMany(Organisation::class, 'signee_id');
     }
 }

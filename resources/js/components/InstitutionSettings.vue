@@ -6,7 +6,7 @@
     </div>
 
     <div class="card-body">
-            <div class="form-group row mt-16">
+            <div class="form-group row mt-12">
                 <label for="input_name" class="col-sm-4 col-form-label text-right pr-2">Institution Name</label>
                 <div class="col-sm-8">
                     <input name="name"
@@ -63,7 +63,33 @@
                     </div>
                 </div>
             </div>
+            <div class="form-group row">
+                <label for="data_sharing" class="mt-12 col-md-4 col-form-label text-md-right">
+                    Data Sharing Agreement
+                </label>
+
+                <div class="col-md-8 mt-12">
+                    <div class="alert alert-info">
+                    <p>The use of the Portfolio Funding Assessment Tool is based on the data sharing agreement made between your institution and the Agroecology Coalition. </p>
+                    </div>
+                    <p><a href="{{ Storage::disk('public')->url('documents/data_sharing_agreement.pdf') }}" target="_blank">Download a copy of the agreement for review.</a></p>
+                 
+                 <!-- TODO -->
+                    @if(!$team->agreement_signed_at)
+                        <p>Please tick the box below as a digital signature to confirm you agree to this data sharing agreement. The signature will be recorded when you submit this form.</p>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="1" id="agreement" name="agreement">
+                            <label class="form-check-label" for="agreement">
+                                On behalf of this institution, I agree to abide by the data sharing agreement.
+                            </label>
+                        </div>
+                    @else
+                        <p><b>This agreement was digitally signed on behalf of this institution on date by signee.</b></p>
+                    @endif
+                </div>
+            </div>
             <hr/>
+
             <div class="form-group row">
                 <div class="col-sm-4">
                     <h3>Optional Information</h3>
@@ -73,9 +99,9 @@
             <hr/>
 
             <div class="form-group row">
-                <label for="input_type" class="col-sm-4 col-form-label text-right pr-2">Select the Institution
+                <label for="input_type" class="mt-12 col-sm-4 col-form-label text-right pr-2">Select the Institution
                     Type</label>
-                <div class="col-sm-8 col-lg-4">
+                <div class="mt-12 col-sm-8 col-lg-4">
                     <v-select
                         name="institution_type"
                         id="input_type"
