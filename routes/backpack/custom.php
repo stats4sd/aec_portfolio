@@ -34,6 +34,7 @@ use App\Http\Controllers\OrganisationMemberController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\SelectedOrganisationController;
 use App\Http\Controllers\UserFeedbackController;
+use Backpack\CRUD\app\Http\Controllers\MyAccountController;
 
 
 Route::group([
@@ -132,20 +133,23 @@ Route::group([
 
         // download files
         Route::get('files/{filename}', [GeneratePdfFileController::class, 'download'])
-        ->where('filename', '.*');
+            ->where('filename', '.*');
 
         Route::crud('additional-criteria-score-tag', AdditionalCriteriaScoreTagCrudController::class);
+        Route::view('support', 'support');
 
+        Route::get('edit-account-info', [MyAccountController::class, 'getAccountInfoForm'])->name('backpack.account.info');
     });
 
 
+    Route::post('edit-account-info', [MyAccountController::class, 'postAccountInfoForm'])->name('backpack.account.info.store');
+    Route::post('change-password', [MyAccountController::class,'postChangePasswordForm'])->name('backpack.account.password');
     Route::crud('initiative-category', InitiativeCategoryCrudController::class);
     Route::crud('institution-type', InstitutionTypeCrudController::class);
     Route::crud('user-feedback', UserFeedbackCrudController::class);
     Route::post('user-feedback', [UserFeedbackController::class, 'store']);
     Route::crud('feedback-type', UserFeedbackTypeCrudController::class);
 
-    Route::view('support', 'support');
 });
 
 Route::get('project/{id}/show-as-pdf', [ProjectCrudController::class, 'show'])

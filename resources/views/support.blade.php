@@ -49,6 +49,7 @@
                     <hr/>
 
                     <h3 class="pt-8">2. Institutional Support</h3>
+                    <h5>{{ \App\Models\Organisation::find(Session::get('selectedOrganisationId'))->name }}</h5>
                     @if(Auth::user()->hasAnyRole(['Institutional Assessor', 'Institutional Member', 'Institutional Admin']))
                         @if(Auth::user()->hasAnyRole(['Institutional Assessor', 'Institutional Member']))
                             To get support within your own institution, you may contact an administrator for your institution:
@@ -71,7 +72,9 @@
                     <hr/>
 
                     <h3 class="pt-8">3. User Feedback</h3>
-                    <p>If you encounter any technical issues while using the tool, please contact us. Our site managers may be able to help, and bug reports will be forwarded onto our technical team. See the <a href="#feedback" onclick="switchtab('feedback')">User Feedback tab</a> for details.</p>
+                    <p>If you encounter any technical issues while using the tool, please contact us. Our site managers may be able to help, and bug reports will be forwarded onto our technical team. See the
+                        <a href="#feedback" onclick="switchtab('feedback')">User Feedback tab</a> for details.
+                    </p>
                 </div>
             </div>
             <div class="tab-pane fade" id="resources" role="tabpanel" aria-labelledby="resources-tab">
@@ -108,15 +111,15 @@
                     >
                 </div>
 
+            </div>
+
         </div>
 
-    </div>
-
-@endsection
+        @endsection
 
 
-@section('after_scripts')
-    @vite(['resources/js/app.js', 'resources/js/user-feedback.js'])
+        @section('after_scripts')
+            @vite(['resources/js/app.js', 'resources/js/user-feedback.js'])
 
 
     <script>
