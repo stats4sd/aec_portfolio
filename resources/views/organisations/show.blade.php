@@ -6,8 +6,6 @@
 
         <div class="w-100 mb-4">
             <h1 class="text-deep-green"><b>{{$organisation->name}} - Information</b></h1>
-
-            <h3>{{ $tab }}</h3>
         </div>
 
         <ul class="nav nav-tabs mt-4" id="org-tabs" role="tablist">
