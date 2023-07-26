@@ -13,6 +13,7 @@
             :enable-edit-button="{{ $enable_edit_button ? 'true' : 'false' }}"
             :enable-show-button="{{ $enable_show_button ? 'true' : 'false' }}"
             :enable-assess-button="{{ $enable_assess_button ? 'true' : 'false' }}"
+            :settings-search-string="{{ $settings_search_string }}"
         />
     </div>
 

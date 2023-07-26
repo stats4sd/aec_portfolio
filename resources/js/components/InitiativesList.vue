@@ -1,6 +1,6 @@
 <template>
 
-    <div class="d-flex justify-content-between align-items-center mb-4">
+    <div class="d-flex justify-content-between align-items-center mb-4" onload=abc();>
         <h1 class="font-weight-bold text-deep-green my-0">
             {{ organisation.name }} - Initiatives
         </h1>
@@ -34,6 +34,20 @@
                     <a v-if="showAddButton" href="/admin/project/create" class="btn btn-primary mr-2 ml-auto">Add Initiative</a>
                     <a v-if="showImportButton" href="/admin/project/import" class="btn btn-success mr-2">Import Initiatives</a>
                     <a v-if="showExportButton" href="/admin/organisation/export" class="btn btn-info">Export All Initiative Data</a>
+
+
+                    <!-- TESTING STARTS HERE -->                    
+                    
+                    <!-- Session variable value passed from session to Vue component tag, it can be showed here -->
+                    <a>{{ settingsSearchString }}</a>
+
+                    <!-- Question 1: How to pass variable "settingsSearchString" value to function initialiseSettings()? -->
+                    <!-- Question 2: How to trigger fucntion initialiseSettings() automatically? -->
+                    <input type="button" value="Initialise Settings" @click="initialiseSettings('12');">
+                    
+                    <!-- TESTING ENDS HERE-->
+
+
                 </div>
             </div>
             <div class="d-flex align-items-center flex-column flex-md-row mt-4">
@@ -112,6 +126,7 @@ const props = defineProps({
     enableEditButton: Boolean,
     enableShowButton: Boolean,
     enableAssessButton: Boolean,
+    settingsSearchString: Object,
 });
 
 // Sorting
@@ -155,8 +170,6 @@ const portfolioFilter = ref('');
 // keyword search filter
 const searchString = ref('')
 
-// to indicate whether Vue component is initalised with settings stored in session
-let flagInitialised = 0;
 
 const portfolios = computed(() => {
     return initiatives.value.map(initiative => initiative.portfolio.name)
@@ -262,47 +275,14 @@ async function resetFilters() {
     }
 }
 
-// handle settings from url
-function handleSettingsFromUrl() {
 
-    const queryPairs = window.location.search.substring(1);
-    const queryParams = new URLSearchParams(queryPairs);
+function initialiseSettings(value) {
+    alert("initialiseSettings()...");
+    alert("value: " + value);
 
-    queryParams.forEach((value, key) => {
-
-        // string type parameters work well, e.g. sortBy, portfolioFilter, searchString
-        // store selection box option JSON object as two string type parameters, i.e. label and value
-        // integer type parameter is handled in the same way as string type parameter
-
-        if (key === 'sortBy') {
-            sortBy.value = value;
-        }
-
-        if (key === 'sortDir') {
-            sortDir.value = value;
-        }
-
-        if (key === 'redlineStatusFilterValue') {
-            redlineStatusFilter.value = value;
-        }
-
-        if (key === 'principleStatusFilterValue') {
-            principleStatusFilter.value = value;
-        }
-
-        if (key === 'portfolioFilter') {
-            portfolioFilter.value = value;
-        }
-
-        if (key === 'searchString') {
-            searchString.value = value;
-        }
-
-    })
-
-    // set flag value to indicate Vue component has been initialised with settings stored in session
-    flagInitialised = 1;
+    searchString.value = value;
 }
+
 
 // ##########################
 // Handle Session Storage
@@ -318,17 +298,16 @@ watchDebounced(filteredInitiatives, () => {
 
 function storeLatestSettings() {
     console.log('storing...')
-    if (flagInitialised == 1) {
-        // send ajax call to SessionController.store
-        const result = axios.post('/admin/session/store', {
-            sortBy: sortBy.value,
-            sortDir: sortDir.value,
-            redlineStatusFilterValue: redlineStatusFilter.value == null ? '' : redlineStatusFilter.value,
-            principleStatusFilterValue: principleStatusFilter.value == null ? '' : principleStatusFilter.value,
-            portfolioFilter: portfolioFilter.value,
-            searchString: searchString.value,
-        });
-    }
+
+    // send ajax call to SessionController.store
+    const result = axios.post('/admin/session/store', {
+        sortBy: sortBy.value,
+        sortDir: sortDir.value,
+        redlineStatusFilterValue: redlineStatusFilter.value == null ? '' : redlineStatusFilter.value,
+        principleStatusFilterValue: principleStatusFilter.value == null ? '' : principleStatusFilter.value,
+        portfolioFilter: portfolioFilter.value,
+        searchString: searchString.value,
+    });    
 }
 
 function removeInitiative(initiative) {
@@ -341,9 +320,7 @@ function removeInitiative(initiative) {
 
 
 onMounted(() => {
-
     initiatives.value = [...props.initialInitiatives]
-    handleSettingsFromUrl();
 })
 
 </script>

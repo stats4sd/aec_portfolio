@@ -17,58 +17,6 @@ class ProjectController extends Controller
      */
     public function index(Request $request)
     {
-        $paramPortfolioFilter = $request->input('portfolioFilter');
-        $paramProcessed = $request->input('processed');
-
-        if ($paramProcessed == null) {
-            logger("processed is null. Now we proceed to final processing");
-
-            if ($paramPortfolioFilter != null) {
-                logger('$paramPortfolioFilter is not null');
-                logger("request come from My Institution > portfolio list > SHOW INITIATIVE button");
-                logger("reset all settings, store the selected portfolio in session, show all initiatives of this portfolio");
-
-                Session::put('sortBy', 'name');
-                Session::put('sortDir', '1');
-                Session::put('redlineStatusFilterLabel', '');
-                Session::put('redlineStatusFilterValue', '');
-                Session::put('principleStatusFilterLabel', '');
-                Session::put('principleStatusFilterValue', '');
-                Session::put('portfolioFilter', $paramPortfolioFilter);
-                Session::put('searchString', '');
-            } else {
-                logger("user clicks Initiatives to enter initiative page");
-                logger("show initiatives with all settings in session");
-            }
-
-            logger("get settings from session");
-
-            $sortBy = Session::get('sortBy') == null ? "name" : Session::get('sortBy');
-            $sortDir = Session::get('sortDir') == null ? "1" : Session::get('sortDir');
-            $portfolioFilter = Session::get('portfolioFilter');
-
-            $queryString = '?';
-            $queryString = $queryString . 'sortBy=' . $sortBy;
-            $queryString = $queryString . '&sortDir=' . $sortDir;
-            $queryString = $queryString . '&redlineStatusFilterLabel=' . Session::get('redlineStatusFilterLabel');
-            $queryString = $queryString . '&redlineStatusFilterValue=' . Session::get('redlineStatusFilterValue');
-            $queryString = $queryString . '&principleStatusFilterLabel=' . Session::get('principleStatusFilterLabel');
-            $queryString = $queryString . '&principleStatusFilterValue=' . Session::get('principleStatusFilterValue');
-            $queryString = $queryString . '&portfolioFilter=' . $portfolioFilter;
-            $queryString = $queryString . '&searchString=' . Session::get('searchString');
-            $queryString = $queryString . '&processed=1';
-
-            logger('$queryString: ' . $queryString);
-
-            return redirect('/admin/project' . $queryString);
-            
-        } else {
-            logger("processed is not null. User has been redirected with final processing, do nothing");
-        }
-
-
-        ////////////////////
-        
 
         $projects = Project::with([
             'portfolio' => [
@@ -118,6 +66,10 @@ class ProjectController extends Controller
             $enableAssessButton = true;
         }
 
+        // get settings from session
+        $searchString = Session::get('searchString') == null ? '' : Session::get('searchString');
+        logger("searchString: " . $searchString);
+
         return view('projects.index', [
             'organisation' => $org,
             'projects' => $projects,
@@ -128,6 +80,7 @@ class ProjectController extends Controller
             'enable_edit_button' => $enableEditButton,
             'enable_show_button' => $enableShowButton,
             'enable_assess_button' => $enableAssessButton,
+            'settings_search_string' => $searchString,
         ]);
     }
 
