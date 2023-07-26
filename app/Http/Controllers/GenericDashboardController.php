@@ -272,12 +272,11 @@ class GenericDashboardController extends Controller
 
 
         // add overall score from PHP side because this is already calculated on the Assessment Model.
-        $allAssessments = Assessment::with('principles', 'failingRedlines')->whereIn('id', DB::table('dashboard_assessment')
-            ->select('assessment_id')
-            ->where('dashboard_id', $dashboardYoursId))
-            ->get();
+        $allAssessments = Project::with([
+            'assessments' => ['principles', 'failingRedlines']
+        ])->get()->pluck('assessments')->flatten();
 
-        $noOfInitiativeCompletedAssessment = $allAssessments->where('principle_status', '=', AssessmentStatus::Complete->value)->count();
+        $noOfInitiativeCompletedAssessment = $allAssessments->count();
 
         // initialise variables
         $assessmentScore = 'N/A';

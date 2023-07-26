@@ -160,7 +160,10 @@ const nextAction = computed(() => {
     const additionalStatus = props.initiative.latest_assessment.additional_status
 
     if (redlineStatus === "Failed") {
-        return null;
+        return {
+            label: "Show information",
+            url: `/admin/project/${props.initiative.id}/show`,
+        }
     }
 
     if (redlineStatus !== "Complete") {
