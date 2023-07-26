@@ -103,7 +103,7 @@ class AdditionalCriteriaCrudController extends CrudController
             ->hint('This could be a link to your own institutional website, or to external information if this assessment criteria is used by multiple institutions.');
 
         CRUD::field('rating_description_header')
-            ->type('    section-title')
+            ->type('section-title')
             ->title('What do the ratings mean?')
             ->content('Each project or initiative will be given a score of 0 - 2 for this assessment criterium. Below, please enter a brief description of what a rating of 0, 1 or 2 means. This will help harmonise the rating process and let different users give scores that are comparable.')
             ->view_namespace('stats4sd.laravel-backpack-section-title::fields');
