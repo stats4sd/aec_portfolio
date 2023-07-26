@@ -34,20 +34,6 @@
                     <a v-if="showAddButton" href="/admin/project/create" class="btn btn-primary mr-2 ml-auto">Add Initiative</a>
                     <a v-if="showImportButton" href="/admin/project/import" class="btn btn-success mr-2">Import Initiatives</a>
                     <a v-if="showExportButton" href="/admin/organisation/export" class="btn btn-info">Export All Initiative Data</a>
-
-
-                    <!-- TESTING STARTS HERE -->                    
-                    
-                    <!-- Session variable value passed from session to Vue component tag, it can be showed here -->
-                    <a>{{ settingsSearchString }}</a>
-
-                    <!-- Question 1: How to pass variable "settingsSearchString" value to function initialiseSettings()? -->
-                    <!-- Question 2: How to trigger fucntion initialiseSettings() automatically? -->
-                    <input type="button" value="Initialise Settings" @click="initialiseSettings('12');">
-                    
-                    <!-- TESTING ENDS HERE-->
-
-
                 </div>
             </div>
             <div class="d-flex align-items-center flex-column flex-md-row mt-4">
@@ -126,7 +112,7 @@ const props = defineProps({
     enableEditButton: Boolean,
     enableShowButton: Boolean,
     enableAssessButton: Boolean,
-    settingsSearchString: Object,
+    settings: Object,
 });
 
 // Sorting
@@ -275,12 +261,14 @@ async function resetFilters() {
     }
 }
 
-
-function initialiseSettings(value) {
-    alert("initialiseSettings()...");
-    alert("value: " + value);
-
-    searchString.value = value;
+// initialise settings by settings stored in session
+function initialiseSettings(settings) {
+    sortBy.value = settings.sortBy;
+    sortDir.value = settings.sortDir;
+    redlineStatusFilter.value = settings.redlineStatusFilterValue;
+    principleStatusFilter.value = settings.principleStatusFilterValue;
+    portfolioFilter.value = settings.portfolioFilter;    
+    searchString.value = settings.searchString;
 }
 
 
@@ -321,6 +309,7 @@ function removeInitiative(initiative) {
 
 onMounted(() => {
     initiatives.value = [...props.initialInitiatives]
+    initialiseSettings(props.settings);
 })
 
 </script>

@@ -67,8 +67,21 @@ class ProjectController extends Controller
         }
 
         // get settings from session
+        $sortBy = Session::get('sortBy') == null ? '' : Session::get('sortBy');
+        $sortDir = Session::get('sortDir') == null ? '' : Session::get('sortDir');
+        $redlineStatusFilterValue = Session::get('redlineStatusFilterValue') == null ? '' : Session::get('redlineStatusFilterValue');
+        $principleStatusFilterValue = Session::get('principleStatusFilterValue') == null ? '' : Session::get('principleStatusFilterValue');
+        $portfolioFilter = Session::get('portfolioFilter') == null ? '' : Session::get('portfolioFilter');
         $searchString = Session::get('searchString') == null ? '' : Session::get('searchString');
-        logger("searchString: " . $searchString);
+
+        $settings = [
+            'sortBy' => $sortBy,
+            'sortDir' => $sortDir,
+            'redlineStatusFilterValue' => $redlineStatusFilterValue,
+            'principleStatusFilterValue' => $principleStatusFilterValue,
+            'portfolioFilter' => $portfolioFilter,
+            'searchString' => $searchString,
+        ];
 
         return view('projects.index', [
             'organisation' => $org,
@@ -80,7 +93,7 @@ class ProjectController extends Controller
             'enable_edit_button' => $enableEditButton,
             'enable_show_button' => $enableShowButton,
             'enable_assess_button' => $enableAssessButton,
-            'settings_search_string' => $searchString,
+            'settings' => $settings,
         ]);
     }
 
