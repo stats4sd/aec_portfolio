@@ -14,9 +14,9 @@ class InitiativeCategorySeeder extends Seeder
     public function run(): void
     {
         InitiativeCategory::create(['name' => 'Field projects']);
-        InitiativeCategory::create(['name' => 'Policy + Advocacy project']);
-        InitiativeCategory::create(['name' => 'Research Project']);
-        InitiativeCategory::create(['name' => 'Entrepreneurship / Private sector']);
+        InitiativeCategory::create(['name' => 'Policy and/or advocacy project']);
+        InitiativeCategory::create(['name' => 'Research project']);
+        InitiativeCategory::create(['name' => 'Entrepreneurship / private sector']);
         InitiativeCategory::create(['name' => 'Other']);
     }
 }

@@ -84,7 +84,8 @@
                     <tr>
                         <td class="text-right pr-4 mr-2">Overall Score:</td>
                         @if($entry->latest_assessment->principle_status === \App\Enums\AssessmentStatus::Complete->value)
-                            <td><span class="font-weight-bold">{{ $entry->latest_assessment->overall_score }} % </span>
+                            <td>
+                                <span class="font-weight-bold">{{ $entry->latest_assessment->overall_score }} % </span>
                                 <br/>
                                 <span class="text-sm text-secondary">Calculated based on {{ $entry->latest_assessment->principleAssessments()->where('is_na', 0)->count() }} / 13 relevant principles.</span>
                             </td>
@@ -95,8 +96,12 @@
                 </table>
             </div>
 
-            <div class="col-12 col-lg-6 print-8">
-                <div id="radarChart"></div>
+            <div class="col-12 col-lg-6 print-8 d-flex justify-content-center align-items-center">
+                @if($entry->latest_assessment->principle_status === \App\Enums\AssessmentStatus::Complete->value)
+                    <div id="radarChart"></div>
+                @else
+                    <p class="text-center text-secondary">~~ Principle Assessment not yet completed ~~<br/>~~ no results available ~~</p>
+                @endif
             </div>
         </div>
         <div class="row">
@@ -244,13 +249,18 @@
         //////////////////////// Set-Up //////////////////////////////
         //////////////////////////////////////////////////////////////
 
-        var margin = {top: 100, right: 100, bottom: 100, left: 100},
+        var margin = {
+                top: 100,
+                right: 100,
+                bottom: 100,
+                left: 100
+            },
             width = document.getElementById('radarChart').offsetWidth - margin.right - margin.left,
             height = Math.min(width, window.innerHeight - margin.top - margin.bottom - 20);
 
 
         // set minimum width;
-        if(width < 250) {
+        if (width < 250) {
             width = 250;
             height = 250;
         }

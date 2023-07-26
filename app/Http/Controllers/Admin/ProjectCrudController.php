@@ -65,7 +65,7 @@ class ProjectCrudController extends CrudController
         CRUD::setEntityNameStrings('initiative', 'initiatives');
 
         CRUD::set('import.importer', ProjectWorkbookImport::class);
-        CRUD::set('import.template-path', 'AE Marker - Project Import Template.xlsx');
+        CRUD::set('import.template-path', 'Agroecology Funding Tool - Initiative Import Template.xlsx');
 
         CRUD::setShowView('projects.show');
     }
@@ -344,7 +344,7 @@ class ProjectCrudController extends CrudController
             ->type('section-title')
             ->view_namespace('stats4sd.laravel-backpack-section-title::fields')
             ->title('Geographical Reach')
-            ->content('The next questions are about where the project operates. The first question is required to understand the scope of the project. You may also choose to add more information below about where your project works. This is not required but, if completed, it will allow you to explore your institutional profile by geographical area. You can choose which level is useful for your institutional analysis.');
+            ->content('The next questions are about where the project operates. This information is important as it will allow you to compare your own initiatives based on region/country with other institutions\' initiatives in those same locations.');
 
 
         CRUD::field('geographic_reach')
