@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "e41ff43ed57bb3bc2934779a5bbc0a01",
+    "content-hash": "566087b745cf28d81e8d221a85990304",
     "packages": [
         {
             "name": "backpack/crud",
@@ -4943,6 +4943,196 @@
                 "source": "https://github.com/spatie/image-optimizer/tree/1.6.4"
             },
             "time": "2023-03-10T08:43:19+00:00"
+        },
+        {
+            "name": "spatie/laravel-medialibrary",
+            "version": "10.10.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/spatie/laravel-medialibrary.git",
+                "reference": "84f7bb253bc7b9498ff2cd0d74f82e88d299c517"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/spatie/laravel-medialibrary/zipball/84f7bb253bc7b9498ff2cd0d74f82e88d299c517",
+                "reference": "84f7bb253bc7b9498ff2cd0d74f82e88d299c517",
+                "shasum": ""
+            },
+            "require": {
+                "ext-exif": "*",
+                "ext-fileinfo": "*",
+                "ext-json": "*",
+                "illuminate/bus": "^9.18|^10.0",
+                "illuminate/conditionable": "^9.18|^10.0",
+                "illuminate/console": "^9.18|^10.0",
+                "illuminate/database": "^9.18|^10.0",
+                "illuminate/pipeline": "^9.18|^10.0",
+                "illuminate/support": "^9.18|^10.0",
+                "intervention/image": "^2.7",
+                "maennchen/zipstream-php": "^2.0|^3.0",
+                "php": "^8.0",
+                "spatie/image": "^2.2.2",
+                "spatie/temporary-directory": "^2.0",
+                "symfony/console": "^6.0"
+            },
+            "conflict": {
+                "php-ffmpeg/php-ffmpeg": "<0.6.1"
+            },
+            "require-dev": {
+                "aws/aws-sdk-php": "^3.133.11",
+                "doctrine/dbal": "^2.13",
+                "ext-imagick": "*",
+                "ext-pdo_sqlite": "*",
+                "ext-zip": "*",
+                "guzzlehttp/guzzle": "^7.4",
+                "league/flysystem-aws-s3-v3": "^3.0",
+                "mockery/mockery": "^1.4",
+                "nunomaduro/larastan": "^2.0",
+                "orchestra/testbench": "^7.0|^8.0",
+                "pestphp/pest": "^1.21",
+                "phpstan/extension-installer": "^1.1",
+                "spatie/laravel-ray": "^1.28",
+                "spatie/pdf-to-image": "^2.1",
+                "spatie/phpunit-snapshot-assertions": "^4.2"
+            },
+            "suggest": {
+                "league/flysystem-aws-s3-v3": "Required to use AWS S3 file storage",
+                "php-ffmpeg/php-ffmpeg": "Required for generating video thumbnails",
+                "spatie/pdf-to-image": "Required for generating thumbnails of PDFs and SVGs"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Spatie\\MediaLibrary\\MediaLibraryServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Spatie\\MediaLibrary\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Freek Van der Herten",
+                    "email": "freek@spatie.be",
+                    "homepage": "https://spatie.be",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Associate files with Eloquent models",
+            "homepage": "https://github.com/spatie/laravel-medialibrary",
+            "keywords": [
+                "cms",
+                "conversion",
+                "downloads",
+                "images",
+                "laravel",
+                "laravel-medialibrary",
+                "media",
+                "spatie"
+            ],
+            "support": {
+                "issues": "https://github.com/spatie/laravel-medialibrary/issues",
+                "source": "https://github.com/spatie/laravel-medialibrary/tree/10.10.1"
+            },
+            "funding": [
+                {
+                    "url": "https://spatie.be/open-source/support-us",
+                    "type": "custom"
+                },
+                {
+                    "url": "https://github.com/spatie",
+                    "type": "github"
+                }
+            ],
+            "time": "2023-06-29T07:18:20+00:00"
+        },
+        {
+            "name": "spatie/laravel-medialibrary-pro",
+            "version": "2.7.3",
+            "source": {
+                "type": "git",
+                "url": "git@github.com:spatie/laravel-medialibrary-pro.git",
+                "reference": "3fdd81a942e7068446a4bc82ab8d71300ca78081"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://satis.spatie.be/dist/spatie/laravel-medialibrary-pro/spatie-laravel-medialibrary-pro-3fdd81a942e7068446a4bc82ab8d71300ca78081-zip-7273b3.zip",
+                "reference": "3fdd81a942e7068446a4bc82ab8d71300ca78081",
+                "shasum": "d3955df1e834171fec2ac69cb1e3989a7a147b64"
+            },
+            "require": {
+                "ext-json": "*",
+                "illuminate/validation": "^9.0|^10.0",
+                "php": "^8.0",
+                "spatie/laravel-medialibrary": "^10.2",
+                "symfony/mime": "^6.0"
+            },
+            "require-dev": {
+                "illuminate/support": "^9.0|^10.0",
+                "livewire/livewire": "^2.10",
+                "mockery/mockery": "^1.4",
+                "orchestra/testbench": "^7.0|^8.0",
+                "pestphp/pest": "^1.20",
+                "symfony/var-dumper": "^6.0"
+            },
+            "suggest": {
+                "livewire/livewire": "Allow uploads without using a front end framework"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Spatie\\MediaLibraryPro\\MediaLibraryProServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Spatie\\MediaLibraryPro\\": "src"
+                }
+            },
+            "autoload-dev": {
+                "psr-4": {
+                    "Spatie\\MediaLibraryPro\\Tests\\": "tests"
+                }
+            },
+            "scripts": {
+                "format": [
+                    "vendor/bin/php-cs-fixer fix --allow-risky=yes"
+                ],
+                "test": [
+                    "vendor/bin/pest"
+                ],
+                "test-coverage": [
+                    "vendor/bin/phpunit --coverage-html coverage"
+                ]
+            },
+            "authors": [
+                {
+                    "name": "Freek Van der Herten",
+                    "email": "freek@spatie.be",
+                    "homepage": "https://spatie.be",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Handle media in a Laravel app",
+            "homepage": "https://github.com/spatie/laravel-medialibrary-pro",
+            "keywords": [
+                "laravel-medialibrary-pro",
+                "spatie"
+            ],
+            "support": {
+                "source": "https://github.com/spatie/laravel-medialibrary-pro/tree/2.7.3",
+                "issues": "https://github.com/spatie/laravel-medialibrary-pro/issues"
+            },
+            "time": "2023-05-19T10:55:42+00:00"
         },
         {
             "name": "spatie/laravel-package-tools",
@@ -11933,6 +12123,7 @@
     "aliases": [],
     "minimum-stability": "dev",
     "stability-flags": {
+        "everapi/freecurrencyapi-php": 20,
         "stats4sd/laravel-backpack-section-title": 20,
         "stats4sd/laravel-file-util": 20
     },
