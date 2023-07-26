@@ -6,8 +6,6 @@
 
         <div class="w-100 mb-4">
             <h1 class="text-deep-green"><b>{{$organisation->name}} - Information</b></h1>
-
-            <h3>{{ $tab }}</h3>
         </div>
 
         <ul class="nav nav-tabs mt-4" id="org-tabs" role="tablist">
@@ -90,11 +88,7 @@
                     $(window).scrollTop(0);
                 }, 400);
             } else {
-
-                let tab = "{{ $tab }}"
-
-                // get from session storage
-                $('#org-tabs a[href="#'+tab+'"]').tab("show");
+                $('#org-tabs a[href="#portfolios"]').tab("show");
                 url = location.href.replace(/\/#/, "#");
                 history.replaceState(null, null, url);
                 setTimeout(() => {
@@ -112,9 +106,6 @@
                 }
                 newUrl += "/";
                 history.replaceState(null, null, newUrl);
-
-                // update session storage
-                axios.post('/admin/organisation/store-tab', {tab: hash})
             });
 
             // enable hover tooltips
