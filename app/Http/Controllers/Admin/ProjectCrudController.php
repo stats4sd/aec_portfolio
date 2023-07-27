@@ -263,6 +263,7 @@ class ProjectCrudController extends CrudController
         CRUD::field('currency')
             ->wrapper(['class' => 'form-group col-sm-4 required'])
             ->attributes(['class' => 'form-control text-right'])
+            ->default($selectedOrganisation->currency)
             ->hint('Enter the 3-digit code for the currency, e.g. "EUR", or "USD"');
 
         CRUD::field('budget')
