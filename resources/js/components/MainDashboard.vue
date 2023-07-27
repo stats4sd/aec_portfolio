@@ -21,7 +21,7 @@
                     placeholder="ALL PORTFOLIOS"
                     :clearable="true"
                 ></vSelect>
-                <div class="btn btn-warning justify-end">
+                <div class="btn btn-warning justify-end" @click="filters.portfolio = null">
                     Show all portfolios
                 </div>
 
@@ -457,7 +457,9 @@ const anyFilters = computed(() => {
 })
 
 function resetFilters() {
-    Object.keys(filters.value).forEach(key => filters.value[key] = null);
+    Object.keys(filters.value).forEach(key => {
+        if(key!=="portfolio") filters.value[key] = null
+    });
     getData()
 }
 
@@ -489,16 +491,7 @@ function formatBudget(amount) {
     return amount ? amount.toLocaleString() : '';
 }
 
-watch(filters.value, (newValue, oldValue) => {
-    if (newValue.portfolio == null) {
-        // after clicking "Reset" button
-        // console.log("watch() triggered, no need to call getData()");
-    } else {
-        // when user select a portfolio, get summary data for the selected portfolio
-        // console.log("watch() triggered, call getData()");
-        getData();
-    }
-})
+watch(filters.value, () => getData())
 
 
 // **************** ChartJS ****************

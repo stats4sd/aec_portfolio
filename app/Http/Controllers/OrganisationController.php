@@ -64,7 +64,7 @@ class OrganisationController extends Controller
     {
         $organisation = Organisation::find(Session::get('selectedOrganisationId'));
 
-        return Excel::download(new AssessmentExportWorkbook($organisation), "AEC - Data Export - " . $organisation->name . "-" .
+        return Excel::download(new AssessmentExportWorkbook($organisation), "Agroecology Funding Tool - Export - " . $organisation->name . "-" .
             Carbon::now()->toDateTimeString() . ".xlsx");
     }
 

@@ -14,6 +14,7 @@ export default defineConfig({
                 'resources/js/dashboard.js',
                 'resources/js/initiatives.js',
                 'resources/js/institutions.js',
+                'resources/js/user-feedback.js',
                 'resources/js/assess.js',
                 'resources/js/dashboard-temp.js',
             ],
@@ -34,6 +35,10 @@ export default defineConfig({
             {
                 find: /^~(.*)$/,
                 replacement: '$1',
+            },
+            {
+                find: 'spatie-media-library-pro',
+                replacement: '/vendor/spatie/laravel-medialibrary-pro/resources/js',
             },
         ],
     },

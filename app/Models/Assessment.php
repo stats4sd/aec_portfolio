@@ -151,7 +151,7 @@ class Assessment extends Model
     }
 
 
-    public function getTotalAttribute(): ?int
+    public function getTotalAttribute(): ?float
     {
         if ($this->failingRedlines()->count() > 0) {
             return 0;
