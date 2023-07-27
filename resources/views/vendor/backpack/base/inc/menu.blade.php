@@ -39,11 +39,10 @@
 
         <li class="nav-item pr-4">
             <a class="nav-link d-flex justify-content-between align-items-center"
-               href="https://www.youtube.com/playlist?list=PLK5PktXR1tmPMHKN6PnfY4jz9Cj_7L1E_"
-               target="_blank"
+               href="{{ backpack_url('support') }}"
             >
                 <i class="la la-question-circle font-3xl pr-2"></i>
-                <span>Video Guides</span>
+                <span>Support</span>
             </a>
         </li>
 
@@ -54,7 +53,18 @@
                 <i class="la la-user-circle font-3xl pr-2"></i>
                 <span>My Account</span>
             </a>
+        </li>J
+
+        @if(\App\Models\Organisation::count() > 1)
+        <li class="nav-item pr-4">
+            <a class="nav-link d-flex justify-content-between align-items-center"
+               href="{{ backpack_url('selected_organisation') }}"
+            >
+                <i class="la la-exclamation-circle font-3xl pr-2"></i>
+                <span>Change Institution</span>
+            </a>
         </li>
+        @endif
 
         <!-- Logout button - tailored to use Laravel Breeze -->
         <li class="nav-item pr-4">

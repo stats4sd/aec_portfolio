@@ -14,12 +14,12 @@ class ScoreTagsTableSeeder extends Seeder
      */
     public function run()
     {
-        
+
 
         \DB::table('score_tags')->delete();
-        
+
         \DB::table('score_tags')->insert(array (
-            0 => 
+            0 =>
             array (
                 'id' => 1,
                 'principle_id' => 1,
@@ -28,7 +28,7 @@ class ScoreTagsTableSeeder extends Seeder
                 'created_at' => '2022-09-13 17:08:31',
                 'updated_at' => '2022-09-13 17:08:31',
             ),
-            1 => 
+            1 =>
             array (
                 'id' => 2,
                 'principle_id' => 1,
@@ -37,7 +37,7 @@ class ScoreTagsTableSeeder extends Seeder
                 'created_at' => '2022-09-13 17:08:44',
                 'updated_at' => '2022-09-13 17:08:44',
             ),
-            2 => 
+            2 =>
             array (
                 'id' => 3,
                 'principle_id' => 1,
@@ -46,7 +46,7 @@ class ScoreTagsTableSeeder extends Seeder
                 'created_at' => '2022-09-13 17:08:55',
                 'updated_at' => '2022-09-13 17:08:55',
             ),
-            3 => 
+            3 =>
             array (
                 'id' => 4,
                 'principle_id' => 1,
@@ -55,7 +55,7 @@ class ScoreTagsTableSeeder extends Seeder
                 'created_at' => '2022-09-13 17:09:01',
                 'updated_at' => '2022-09-13 17:09:11',
             ),
-            4 => 
+            4 =>
             array (
                 'id' => 5,
                 'principle_id' => 2,
@@ -64,7 +64,7 @@ class ScoreTagsTableSeeder extends Seeder
                 'created_at' => '2022-09-13 17:09:20',
                 'updated_at' => '2022-09-13 17:09:20',
             ),
-            5 => 
+            5 =>
             array (
                 'id' => 6,
                 'principle_id' => 2,
@@ -73,7 +73,7 @@ class ScoreTagsTableSeeder extends Seeder
                 'created_at' => '2022-09-13 17:09:26',
                 'updated_at' => '2022-09-13 17:09:26',
             ),
-            6 => 
+            6 =>
             array (
                 'id' => 7,
                 'principle_id' => 2,
@@ -82,7 +82,7 @@ class ScoreTagsTableSeeder extends Seeder
                 'created_at' => '2022-09-13 17:09:43',
                 'updated_at' => '2022-09-13 17:09:43',
             ),
-            7 => 
+            7 =>
             array (
                 'id' => 8,
                 'principle_id' => 2,
@@ -91,7 +91,7 @@ class ScoreTagsTableSeeder extends Seeder
                 'created_at' => '2022-09-13 17:09:54',
                 'updated_at' => '2022-09-13 17:09:54',
             ),
-            8 => 
+            8 =>
             array (
                 'id' => 9,
                 'principle_id' => 2,
@@ -100,7 +100,7 @@ class ScoreTagsTableSeeder extends Seeder
                 'created_at' => '2022-09-13 17:09:57',
                 'updated_at' => '2022-09-13 17:09:57',
             ),
-            9 => 
+            9 =>
             array (
                 'id' => 10,
                 'principle_id' => 2,
@@ -109,7 +109,7 @@ class ScoreTagsTableSeeder extends Seeder
                 'created_at' => '2022-09-13 17:10:02',
                 'updated_at' => '2022-09-13 17:10:02',
             ),
-            10 => 
+            10 =>
             array (
                 'id' => 11,
                 'principle_id' => 2,
@@ -118,7 +118,7 @@ class ScoreTagsTableSeeder extends Seeder
                 'created_at' => '2022-09-13 17:10:09',
                 'updated_at' => '2022-09-13 17:10:09',
             ),
-            11 => 
+            11 =>
             array (
                 'id' => 12,
                 'principle_id' => 2,
@@ -127,7 +127,7 @@ class ScoreTagsTableSeeder extends Seeder
                 'created_at' => '2022-09-13 17:10:16',
                 'updated_at' => '2022-09-13 17:10:16',
             ),
-            12 => 
+            12 =>
             array (
                 'id' => 13,
                 'principle_id' => 2,
@@ -136,7 +136,7 @@ class ScoreTagsTableSeeder extends Seeder
                 'created_at' => '2022-09-13 17:10:24',
                 'updated_at' => '2022-09-13 17:10:24',
             ),
-            13 => 
+            13 =>
             array (
                 'id' => 14,
                 'principle_id' => 2,
@@ -145,7 +145,7 @@ class ScoreTagsTableSeeder extends Seeder
                 'created_at' => '2022-09-13 17:10:29',
                 'updated_at' => '2022-09-13 17:10:29',
             ),
-            14 => 
+            14 =>
             array (
                 'id' => 15,
                 'principle_id' => 3,
@@ -154,7 +154,7 @@ class ScoreTagsTableSeeder extends Seeder
                 'created_at' => '2022-09-13 17:10:47',
                 'updated_at' => '2022-09-13 17:10:47',
             ),
-            15 => 
+            15 =>
             array (
                 'id' => 16,
                 'principle_id' => 3,
@@ -163,7 +163,7 @@ class ScoreTagsTableSeeder extends Seeder
                 'created_at' => '2022-09-13 17:10:53',
                 'updated_at' => '2022-09-13 17:10:53',
             ),
-            16 => 
+            16 =>
             array (
                 'id' => 17,
                 'principle_id' => 3,
@@ -172,7 +172,7 @@ class ScoreTagsTableSeeder extends Seeder
                 'created_at' => '2022-09-13 17:11:00',
                 'updated_at' => '2022-09-13 17:11:00',
             ),
-            17 => 
+            17 =>
             array (
                 'id' => 18,
                 'principle_id' => 3,
@@ -181,7 +181,7 @@ class ScoreTagsTableSeeder extends Seeder
                 'created_at' => '2022-09-13 17:11:05',
                 'updated_at' => '2022-09-13 17:11:05',
             ),
-            18 => 
+            18 =>
             array (
                 'id' => 19,
                 'principle_id' => 4,
@@ -190,7 +190,7 @@ class ScoreTagsTableSeeder extends Seeder
                 'created_at' => '2022-09-13 17:11:12',
                 'updated_at' => '2022-09-13 17:11:12',
             ),
-            19 => 
+            19 =>
             array (
                 'id' => 20,
                 'principle_id' => 4,
@@ -199,7 +199,7 @@ class ScoreTagsTableSeeder extends Seeder
                 'created_at' => '2022-09-13 17:11:17',
                 'updated_at' => '2022-09-13 17:11:17',
             ),
-            20 => 
+            20 =>
             array (
                 'id' => 21,
                 'principle_id' => 4,
@@ -208,7 +208,7 @@ class ScoreTagsTableSeeder extends Seeder
                 'created_at' => '2022-09-13 17:11:22',
                 'updated_at' => '2022-09-13 17:11:34',
             ),
-            21 => 
+            21 =>
             array (
                 'id' => 22,
                 'principle_id' => 4,
@@ -217,7 +217,7 @@ class ScoreTagsTableSeeder extends Seeder
                 'created_at' => '2022-09-13 17:11:27',
                 'updated_at' => '2022-09-13 17:11:27',
             ),
-            22 => 
+            22 =>
             array (
                 'id' => 23,
                 'principle_id' => 4,
@@ -226,7 +226,7 @@ class ScoreTagsTableSeeder extends Seeder
                 'created_at' => '2022-09-13 17:11:40',
                 'updated_at' => '2022-09-13 17:11:40',
             ),
-            23 => 
+            23 =>
             array (
                 'id' => 24,
                 'principle_id' => 4,
@@ -235,7 +235,7 @@ class ScoreTagsTableSeeder extends Seeder
                 'created_at' => '2022-09-13 17:11:46',
                 'updated_at' => '2022-09-13 17:11:46',
             ),
-            24 => 
+            24 =>
             array (
                 'id' => 25,
                 'principle_id' => 4,
@@ -244,7 +244,7 @@ class ScoreTagsTableSeeder extends Seeder
                 'created_at' => '2022-09-13 17:11:54',
                 'updated_at' => '2022-09-13 17:11:54',
             ),
-            25 => 
+            25 =>
             array (
                 'id' => 26,
                 'principle_id' => 4,
@@ -253,7 +253,7 @@ class ScoreTagsTableSeeder extends Seeder
                 'created_at' => '2022-09-13 17:12:05',
                 'updated_at' => '2022-09-13 17:12:05',
             ),
-            26 => 
+            26 =>
             array (
                 'id' => 27,
                 'principle_id' => 4,
@@ -262,7 +262,7 @@ class ScoreTagsTableSeeder extends Seeder
                 'created_at' => '2022-09-13 17:12:10',
                 'updated_at' => '2022-09-13 17:12:10',
             ),
-            27 => 
+            27 =>
             array (
                 'id' => 28,
                 'principle_id' => 5,
@@ -271,7 +271,7 @@ class ScoreTagsTableSeeder extends Seeder
                 'created_at' => '2022-09-13 17:12:15',
                 'updated_at' => '2022-09-13 17:12:15',
             ),
-            28 => 
+            28 =>
             array (
                 'id' => 29,
                 'principle_id' => 5,
@@ -280,7 +280,7 @@ class ScoreTagsTableSeeder extends Seeder
                 'created_at' => '2022-09-13 17:12:22',
                 'updated_at' => '2022-09-13 17:12:22',
             ),
-            29 => 
+            29 =>
             array (
                 'id' => 30,
                 'principle_id' => 5,
@@ -289,7 +289,7 @@ class ScoreTagsTableSeeder extends Seeder
                 'created_at' => '2022-09-13 17:12:28',
                 'updated_at' => '2022-09-13 17:12:28',
             ),
-            30 => 
+            30 =>
             array (
                 'id' => 31,
                 'principle_id' => 5,
@@ -298,7 +298,7 @@ class ScoreTagsTableSeeder extends Seeder
                 'created_at' => '2022-09-13 17:12:33',
                 'updated_at' => '2022-09-13 17:12:33',
             ),
-            31 => 
+            31 =>
             array (
                 'id' => 32,
                 'principle_id' => 5,
@@ -307,7 +307,7 @@ class ScoreTagsTableSeeder extends Seeder
                 'created_at' => '2022-09-13 17:12:38',
                 'updated_at' => '2022-09-13 17:12:38',
             ),
-            32 => 
+            32 =>
             array (
                 'id' => 33,
                 'principle_id' => 5,
@@ -316,7 +316,7 @@ class ScoreTagsTableSeeder extends Seeder
                 'created_at' => '2022-09-13 17:12:44',
                 'updated_at' => '2022-09-13 17:12:44',
             ),
-            33 => 
+            33 =>
             array (
                 'id' => 34,
                 'principle_id' => 5,
@@ -325,7 +325,7 @@ class ScoreTagsTableSeeder extends Seeder
                 'created_at' => '2022-09-13 17:12:51',
                 'updated_at' => '2022-09-13 17:12:51',
             ),
-            34 => 
+            34 =>
             array (
                 'id' => 35,
                 'principle_id' => 6,
@@ -334,7 +334,7 @@ class ScoreTagsTableSeeder extends Seeder
                 'created_at' => '2022-09-13 17:13:07',
                 'updated_at' => '2022-09-13 17:13:07',
             ),
-            35 => 
+            35 =>
             array (
                 'id' => 36,
                 'principle_id' => 6,
@@ -343,7 +343,7 @@ class ScoreTagsTableSeeder extends Seeder
                 'created_at' => '2022-09-13 17:13:12',
                 'updated_at' => '2022-09-13 17:13:12',
             ),
-            36 => 
+            36 =>
             array (
                 'id' => 37,
                 'principle_id' => 6,
@@ -352,7 +352,7 @@ class ScoreTagsTableSeeder extends Seeder
                 'created_at' => '2022-09-13 17:13:18',
                 'updated_at' => '2022-09-13 17:13:18',
             ),
-            37 => 
+            37 =>
             array (
                 'id' => 38,
                 'principle_id' => 6,
@@ -361,7 +361,7 @@ class ScoreTagsTableSeeder extends Seeder
                 'created_at' => '2022-09-13 17:13:23',
                 'updated_at' => '2022-09-13 17:13:23',
             ),
-            38 => 
+            38 =>
             array (
                 'id' => 39,
                 'principle_id' => 6,
@@ -370,7 +370,7 @@ class ScoreTagsTableSeeder extends Seeder
                 'created_at' => '2022-09-13 17:13:30',
                 'updated_at' => '2022-09-13 17:13:30',
             ),
-            39 => 
+            39 =>
             array (
                 'id' => 40,
                 'principle_id' => 6,
@@ -379,7 +379,7 @@ class ScoreTagsTableSeeder extends Seeder
                 'created_at' => '2022-09-13 17:13:40',
                 'updated_at' => '2022-09-13 17:13:40',
             ),
-            40 => 
+            40 =>
             array (
                 'id' => 41,
                 'principle_id' => 7,
@@ -388,7 +388,7 @@ class ScoreTagsTableSeeder extends Seeder
                 'created_at' => '2022-09-13 17:13:46',
                 'updated_at' => '2022-09-13 17:13:46',
             ),
-            41 => 
+            41 =>
             array (
                 'id' => 42,
                 'principle_id' => 7,
@@ -397,7 +397,7 @@ class ScoreTagsTableSeeder extends Seeder
                 'created_at' => '2022-09-13 17:13:53',
                 'updated_at' => '2022-09-13 17:13:53',
             ),
-            42 => 
+            42 =>
             array (
                 'id' => 43,
                 'principle_id' => 7,
@@ -406,7 +406,7 @@ class ScoreTagsTableSeeder extends Seeder
                 'created_at' => '2022-09-13 17:13:59',
                 'updated_at' => '2022-09-13 17:13:59',
             ),
-            43 => 
+            43 =>
             array (
                 'id' => 44,
                 'principle_id' => 7,
@@ -415,7 +415,7 @@ class ScoreTagsTableSeeder extends Seeder
                 'created_at' => '2022-09-13 17:14:14',
                 'updated_at' => '2022-09-13 17:14:14',
             ),
-            44 => 
+            44 =>
             array (
                 'id' => 45,
                 'principle_id' => 7,
@@ -424,7 +424,7 @@ class ScoreTagsTableSeeder extends Seeder
                 'created_at' => '2022-09-13 17:14:21',
                 'updated_at' => '2022-09-13 17:14:21',
             ),
-            45 => 
+            45 =>
             array (
                 'id' => 46,
                 'principle_id' => 7,
@@ -433,7 +433,7 @@ class ScoreTagsTableSeeder extends Seeder
                 'created_at' => '2022-09-13 17:14:26',
                 'updated_at' => '2022-09-13 17:14:26',
             ),
-            46 => 
+            46 =>
             array (
                 'id' => 47,
                 'principle_id' => 7,
@@ -442,7 +442,7 @@ class ScoreTagsTableSeeder extends Seeder
                 'created_at' => '2022-09-13 17:14:33',
                 'updated_at' => '2022-09-13 17:14:33',
             ),
-            47 => 
+            47 =>
             array (
                 'id' => 48,
                 'principle_id' => 7,
@@ -451,7 +451,7 @@ class ScoreTagsTableSeeder extends Seeder
                 'created_at' => '2022-09-13 17:14:39',
                 'updated_at' => '2022-09-13 17:14:39',
             ),
-            48 => 
+            48 =>
             array (
                 'id' => 49,
                 'principle_id' => 8,
@@ -460,7 +460,7 @@ class ScoreTagsTableSeeder extends Seeder
                 'created_at' => '2022-09-13 17:14:52',
                 'updated_at' => '2022-09-13 17:14:52',
             ),
-            49 => 
+            49 =>
             array (
                 'id' => 50,
                 'principle_id' => 8,
@@ -469,7 +469,7 @@ class ScoreTagsTableSeeder extends Seeder
                 'created_at' => '2022-09-13 17:21:02',
                 'updated_at' => '2022-09-13 17:21:02',
             ),
-            50 => 
+            50 =>
             array (
                 'id' => 51,
                 'principle_id' => 8,
@@ -478,7 +478,7 @@ class ScoreTagsTableSeeder extends Seeder
                 'created_at' => '2022-09-13 17:21:10',
                 'updated_at' => '2022-09-13 17:21:10',
             ),
-            51 => 
+            51 =>
             array (
                 'id' => 52,
                 'principle_id' => 8,
@@ -487,7 +487,7 @@ class ScoreTagsTableSeeder extends Seeder
                 'created_at' => '2022-09-13 17:21:17',
                 'updated_at' => '2022-09-13 17:21:17',
             ),
-            52 => 
+            52 =>
             array (
                 'id' => 53,
                 'principle_id' => 8,
@@ -496,7 +496,7 @@ class ScoreTagsTableSeeder extends Seeder
                 'created_at' => '2022-09-13 17:21:23',
                 'updated_at' => '2022-09-13 17:21:23',
             ),
-            53 => 
+            53 =>
             array (
                 'id' => 54,
                 'principle_id' => 8,
@@ -505,7 +505,7 @@ class ScoreTagsTableSeeder extends Seeder
                 'created_at' => '2022-09-13 17:21:33',
                 'updated_at' => '2022-09-13 17:21:33',
             ),
-            54 => 
+            54 =>
             array (
                 'id' => 55,
                 'principle_id' => 8,
@@ -514,7 +514,7 @@ class ScoreTagsTableSeeder extends Seeder
                 'created_at' => '2022-09-13 17:21:36',
                 'updated_at' => '2022-09-13 17:21:36',
             ),
-            55 => 
+            55 =>
             array (
                 'id' => 56,
                 'principle_id' => 9,
@@ -523,7 +523,7 @@ class ScoreTagsTableSeeder extends Seeder
                 'created_at' => '2022-09-13 17:21:46',
                 'updated_at' => '2022-09-13 17:21:46',
             ),
-            56 => 
+            56 =>
             array (
                 'id' => 57,
                 'principle_id' => 9,
@@ -532,7 +532,7 @@ class ScoreTagsTableSeeder extends Seeder
                 'created_at' => '2022-09-13 17:21:51',
                 'updated_at' => '2022-09-13 17:21:51',
             ),
-            57 => 
+            57 =>
             array (
                 'id' => 58,
                 'principle_id' => 9,
@@ -541,7 +541,7 @@ class ScoreTagsTableSeeder extends Seeder
                 'created_at' => '2022-09-13 17:21:57',
                 'updated_at' => '2022-09-13 17:21:57',
             ),
-            58 => 
+            58 =>
             array (
                 'id' => 59,
                 'principle_id' => 9,
@@ -550,7 +550,7 @@ class ScoreTagsTableSeeder extends Seeder
                 'created_at' => '2022-09-13 17:22:03',
                 'updated_at' => '2022-09-13 17:22:03',
             ),
-            59 => 
+            59 =>
             array (
                 'id' => 60,
                 'principle_id' => 9,
@@ -559,7 +559,7 @@ class ScoreTagsTableSeeder extends Seeder
                 'created_at' => '2022-09-13 17:22:09',
                 'updated_at' => '2022-09-13 17:22:09',
             ),
-            60 => 
+            60 =>
             array (
                 'id' => 61,
                 'principle_id' => 9,
@@ -568,7 +568,7 @@ class ScoreTagsTableSeeder extends Seeder
                 'created_at' => '2022-09-13 17:22:14',
                 'updated_at' => '2022-09-13 17:22:14',
             ),
-            61 => 
+            61 =>
             array (
                 'id' => 62,
                 'principle_id' => 9,
@@ -577,7 +577,7 @@ class ScoreTagsTableSeeder extends Seeder
                 'created_at' => '2022-09-13 17:22:22',
                 'updated_at' => '2022-09-13 17:22:22',
             ),
-            62 => 
+            62 =>
             array (
                 'id' => 63,
                 'principle_id' => 10,
@@ -586,7 +586,7 @@ class ScoreTagsTableSeeder extends Seeder
                 'created_at' => '2022-09-13 17:22:28',
                 'updated_at' => '2022-09-13 17:22:28',
             ),
-            63 => 
+            63 =>
             array (
                 'id' => 64,
                 'principle_id' => 10,
@@ -595,7 +595,7 @@ class ScoreTagsTableSeeder extends Seeder
                 'created_at' => '2022-09-13 17:22:34',
                 'updated_at' => '2022-09-13 17:22:34',
             ),
-            64 => 
+            64 =>
             array (
                 'id' => 65,
                 'principle_id' => 10,
@@ -604,7 +604,7 @@ class ScoreTagsTableSeeder extends Seeder
                 'created_at' => '2022-09-13 17:22:39',
                 'updated_at' => '2022-09-13 17:22:39',
             ),
-            65 => 
+            65 =>
             array (
                 'id' => 66,
                 'principle_id' => 10,
@@ -613,7 +613,7 @@ class ScoreTagsTableSeeder extends Seeder
                 'created_at' => '2022-09-13 17:22:48',
                 'updated_at' => '2022-09-13 17:22:48',
             ),
-            66 => 
+            66 =>
             array (
                 'id' => 67,
                 'principle_id' => 10,
@@ -622,7 +622,7 @@ class ScoreTagsTableSeeder extends Seeder
                 'created_at' => '2022-09-13 17:22:53',
                 'updated_at' => '2022-09-13 17:22:53',
             ),
-            67 => 
+            67 =>
             array (
                 'id' => 68,
                 'principle_id' => 10,
@@ -631,7 +631,7 @@ class ScoreTagsTableSeeder extends Seeder
                 'created_at' => '2022-09-13 17:22:59',
                 'updated_at' => '2022-09-13 17:22:59',
             ),
-            68 => 
+            68 =>
             array (
                 'id' => 69,
                 'principle_id' => 10,
@@ -640,7 +640,7 @@ class ScoreTagsTableSeeder extends Seeder
                 'created_at' => '2022-09-13 17:23:27',
                 'updated_at' => '2022-09-13 17:23:27',
             ),
-            69 => 
+            69 =>
             array (
                 'id' => 70,
                 'principle_id' => 11,
@@ -649,7 +649,7 @@ class ScoreTagsTableSeeder extends Seeder
                 'created_at' => '2022-09-13 17:23:34',
                 'updated_at' => '2022-09-13 17:23:34',
             ),
-            70 => 
+            70 =>
             array (
                 'id' => 71,
                 'principle_id' => 11,
@@ -658,7 +658,7 @@ class ScoreTagsTableSeeder extends Seeder
                 'created_at' => '2022-09-13 17:23:42',
                 'updated_at' => '2022-09-13 17:23:42',
             ),
-            71 => 
+            71 =>
             array (
                 'id' => 72,
                 'principle_id' => 11,
@@ -667,7 +667,7 @@ class ScoreTagsTableSeeder extends Seeder
                 'created_at' => '2022-09-13 17:23:51',
                 'updated_at' => '2022-09-13 17:23:51',
             ),
-            72 => 
+            72 =>
             array (
                 'id' => 73,
                 'principle_id' => 11,
@@ -676,7 +676,7 @@ class ScoreTagsTableSeeder extends Seeder
                 'created_at' => '2022-09-13 17:23:58',
                 'updated_at' => '2022-09-13 17:23:58',
             ),
-            73 => 
+            73 =>
             array (
                 'id' => 74,
                 'principle_id' => 11,
@@ -685,7 +685,7 @@ class ScoreTagsTableSeeder extends Seeder
                 'created_at' => '2022-09-13 17:24:05',
                 'updated_at' => '2022-09-13 17:24:05',
             ),
-            74 => 
+            74 =>
             array (
                 'id' => 75,
                 'principle_id' => 11,
@@ -694,7 +694,7 @@ class ScoreTagsTableSeeder extends Seeder
                 'created_at' => '2022-09-13 17:24:10',
                 'updated_at' => '2022-09-13 17:24:10',
             ),
-            75 => 
+            75 =>
             array (
                 'id' => 76,
                 'principle_id' => 11,
@@ -703,7 +703,7 @@ class ScoreTagsTableSeeder extends Seeder
                 'created_at' => '2022-09-13 17:24:17',
                 'updated_at' => '2022-09-13 17:24:17',
             ),
-            76 => 
+            76 =>
             array (
                 'id' => 77,
                 'principle_id' => 11,
@@ -712,7 +712,7 @@ class ScoreTagsTableSeeder extends Seeder
                 'created_at' => '2022-09-13 17:24:24',
                 'updated_at' => '2022-09-13 17:24:24',
             ),
-            77 => 
+            77 =>
             array (
                 'id' => 78,
                 'principle_id' => 12,
@@ -721,7 +721,7 @@ class ScoreTagsTableSeeder extends Seeder
                 'created_at' => '2022-09-13 17:24:31',
                 'updated_at' => '2022-09-13 17:24:31',
             ),
-            78 => 
+            78 =>
             array (
                 'id' => 79,
                 'principle_id' => 12,
@@ -730,7 +730,7 @@ class ScoreTagsTableSeeder extends Seeder
                 'created_at' => '2022-09-13 17:24:35',
                 'updated_at' => '2022-09-13 17:24:35',
             ),
-            79 => 
+            79 =>
             array (
                 'id' => 80,
                 'principle_id' => 12,
@@ -739,7 +739,7 @@ class ScoreTagsTableSeeder extends Seeder
                 'created_at' => '2022-09-13 17:24:40',
                 'updated_at' => '2022-09-13 17:24:40',
             ),
-            80 => 
+            80 =>
             array (
                 'id' => 81,
                 'principle_id' => 12,
@@ -748,7 +748,7 @@ class ScoreTagsTableSeeder extends Seeder
                 'created_at' => '2022-09-13 17:24:47',
                 'updated_at' => '2022-09-13 17:24:47',
             ),
-            81 => 
+            81 =>
             array (
                 'id' => 82,
                 'principle_id' => 12,
@@ -757,7 +757,7 @@ class ScoreTagsTableSeeder extends Seeder
                 'created_at' => '2022-09-13 17:24:54',
                 'updated_at' => '2022-09-13 17:24:54',
             ),
-            82 => 
+            82 =>
             array (
                 'id' => 83,
                 'principle_id' => 12,
@@ -766,7 +766,7 @@ class ScoreTagsTableSeeder extends Seeder
                 'created_at' => '2022-09-13 17:25:10',
                 'updated_at' => '2022-09-13 17:25:10',
             ),
-            83 => 
+            83 =>
             array (
                 'id' => 84,
                 'principle_id' => 12,
@@ -775,7 +775,7 @@ class ScoreTagsTableSeeder extends Seeder
                 'created_at' => '2022-09-13 17:25:16',
                 'updated_at' => '2022-09-13 17:25:16',
             ),
-            84 => 
+            84 =>
             array (
                 'id' => 85,
                 'principle_id' => 12,
@@ -784,16 +784,16 @@ class ScoreTagsTableSeeder extends Seeder
                 'created_at' => '2022-09-13 17:25:22',
                 'updated_at' => '2022-09-13 17:25:22',
             ),
-            85 => 
+            85 =>
             array (
                 'id' => 86,
                 'principle_id' => 12,
-                'name' => 'mproving the enabling environment for agroecology, sustainable land use and natural resource management',
+                'name' => 'Improving the enabling environment for agroecology, sustainable land use and natural resource management',
             'description' => 'Improving the enabling environment for agroecology, sustainable land use and natural resource management (e.g. Public and private incentives for provision of ecosystem services through agriculture and land management, national land use policies that protect agricultural land from conversion)',
                 'created_at' => '2022-09-13 17:25:30',
                 'updated_at' => '2022-09-13 17:25:30',
             ),
-            86 => 
+            86 =>
             array (
                 'id' => 87,
                 'principle_id' => 13,
@@ -802,7 +802,7 @@ class ScoreTagsTableSeeder extends Seeder
                 'created_at' => '2022-09-13 17:25:41',
                 'updated_at' => '2022-09-13 17:25:41',
             ),
-            87 => 
+            87 =>
             array (
                 'id' => 88,
                 'principle_id' => 13,
@@ -811,7 +811,7 @@ class ScoreTagsTableSeeder extends Seeder
                 'created_at' => '2022-09-13 17:25:46',
                 'updated_at' => '2022-09-13 17:25:46',
             ),
-            88 => 
+            88 =>
             array (
                 'id' => 89,
                 'principle_id' => 13,
@@ -820,7 +820,7 @@ class ScoreTagsTableSeeder extends Seeder
                 'created_at' => '2022-09-13 17:25:52',
                 'updated_at' => '2022-09-13 17:25:52',
             ),
-            89 => 
+            89 =>
             array (
                 'id' => 90,
                 'principle_id' => 13,
@@ -829,7 +829,7 @@ class ScoreTagsTableSeeder extends Seeder
                 'created_at' => '2022-09-13 17:25:58',
                 'updated_at' => '2022-09-13 17:25:58',
             ),
-            90 => 
+            90 =>
             array (
                 'id' => 91,
                 'principle_id' => 13,
@@ -838,7 +838,7 @@ class ScoreTagsTableSeeder extends Seeder
                 'created_at' => '2022-09-13 17:26:03',
                 'updated_at' => '2022-09-13 17:26:03',
             ),
-            91 => 
+            91 =>
             array (
                 'id' => 92,
                 'principle_id' => 13,
@@ -847,7 +847,7 @@ class ScoreTagsTableSeeder extends Seeder
                 'created_at' => '2022-09-13 17:26:09',
                 'updated_at' => '2022-09-13 17:26:09',
             ),
-            92 => 
+            92 =>
             array (
                 'id' => 93,
                 'principle_id' => 13,
@@ -856,7 +856,7 @@ class ScoreTagsTableSeeder extends Seeder
                 'created_at' => '2022-09-13 17:26:16',
                 'updated_at' => '2022-09-13 17:26:16',
             ),
-            93 => 
+            93 =>
             array (
                 'id' => 94,
                 'principle_id' => 13,
@@ -865,7 +865,7 @@ class ScoreTagsTableSeeder extends Seeder
                 'created_at' => '2022-09-13 17:26:26',
                 'updated_at' => '2022-09-13 17:26:26',
             ),
-            94 => 
+            94 =>
             array (
                 'id' => 95,
                 'principle_id' => 13,
@@ -875,7 +875,7 @@ class ScoreTagsTableSeeder extends Seeder
                 'updated_at' => '2022-09-13 17:26:34',
             ),
         ));
-        
-        
+
+
     }
 }

@@ -3,6 +3,7 @@
         <div class="card-body">
             <div class="px-5 mx-5">
                 <h3 class="text-bright-green font-weight-bold">Agrocological Principles Assessment</h3>
+                <h3 class="text-deep-green font-weight-bold">{{ assessment.project.name.toUpperCase() }}</h3>
                 <div class="mb-5">
 
 

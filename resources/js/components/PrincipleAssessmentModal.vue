@@ -131,7 +131,7 @@
 </template>
 
 <script setup>
-import {computed, ref, defineEmits, nextTick, onMounted} from "vue";
+import {computed, ref, defineEmits, nextTick, watch} from "vue";
 
 
 const props = defineProps({
@@ -175,8 +175,12 @@ function discard() {
 async function save(nextAction) {
 
     // slider appears to be '0' on null, but actually requires moving up and back to 0 to be considered not null.
-    if (props.principleAssessment.rating === null) {
+    if (props.principleAssessment.rating === null && !props.principleAssessment.is_na) {
         props.principleAssessment.rating = 0;
+    }
+
+    if(props.principleAssessment.is_na) {
+        props.principleAssessment.rating = null;
     }
 
     props.principleAssessment.complete = true;
