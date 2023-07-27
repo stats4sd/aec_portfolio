@@ -1,6 +1,6 @@
 <template>
 
-    <div class="d-flex justify-content-between align-items-center mb-4" onload=abc();>
+    <div class="d-flex justify-content-between align-items-center mb-4">
         <h1 class="font-weight-bold text-deep-green my-0">
             {{ organisation.name }} - Initiatives
         </h1>
@@ -267,7 +267,7 @@ function initialiseSettings(settings) {
     sortDir.value = settings.sortDir;
     redlineStatusFilter.value = settings.redlineStatusFilterValue;
     principleStatusFilter.value = settings.principleStatusFilterValue;
-    portfolioFilter.value = settings.portfolioFilter;    
+    portfolioFilter.value = settings.portfolioFilter;
     searchString.value = settings.searchString;
 }
 
@@ -295,7 +295,7 @@ function storeLatestSettings() {
         principleStatusFilterValue: principleStatusFilter.value == null ? '' : principleStatusFilter.value,
         portfolioFilter: portfolioFilter.value,
         searchString: searchString.value,
-    });    
+    });
 }
 
 function removeInitiative(initiative) {

@@ -17,6 +17,10 @@ class ProjectController extends Controller
      */
     public function index(Request $request)
     {
+        // handle portfolio url - override existing session
+        if($request->has('portfolioFilter'))  {
+            Session::put('portfolioFilter', $request->get('portfolioFilter'));
+        }
 
         $projects = Project::with([
             'portfolio' => [
@@ -67,12 +71,12 @@ class ProjectController extends Controller
         }
 
         // get settings from session
-        $sortBy = Session::get('sortBy') == null ? '' : Session::get('sortBy');
-        $sortDir = Session::get('sortDir') == null ? '' : Session::get('sortDir');
-        $redlineStatusFilterValue = Session::get('redlineStatusFilterValue') == null ? '' : Session::get('redlineStatusFilterValue');
-        $principleStatusFilterValue = Session::get('principleStatusFilterValue') == null ? '' : Session::get('principleStatusFilterValue');
-        $portfolioFilter = Session::get('portfolioFilter') == null ? '' : Session::get('portfolioFilter');
-        $searchString = Session::get('searchString') == null ? '' : Session::get('searchString');
+        $sortBy = Session::get('sortBy') ?? '';
+        $sortDir = Session::get('sortDir') ?? '';
+        $redlineStatusFilterValue = Session::get('redlineStatusFilterValue') ?? '';
+        $principleStatusFilterValue = Session::get('principleStatusFilterValue') ?? '';
+        $portfolioFilter = Session::get('portfolioFilter') ?? '';
+        $searchString = Session::get('searchString') ?? '';
 
         $settings = [
             'sortBy' => $sortBy,

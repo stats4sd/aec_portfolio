@@ -20,7 +20,7 @@ class SessionController extends Controller
     }
 
     // to reset session variables for all initiative page settings, then go to initiative page
-    public function reset(Request $request) {
+    public function reset() {
         Session::put('sortBy', 'name');
         Session::put('sortDir', '1');
         Session::forget('redlineStatusFilterLabel');
