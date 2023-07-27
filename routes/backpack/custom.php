@@ -33,6 +33,7 @@ use App\Http\Controllers\OrganisationController;
 use App\Http\Controllers\OrganisationMemberController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\SelectedOrganisationController;
+use App\Http\Controllers\SessionController;
 use App\Http\Controllers\UserFeedbackController;
 use Backpack\CRUD\app\Http\Controllers\MyAccountController;
 
@@ -94,6 +95,9 @@ Route::group([
         Route::crud('project', ProjectCrudController::class);
         Route::get('project', [ProjectController::class, 'index']);
         Route::get('project/{project}/re-assess', [ProjectCrudController::class, 'reAssess']);
+
+        Route::post('session/store', [SessionController::class, 'store']);
+        Route::post('session/reset', [SessionController::class, 'reset']);
 
 
         Route::crud('assessment', AssessmentCrudController::class);

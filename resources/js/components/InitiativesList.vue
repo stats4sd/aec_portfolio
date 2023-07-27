@@ -24,8 +24,8 @@
                     <h3 class="my-0 mx-4 btn btn-outline-info" @click="sortDir = -sortDir">
                         <i
                             class="la"
-                            :class="sortDir === 1 ? 'la-arrow-up' : 'la-arrow-down'"
-                        ></i> Sort {{ sortDir === 1 ? 'Ascending' : 'Descending' }}
+                            :class="sortDir == 1 ? 'la-arrow-up' : 'la-arrow-down'"
+                        ></i> Sort {{ sortDir == 1 ? 'Ascending' : 'Descending' }}
                     </h3>
 
                 </div>
@@ -43,6 +43,7 @@
                     class="mr-4 mb-3 mb-md-0"
                     v-model="redlineStatusFilter"
                     :options="makeFilterOptions('Red Flags')"
+                    :reduce="option => option.value"
                     placeholder="Filter By Red Flag Status"
                     :clearable="true"
                 />
@@ -52,6 +53,7 @@
                     class="mr-4"
                     v-model="principleStatusFilter"
                     :options="makeFilterOptions('Principles')"
+                    :reduce="option => option.value"
                     placeholder="Filter By Assessment Status"
                     :clearable="true"
                 />
@@ -79,14 +81,14 @@
         </div>
     </div>
 
-    <InitiativeListCard v-for="initiative in filteredInitiatives"
+    <InitiativeListCard
+        v-for="initiative in filteredInitiatives"
         :key="initiative.id"
         :initiative="initiative"
         :has-additional-assessment="hasAdditionalAssessment"
         :enable-edit-button="enableEditButton"
         :enable-show-button="enableShowButton"
         :enable-assess-button="enableAssessButton"
-        @remove_initiative="removeInitiative"
     />
 
 </template>
@@ -97,6 +99,7 @@ import vSelect from 'vue-select'
 
 import {computed, ref, watch, onMounted} from "vue";
 import InitiativeListCard from "./InitiativeListCard.vue";
+import {watchDebounced} from "@vueuse/core";
 
 
 const props = defineProps({
@@ -109,6 +112,7 @@ const props = defineProps({
     enableEditButton: Boolean,
     enableShowButton: Boolean,
     enableAssessButton: Boolean,
+    settings: Object,
 });
 
 // Sorting
@@ -152,6 +156,7 @@ const portfolioFilter = ref('');
 // keyword search filter
 const searchString = ref('')
 
+
 const portfolios = computed(() => {
     return initiatives.value.map(initiative => initiative.portfolio.name)
         .reduce((cumulative, current) => {
@@ -191,7 +196,10 @@ function makeFilterOptions(string) {
     })
 }
 
+const initiatives = ref([])
+
 const filteredInitiatives = computed(() => {
+
     // just mentioning variables, computed() function will be triggered when their value changed
     sortBy.value;
     sortDir.value;
@@ -203,14 +211,14 @@ const filteredInitiatives = computed(() => {
     // apply filter for red flag status
     if (redlineStatusFilter.value) {
         tempInitiatives = tempInitiatives.filter(
-            initiative => initiative.latest_assessment.redline_status === redlineStatusFilter.value.value
+            initiative => initiative.latest_assessment.redline_status === redlineStatusFilter.value
         )
     }
 
     // apply filter for principle status
     if (principleStatusFilter.value) {
         tempInitiatives = tempInitiatives.filter(
-            initiative => initiative.latest_assessment.principle_status === principleStatusFilter.value.value
+            initiative => initiative.latest_assessment.principle_status === principleStatusFilter.value
         )
     }
 
@@ -231,45 +239,77 @@ const filteredInitiatives = computed(() => {
     return tempInitiatives;
 })
 
-function resetFilters() {
-    redlineStatusFilter.value = '';
-    principleStatusFilter.value = '';
-    portfolioFilter.value = '';
-    searchString.value = '';
+// reset all session variables, then redirect to initiative page
+async function resetFilters() {
 
-    handlePortfolioFromUrl();
+    try {
+
+        redlineStatusFilter.value = '';
+        principleStatusFilter.value = '';
+        portfolioFilter.value = '';
+        sortBy.value = 'Name';
+        sortDir.value = 1;
+        searchString.value = '';
+
+        const result = await axios.post("/admin/session/reset")
+
+    } catch (error) {
+        new Noty({
+            type: "danger",
+            text: "Something went wrong - the initiative filters could not be reset. Please reload the page and try again.",
+        })
+    }
 }
 
-// handle portfolio from url
-function handlePortfolioFromUrl() {
-    const querypairs = window.location.search.substring(1);
-    const test = new URLSearchParams(querypairs)
-    console.log(test)
+// initialise settings by settings stored in session
+function initialiseSettings(settings) {
+    sortBy.value = settings.sortBy;
+    sortDir.value = settings.sortDir;
+    redlineStatusFilter.value = settings.redlineStatusFilterValue;
+    principleStatusFilter.value = settings.principleStatusFilterValue;
+    portfolioFilter.value = settings.portfolioFilter;
+    searchString.value = settings.searchString;
+}
 
-    test.forEach((value, key) => {
-        if (key === 'portfolio') {
-            portfolioFilter.value = value;
-        }
-    })
+
+// ##########################
+// Handle Session Storage
+// ##########################
+
+watchDebounced(filteredInitiatives, () => {
+    storeLatestSettings()
+}, {
+    debounce: 500,
+    maxWait: 5000
+})
+
+
+function storeLatestSettings() {
+    console.log('storing...')
+
+    // send ajax call to SessionController.store
+    const result = axios.post('/admin/session/store', {
+        sortBy: sortBy.value,
+        sortDir: sortDir.value,
+        redlineStatusFilterValue: redlineStatusFilter.value == null ? '' : redlineStatusFilter.value,
+        principleStatusFilterValue: principleStatusFilter.value == null ? '' : principleStatusFilter.value,
+        portfolioFilter: portfolioFilter.value,
+        searchString: searchString.value,
+    });
 }
 
 function removeInitiative(initiative) {
+    let tempArray = initiatives.value.map(initiative => initiative.id);
 
-    let tempArray = initiatives.value.map(initiative=>initiative.id);
-
-    // let index = initiatives.value.indexOf(initiative);
     let index = tempArray.indexOf(initiative.id);
-
 
     initiatives.value.splice(index, 1);
 }
 
-const initiatives = ref([])
 
 onMounted(() => {
     initiatives.value = [...props.initialInitiatives]
-    handlePortfolioFromUrl();
+    initialiseSettings(props.settings);
 })
-
 
 </script>
