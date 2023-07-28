@@ -382,6 +382,15 @@ class ProjectCrudController extends CrudController
 
     protected function setupUpdateOperation()
     {
+        logger("ProjectCrudController.setupUpdateOperation()");
+
+        $entry = $this->crud->getCurrentEntry();
+
+        logger('***** ' . count($entry->regions) . ' region(s) *****');
+        foreach ($entry->regions as $region) {
+            logger($region->name);
+        }
+
         $this->authorize('update', CRUD::getCurrentEntry());
 
         $this->setupCreateOperation();
