@@ -19,7 +19,8 @@ use Backpack\CRUD\app\Models\Traits\CrudTrait;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use App\Http\Controllers\Admin\Operations\RedlineOperation;
 
-class Project extends Model
+class
+Project extends Model
 {
     use CrudTrait, HasFactory, SoftDeletes;
 
@@ -54,9 +55,11 @@ class Project extends Model
             $assessment->additionalCriteria()->sync($project->organisation->additionalCriteria->pluck('id')->toArray());
         });
 
-        static::saving(function (Project $project) {
+        static::saved(function (Project $project) {
+
             // in case the exchange_rate has changed, re-calculate the budget_org
-            $project->budget_org = $project->budget * $project->exchange_rate;
+           $project->budget_org = $project->budget * $project->exchange_rate;
+           $project->saveQuietly();
         });
 
         static::addGlobalScope('organisation', function (Builder $builder) {
