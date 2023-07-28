@@ -29,26 +29,6 @@ class Portfolio extends Model
             $query->where('organisation_id', Session::get('selectedOrganisationId'));
         });
 
-        /************/
-
-        static::updating(function (Portfolio $portfolio) {
-            logger("Portfolio (" . $portfolio->id . ") - updating()");
-        });
-
-        static::updated(function (Portfolio $portfolio) {
-            logger("Portfolio (" . $portfolio->id . ") - updated()");
-        });
-
-        static::saved(function (Portfolio $portfolio) {
-            logger("Portfolio (" . $portfolio->id . ") - saved()");
-        });
-
-        static::retrieved(function (Portfolio $portfolio) {
-            logger("Portfolio (" . $portfolio->id . ") - retrieved()");
-        });
-
-        /************/
-
         // attach event handler, on deleting of a portfolio
 	    static::deleting(function($portfolio) {
             // delete all projects that belong to this portfolio
