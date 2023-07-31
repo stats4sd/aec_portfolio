@@ -2,7 +2,12 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Models\Project;
+use App\Models\Revision;
+use App\Models\Assessment;
+use Illuminate\Support\Facades\DB;
 use App\Http\Requests\RevisionRequest;
+use Illuminate\Support\Facades\Session;
 use Backpack\CRUD\app\Http\Controllers\CrudController;
 use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
 
@@ -39,8 +44,15 @@ class RevisionCrudController extends CrudController
      */
     protected function setupListOperation()
     {
-        CRUD::column('revisionable_type');
-        CRUD::column('revisionable_id');
+        CRUD::column('project.organisation.id');
+
+        CRUD::column('project.name')->label('Project');
+
+        CRUD::column('item_type');
+        CRUD::column('item');
+        CRUD::column('key');
+        CRUD::column('old_value');
+        CRUD::column('new_value');
 
         $this->crud->addColumns([
             [
@@ -57,53 +69,63 @@ class RevisionCrudController extends CrudController
             ],
         ]);
 
-        // CRUD::column('user_id');
-
-        CRUD::column('key');
-        CRUD::column('old_value');
-        CRUD::column('new_value');
         CRUD::column('created_at');
-        // CRUD::column('updated_at');
 
-        /**
-         * Columns can be defined using the fluent syntax or array syntax:
-         * - CRUD::column('price')->type('number');
-         * - CRUD::addColumn(['name' => 'price', 'type' => 'number']); 
-         */
+
+        // TODO: add filter silently to show projects of selected organisation only?
+
+        // add filter for project
+        $this->crud->addFilter(
+            [
+                'type' => 'select2',
+                'name' => 'projects',
+                'label' => 'filter by project',
+            ],
+            function () {
+                return Project::where('organisation_id', Session::get('selectedOrganisationId'))->get()->pluck('name', 'id')->toArray();
+            },
+            function ($values) {
+                logger('Selected project id: ' . $values);
+                
+                // find assessment red line ids belong to related assessments
+                $assessmentRedLineIds = DB::table("assessment_red_line")->select('id')->whereIn('assessment_id', function ($query) use ($values) {
+                    // find assessment_id belongs to selected project
+                    $query->select('id')->from('assessments')->where('project_id', $values);
+                })
+                ->pluck('id');
+
+                // find principle assessment ids belong to related assessments
+                $principleAssessmentIds = DB::table("principle_assessment")->select('id')->whereIn('assessment_id', function ($query) use ($values) {
+                    // find assessment_id belongs to selected project
+                    $query->select('id')->from('assessments')->where('project_id', $values);
+                })
+                ->pluck('id');
+
+                // find additional criteria assessment ids belong to related assessments
+                $additionalCriteriaAssessmentIds = DB::table("additional_criteria_assessment")->select('id')->whereIn('assessment_id', function ($query) use ($values) {
+                    // find assessment_id belongs to selected project
+                    $query->select('id')->from('assessments')->where('project_id', $values);
+                })
+                ->pluck('id');
+
+                // dump($assessmentRedLineIds);
+                // dump($principleAssessmentIds);
+                // dump($additionalCriteriaAssessmentIds);
+
+                $firstQuery = Revision::where('revisionable_type', 'App\Models\AssessmentRedLine')->whereIn("revisionable_id", $assessmentRedLineIds);
+
+                $secondQuery = Revision::where('revisionable_type', 'App\Models\PrincipleAssessment')->whereIn("revisionable_id", $principleAssessmentIds);
+
+                $thirdQuery = Revision::where('revisionable_type', 'App\Models\AdditionalCriteriaAssessment')->whereIn("revisionable_id", $additionalCriteriaAssessmentIds);
+
+                // TODO: union 3 query results together
+                $this->crud->query->where('revisionable_type', 'App\Models\AssessmentRedLine')->whereIn("revisionable_id", $assessmentRedLineIds);
+
+                // TODO
+                // $this->crud->query = $secondQuery->union($thirdQuery);
+
+            }
+        );
     }
 
-    // /**
-    //  * Define what happens when the Create operation is loaded.
-    //  * 
-    //  * @see https://backpackforlaravel.com/docs/crud-operation-create
-    //  * @return void
-    //  */
-    // protected function setupCreateOperation()
-    // {
-    //     CRUD::setValidation(RevisionRequest::class);
-
-    //     CRUD::field('revisionable_type');
-    //     CRUD::field('revisionable_id');
-    //     CRUD::field('user_id');
-    //     CRUD::field('key');
-    //     CRUD::field('old_value');
-    //     CRUD::field('new_value');
-
-    //     /**
-    //      * Fields can be defined using the fluent syntax or array syntax:
-    //      * - CRUD::field('price')->type('number');
-    //      * - CRUD::addField(['name' => 'price', 'type' => 'number'])); 
-    //      */
-    // }
-
-    // /**
-    //  * Define what happens when the Update operation is loaded.
-    //  * 
-    //  * @see https://backpackforlaravel.com/docs/crud-operation-update
-    //  * @return void
-    //  */
-    // protected function setupUpdateOperation()
-    // {
-    //     $this->setupCreateOperation();
-    // }
 }
