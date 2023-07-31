@@ -12,6 +12,7 @@ use App\Models\Project;
 use App\Models\ProjectRegion;
 use App\Models\Region;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
@@ -274,9 +275,24 @@ class GenericDashboardController extends Controller
         // add overall score from PHP side because this is already calculated on the Assessment Model.
         $allAssessments = Project::with([
             'assessments' => ['principles', 'failingRedlines']
-        ])->get()->pluck('assessments')->flatten();
+        ])
+            // only initiatives that are fully assessed
+            ->whereHas('assessments', function (Builder $query) {
+                $query->where('redline_status', AssessmentStatus::Failed->value)
+                    ->orWhere('principle_status', AssessmentStatus::Complete->value);
+            })
+
+            // and only initiatives that are in the filters for this rendering of the dashboard
+            ->whereIn('id', DB::table('dashboard_project')
+                ->select('project_id')
+                ->where('dashboard_id', $dashboardYoursId)
+            )
+            ->get()
+            ->pluck('assessments')
+            ->flatten();
 
         $noOfInitiativeCompletedAssessment = $allAssessments->count();
+
 
         // initialise variables
         $assessmentScore = 'N/A';
