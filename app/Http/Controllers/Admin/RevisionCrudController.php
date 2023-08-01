@@ -44,9 +44,9 @@ class RevisionCrudController extends CrudController
      */
     protected function setupListOperation()
     {
-        CRUD::column('project.organisation.id');
+        CRUD::column('project.organisation.id')->label('Institution ID');
 
-        CRUD::column('project.name')->label('Project');
+        CRUD::column('project.name')->label('Initiative');
 
         CRUD::column('item_type');
         CRUD::column('item');
@@ -72,14 +72,14 @@ class RevisionCrudController extends CrudController
         CRUD::column('created_at');
 
 
-        // TODO: add filter silently to show projects of selected organisation only?
+        // TODO: add filter silently to show initiatives of selected organisation only?
 
-        // add filter for project
+        // add filter for initiative
         $this->crud->addFilter(
             [
                 'type' => 'select2',
                 'name' => 'projects',
-                'label' => 'filter by project',
+                'label' => 'filter by initiative',
             ],
             function () {
                 return Project::where('organisation_id', Session::get('selectedOrganisationId'))->get()->pluck('name', 'id')->toArray();
