@@ -86,6 +86,8 @@ Route::group([
 
         Route::get('organisation/show', [OrganisationController::class, 'show'])->name('organisation.self.show');
         Route::get('organisation/export', [OrganisationController::class, 'export'])->name('organisation.export');
+        Route::post('organisation/store-tab', [OrganisationController::class, 'storeTab']);
+
 
         Route::crud('portfolio', PortfolioCrudController::class);
         Route::get('portfolio', function () {

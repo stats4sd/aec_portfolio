@@ -88,7 +88,11 @@
                     $(window).scrollTop(0);
                 }, 400);
             } else {
-                $('#org-tabs a[href="#portfolios"]').tab("show");
+
+                let tab = "{{ $tab }}"
+
+                // get from session storage
+                $('#org-tabs a[href="#'+tab+'"]').tab("show");
                 url = location.href.replace(/\/#/, "#");
                 history.replaceState(null, null, url);
                 setTimeout(() => {
@@ -106,6 +110,9 @@
                 }
                 newUrl += "/";
                 history.replaceState(null, null, newUrl);
+
+                // update session storage
+                axios.post('/admin/organisation/store-tab', {tab: hash})
             });
 
             // enable hover tooltips

@@ -53,7 +53,7 @@
                 <i class="la la-user-circle font-3xl pr-2"></i>
                 <span>My Account</span>
             </a>
-        </li>J
+        </li>
 
         @if(\App\Models\Organisation::count() > 1)
         <li class="nav-item pr-4">
