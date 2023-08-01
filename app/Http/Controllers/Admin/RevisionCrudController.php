@@ -119,7 +119,16 @@ class RevisionCrudController extends CrudController
                 $thirdQuery = Revision::where('revisionable_type', 'App\Models\AdditionalCriteriaAssessment')->whereIn("revisionable_id", $additionalCriteriaAssessmentIds);
 
                 // TODO: union 3 query results together
-                $this->crud->query->where('revisionable_type', 'App\Models\AssessmentRedLine')->whereIn("revisionable_id", $assessmentRedLineIds);
+                // $this->crud->query->where('revisionable_type', 'App\Models\AssessmentRedLine')->whereIn("revisionable_id", $assessmentRedLineIds);
+
+                // Question: how to pass $additionalCriteriaAssessmentIds into the funciton?
+                $this->crud->query->where('revisionable_type', 'App\Models\AssessmentRedLine')->whereIn("revisionable_id", $assessmentRedLineIds)
+                                ->orWhere(function($query1) {
+                                    $query1->where('revisionable_type', 'App\Models\PrincipleAssessment')->whereIn("revisionable_id", [7437,7438,7439,7440,7441,7442,7443,7444,7445,7446,7447,7448,7449]);
+                                })
+                                ->orWhere(function($query2) {
+                                    $query2->where('revisionable_type', 'App\Models\AdditionalCriteriaAssessment')->whereIn("revisionable_id", [243]);
+                                });
 
                 // TODO
                 // $this->crud->query = $secondQuery->union($thirdQuery);
