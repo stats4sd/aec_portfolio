@@ -8,9 +8,8 @@ use Illuminate\Database\Eloquent\Builder;
 use Backpack\CRUD\app\Models\Traits\CrudTrait;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Venturecraft\Revisionable\Revisionable;
 
-class Revision extends Revisionable
+class Revision extends \Venturecraft\Revisionable\Revision
 {
     use CrudTrait;
     use HasFactory;
@@ -21,9 +20,21 @@ class Revision extends Revisionable
     |--------------------------------------------------------------------------
     */
 
-    protected $table = 'revisions';
+    public $table = 'revisions';
     protected $guarded = ['id'];
 
+    protected static function booted()
+    {
+        static::addGlobalScope('organisation', function (Builder $query) {
+            $query->whereHas('revisionable', function (Builder $query) {
+                $query->whereHas('assessment', function (Builder $query) {
+                    $query->whereHas('project', function (Builder $query) {
+                        $query->where('projects.organisation_id', Session::get('selectedOrganisationId'));
+                    });
+                });
+            });
+        });
+    }
 
     /*
     |--------------------------------------------------------------------------
@@ -36,24 +47,26 @@ class Revision extends Revisionable
         return $this->belongsTo(User::class);
     }
 
-    
+
     /*
     |--------------------------------------------------------------------------
     | FUNCTIONS
     |--------------------------------------------------------------------------
     */
 
-    public function getItemTypeAttribute() {
+    public function getItemTypeAttribute()
+    {
         if ($this->revisionable_type == 'App\Models\AssessmentRedLine') {
             return 'Red Flag';
         } else if ($this->revisionable_type == 'App\Models\PrincipleAssessment') {
             return 'Principle';
         } else if ($this->revisionable_type == 'App\Models\AdditionalCriteriaAssessment') {
-            return 'Additional Criteria'; 
+            return 'Additional Criteria';
         }
     }
 
-    public function getItemAttribute() {
+    public function getItemAttribute()
+    {
         if ($this->revisionable_type == 'App\Models\AssessmentRedLine') {
             $assessmentRedLine = AssessmentRedLine::find($this->revisionable_id);
             return $assessmentRedLine->redLine->name;
@@ -69,7 +82,8 @@ class Revision extends Revisionable
         }
     }
 
-    public function getProjectAttribute() {
+    public function getProjectAttribute()
+    {
         // I did some searches in google and our projects, I cannot find example for reference...
         // Um... cannot access the corresponding model's assessment model directly...
         // logger($this->assessment->project);
@@ -86,10 +100,11 @@ class Revision extends Revisionable
             $additionalCriteriaAssessment = AdditionalCriteriaAssessment::find($this->revisionable_id);
             return $additionalCriteriaAssessment->assessment->project;
         }
-        
+
     }
 
-    public function getProjectIdAttribute() {
+    public function getProjectIdAttribute()
+    {
         if ($this->revisionable_type == 'App\Models\AssessmentRedLine') {
             $assessmentRedLine = AssessmentRedLine::find($this->revisionable_id);
             return $assessmentRedLine->assessment->project->id;
