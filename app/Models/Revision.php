@@ -2,14 +2,15 @@
 
 namespace App\Models;
 
-use Backpack\CRUD\app\Models\Traits\CrudTrait;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Database\Eloquent\Builder;
+use Backpack\CRUD\app\Models\Traits\CrudTrait;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Venturecraft\Revisionable\Revisionable;
 
-class Revision extends Model
+class Revision extends Revisionable
 {
     use CrudTrait;
     use HasFactory;
@@ -23,18 +24,6 @@ class Revision extends Model
     protected $table = 'revisions';
     protected $guarded = ['id'];
 
-    protected static function booted()
-    {
-        // TODO: add global scope to filter by currently selected organisation.
-
-        // Unlike portfolio table and project table, there is no organisation_id column in revisions table.
-        // Question: How do we check this revision record is related to an organisation indirectly...
-        // Red flag / Principle / Additional Criteria -> assessment -> project -> organisation
-        // static::addGlobalScope('organisation',  function(Builder $query) {
-        //     $query->where('organisation_id', Session::get('selectedOrganisationId'));
-        // });
-
-    }
 
     /*
     |--------------------------------------------------------------------------
@@ -81,6 +70,10 @@ class Revision extends Model
     }
 
     public function getProjectAttribute() {
+        // I did some searches in google and our projects, I cannot find example for reference...
+        // Um... cannot access the corresponding model's assessment model directly...
+        // logger($this->assessment->project);
+
         if ($this->revisionable_type == 'App\Models\AssessmentRedLine') {
             $assessmentRedLine = AssessmentRedLine::find($this->revisionable_id);
             return $assessmentRedLine->assessment->project;
@@ -93,6 +86,7 @@ class Revision extends Model
             $additionalCriteriaAssessment = AdditionalCriteriaAssessment::find($this->revisionable_id);
             return $additionalCriteriaAssessment->assessment->project;
         }
+        
     }
 
     public function getProjectIdAttribute() {

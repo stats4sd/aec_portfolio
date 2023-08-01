@@ -3,10 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Models\Project;
-use App\Models\Revision;
-use App\Models\Assessment;
 use Illuminate\Support\Facades\DB;
-use App\Http\Requests\RevisionRequest;
 use Illuminate\Support\Facades\Session;
 use Backpack\CRUD\app\Http\Controllers\CrudController;
 use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
@@ -40,14 +37,14 @@ class RevisionCrudController extends CrudController
      */
     protected function setupListOperation()
     {
-        // TODO: how to show initiatives of selected organisation only?
+        // Question: How to show revisions records belong to initiatives that belong to user selected organisation?
         //
         // In revisions table, there is no column to indicate which organisation it belongs to.
         //
-        // As we can only find out the corresponding organisation indirectly, 
+        // We can only find out the corresponding organisation very indirectly, 
         // i.e. find Red Flag / Principle / Additional Criteria model => Assessment model => Project model => Organisation ID
         //
-        // It seems "CRUD::addClause()" cannot be used here as it can only specify condition for database columns directly.
+        // It seems that "CRUD::addClause()" cannot be used here as it can only specify condition for table columns directly.
         //
         //
         // Possible workaround:
@@ -58,21 +55,17 @@ class RevisionCrudController extends CrudController
         // It sounds complicated, and we may have performance issue when we have more and more records.
         // 
         // 2. Do not show any revision records at the beginning. User must select an initiative then only show related revision
-        // records in list view. As the filter only shows initiatives belong to selected organisation, the revisions records to be
-        // showed must belong to the selected organisation.
+        // records in list view. As the filter only shows initiatives belong to user selected organisation, the revisions records 
+        // to be showed must belong to user selected organisation.
         //
         // This approach is simpler, and it is unlikely to have performance issue. 
-        // But we may nedd to provide additioanl instructions on how to use this CRUD panel.
+        // But we may need to provide additioanl instructions on how to use this CRUD panel.
 
 
-        // this query condition only applied when no filter is applied.
-        // as there is no revisions record id is 0, no record will be showed at the beginning.
-        // after user selecting an initiative in filter, this will not be applied.
+        // add a clause that no revisions record will meet, it will return an empty set
+        // therefore no revisions record showed at the beginning
         CRUD::addClause('where', 'id', '=', 0);
 
-
-        // for testing purpose temporary
-        CRUD::column('project.organisation.id')->label('Institution ID');
 
         CRUD::column('project.name')->label('Initiative');
         CRUD::column('item_type');
@@ -132,18 +125,23 @@ class RevisionCrudController extends CrudController
                 ->pluck('id');
 
                 // find revisions records related to selected initiative
-                $this->crud->query->where('revisionable_type', 'App\Models\AssessmentRedLine')->whereIn("revisionable_id", $assessmentRedLineIds)
-                                ->orWhere(function($query1) use ($principleAssessmentIds) {
-                                    $query1->where('revisionable_type', 'App\Models\PrincipleAssessment')->whereIn("revisionable_id", $principleAssessmentIds);
+                // it will return empty set + selected project red flag revisions + selected project principle revisions + selected project additional criteria revisions
+                $this->crud->query->where('id', '0')
+                                ->orWhere(function($query1) use ($assessmentRedLineIds) {
+                                    $query1->where('revisionable_type', 'App\Models\AssessmentRedLine')->whereIn("revisionable_id", $assessmentRedLineIds);
                                 })
-                                ->orWhere(function($query2) use ($additionalCriteriaAssessmentIds) {
-                                    $query2->where('revisionable_type', 'App\Models\AdditionalCriteriaAssessment')->whereIn("revisionable_id", $additionalCriteriaAssessmentIds);
+                                ->orWhere(function($query2) use ($principleAssessmentIds) {
+                                    $query2->where('revisionable_type', 'App\Models\PrincipleAssessment')->whereIn("revisionable_id", $principleAssessmentIds);
+                                })
+                                ->orWhere(function($query3) use ($additionalCriteriaAssessmentIds) {
+                                    $query3->where('revisionable_type', 'App\Models\AdditionalCriteriaAssessment')->whereIn("revisionable_id", $additionalCriteriaAssessmentIds);
                                 });
+
             }
         );
 
         // Maybe it is useful to add filter by item type here.
-        // But it maybe complicated when user filter by item type without filtering by initiative.
+        // But it may be complicated when user filter by item type without filtering by initiative.
         // Consider this feature as a nice to have feature or future enhancement.
 
     }
