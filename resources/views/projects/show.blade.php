@@ -97,10 +97,12 @@
             </div>
 
             <div class="col-12 col-lg-6 print-8 d-flex justify-content-center align-items-center">
-                @if($entry->latest_assessment->principle_status === \App\Enums\AssessmentStatus::Complete->value)
+                @if($entry->latest_assessment->principle_status === \App\Enums\AssessmentStatus::Complete->value && $entry->latest_assessment->redline_status !== \App\Enums\AssessmentStatus::Failed->value)
                     <div id="radarChart"></div>
+                @elseif($entry->latest_assessment->redline_status === \App\Enums\AssessmentStatus::Failed->value)
+                    <p class="text-center text-secondary">~~ Red flag assessment failed ~~<br/>~~ no principle assessment results available ~~</p>
                 @else
-                    <p class="text-center text-secondary">~~ Principle Assessment not yet completed ~~<br/>~~ no results available ~~</p>
+                    <p class="text-center text-secondary">~~ Principle assessment not completed ~~<br/>~~ no results available ~~</p>
                 @endif
             </div>
         </div>
