@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Models\Project;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
 use Backpack\CRUD\app\Http\Controllers\CrudController;
 use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
@@ -37,38 +36,9 @@ class RevisionCrudController extends CrudController
      */
     protected function setupListOperation()
     {
-
+        // do not remember user's filtering, search and pagination when user leave the page.
+        // it is to avoid keeping user selected initiative of institution A in filter after user changing to institution B
         CRUD::disablePersistentTable();
-
-        // Question: How to show revisions records belong to initiatives that belong to user selected organisation?
-        //
-        // In revisions table, there is no column to indicate which organisation it belongs to.
-        //
-        // We can only find out the corresponding organisation very indirectly,
-        // i.e. find Red Flag / Principle / Additional Criteria model => Assessment model => Project model => Organisation ID
-        //
-        // It seems that "CRUD::addClause()" cannot be used here as it can only specify condition for table columns directly.
-        //
-        //
-        // Possible workaround:
-        //
-        // 1. Based on user selected organisation id, find out all related records of red flag / principle / additional criteria,
-        // only show revisions record with matched revisionable_type and revisionable_id.
-        //
-        // It sounds complicated, and we may have performance issue when we have more and more records.
-        //
-        // 2. Do not show any revision records at the beginning. User must select an initiative then only show related revision
-        // records in list view. As the filter only shows initiatives belong to user selected organisation, the revisions records
-        // to be showed must belong to user selected organisation.
-        //
-        // This approach is simpler, and it is unlikely to have performance issue.
-        // But we may need to provide additioanl instructions on how to use this CRUD panel.
-
-
-        // add a clause that no revisions record will meet, it will return an empty set
-        // therefore no revisions record showed at the beginning
-        //CRUD::addClause('where', 'id', '=', 0);
-
 
         CRUD::column('project.name')->label('Initiative');
         CRUD::column('item_type');
@@ -114,9 +84,24 @@ class RevisionCrudController extends CrudController
             }
         );
 
-        // Maybe it is useful to add filter by item type here.
-        // But it may be complicated when user filter by item type without filtering by initiative.
-        // Consider this feature as a nice to have feature or future enhancement.
+        // add filter by item type
+        $this->crud->addFilter([
+            'name' => 'item_type',
+            'type' => 'dropdown',
+            'label' => 'Filter by Item Type'
+        ], [
+            0 => 'Red Flag',
+            1 => 'Principle',
+            2 => 'Additional Criteria',
+        ], function ($value) {
+            if ($value == 0) {
+                $this->crud->addClause('where', 'revisionable_type', 'App\Models\AssessmentRedLine');
+            } else if ($value == 1) {
+                $this->crud->addClause('where', 'revisionable_type', 'App\Models\PrincipleAssessment');
+            } else if ($value == 2) {
+                $this->crud->addClause('where', 'revisionable_type', 'App\Models\AdditionalCriteriaAssessment');
+            }
+        });
 
     }
 

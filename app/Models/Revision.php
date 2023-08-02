@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Database\Eloquent\Builder;
 use Backpack\CRUD\app\Models\Traits\CrudTrait;
@@ -25,6 +24,8 @@ class Revision extends \Venturecraft\Revisionable\Revision
 
     protected static function booted()
     {
+        // add a global scope to only return entries for the selected organisation
+        // assumption: all 'revisionable' data models are related to the Assessment model
         static::addGlobalScope('organisation', function (Builder $query) {
             $query->whereHas('revisionable', function (Builder $query) {
                 $query->whereHas('assessment', function (Builder $query) {
@@ -84,10 +85,6 @@ class Revision extends \Venturecraft\Revisionable\Revision
 
     public function getProjectAttribute()
     {
-        // I did some searches in google and our projects, I cannot find example for reference...
-        // Um... cannot access the corresponding model's assessment model directly...
-        // logger($this->assessment->project);
-
         if ($this->revisionable_type == 'App\Models\AssessmentRedLine') {
             $assessmentRedLine = AssessmentRedLine::find($this->revisionable_id);
             return $assessmentRedLine->assessment->project;
@@ -100,7 +97,6 @@ class Revision extends \Venturecraft\Revisionable\Revision
             $additionalCriteriaAssessment = AdditionalCriteriaAssessment::find($this->revisionable_id);
             return $additionalCriteriaAssessment->assessment->project;
         }
-
     }
 
     public function getProjectIdAttribute()
