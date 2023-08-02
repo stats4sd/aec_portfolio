@@ -525,6 +525,8 @@ function getChartData(principlesSummary, nas) {
     return {
         labels: principlesSummary.map(item => item.name),
         datasets: [
+            // add fake, transparent datasets onto the yNa axis above the real NA line. This pushes the NA line down so that it sits underneath the principle name.
+            // without these, the NA line will be centered in the axis and overlap with the label.
             {
                 backgroundColor: 'transparent',
                 data: nas.map(item => 0),
