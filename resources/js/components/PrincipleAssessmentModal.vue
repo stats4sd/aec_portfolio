@@ -187,7 +187,6 @@ async function save(nextAction) {
 
     emit('update_rating', props.principleAssessment)
 
-    await axios.patch(`/principle-assessment/${props.principleAssessment.id}`, props.principleAssessment)
     let url = `/principle-assessment/${props.principleAssessment.id}`
 
     // check if we are saving a principle-assessment or additional-criteria-assessment
@@ -195,7 +194,7 @@ async function save(nextAction) {
         url = `/additional-assessment/${props.principleAssessment.id}`
     }
 
-        const res = await axios.patch(url, props.principleAssessment)
+    const res = await axios.patch(url, props.principleAssessment)
 
     emit(nextAction)
 

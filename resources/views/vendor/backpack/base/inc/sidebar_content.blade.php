@@ -139,3 +139,4 @@ E.g., Centralise instituion selection to a single feature instead of distributin
 <li class="nav-item"><a class="nav-link" href="{{ backpack_url('institution-type') }}"><i class="nav-icon la la-question"></i> Institution types</a></li>
 <li class="nav-item"><a class="nav-link" href="{{ backpack_url('user-feedback') }}"><i class="nav-icon la la-question"></i> User feedback</a></li>
 <li class="nav-item"><a class="nav-link" href="{{ backpack_url('feedback-type') }}"><i class="nav-icon la la-question"></i> Feedback types</a></li>
+<li class="nav-item"><a class="nav-link" href="{{ backpack_url('revision') }}"><i class="nav-icon la la-question"></i> Revisions</a></li>

@@ -59,6 +59,11 @@ class User extends Authenticatable
         return $this->hasMany(UserFeedback::class);
     }
 
+    public function revisions(): HasMany
+    {
+        return $this->hasMany(Revision::class);
+    }
+
     public function isAdmin()
     {
         return $this->hasAnyRole('Site Admin');
