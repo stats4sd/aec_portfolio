@@ -12,7 +12,6 @@ console.log('spider');
 
 window.spiderChart = function SpiderChart(id, data, options) {
 
-    console.log('data', data);
     var cfg = {
 	 w: 600,				//Width of the circle
 	 h: 600,				//Height of the circle
@@ -137,6 +136,7 @@ window.spiderChart = function SpiderChart(id, data, options) {
 		.attr("x", function(d, i){ return rScale(maxValue * cfg.labelFactor) * Math.cos(angleSlice*i - Math.PI/2); })
 		.attr("y", function(d, i){ return rScale(maxValue * cfg.labelFactor) * Math.sin(angleSlice*i - Math.PI/2); })
 		.text(function(d){return d.axis})
+        // if value is null, make the label grey (to highlight 'na' values)
         .attr("fill", function(d){return d.value ? "#000" : "#919191"})
 		.call(wrap, cfg.wrapWidth);
 
