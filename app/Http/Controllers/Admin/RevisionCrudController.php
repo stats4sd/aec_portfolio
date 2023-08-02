@@ -88,7 +88,7 @@ class RevisionCrudController extends CrudController
         $this->crud->addFilter([
             'name' => 'item_type',
             'type' => 'dropdown',
-            'label' => 'Filter by Item Type'
+            'label' => 'Filter by Item type'
         ], [
             0 => 'Red Flag',
             1 => 'Principle',
