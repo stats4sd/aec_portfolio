@@ -522,15 +522,30 @@ ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend)
 
 function getChartData(principlesSummary, nas) {
 
-    // nas = nas
-    //     .map(item => [item, item])
-    //     .flat()
-    //
-    // console.log(nas);
-
     return {
         labels: principlesSummary.map(item => item.name),
         datasets: [
+            {
+                backgroundColor: 'transparent',
+                data: nas.map(item => 0),
+                stack: 'another-one',
+                grouped: true,
+                yAxisID: 'yNa',
+            },
+            {
+                backgroundColor: 'transparent',
+                data: nas.map(item => 0),
+                stack: 'another-one',
+                grouped: true,
+                yAxisID: 'yNa',
+            },
+            {
+                backgroundColor: 'transparent',
+                data: nas.map(item => 0),
+                stack: 'another-one',
+                grouped: true,
+                yAxisID: 'yNa',
+            },
             {
                 backgroundColor: 'transparent',
                 data: nas.map(item => 0),
@@ -652,7 +667,7 @@ const chartOptions = ref({
             labels: {
                 // filter out the first dataset label (that dataset is purely to move the 'na' line down slightly)
                 filter: function (item, chart) {
-                    return item.datasetIndex > 0
+                    return item.datasetIndex > 3
                 }
             }
         }
