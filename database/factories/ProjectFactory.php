@@ -34,6 +34,7 @@ class ProjectFactory extends Factory
             'created_at' => Carbon::now(),
             'updated_at' => Carbon::now(),
             'currency' => $this->faker->currencyCode(),
+            'exchange_rate' => $this->faker->numberBetween(1, 20) / 10,
             'start_date' => Carbon::now(),
             'end_date' => Carbon::now(),
             'geographic_reach' => $this->faker->randomElement(GeographicalReach::cases()),
