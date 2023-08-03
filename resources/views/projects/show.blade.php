@@ -96,14 +96,26 @@
                 </table>
             </div>
 
-            <div class="col-12 col-lg-6 print-8 d-flex justify-content-center align-items-center">
+            <div class="col-12 col-lg-6 print-8 d-flex justify-content-top align-items-center flex-column">
                 @if($entry->latest_assessment->principle_status === \App\Enums\AssessmentStatus::Complete->value && $entry->latest_assessment->redline_status !== \App\Enums\AssessmentStatus::Failed->value)
-                    <div id="radarChart"></div>
+                    <div id="radarChart" class="w-100"></div>
+
+                    @if($entry->latest_assessment->principleAssessments->pluck('is_na')->contains(1))
+                        <div class="mt-4">
+                            <h6 class="font-weight-bold">Principles Not Applicable for this Initiative:</h6>
+                            <ul>
+                                @foreach($entry->latest_assessment->principleAssessments->where('is_na', 1) as $principleAssessment)
+                                    <li>{{ $principleAssessment->principle->name }}</li>
+                                @endforeach
+                            </ul>
+                    @endif
+
                 @elseif($entry->latest_assessment->redline_status === \App\Enums\AssessmentStatus::Failed->value)
                     <p class="text-center text-secondary">~~ Red flag assessment failed ~~<br/>~~ no principle assessment results available ~~</p>
                 @else
                     <p class="text-center text-secondary">~~ Principle assessment not completed ~~<br/>~~ no results available ~~</p>
                 @endif
+
             </div>
         </div>
         <div class="row">

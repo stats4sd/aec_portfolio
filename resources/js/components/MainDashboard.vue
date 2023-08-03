@@ -349,12 +349,21 @@
                         <div class="col-12 col-lg-6 d-flex flex-column align-items-center">
                             <h2 class="mb-4">Your Initiatives</h2>
                             <Bar :data="chartDataYours" :options="chartOptions"/>
+                            <div class="text-center mt-4 px-4">
+                                <h5 class="mb-0">Percentage of Initiatives scoring at different levels by principle</h5>
+                                <p>Calculated using the number of initiatives for which the principle applied as the denominator.</p>
+                                <p>The grey lines under the name of the principle represent the % of initiatives that marked that principle as non-applicable </p>
+                            </div>
                         </div>
 
                         <div class="col-12 col-lg-6 d-flex flex-column align-items-center">
                             <h2 class="mb-4">Other Institutions' Initiatives</h2>
                             <Bar v-if="!summary.tooFewOtherProjects" :data="chartDataOthers" :options="chartOptions"/>
-
+                            <div v-if="!summary.tooFewOtherProjects" class="text-center mt-4 px-4">
+                                <h5 class="mb-0">Percentage of Initiatives scoring at different levels by principle</h5>
+                                <p>Calculated using the number of initiatives for which the principle applied as the denominator.</p>
+                                <p>The grey lines under the name of the principle represent the % of initiatives that marked that principle as non-applicable </p>
+                            </div>
                             <div v-else class="d-flex flex-column justify-content-center h-100">
                                 <div class="alert alert-info text-dark">There are too few initiatives or institutions
                                     within the current set of filters to display anonymized results.
@@ -379,7 +388,7 @@ import '@vuepic/vue-datepicker/dist/main.css'
 import {ref, computed, onMounted, watch} from "vue";
 import {isNumber} from "lodash";
 
-const tab = ref('summary')
+const tab = ref('principles')
 
 const props = defineProps({
     user: {
@@ -458,7 +467,7 @@ const anyFilters = computed(() => {
 
 function resetFilters() {
     Object.keys(filters.value).forEach(key => {
-        if(key!=="portfolio") filters.value[key] = null
+        if (key !== "portfolio") filters.value[key] = null
     });
     getData()
 }
@@ -511,24 +520,77 @@ ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend)
 
 // ChartJS.register(ChartDataLabels);
 
-function getChartData(principlesSummary) {
+function getChartData(principlesSummary, nas) {
+
     return {
         labels: principlesSummary.map(item => item.name),
         datasets: [
+            // add fake, transparent datasets onto the yNa axis above the real NA line. This pushes the NA line down so that it sits underneath the principle name.
+            // without these, the NA line will be centered in the axis and overlap with the label.
+            {
+                backgroundColor: 'transparent',
+                data: nas.map(item => 0),
+                stack: 'another-one',
+                grouped: true,
+                yAxisID: 'yNa',
+            },
+            {
+                backgroundColor: 'transparent',
+                data: nas.map(item => 0),
+                stack: 'another-one',
+                grouped: true,
+                yAxisID: 'yNa',
+            },
+            {
+                backgroundColor: 'transparent',
+                data: nas.map(item => 0),
+                stack: 'another-one',
+                grouped: true,
+                yAxisID: 'yNa',
+            },
+            {
+                backgroundColor: 'transparent',
+                data: nas.map(item => 0),
+                stack: 'another-one',
+                grouped: true,
+                yAxisID: 'yNa',
+            },
+            {
+                label: 'NA',
+                backgroundColor: '#bbb',
+                data: nas.map(item => item.value),
+                barThickness: 4,
+                stack: 'na',
+                grouped: true,
+                yAxisID: 'yNa',
+                legend: false,
+            },
             {
                 label: 'EXCELLENT (1.5 - 2.0)',
                 backgroundColor: '#54C45E',
-                data: principlesSummary.map(item => item.green)
+                data: principlesSummary.map(item => item.green),
+                barPercentage: 1,
+                categoryPercentage: 1,
+                stack: 'main',
+                grouped: true,
             },
             {
                 label: 'OK (0.5 - 1.5)',
                 backgroundColor: '#FFE342',
-                data: principlesSummary.map(item => item.yellow)
+                data: principlesSummary.map(item => item.yellow),
+                barPercentage: 1,
+                categoryPercentage: 1,
+                stack: 'main',
+                grouped: true,
             },
             {
                 label: 'POOR (0.0 - 0.5)',
                 backgroundColor: '#e3342f',
-                data: principlesSummary.map(item => item.red)
+                data: principlesSummary.map(item => item.red),
+                barPercentage: 1,
+                categoryPercentage: 1,
+                stack: 'main',
+                grouped: true,
             },
         ]
     }
@@ -537,7 +599,7 @@ function getChartData(principlesSummary) {
 const chartDataYours = computed(() => {
 
     if (summary.value.yoursPrinciplesSummarySorted) {
-        return getChartData(summary.value.yoursPrinciplesSummarySorted)
+        return getChartData(summary.value.yoursPrinciplesSummarySorted, summary.value.yourNas)
     }
     return {
         labels: [],
@@ -548,7 +610,7 @@ const chartDataYours = computed(() => {
 const chartDataOthers = computed(() => {
 
     if (summary.value.othersPrinciplesSummarySorted && !summary.value.tooFewOtherProjects) {
-        return getChartData(summary.value.othersPrinciplesSummarySorted)
+        return getChartData(summary.value.othersPrinciplesSummarySorted, summary.value.otherNas)
     }
     return {
         labels: [],
@@ -564,9 +626,10 @@ const chartOptions = ref({
     scales: {
         y: {
             stacked: true,
-
             ticks: {
+                min: 50,
                 mirror: true,
+                align: 'end',
                 z: 1,
                 color: 'black',
                 font: {
@@ -578,21 +641,13 @@ const chartOptions = ref({
             stacked: true,
             max: 100,
         },
+        yNa: {
+            display: false,
+            stacked: false,
+            max: 100,
+        },
     },
     plugins: {
-        // datalabels: {
-        //     color: 'black',
-        //     display: function (context) {
-        //         return context.dataset.data[context.dataIndex] > 10; // hide label if bar is too short
-        //     },
-        //     font: {
-        //         weight: 'bold'
-        //     },
-        //     formatter: function (value, context) {
-        //         return Math.round(value) + "%"
-        //     }
-        // },
-
         tooltip: {
             padding: 14,
             backgroundColor: '#f8f9fa',
@@ -610,13 +665,20 @@ const chartOptions = ref({
                 label: (context) => context.formattedValue,
             },
         },
+        legend: {
+            labels: {
+                // filter out the first dataset label (that dataset is purely to move the 'na' line down slightly)
+                filter: function (item, chart) {
+                    return item.datasetIndex > 3
+                }
+            }
+        }
     },
     barPercentage: 1,
     categoryPercentage: 1,
     barThickness: 'flex',
     borderWidth: 1,
     borderColor: 'lightgrey',
-
 })
 
 </script>
