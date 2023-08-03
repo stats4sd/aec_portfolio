@@ -2,16 +2,17 @@
 
 namespace App\Http\Controllers;
 
-use App\Enums\GeographicalReach;
-use App\Exports\Assessment\AssessmentExportWorkbook;
-use App\Http\Requests\OrganisationRequest;
-use App\Jobs\ExportOrgData;
-use App\Models\Country;
-use App\Models\InstitutionType;
-use App\Models\Organisation;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\Session;
+use App\Models\Country;
+use App\Jobs\ExportOrgData;
+use App\Models\Organisation;
+use App\Models\InstitutionType;
+use App\Enums\GeographicalReach;
+use Illuminate\Support\Facades\Auth;
 use Maatwebsite\Excel\Facades\Excel;
+use Illuminate\Support\Facades\Session;
+use App\Http\Requests\OrganisationRequest;
+use App\Exports\Assessment\AssessmentExportWorkbook;
 
 class OrganisationController extends Controller
 {
@@ -55,29 +56,17 @@ class OrganisationController extends Controller
             $validated['has_additional_criteria'] = false;
         }
 
+        if (isset($validated['agreement']) && !$organisation->agreement_signed_at) {
+            unset($validated['agreement']);
+            $validated['agreement_signed_at'] = Carbon::now();
+            $validated['signee_id'] = Auth::user()->id;
+        }
+
         $organisation->update($validated);
 
         return $organisation->id;
         
     }
-
-//TODO
-    // public function update(OrganisationRequest $request, Organisation $organisation)
-    // {
-    //     $this->authorize('update', $organisation);
-
-    //     $validatedData = $request->validated();
-    //     if (isset($validatedData['agreement']) && !$organisation->agreement_signed_at) {
-    //         unset($validatedData['agreement']);
-    //         $validatedData['agreement_signed_at'] = Carbon::now();
-    //         $validatedData['signee_id'] = Auth::user()->id;
-    //     }
-
-    //     $organisation->update(array_filter($validatedData));
-
-    //     return redirect()->route('organisations.show', [$organisation]);
-    // }
-
 
     public function export()
     {

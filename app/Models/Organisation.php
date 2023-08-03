@@ -85,7 +85,7 @@ class Organisation extends Model
 
     public function admins()
     {
-        return $this->belongsToMany(User::class, 'organisation_members')->withPivot('role')->wherePivot('role', '=', 'Site Admin');
+        return $this->belongsToMany(User::class, 'organisation_members')->withPivot('role')->wherePivot('role', '=', 'admin');
     }
 
     public function editors()

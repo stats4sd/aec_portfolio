@@ -72,20 +72,32 @@
                     <div class="alert alert-info">
                     <p>The use of the Portfolio Funding Assessment Tool is based on the data sharing agreement made between your institution and the Agroecology Coalition. </p>
                     </div>
+
                     <p><a href="{{ Storage::disk('public')->url('documents/data_sharing_agreement.pdf') }}" target="_blank">Download a copy of the agreement for review.</a></p>
                  
-                 <!-- TODO -->
-                    @if(!$team->agreement_signed_at)
+                    <span class="show"
+                        v-if="!initInstitution.agreement_signed_at">
                         <p>Please tick the box below as a digital signature to confirm you agree to this data sharing agreement. The signature will be recorded when you submit this form.</p>
                         <div class="form-check">
-                            <input class="form-check-input" type="checkbox" value="1" id="agreement" name="agreement">
+                            <input
+                                class="form-check-input"
+                                type="checkbox"
+                                id="agreement"
+                                name="agreement"
+                                v-model="institution.agreement_signed_at"
+                                :value="1"
+                                :disabled="!canEdit"
+                            >
                             <label class="form-check-label" for="agreement">
-                                On behalf of this institution, I agree to abide by the data sharing agreement.
+                                On behalf of {{initInstitution.name}}, I agree to abide by the data sharing agreement.
                             </label>
                         </div>
-                    @else
-                        <p><b>This agreement was digitally signed on behalf of this institution on date by signee.</b></p>
-                    @endif
+                    </span>
+                    <span class="show"
+                            v-if="initInstitution.agreement_signed_at">
+                            <p><b>This agreement was digitally signed on behalf of {{ initInstitution.name }} on {{ moment(initInstitution.agreement_signed_at).utc().format('YYYY-MM-DD') }} by {{ initInstitution.signee_id }}.</b></p>
+                    </span>
+
                 </div>
             </div>
             <hr/>
@@ -191,6 +203,7 @@
 import {onMounted, ref, computed} from "vue";
 import 'vue-select/dist/vue-select.css';
 import vSelect from 'vue-select'
+import moment from "moment";
 
 
 const props = defineProps({
