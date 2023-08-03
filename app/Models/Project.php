@@ -35,7 +35,9 @@ Project extends Model
     {
         static::creating(function ($project) {
             if (is_null($project->code)) {
-                $org_project_number = Project::where('organisation_id', $project->organisation_id)->count() + 1;
+                // when counting total number of project of an organisation, include soft-deleted projects
+                // to avoid generating a duplicated project code
+                $org_project_number = Project::withTrashed()->where('organisation_id', $project->organisation_id)->count() + 1;
 
                 $org_name = $project->organisation->name;
                 $org_name_words = explode(' ', $org_name);
