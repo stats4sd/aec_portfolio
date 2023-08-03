@@ -3,11 +3,15 @@ orgCurrencyField = crud.field('org_currency')
 startDateField = crud.field('start_date')
 exchangeRateField = crud.field('exchange_rate')
 
-crud.field('currency').onChange(function(field) {
+crud.field('currency').onChange(function (field) {
+
     crud.field('get_exchange_rate_button').hide(field.value.toUpperCase() == orgCurrencyField.value).disable(field.value.toUpperCase() == orgCurrencyField.value);
     crud.field('exchange_rate').hide(field.value.toUpperCase() == orgCurrencyField.value)
-    crud.field('exchange_rate').input.value = 1;
-  }).change();
+
+    if (field.value.toUpperCase() == orgCurrencyField.value) {
+        crud.field('exchange_rate').input.value = 1;
+    }
+}).change();
 
 async function getConversionRatio(baseCurrency, currency, date) {
 
