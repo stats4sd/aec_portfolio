@@ -57,8 +57,6 @@ Project extends Model
 
         static::saved(function (Project $project) {
 
-            // refresh from the database in case the exchange_rate was set by SQL default;
-            $project->refresh();
             // in case the exchange_rate has changed, re-calculate the budget_org
            $project->budget_org = $project->budget * $project->exchange_rate;
            $project->saveQuietly();
