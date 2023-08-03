@@ -63,6 +63,8 @@ class ProjectSeeder extends Seeder
         // add complete assessments for projects
         foreach (Project::withoutGlobalScopes()->get() as $project) {
 
+            // save the project to calculate budget_org
+
             // assign 80% of projects to regions
             if ($this->faker->boolean(80)) {
                 $project->regions()->sync($this->faker->randomElements(

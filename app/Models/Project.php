@@ -62,7 +62,6 @@ Project extends Model
             // in case the exchange_rate has changed, re-calculate the budget_org
            $project->budget_org = $project->budget * $project->exchange_rate;
            $project->saveQuietly();
-            ddd($project);
         });
 
         static::addGlobalScope('organisation', function (Builder $builder) {
