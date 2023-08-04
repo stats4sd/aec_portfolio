@@ -4,9 +4,12 @@
 
     <div class="mt-16 container-fluid">
 
-        <div class="w-100 mb-4">
-            <h1 class="text-deep-green"><b>{{$organisation->name}} - Information</b></h1>
+        <div class="w-100 mb-4 d-flex align-items-center">
+            <h1 class="text-deep-green mb-0"><b>{{$organisation->name}} - Information</b></h1>
+            <x-help-text-link class="font-2xl" section-id="#page-info"/>
         </div>
+
+        <x-help-text-entry section-id="page-info" location="My Institution - page title"/>
 
         <ul class="nav nav-tabs mt-4" id="org-tabs" role="tablist">
             <li class="nav-item" role="presentation">

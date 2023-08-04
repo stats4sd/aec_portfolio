@@ -1,6 +1,14 @@
 <div class="card-header">
-    <h2>Institution Portfolios</h2>
-    <p class="help-block">Review and manage the list of portfolios. All initiatives entered into the platform are part of a portfolio. <br/> <br/> If your institution just has 1 portfolio, please add it here.</p>
+    <div class="d-flex align-items-center">
+        <h2 class="mb-0">Institution Portfolios</h2>
+        <x-help-text-link class="font-2xl" section-id="#portfolios-help"/>
+    </div>
+    <p class="help-block">Review and manage the list of portfolios. All initiatives entered into the platform are part of a portfolio.
+    </p>
+
+    <x-help-text-entry section-id="portfolios-help" location="My Institution - Portfolios"/>
+
+
 </div>
 
 <div class="card-body">

@@ -1,7 +1,14 @@
 <div class="card-header">
-    <h2>Institution Members</h2>
+    <div class="d-flex align-items-center">
+        <h2 class="mb-0">Institution Members</h2>
+        <x-help-text-link class="font-2xl" section-id="#members-help"/>
+    </div>
     <p class="help-block">Review and manage the list of members with access to this institution's information.</p>
+
+    <x-help-text-entry section-id="members-help" location="My Institution - Institution members"/>
+
 </div>
+
 
 <div class="card-body">
 
@@ -17,21 +24,21 @@
         </tr>
         </thead>
         <tbody>
-            @foreach($organisation->users as $user)
-                <tr>
+        @foreach($organisation->users as $user)
+            <tr>
+                <td>
+                    {{ $user->name }}
+                </td>
+                <td>{{ $user->email }}</td>
+                <td>{{ $user->roles->pluck('name')->join(', ') }}</td>
+                @if(Auth::user()->can('maintain institutional members'))
                     <td>
-                        {{ $user->name }}
+                        <a href="{{ route('organisationmembers.edit', [$organisation, $user]) }}" class="btn btn-dark btn-sm" name="edit_member{{ $user->id }}" onclick="">EDIT</a>
+                        <button class="btn btn-dark btn-sm remove-button" data-user="{{ $user->id }}" data-toggle="modal" data-target="#removeUserModal{{ $user->id }}">REMOVE</button>
                     </td>
-                    <td>{{ $user->email }}</td>
-                    <td>{{ $user->roles->pluck('name')->join(', ') }}</td>
-                    @if(Auth::user()->can('maintain institutional members'))
-                        <td>
-                            <a href="{{ route('organisationmembers.edit', [$organisation, $user]) }}" class="btn btn-dark btn-sm" name="edit_member{{ $user->id }}" onclick="">EDIT</a>
-                            <button class="btn btn-dark btn-sm remove-button" data-user="{{ $user->id }}" data-toggle="modal" data-target="#removeUserModal{{ $user->id }}">REMOVE</button>
-                        </td>
-                    @endif
-                </tr>
-            @endforeach
+                @endif
+            </tr>
+        @endforeach
         </tbody>
     </table>
     <hr/>

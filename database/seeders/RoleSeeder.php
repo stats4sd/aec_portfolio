@@ -76,6 +76,7 @@ class RoleSeeder extends Seeder
         // extras
         Permission::updateOrCreate(['name' => 'edit own institution', 'guard_name' => 'web']);
         Permission::updateOrCreate(['name' => 'manage user feedback', 'guard_name' => 'web']);
+        Permission::updateOrCreate(['name' => 'manage help text entries', 'guard_name' => 'web']);
 
 
         // roles_has_permissions
@@ -126,6 +127,7 @@ class RoleSeeder extends Seeder
         $admin->givePermissionTo('maintain custom principles');
 
         $admin->givePermissionTo('manage user feedback');
+        $admin->givePermissionTo('manage help text entries');
 
 
         $manager->givePermissionTo('view red lines');
@@ -143,6 +145,7 @@ class RoleSeeder extends Seeder
         $manager->givePermissionTo('maintain custom principles');
         $manager->givePermissionTo('view institutional members');
         $manager->givePermissionTo('manage user feedback');
+        $manager->givePermissionTo('manage help text entries');
 
 
         $insAdmin->givePermissionTo('invite institutional members');
