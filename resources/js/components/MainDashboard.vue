@@ -2,8 +2,6 @@
 
 
     <div class="container">
-
-
     </div>
     <!-- FILTERS -->
     <div
@@ -226,6 +224,7 @@
     <div class="tab-content">
 
         <div class='tab pane' v-if="tab==='summary'">
+
             <div class="mt-8">
                 <div class="card-header d-flex align-items-baseline">
                     <h2 class="mr-4">Summary of Initiatives</h2>
@@ -235,9 +234,12 @@
                     <div class="row">
                         <div class="col-12 col-lg-6 p-0">
                             <ul class="list-group list-group-flush">
-                                <li class="list-group-item d-flex font-lg">
-                                    <span class="w-50 text-right pr-4"># Initiatives Added</span>
+                                <li class="list-group-item d-flex font-lg align-items-center">
+                                    <span class="w-50 text-right pr-4">
+                                        # Initiatives Added
+                                    </span>
                                     <span class="font-weight-bold ">{{ summary.totalCount }}</span>
+                                    <v-help-text-link class="pl-2 font-lg" location="Dashboard - initiatives added" type="popover"/>
                                 </li>
                                 <li
                                     v-for="summaryLine in summary.statusSummary"
@@ -382,13 +384,14 @@
 import 'vue-select/dist/vue-select.css';
 import vSelect from 'vue-select'
 
+import VHelpTextLink from "./vHelpTextLink.vue";
 import VueDatePicker from '@vuepic/vue-datepicker';
 import '@vuepic/vue-datepicker/dist/main.css'
 
 import {ref, computed, onMounted, watch} from "vue";
 import {isNumber} from "lodash";
 
-const tab = ref('principles')
+const tab = ref('summary')
 
 const props = defineProps({
     user: {
@@ -514,6 +517,7 @@ import {
     LinearScale
 } from 'chart.js'
 import {Bar} from 'vue-chartjs'
+
 // import ChartDataLabels from 'chartjs-plugin-datalabels';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend)

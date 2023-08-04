@@ -11,7 +11,6 @@ class HelpTextEntry extends Component
     public \App\Models\HelpTextEntry $helpTextEntry;
 
     public function __construct(
-        public string $sectionId,
         public string $location,
     )
     {
