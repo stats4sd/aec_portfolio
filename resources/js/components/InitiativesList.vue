@@ -126,7 +126,7 @@ const sortOptions = ref([
         label: 'Name',
     },
     {
-        id: 'budget',
+        id: 'budget_org',
         label: 'Budget',
     }
 ])
@@ -140,11 +140,11 @@ const propComparator = (propName, sortDir) =>
     (a, b) => a[propName] === b[propName] ? 0 : a[propName] < b[propName] ? -sortDir : sortDir
 
 watch(sortDir, (newSortDir) => {
-    initiatives.value.sort(propComparator(sortBy.value, newSortDir))
+    filteredInitiatives.value.sort(propComparator(sortBy.value, newSortDir))
 })
 
 watch(sortBy, (newSortBy) => {
-    initiatives.value.sort(propComparator(newSortBy, sortDir.value))
+    filteredInitiatives.value.sort(propComparator(newSortBy, sortDir.value))
 })
 
 
