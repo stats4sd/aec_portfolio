@@ -20,7 +20,7 @@ class PrincipleCrudController extends CrudController
     use ListOperation;
     use CreateOperation;
     use UpdateOperation;
-    use DeleteOperation { destroy as traitDestroy; }
+    // use DeleteOperation { destroy as traitDestroy; }
     use ShowOperation { show as traitShow; }
 
     use ImportOperation;
