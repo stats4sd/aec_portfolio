@@ -49,6 +49,7 @@ class TestSeeder extends Seeder
             'code' => 'TP1',
             'description' => 'A project for testing',
             'budget' => '1000000',
+            'exchange_rate' => 1,
             'currency' => 'EUR',
             'start_date' => '2023-01-01',
             'geographic_reach' => GeographicalReach::Global->name,
