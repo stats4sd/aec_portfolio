@@ -26,6 +26,7 @@ use App\Http\Controllers\Admin\ScoreTagCrudController;
 use App\Http\Controllers\Admin\UserCrudController;
 use App\Http\Controllers\Admin\UserFeedbackCrudController;
 use App\Http\Controllers\Admin\RevisionCrudController;
+use App\Http\Controllers\Admin\CustomScoreTagCrudController;
 use App\Http\Controllers\AssessmentController;
 use App\Http\Controllers\GeneratePdfFileController;
 use App\Http\Controllers\GenericDashboardController;
@@ -162,7 +163,9 @@ Route::group([
     Route::crud('feedback-type', UserFeedbackTypeCrudController::class);
 
     Route::crud('revision', RevisionCrudController::class);
+    Route::crud('custom-score-tag', CustomScoreTagCrudController::class);
 });
+
 Route::get('project/{id}/show-as-pdf', [ProjectCrudController::class, 'show'])
     ->middleware('auth.basic')
     ->name('project.show-as-pdf');

@@ -56,11 +56,11 @@
 @endif
 
 @if(Auth::user()->can('maintain score tags'))
-    <li class="nav-item"><a class="nav-link" href="{{ backpack_url('score-tag') }}"><i class="nav-icon la la-tag"></i> Score tags (TBC)</a></li>
+    <li class="nav-item"><a class="nav-link" href="{{ backpack_url('score-tag') }}"><i class="nav-icon la la-tag"></i> Score tags</a></li>
 @endif
 
 @if(Auth::user()->can('review custom score tags'))
-    <li class="nav-item"><a class="nav-link" href="{{ backpack_url('additional-criteria-score-tag') }}"><i class="nav-icon la la-tag"></i> Additional Criteria Score tags (TBC)</a></li>
+    <li class="nav-item"><a class="nav-link" href="{{ backpack_url('custom-score-tag') }}"><i class="nav-icon la la-tag"></i> Custom Score tags</a></li>
 @endif
 
 
