@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Models\AdditionalCriteriaScoreTag;
+use App\Models\ScoreTag;
 use App\Http\Controllers\Admin\Traits\ScoreTagInlineCreateOperation;
 use App\Http\Requests\ScoreTagRequest;
 use Backpack\CRUD\app\Http\Controllers\CrudController;
@@ -29,14 +30,16 @@ class ScoreTagCrudController extends CrudController
 
     public function setup()
     {
-        CRUD::setModel(\App\Models\AdditionalCriteriaScoreTag::class);
+        // CRUD::setModel(\App\Models\AdditionalCriteriaScoreTag::class);
+        CRUD::setModel(\App\Models\ScoreTag::class);
         CRUD::setRoute(config('backpack.base.route_prefix') . '/score-tag');
         CRUD::setEntityNameStrings('score tag', 'score tags');
     }
 
     protected function setupListOperation()
     {
-        $this->authorize('viewAny', AdditionalCriteriaScoreTag::class);
+        // $this->authorize('viewAny', AdditionalCriteriaScoreTag::class);
+        $this->authorize('viewAny', ScoreTag::class);
 
         CRUD::column('created_at');
         CRUD::column('description');
@@ -47,7 +50,8 @@ class ScoreTagCrudController extends CrudController
 
     protected function setupCreateOperation()
     {
-        $this->authorize('create', AdditionalCriteriaScoreTag::class);
+        // $this->authorize('create', AdditionalCriteriaScoreTag::class);
+        $this->authorize('create', ScoreTag::class);
 
         CRUD::setValidation(ScoreTagRequest::class);
 
@@ -65,7 +69,8 @@ class ScoreTagCrudController extends CrudController
 
     public function destroy($id)
     {
-        $this->authorize('delete', AdditionalCriteriaScoreTag::find($id));
+        // $this->authorize('delete', AdditionalCriteriaScoreTag::find($id));
+        $this->authorize('delete', ScoreTag::find($id));
 
         $this->crud->hasAccessOrFail('delete');
 
@@ -74,7 +79,8 @@ class ScoreTagCrudController extends CrudController
 
     public function show($id)
     {
-        $this->authorize('view', AdditionalCriteriaScoreTag::find($id));
+        // $this->authorize('view', AdditionalCriteriaScoreTag::find($id));
+        $this->authorize('view', ScoreTag::find($id));
 
         return $this->traitShow($id);
     }
