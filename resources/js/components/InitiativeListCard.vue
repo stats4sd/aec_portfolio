@@ -17,11 +17,14 @@
                             <span class="font-weight-bold">{{ initiative.latest_assessment.assessment_status }}</span>
                         </div>
                         <div class="w-50">
-                            <span class="font-weight-bold text-grey">SCORE</span><br/>
+                            <span class="font-weight-bold text-grey">SCORE</span>
+                            <v-help-text-link location="Initiatives - score" type="popover"/>
+                            <br/>
                             <span class="font-xl text-bright-green font-weight-bold"
                                   v-if="initiative.latest_assessment.overall_score !== null">{{
                                     initiative.latest_assessment.overall_score
                                 }}%</span>
+
                         </div>
                     </div>
                 </div>

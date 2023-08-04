@@ -59,6 +59,15 @@ class HelpTextEntrySeeder extends Seeder
                     ",
             ],
             [
+                'location' => 'Initiatives - score',
+                'text' => "
+                    The overall score for the initiative is calculated as follows: <ul>
+                        <li>The sum of the rating given for each principle, divided by the maximum possible score.</li>
+                        <li>The maximum score is 2 per principle. It takes into account any principles marked as NA. For example, an initiative where all 13 principles are relevant will be marked out of 13 x 2 = 26. If 2 principles are marked as NA, the initiative will be marked out of 11 x 2 = 22.</li>
+</ul>
+                    ",
+            ],
+            [
                 'location' => 'Dashboard - page title',
                 'text' => "
                     This page presents an overall summary of your institution's initiatives and compares your assessment results against the results from other institutions that use this tool. You can navigate the tabs below to review a summary of your overall portfolio ('Summary of Initaitives'), and the results of each step of the main assessment ('Summary of Red Flags' and 'Summary of Principles'). See the help text on each tab for more information.<br/><br/>
@@ -113,7 +122,7 @@ class HelpTextEntrySeeder extends Seeder
             ],
         ];
 
-        foreach($helpTextEntries as $helpTextEntry) {
+        foreach ($helpTextEntries as $helpTextEntry) {
             HelpTextEntry::create($helpTextEntry);
         }
     }
