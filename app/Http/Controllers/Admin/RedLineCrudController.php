@@ -16,7 +16,7 @@ use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Stats4sd\FileUtil\Http\Controllers\Operations\ImportOperation;
 
 
-class RedLineCrudController extends CrudController
+class RedLineCrudController extends AdminPanelCrudController
 {
     use ListOperation;
     use CreateOperation;
@@ -35,6 +35,11 @@ class RedLineCrudController extends CrudController
         CRUD::setEntityNameStrings('red flag', 'red flags');
 
         CRUD::set('import.importer', RedLineImport::class);
+
+        parent::setup();
+
+
+
     }
 
     protected function setupListOperation()
