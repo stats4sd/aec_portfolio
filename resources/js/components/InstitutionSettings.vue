@@ -84,7 +84,7 @@
                                 type="checkbox"
                                 id="agreement"
                                 name="agreement"
-                                v-model="institution.agreement_signed_at"
+                                v-model="institution.agreement"
                                 :value="1"
                                 :disabled="!canEdit"
                             >
