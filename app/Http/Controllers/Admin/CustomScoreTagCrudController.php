@@ -12,7 +12,7 @@ use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
  * @package App\Http\Controllers\Admin
  * @property-read \Backpack\CRUD\app\Library\CrudPanel\CrudPanel $crud
  */
-class CustomScoreTagCrudController extends CrudController
+class CustomScoreTagCrudController extends AdminPanelCrudController
 {
     use \Backpack\CRUD\app\Http\Controllers\Operations\ListOperation;
 
@@ -26,6 +26,8 @@ class CustomScoreTagCrudController extends CrudController
         CRUD::setModel(\App\Models\CustomScoreTag::class);
         CRUD::setRoute(config('backpack.base.route_prefix') . '/custom-score-tag');
         CRUD::setEntityNameStrings('custom score tag', 'custom score tags');
+
+        parent::setup();
     }
 
     /**

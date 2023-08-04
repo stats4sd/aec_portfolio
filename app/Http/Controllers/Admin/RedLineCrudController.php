@@ -37,9 +37,6 @@ class RedLineCrudController extends AdminPanelCrudController
         CRUD::set('import.importer', RedLineImport::class);
 
         parent::setup();
-
-
-
     }
 
     protected function setupListOperation()

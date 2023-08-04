@@ -35,7 +35,6 @@ use App\Http\Controllers\OrganisationController;
 use App\Http\Controllers\OrganisationMemberController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\SelectedOrganisationController;
-use App\Http\Controllers\AdminPanelController;
 use App\Http\Controllers\SessionController;
 use App\Http\Controllers\UserFeedbackController;
 use Backpack\CRUD\app\Http\Controllers\MyAccountController;
@@ -56,9 +55,6 @@ Route::group([
     Route::get('/', [SelectedOrganisationController::class, 'show']);
 
     Route::crud('organisation-crud', OrganisationCrudController::class);
-
-
-    Route::get('admin-panel', [AdminPanelController::class, 'show']);
 
 
     Route::crud('red-flag', RedLineCrudController::class);

@@ -15,7 +15,7 @@ use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 
-class RoleInviteCrudController extends CrudController
+class RoleInviteCrudController extends AdminPanelCrudController
 {
     use ListOperation;
     use CreateOperation;
@@ -34,6 +34,8 @@ class RoleInviteCrudController extends CrudController
         CRUD::setModel(\App\Models\RoleInvite::class);
         CRUD::setRoute(config('backpack.base.route_prefix') . '/role-invite');
         CRUD::setEntityNameStrings('role invite', 'role invites');
+
+        parent::setup();
     }
 
     protected function setupListOperation()

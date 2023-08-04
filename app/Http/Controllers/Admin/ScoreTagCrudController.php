@@ -15,7 +15,7 @@ use Backpack\CRUD\app\Http\Controllers\Operations\UpdateOperation;
 use App\Http\Controllers\Admin\Traits\ScoreTagInlineCreateOperation;
 
 
-class ScoreTagCrudController extends CrudController
+class ScoreTagCrudController extends AdminPanelCrudController
 {
     use ListOperation;
     use CreateOperation;
@@ -31,6 +31,8 @@ class ScoreTagCrudController extends CrudController
         CRUD::setModel(\App\Models\ScoreTag::class);
         CRUD::setRoute(config('backpack.base.route_prefix') . '/score-tag');
         CRUD::setEntityNameStrings('score tag', 'score tags');
+
+        parent::setup();
     }
 
     protected function setupListOperation()

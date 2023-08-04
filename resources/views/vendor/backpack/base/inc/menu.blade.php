@@ -69,7 +69,7 @@
         @if(Auth::user()->can('maintain institutions'))
         <li class="nav-item pr-4">
             <a class="nav-link d-flex justify-content-between align-items-center"
-               href="{{ backpack_url('admin-panel') }}"
+               href="{{ backpack_url('organisation-crud') }}"
             >
                 <i class="la la-user-tie font-3xl pr-2"></i>
                 <span>Admin Panel</span>

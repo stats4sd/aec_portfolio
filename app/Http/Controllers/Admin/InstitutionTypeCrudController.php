@@ -12,7 +12,7 @@ use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
  * @package App\Http\Controllers\Admin
  * @property-read \Backpack\CRUD\app\Library\CrudPanel\CrudPanel $crud
  */
-class InstitutionTypeCrudController extends CrudController
+class InstitutionTypeCrudController extends AdminPanelCrudController
 {
     use \Backpack\CRUD\app\Http\Controllers\Operations\ListOperation;
     use \Backpack\CRUD\app\Http\Controllers\Operations\CreateOperation;
@@ -32,6 +32,8 @@ class InstitutionTypeCrudController extends CrudController
         CRUD::setModel(\App\Models\InstitutionType::class);
         CRUD::setRoute(config('backpack.base.route_prefix') . '/institution-type');
         CRUD::setEntityNameStrings('institution type', 'institution types');
+
+        parent::setup();
     }
 
     /**
