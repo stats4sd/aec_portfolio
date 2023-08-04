@@ -11,7 +11,9 @@
                     <h5 class="font-weight-bold text-bright-green">Current Assessment</h5>
                     <div class="d-flex justify-content-between">
                         <div class="w-50">
-                            <span class="font-weight-bold text-grey">STATUS</span><br/>
+                            <span class="font-weight-bold text-grey">STATUS</span>
+                            <v-help-text-link location="Initiatives - statuses" type="popover"/>
+                            <br/>
                             <span class="font-weight-bold">{{ initiative.latest_assessment.assessment_status }}</span>
                         </div>
                         <div class="w-50">
@@ -136,6 +138,7 @@
 
 import {computed, defineEmits, ref} from "vue";
 import Swal from "sweetalert2";
+import VHelpTextLink from "./vHelpTextLink.vue";
 
 const props = defineProps({
     initiative: Object,

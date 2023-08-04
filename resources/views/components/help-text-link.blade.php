@@ -3,5 +3,5 @@
    data-toggle="collapse"
     role="button"
     aria-expanded="false"
-    data-target="{{ $sectionId }}">
+    data-target="#{{ $sectionId }}">
 </i>

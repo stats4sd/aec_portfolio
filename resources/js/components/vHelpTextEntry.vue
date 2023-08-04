@@ -1,5 +1,5 @@
 <template>
-    <div class="collapse" :id="sectionId">
+    <div class="collapse" :id="targetId">
     <div class="bd-callout border-info">
         {{ helpTextEntry.text }}
     </div>
@@ -7,15 +7,20 @@
 </template>
 
 <script setup>
-
-import {onMounted, ref} from "vue";
+import slugify from 'slugify';
+import {onMounted, ref, computed} from "vue";
 
 const props = defineProps({
-    sectionId: String,
     location: String,
 })
 
+const targetId = computed(() => {
+    return slugify(props.location)
+})
+
 const helpTextEntry = ref({})
+
+
 
 onMounted(() => {
     axios.get('/admin/help-text-entry/find/' + props.location)

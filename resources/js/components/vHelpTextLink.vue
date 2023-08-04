@@ -1,18 +1,49 @@
 <template>
+
     <i
         class="ml-2 cursor-help la la-question-circle"
-        data-toggle="collapse"
+        :data-toggle="type"
+        :data-target="type==='collapse' ? '#'+targetId : ''"
+        data-container="body"
+        data-html="true"
+        data-trigger="focus"
+        tabindex="0"
+        :data-content="helpTextEntry.text"
         role="button"
-        aria-expanded="false"
-        :data-target="sectionId">
+        aria-expanded="false">
     </i>
 
 </template>
 
 <script setup>
+import slugify from 'slugify';
+
+import {computed, onMounted, ref} from "vue";
 
 const props = defineProps({
-    sectionId: String,
+    location: String,
+    type: {
+        type: String,
+        default: 'collapse',
+    }
 });
+
+const targetId = computed(() => {
+    return slugify(props.location)
+})
+
+
+const helpTextEntry = ref({})
+
+onMounted(() => {
+
+    if (props.type === 'popover') {
+        axios.get('/admin/help-text-entry/find/' + props.location)
+            .then((res) => {
+                helpTextEntry.value = res.data
+            })
+    }
+})
+
 
 </script>

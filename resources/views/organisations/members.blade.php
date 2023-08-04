@@ -1,7 +1,7 @@
 <div class="card-header">
     <div class="d-flex align-items-center">
         <h2 class="mb-0">Institution Members</h2>
-        <x-help-text-link class="font-2xl" section-id="#members-help"/>
+        <x-help-text-link class="font-2xl" section-id="members-help"/>
     </div>
     <p class="help-block">Review and manage the list of members with access to this institution's information.</p>
 

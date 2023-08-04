@@ -1,7 +1,7 @@
 <div class="card-header">
     <div class="d-flex align-items-center">
         <h2 class="mb-0">Institution Portfolios</h2>
-        <x-help-text-link class="font-2xl" section-id="#portfolios-help"/>
+        <x-help-text-link class="font-2xl" section-id="portfolios-help"/>
     </div>
     <p class="help-block">Review and manage the list of portfolios. All initiatives entered into the platform are part of a portfolio.
     </p>
