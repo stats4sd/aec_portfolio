@@ -42,7 +42,6 @@
 @if(Auth::user()->can('manage definitions'))
     <li class="nav-item"><a class="nav-link" href="{{ backpack_url('institution-type') }}"><i class="nav-icon la la-university"></i> Institution types</a></li>
     <li class="nav-item"><a class="nav-link" href="{{ backpack_url('initiative-category') }}"><i class="nav-icon la la-project-diagram"></i> Initiative categories</a></li>
-    <li class="nav-item"><a class="nav-link" href="{{ backpack_url('feedback-type') }}"><i class="nav-icon la la-comment-alt"></i> Feedback types</a></li>
     <hr/>
 @endif
 
@@ -57,11 +56,11 @@
 @endif
 
 @if(Auth::user()->can('maintain score tags'))
-    <li class="nav-item"><a class="nav-link" href="{{ backpack_url('score-tag') }}"><i class="nav-icon la la-tag"></i> Score tags (TBC)</a></li>
+    <li class="nav-item"><a class="nav-link" href="{{ backpack_url('score-tag') }}"><i class="nav-icon la la-tag"></i> Score tags</a></li>
 @endif
 
 @if(Auth::user()->can('review custom score tags'))
-    <li class="nav-item"><a class="nav-link" href="{{ backpack_url('additional-criteria-score-tag') }}"><i class="nav-icon la la-tag"></i> Additional Criteria Score tags (TBC)</a></li>
+    <li class="nav-item"><a class="nav-link" href="{{ backpack_url('custom-score-tag') }}"><i class="nav-icon la la-tag"></i> Custom Score tags</a></li>
 @endif
 
 
