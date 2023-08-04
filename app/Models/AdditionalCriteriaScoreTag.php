@@ -6,13 +6,14 @@ use Backpack\CRUD\app\Models\Traits\CrudTrait;
 use App\Imports\PrincipleImport;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Matrix\Operators\Addition;
 
 class AdditionalCriteriaScoreTag extends Model
 {
-    use CrudTrait;
+    use CrudTrait, SoftDeletes;
 
     protected $guarded = ['id'];
 
