@@ -243,11 +243,13 @@
                                 </li>
                                 <li
                                     v-for="summaryLine in summary.statusSummary"
-                                    class="list-group-item d-flex font-lg text-deep-green">
+                                    class="list-group-item d-flex font-lg text-deep-green align-items-center">
                                     <span class="w-50 text-right pr-4">{{ summaryLine.status }}</span>
                                     <span class="font-weight-bold ">{{ summaryLine.number }} ({{
                                             summaryLine.percent
                                         }}%)</span>
+                                    <v-help-text-link class="pl-2 font-lg" :location="'Dashboard - '+summaryLine.status" type="popover"/>
+
                                 </li>
                             </ul>
                         </div>
@@ -268,19 +270,21 @@
                     <div class="row">
                         <div class="col-12 col-md-6">
                             <ul class="list-group list-group-flush">
-                                <li class="list-group-item d-flex font-lg">
+                                <li class="list-group-item d-flex font-lg align-items-center">
                                     <span class="w-50 text-right pr-4">OVERALL SCORE</span>
                                     <span class="font-weight-bold">{{ summary.assessmentScore }}%</span>
+                                    <v-help-text-link class="pl-2 font-lg" location="Dashboard - overall score" type="popover"/>
                                 </li>
                             </ul>
                         </div>
                         <div class="col-12 col-md-6">
                             <ul class="list-group list-group-flush">
-                                <li class="list-group-item d-flex font-lg">
+                                <li class="list-group-item d-flex font-lg align-items-center">
                                     <span class="w-50 text-right pr-4">AE-focused Budget</span>
                                     <span class="font-weight-bold ">{{
                                             formatBudget(summary.aeBudget)
                                         }} {{ organisation.currency }}</span>
+                                    <v-help-text-link class="pl-2 font-lg" location="Dashboard - AE focused budget" type="popover" data-placement="top"/>
                                 </li>
                             </ul>
                         </div>
@@ -293,9 +297,10 @@
                 <div class="card-header d-flex align-items-baseline">
                     <h2 class="mr-4">Summary of Red Flags</h2>
                     <h5>({{ filters.portfolio ? filters.portfolio.name.toUpperCase() : 'ALL PORTFOLIOS' }})</h5>
+                    <v-help-text-link class="pl-2 font-lg" location="Dashboard - Redflags summary"/>
                 </div>
                 <div class="card-body">
-
+                    <v-help-text-entry location="Dashboard - Redflags summary"/>
 
                     <!-- red lines summary -->
                     <table class="table" v-if="summary.redlinesSummary != null">
@@ -342,11 +347,15 @@
         </div>
         <div v-if="tab==='principles'">
             <div class="mx-auto mt-8 w-100" style="max-width: 1500px;" v-if="summary.yoursPrinciplesSummarySorted">
-                <div class="card-header">
+                <div class="card-header d-flex align-items-baseline">
                     <h2 class="mr-4">Summary of Principles</h2>
                     <h5>({{ filters.portfolio ? filters.portfolio.name.toUpperCase() : 'ALL PORTFOLIOS' }})</h5>
+                    <v-help-text-link class="pl-2 font-lg" location="Dashboard - Summary of Principles"/>
+
                 </div>
                 <div class="card-body">
+                    <v-help-text-entry location="Dashboard - Summary of Principles"/>
+
                     <div class="row">
                         <div class="col-12 col-lg-6 d-flex flex-column align-items-center">
                             <h2 class="mb-4">Your Initiatives</h2>
@@ -517,6 +526,7 @@ import {
     LinearScale
 } from 'chart.js'
 import {Bar} from 'vue-chartjs'
+import VHelpTextEntry from "./vHelpTextEntry.vue";
 
 // import ChartDataLabels from 'chartjs-plugin-datalabels';
 

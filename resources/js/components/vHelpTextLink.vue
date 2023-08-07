@@ -10,7 +10,9 @@
         tabindex="0"
         :data-content="helpTextEntry.text"
         role="button"
-        aria-expanded="false">
+        aria-expanded="false"
+        ref="popoverIcon"
+    >
     </i>
 
 </template>
@@ -34,8 +36,11 @@ const targetId = computed(() => {
 
 
 const helpTextEntry = ref({})
+const popoverIcon = ref(null)
 
 onMounted(() => {
+
+    $(popoverIcon.value).popover();
 
     if (props.type === 'popover') {
         axios.get('/admin/help-text-entry/find/' + props.location)

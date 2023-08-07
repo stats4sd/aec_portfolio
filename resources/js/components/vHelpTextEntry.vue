@@ -1,7 +1,6 @@
 <template>
     <div class="collapse" :id="targetId">
-    <div class="bd-callout border-info">
-        {{ helpTextEntry.text }}
+    <div class="bd-callout border-info" v-html="helpTextEntry.text">
     </div>
 </div>
 </template>
