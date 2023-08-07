@@ -31,11 +31,10 @@
                         id="input_currency"
                         v-model="institution.currency"
                         :disabled="!canEdit"
-
                     >
                     <span class="text-danger emphasis show" role="alert" v-if="errors.hasOwnProperty('currency')">
-                            <strong v-for="error in errors.currency">{{ error }}</strong><br/>
-                        </span>
+                        <strong v-for="error in errors.currency">{{ error }}</strong><br/>
+                    </span>
                     <small id="currencyHelp" class="form-text font-sm">This currency will be used for the summary
                         dashboard. All initiative budgets for your institution will be converted into this
                         currency.</small>

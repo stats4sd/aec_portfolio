@@ -58,7 +58,8 @@
                             <a class="btn btn-success mr-2" :class="[ enableShowButton ? '' : 'disabled']"
                                :href="`/admin/project/${initiative.id}/show`">Show Information</a>
 
-                            <button class="btn btn-danger" @click="removeInitiative();">Delete</button>
+                            <button class="btn btn-danger" :class="[ enableDeleteButton ? '' : 'disabled']"
+                                    @click="enableDeleteButton ? removeInitiative() : '';">Delete</button>
 
                         </div>
 
@@ -143,6 +144,7 @@ const props = defineProps({
     enableEditButton: Boolean,
     enableShowButton: Boolean,
     enableAssessButton: Boolean,
+    enableDeleteButton: Boolean,
 })
 
 const expanded = ref(false)
