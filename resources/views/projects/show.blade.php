@@ -6,8 +6,8 @@
 
     <div class="container mt-4">
 
-        <h1>Initiative Review Page</h1>
-        <h2>{{ $entry->organisation->name }} - {{ $entry->name }}</h2>
+        <h1>{{ $entry->organisation->name }} - {{ \Illuminate\Support\Str::title($entry->name) }}</h1>
+        <h4 class="text-uppercase">Initiative Summary</h4>
 
         <form method="POST" action="{{ backpack_url("project/$entry->id/generate-pdf") }}">
             @csrf
@@ -108,17 +108,26 @@
                                     <li>{{ $principleAssessment->principle->name }}</li>
                                 @endforeach
                             </ul>
+                        </div>
                     @endif
 
                 @elseif($entry->latest_assessment->redline_status === \App\Enums\AssessmentStatus::Failed->value)
-                    <p class="text-center text-secondary">~~ Red flag assessment failed ~~<br/>~~ no principle assessment results available ~~</p>
+                    <p class="text-center text-secondary">~~ Red flag assessment failed ~~<br/>~~ no principle assessment results available ~~
+                    </p>
                 @else
-                    <p class="text-center text-secondary">~~ Principle assessment not completed ~~<br/>~~ no results available ~~</p>
+                    <p class="text-center text-secondary">~~ Principle assessment not completed ~~<br/>~~ no results available ~~
+                    </p>
                 @endif
 
             </div>
         </div>
-        <div class="row">
+
+        <div class="print-page-break">
+            <h1 class="only-print mt-16">{{ $entry->organisation->name }} - {{ \Illuminate\Support\Str::title($entry->name) }}</h1>
+            <h4 class="only-print text-uppercase">Principle Assessment Summary</h4>
+        </div>
+
+        <div class="row mt-4 pt-4">
             <div class="col-12">
                 <table class="table table-borderless table-responsive">
                     <tr>
