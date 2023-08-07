@@ -46,7 +46,7 @@ class ProjectController extends Controller
 
 
         // only enable features if the agreement is signed;
-        if ($org->aggreement_signed_at) {
+        if ($org->agreement_signed_at) {
 
             if (Auth::user()->can('maintain projects')) {
                 $showAddButton = true;
