@@ -24,11 +24,13 @@ class OrganisationController extends Controller
 
     public function show()
     {
-        $organisation = Organisation::find(Session::get('selectedOrganisationId'))->load(['portfolios.projects.assessments' => [
-            'failingRedlines',
-            'project.organisation',
-            'principles',
-            ]
+        $organisation = Organisation::find(Session::get('selectedOrganisationId'))->load([
+            'portfolios.projects.assessments' => [
+                'failingRedlines',
+                'project.organisation',
+                'principles',
+            ],
+            'signee',
         ]);
         $institutionTypes = InstitutionType::all();
         $geographicReaches = GeographicalReach::cases();
@@ -64,8 +66,15 @@ class OrganisationController extends Controller
 
         $organisation->update($validated);
 
-        return $organisation->id;
-        
+        return $organisation->load([
+            'portfolios.projects.assessments' => [
+                'failingRedlines',
+                'project.organisation',
+                'principles',
+            ],
+            'signee',
+        ]);
+
     }
 
     public function export()

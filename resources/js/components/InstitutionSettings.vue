@@ -73,10 +73,10 @@
                     <p>The use of the Portfolio Funding Assessment Tool is based on the data sharing agreement made between your institution and the Agroecology Coalition. </p>
                     </div>
 
-                    <p><a href="{{ Storage::disk('public')->url('documents/data_sharing_agreement.pdf') }}" target="_blank">Download a copy of the agreement for review.</a></p>
-                 
+                    <p><a href="/documents/data_sharing_agreement.pdf" target="_blank">Download a copy of the agreement for review.</a></p>
+
                     <span class="show"
-                        v-if="!initInstitution.agreement_signed_at">
+                        v-if="!institution.agreement_signed_at">
                         <p>Please tick the box below as a digital signature to confirm you agree to this data sharing agreement. The signature will be recorded when you submit this form.</p>
                         <div class="form-check">
                             <input
@@ -89,13 +89,13 @@
                                 :disabled="!canEdit"
                             >
                             <label class="form-check-label" for="agreement">
-                                On behalf of {{initInstitution.name}}, I agree to abide by the data sharing agreement.
+                                On behalf of {{institution.name}}, I agree to abide by the data sharing agreement.
                             </label>
                         </div>
                     </span>
                     <span class="show"
-                            v-if="initInstitution.agreement_signed_at">
-                            <p><b>This agreement was digitally signed on behalf of {{ initInstitution.name }} on {{ moment(initInstitution.agreement_signed_at).utc().format('YYYY-MM-DD') }} by {{ initInstitution.signee_id }}.</b></p>
+                            v-if="institution.agreement_signed_at">
+                            <p><b>This agreement was digitally signed on behalf of {{ institution.name }} on {{ moment(institution.agreement_signed_at).utc().format('YYYY-MM-DD') }} by {{ institution.signee.name }}.</b></p>
                     </span>
 
                 </div>
@@ -230,7 +230,7 @@ async function save() {
     try {
         const result = await axios.post(props.updateRoute, institution.value)
 
-        console.log(result)
+        institution.value = result.data
     } catch (error) {
 
         console.log(error)

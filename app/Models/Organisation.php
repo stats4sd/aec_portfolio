@@ -85,17 +85,26 @@ class Organisation extends Model
 
     public function admins()
     {
-        return $this->belongsToMany(User::class, 'organisation_members')->withPivot('role')->wherePivot('role', '=', 'admin');
+        return $this->belongsToMany(User::class, 'organisation_members')
+            ->whereHas('roles', function(Builder $query) {
+                $query->where('name', 'Institutional Admin');
+            });
     }
 
     public function editors()
     {
-        return $this->belongsToMany(User::class, 'organisation_members')->withPivot('role')->wherePivot('role', '=', 'editor');
+        return $this->belongsToMany(User::class, 'organisation_members')
+                        ->whereHas('roles', function(Builder $query) {
+                $query->where('name', 'Institutional Assessor');
+            });
     }
 
     public function viewers()
     {
-        return $this->belongsToMany(User::class, 'organisation_members')->withPivot('role')->wherePivot('role', '=', 'viewer');
+        return $this->belongsToMany(User::class, 'organisation_members')
+                        ->whereHas('roles', function(Builder $query) {
+                $query->where('name', 'Institutional Member');
+            });
     }
 
     public function creator()
