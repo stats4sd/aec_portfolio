@@ -43,16 +43,21 @@ class HelpTextEntryCrudController extends CrudController
      */
     protected function setupListOperation()
     {
+        CRUD::setDefaultPageLength(25);
+        CRUD::setResponsiveTable(false);
+
         Widget::add()
             ->to('before_content')
             ->type('card')
-            ->wrapper('col-10')
+            ->wrapper([
+                'class' => 'col-10',
+                ])
             ->content([
-                'body' => 'This page allows you to review and update the helper text available throughout the platform. All the text available via the ? symbols can be updated below. Only the text can be changed - there is no way to add additional help text entries through this system.'
+                'body' => 'This page allows you to review and update the helper text available throughout the platform. All the text available via the ? symbols can be updated below. Only the text can be changed - there is no way to add additional help text entries through this system.',
             ]);
 
-        CRUD::column('name');
-        CRUD::column('text');
+        CRUD::column('location');
+        CRUD::column('text')->limit(100);
     }
 
     /**

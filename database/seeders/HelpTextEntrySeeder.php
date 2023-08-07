@@ -73,7 +73,7 @@ class HelpTextEntrySeeder extends Seeder
                     This page presents an overall summary of your institution's initiatives and compares your assessment results against the results from other institutions that use this tool. You can navigate the tabs below to review a summary of your overall portfolio ('Summary of Initaitives'), and the results of each step of the main assessment ('Summary of Red Flags' and 'Summary of Principles'). See the help text on each tab for more information.<br/><br/>
                     You may filter the results shown in 2 ways:
                     <ul>
-                    <li>You may restrict the results to a single portfolio. In this case, 'your' results will be filtered to only the selected portfolio. The comparision against other institutions will remain unchanged./li>
+                    <li>You may restrict the results to a single portfolio. In this case, 'your' results will be filtered to only the selected portfolio. The comparision against other institutions will remain unchanged.</li>
                     <li>You may add one or more filters based on the initiative properties, including location, category, date and budget. These filters will be applied to both your initiatives and initiatives from other institutions. For example, you can compare all your initiatives that started between 2020 and 2023 with all other institutions' initiatives from the same time period.</li>
                     </ul>
                 ",
