@@ -26,7 +26,11 @@
     <li class="nav-item"><a class="nav-link" href="{{ backpack_url('removal-request') }}"><i class="nav-icon la la-trash-alt"></i> Removal Requests</a></li>
 @endif
 
-@if(Auth::user()->canAny(['manage revisions', 'manage user feedback', 'manage removal requests']))
+@if(Auth::user()->can('manage help text entries'))
+    <li class="nav-item"><a class="nav-link" href="{{ backpack_url('help-text-entry') }}"><i class="nav-icon la la-trash-alt"></i> Help Text Entry</a></li>
+@endif
+
+@if(Auth::user()->canAny(['manage revisions', 'manage user feedback', 'manage removal requests', 'manage help text entries']))
     <hr/>
 @endif
 
