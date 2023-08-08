@@ -19,6 +19,7 @@ use Backpack\Pro\Http\Controllers\Operations\FetchOperation;
 use Backpack\Pro\Http\Controllers\Operations\InlineCreateOperation;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 use Prologue\Alerts\Facades\Alert;
 
@@ -40,6 +41,10 @@ class AdditionalCriteriaCrudController extends CrudController
         CRUD::setModel(\App\Models\AdditionalCriteria::class);
         CRUD::setRoute(config('backpack.base.route_prefix') . '/additional-criteria');
         CRUD::setEntityNameStrings('additional criteria', 'additional criteria');
+
+        if(Auth::user()->cannot('maintain custom principles')) {
+            CRUD::denyAccess(['update', 'create', 'delete']);
+        }
     }
 
     protected function setupListOperation()
