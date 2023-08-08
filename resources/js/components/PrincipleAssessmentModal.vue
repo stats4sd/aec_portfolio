@@ -82,7 +82,7 @@
                         </div>
 
                         <div>
-                            <h6>Presence of Examples // Indicators for {{ principle.name }}</h6>
+                            <h5>Presence of Examples // Indicators <br/>for {{ principle.name }}</h5>
                             <p>Below are some common examples of {{ principle.name }} within a project. Tick the ones that are present within the project. You may also add additional examples below to further support the rating given.</p>
 
                             <div v-for="tag in principle.score_tags" class="checkbox-group mb-2 example-list">
@@ -131,7 +131,7 @@
 </template>
 
 <script setup>
-import {computed, ref, defineEmits, nextTick, onMounted} from "vue";
+import {computed, ref, defineEmits, nextTick, watch} from "vue";
 
 
 const props = defineProps({
@@ -175,15 +175,18 @@ function discard() {
 async function save(nextAction) {
 
     // slider appears to be '0' on null, but actually requires moving up and back to 0 to be considered not null.
-    if (props.principleAssessment.rating === null) {
+    if (props.principleAssessment.rating === null && !props.principleAssessment.is_na) {
         props.principleAssessment.rating = 0;
+    }
+
+    if(props.principleAssessment.is_na) {
+        props.principleAssessment.rating = null;
     }
 
     props.principleAssessment.complete = true;
 
     emit('update_rating', props.principleAssessment)
 
-    await axios.patch(`/principle-assessment/${props.principleAssessment.id}`, props.principleAssessment)
     let url = `/principle-assessment/${props.principleAssessment.id}`
 
     // check if we are saving a principle-assessment or additional-criteria-assessment
@@ -191,7 +194,7 @@ async function save(nextAction) {
         url = `/additional-assessment/${props.principleAssessment.id}`
     }
 
-        const res = await axios.patch(url, props.principleAssessment)
+    const res = await axios.patch(url, props.principleAssessment)
 
     emit(nextAction)
 

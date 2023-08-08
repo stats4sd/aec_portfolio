@@ -135,6 +135,8 @@ class AdditionalCriteriaCrudController extends CrudController
                 ],
             ]);
 
+            CRUD::removeSaveActions(['save_and_edit','save_and_new', 'save_and_preview']);
+
     }
 
     protected function setupUpdateOperation()

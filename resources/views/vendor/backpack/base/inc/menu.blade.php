@@ -39,11 +39,10 @@
 
         <li class="nav-item pr-4">
             <a class="nav-link d-flex justify-content-between align-items-center"
-               href="https://www.youtube.com/playlist?list=PLK5PktXR1tmPMHKN6PnfY4jz9Cj_7L1E_"
-               target="_blank"
+               href="{{ backpack_url('support') }}"
             >
                 <i class="la la-question-circle font-3xl pr-2"></i>
-                <span>Video Guides</span>
+                <span>Support</span>
             </a>
         </li>
 

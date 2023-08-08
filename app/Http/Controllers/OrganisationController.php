@@ -9,6 +9,8 @@ use App\Models\Organisation;
 use App\Models\InstitutionType;
 use App\Enums\GeographicalReach;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Str;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Session;
 use App\Http\Requests\OrganisationRequest;
@@ -36,12 +38,16 @@ class OrganisationController extends Controller
         $geographicReaches = GeographicalReach::cases();
         $countries = Country::all();
 
+        // get session stored tab
+        $tab = Str::replace('#', '', Session::get('organisation.tab'));
+
 
         return view('organisations.show', [
             'organisation' => $organisation,
             'institutionTypes' => $institutionTypes,
             'geographicReaches' => $geographicReaches,
             'countries' => $countries,
+            'tab' => $tab,
         ]);
 
     }
@@ -81,7 +87,7 @@ class OrganisationController extends Controller
     {
         $organisation = Organisation::find(Session::get('selectedOrganisationId'));
 
-        return Excel::download(new AssessmentExportWorkbook($organisation), "AEC - Data Export - " . $organisation->name . "-" .
+        return Excel::download(new AssessmentExportWorkbook($organisation), "Agroecology Funding Tool - Export - " . $organisation->name . "-" .
             Carbon::now()->toDateTimeString() . ".xlsx");
     }
 
@@ -105,5 +111,12 @@ class OrganisationController extends Controller
         return Excel::download(new MergedExport(), 'test.xlsx');
     }
 
+
+    public function storeTab()
+    {
+        Session::put('organisation.tab', request()?->get('tab'));
+
+        return response('success', 200);
+    }
 
 }

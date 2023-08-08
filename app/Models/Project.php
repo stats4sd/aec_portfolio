@@ -19,7 +19,8 @@ use Backpack\CRUD\app\Models\Traits\CrudTrait;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use App\Http\Controllers\Admin\Operations\RedlineOperation;
 
-class Project extends Model
+class
+Project extends Model
 {
     use CrudTrait, HasFactory, SoftDeletes;
 
@@ -34,7 +35,9 @@ class Project extends Model
     {
         static::creating(function ($project) {
             if (is_null($project->code)) {
-                $org_project_number = Project::where('organisation_id', $project->organisation_id)->count() + 1;
+                // when counting total number of project of an organisation, include soft-deleted projects
+                // to avoid generating a duplicated project code
+                $org_project_number = Project::withTrashed()->where('organisation_id', $project->organisation_id)->count() + 1;
 
                 $org_name = $project->organisation->name;
                 $org_name_words = explode(' ', $org_name);
@@ -54,10 +57,11 @@ class Project extends Model
             $assessment->additionalCriteria()->sync($project->organisation->additionalCriteria->pluck('id')->toArray());
         });
 
-        static::saving(function (Project $project) {
+        static::saved(function (Project $project) {
 
             // in case the exchange_rate has changed, re-calculate the budget_org
            $project->budget_org = $project->budget * $project->exchange_rate;
+           $project->saveQuietly();
         });
 
         static::addGlobalScope('organisation', function (Builder $builder) {

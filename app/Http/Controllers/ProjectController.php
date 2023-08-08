@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Project;
+use App\Models\Portfolio;
+use Illuminate\Support\Str;
 use App\Models\Organisation;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -13,8 +15,13 @@ class ProjectController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
+        // handle portfolio url - override existing session
+        if($request->has('portfolioFilter'))  {
+            Session::put('portfolioFilter', $request->get('portfolioFilter'));
+        }
+
         $projects = Project::with([
             'portfolio' => [
                 'organisation'
@@ -72,6 +79,23 @@ class ProjectController extends Controller
 
         }
 
+        // get settings from session
+        $sortBy = Session::get('sortBy') ?? 'name';
+        $sortDir = Session::get('sortDir') ?? 1;
+        $redlineStatusFilterValue = Session::get('redlineStatusFilterValue') ?? '';
+        $principleStatusFilterValue = Session::get('principleStatusFilterValue') ?? '';
+        $portfolioFilter = Session::get('portfolioFilter') ?? '';
+        $searchString = Session::get('searchString') ?? '';
+
+        $settings = [
+            'sortBy' => $sortBy,
+            'sortDir' => $sortDir,
+            'redlineStatusFilterValue' => $redlineStatusFilterValue,
+            'principleStatusFilterValue' => $principleStatusFilterValue,
+            'portfolioFilter' => $portfolioFilter,
+            'searchString' => $searchString,
+        ];
+
         return view('projects.index', [
             'organisation' => $org,
             'projects' => $projects,
@@ -83,8 +107,10 @@ class ProjectController extends Controller
             'enable_show_button' => $enableShowButton,
             'enable_assess_button' => $enableAssessButton,
             'enable_delete_button' => $enableDeleteButton,
+            'settings' => $settings,
         ]);
     }
+
 
     /**
      * Show the form for creating a new resource.

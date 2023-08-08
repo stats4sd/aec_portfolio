@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Traits\HasRoles;
 use Illuminate\Notifications\Notifiable;
@@ -52,6 +53,16 @@ class User extends Authenticatable
     public function removalRequests()
     {
         return $this->hasMany(RemovalRequest::class, 'requester_id');
+    }
+
+    public function userFeedBacks(): HasMany
+    {
+        return $this->hasMany(UserFeedback::class);
+    }
+
+    public function revisions(): HasMany
+    {
+        return $this->hasMany(Revision::class);
     }
 
     public function isAdmin()

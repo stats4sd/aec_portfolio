@@ -1,4 +1,6 @@
 @import url("https://fonts.googleapis.com/css?family=Hind");
+@import "../../vendor/spatie/laravel-medialibrary-pro/resources/js/media-library-pro-styles";
+
 @import "variables";
 
 @import "~@digitallyhappy/backstrap/src/scss/style";
@@ -277,4 +279,23 @@ label {
 
 .btn.active {
     cursor: pointer;
+}
+
+.bd-callout {
+    padding: 1.25rem;
+    background-color: #fff;
+    border: 1px solid #eee;
+    border-left-width: 0.25rem;
+    border-top-color: #eee !important;
+    border-right-color: #eee !important;
+    border-bottom-color: #eee !important;
+    border-radius: 0.25rem;
+}
+
+*[role=button]  {
+    cursor: pointer;
+}
+
+.popover {
+    font-size: 1em !important;
 }

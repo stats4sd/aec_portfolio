@@ -1,6 +1,14 @@
 <div class="card-header">
-    <h2>Institution Portfolios</h2>
-    <p class="help-block">Review and manage the list of portfolios. All initiatives entered into the platform are part of a portfolio. <br/> <br/> If your institution just has 1 portfolio, please add it here.</p>
+    <div class="d-flex align-items-center">
+        <h2 class="mb-0">Institution Portfolios</h2>
+        <x-help-text-link class="font-2xl" location="My Institution - Portfolios"/>
+    </div>
+    <p class="help-block">Review and manage the list of portfolios. All initiatives entered into the platform are part of a portfolio.
+    </p>
+
+    <x-help-text-entry location="My Institution - Portfolios"/>
+
+
 </div>
 
 <div class="card-body">
@@ -10,7 +18,7 @@
         <tr>
             <th scope="col">Portfolio Name</th>
             <th scope="col">Budget</th>
-            <th scope="col">Geographic Reach</th>
+            <th scope="col">Description</th>
             <th scope="col"># of Initiatives</th>
             <th scope="col"># of Fully Assessed Initiatives</th>
             <th scope="col">Actions</th>
@@ -24,13 +32,13 @@
                         {{ $portfolio->name }}
                     </td>
                     <td>{{ $organisation->currency }} {{ $portfolio->budget }}</td>
-                    <td>{{ $portfolio->geographic_reach }}</td>
+                    <td>{{ $portfolio->description }}</td>
                     <td>{{ $portfolio->projects->count() }}</td>
                     <td>{{ $portfolio->projects->filter(fn(\App\Models\Project $initiative): bool => $initiative->latest_assessment->completed_at !== null)->count() }}</td>
                     <td>
                         <div class="btn-group">
 
-                            <a href="{{ url("admin/project?portfolio=$portfolio->name") }}" class="btn btn-success btn-sm">SHOW INITIATIVES</a>
+                            <a href="{{ url("admin/project?portfolioFilter=$portfolio->name") }}" class="btn btn-success btn-sm">SHOW INITIATIVES</a>
                             @if(Auth::user()->can('maintain portfolios'))
                                 <a href="{{ route('portfolio.edit', [$portfolio]) }}" class="btn btn-info btn-sm">EDIT</a>
                                 <button class="btn btn-danger btn-sm remove-button" data-portfolio="{{ $portfolio->id }}" data-toggle="modal" data-target="#removePortfolioModal{{ $portfolio->id }}">REMOVE</button>

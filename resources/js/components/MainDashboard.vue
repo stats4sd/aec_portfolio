@@ -2,8 +2,6 @@
 
 
     <div class="container">
-
-
     </div>
     <!-- FILTERS -->
     <div
@@ -21,7 +19,7 @@
                     placeholder="ALL PORTFOLIOS"
                     :clearable="true"
                 ></vSelect>
-                <div class="btn btn-warning justify-end">
+                <div class="btn btn-warning justify-end" @click="filters.portfolio = null">
                     Show all portfolios
                 </div>
 
@@ -226,6 +224,7 @@
     <div class="tab-content">
 
         <div class='tab pane' v-if="tab==='summary'">
+
             <div class="mt-8">
                 <div class="card-header d-flex align-items-baseline">
                     <h2 class="mr-4">Summary of Initiatives</h2>
@@ -235,17 +234,22 @@
                     <div class="row">
                         <div class="col-12 col-lg-6 p-0">
                             <ul class="list-group list-group-flush">
-                                <li class="list-group-item d-flex font-lg">
-                                    <span class="w-50 text-right pr-4"># Initiatives Added</span>
+                                <li class="list-group-item d-flex font-lg align-items-center">
+                                    <span class="w-50 text-right pr-4">
+                                        # Initiatives Added
+                                    </span>
                                     <span class="font-weight-bold ">{{ summary.totalCount }}</span>
+                                    <v-help-text-link class="pl-2 font-lg" location="Dashboard - initiatives added" type="popover"/>
                                 </li>
                                 <li
                                     v-for="summaryLine in summary.statusSummary"
-                                    class="list-group-item d-flex font-lg text-deep-green">
+                                    class="list-group-item d-flex font-lg text-deep-green align-items-center">
                                     <span class="w-50 text-right pr-4">{{ summaryLine.status }}</span>
                                     <span class="font-weight-bold ">{{ summaryLine.number }} ({{
                                             summaryLine.percent
                                         }}%)</span>
+                                    <v-help-text-link class="pl-2 font-lg" :location="'Dashboard - '+summaryLine.status" type="popover"/>
+
                                 </li>
                             </ul>
                         </div>
@@ -266,19 +270,21 @@
                     <div class="row">
                         <div class="col-12 col-md-6">
                             <ul class="list-group list-group-flush">
-                                <li class="list-group-item d-flex font-lg">
+                                <li class="list-group-item d-flex font-lg align-items-center">
                                     <span class="w-50 text-right pr-4">OVERALL SCORE</span>
                                     <span class="font-weight-bold">{{ summary.assessmentScore }}%</span>
+                                    <v-help-text-link class="pl-2 font-lg" location="Dashboard - overall score" type="popover"/>
                                 </li>
                             </ul>
                         </div>
                         <div class="col-12 col-md-6">
                             <ul class="list-group list-group-flush">
-                                <li class="list-group-item d-flex font-lg">
+                                <li class="list-group-item d-flex font-lg align-items-center">
                                     <span class="w-50 text-right pr-4">AE-focused Budget</span>
                                     <span class="font-weight-bold ">{{
                                             formatBudget(summary.aeBudget)
                                         }} {{ organisation.currency }}</span>
+                                    <v-help-text-link class="pl-2 font-lg" location="Dashboard - AE focused budget" type="popover" data-placement="top"/>
                                 </li>
                             </ul>
                         </div>
@@ -291,9 +297,10 @@
                 <div class="card-header d-flex align-items-baseline">
                     <h2 class="mr-4">Summary of Red Flags</h2>
                     <h5>({{ filters.portfolio ? filters.portfolio.name.toUpperCase() : 'ALL PORTFOLIOS' }})</h5>
+                    <v-help-text-link class="pl-2 font-lg" location="Dashboard - Redflags summary"/>
                 </div>
                 <div class="card-body">
-
+                    <v-help-text-entry location="Dashboard - Redflags summary"/>
 
                     <!-- red lines summary -->
                     <table class="table" v-if="summary.redlinesSummary != null">
@@ -340,21 +347,34 @@
         </div>
         <div v-if="tab==='principles'">
             <div class="mx-auto mt-8 w-100" style="max-width: 1500px;" v-if="summary.yoursPrinciplesSummarySorted">
-                <div class="card-header">
+                <div class="card-header d-flex align-items-baseline">
                     <h2 class="mr-4">Summary of Principles</h2>
                     <h5>({{ filters.portfolio ? filters.portfolio.name.toUpperCase() : 'ALL PORTFOLIOS' }})</h5>
+                    <v-help-text-link class="pl-2 font-lg" location="Dashboard - Summary of Principles"/>
+
                 </div>
                 <div class="card-body">
+                    <v-help-text-entry location="Dashboard - Summary of Principles"/>
+
                     <div class="row">
                         <div class="col-12 col-lg-6 d-flex flex-column align-items-center">
                             <h2 class="mb-4">Your Initiatives</h2>
                             <Bar :data="chartDataYours" :options="chartOptions"/>
+                            <div class="text-center mt-4 px-4">
+                                <h5 class="mb-0">Percentage of Initiatives scoring at different levels by principle</h5>
+                                <p>Calculated using the number of initiatives for which the principle applied as the denominator.</p>
+                                <p>The grey lines under the name of the principle represent the % of initiatives that marked that principle as non-applicable </p>
+                            </div>
                         </div>
 
                         <div class="col-12 col-lg-6 d-flex flex-column align-items-center">
                             <h2 class="mb-4">Other Institutions' Initiatives</h2>
                             <Bar v-if="!summary.tooFewOtherProjects" :data="chartDataOthers" :options="chartOptions"/>
-
+                            <div v-if="!summary.tooFewOtherProjects" class="text-center mt-4 px-4">
+                                <h5 class="mb-0">Percentage of Initiatives scoring at different levels by principle</h5>
+                                <p>Calculated using the number of initiatives for which the principle applied as the denominator.</p>
+                                <p>The grey lines under the name of the principle represent the % of initiatives that marked that principle as non-applicable </p>
+                            </div>
                             <div v-else class="d-flex flex-column justify-content-center h-100">
                                 <div class="alert alert-info text-dark">There are too few initiatives or institutions
                                     within the current set of filters to display anonymized results.
@@ -373,6 +393,7 @@
 import 'vue-select/dist/vue-select.css';
 import vSelect from 'vue-select'
 
+import VHelpTextLink from "./vHelpTextLink.vue";
 import VueDatePicker from '@vuepic/vue-datepicker';
 import '@vuepic/vue-datepicker/dist/main.css'
 
@@ -457,7 +478,9 @@ const anyFilters = computed(() => {
 })
 
 function resetFilters() {
-    Object.keys(filters.value).forEach(key => filters.value[key] = null);
+    Object.keys(filters.value).forEach(key => {
+        if (key !== "portfolio") filters.value[key] = null
+    });
     getData()
 }
 
@@ -489,16 +512,7 @@ function formatBudget(amount) {
     return amount ? amount.toLocaleString() : '';
 }
 
-watch(filters.value, (newValue, oldValue) => {
-    if (newValue.portfolio == null) {
-        // after clicking "Reset" button
-        // console.log("watch() triggered, no need to call getData()");
-    } else {
-        // when user select a portfolio, get summary data for the selected portfolio
-        // console.log("watch() triggered, call getData()");
-        getData();
-    }
-})
+watch(filters.value, () => getData())
 
 
 // **************** ChartJS ****************
@@ -512,30 +526,85 @@ import {
     LinearScale
 } from 'chart.js'
 import {Bar} from 'vue-chartjs'
+import VHelpTextEntry from "./vHelpTextEntry.vue";
+
 // import ChartDataLabels from 'chartjs-plugin-datalabels';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend)
 
 // ChartJS.register(ChartDataLabels);
 
-function getChartData(principlesSummary) {
+function getChartData(principlesSummary, nas) {
+
     return {
         labels: principlesSummary.map(item => item.name),
         datasets: [
+            // add fake, transparent datasets onto the yNa axis above the real NA line. This pushes the NA line down so that it sits underneath the principle name.
+            // without these, the NA line will be centered in the axis and overlap with the label.
+            {
+                backgroundColor: 'transparent',
+                data: nas.map(item => 0),
+                stack: 'another-one',
+                grouped: true,
+                yAxisID: 'yNa',
+            },
+            {
+                backgroundColor: 'transparent',
+                data: nas.map(item => 0),
+                stack: 'another-one',
+                grouped: true,
+                yAxisID: 'yNa',
+            },
+            {
+                backgroundColor: 'transparent',
+                data: nas.map(item => 0),
+                stack: 'another-one',
+                grouped: true,
+                yAxisID: 'yNa',
+            },
+            {
+                backgroundColor: 'transparent',
+                data: nas.map(item => 0),
+                stack: 'another-one',
+                grouped: true,
+                yAxisID: 'yNa',
+            },
+            {
+                label: 'NA',
+                backgroundColor: '#bbb',
+                data: nas.map(item => item.value),
+                barThickness: 4,
+                stack: 'na',
+                grouped: true,
+                yAxisID: 'yNa',
+                legend: false,
+            },
             {
                 label: 'EXCELLENT (1.5 - 2.0)',
                 backgroundColor: '#54C45E',
-                data: principlesSummary.map(item => item.green)
+                data: principlesSummary.map(item => item.green),
+                barPercentage: 1,
+                categoryPercentage: 1,
+                stack: 'main',
+                grouped: true,
             },
             {
                 label: 'OK (0.5 - 1.5)',
                 backgroundColor: '#FFE342',
-                data: principlesSummary.map(item => item.yellow)
+                data: principlesSummary.map(item => item.yellow),
+                barPercentage: 1,
+                categoryPercentage: 1,
+                stack: 'main',
+                grouped: true,
             },
             {
                 label: 'POOR (0.0 - 0.5)',
                 backgroundColor: '#e3342f',
-                data: principlesSummary.map(item => item.red)
+                data: principlesSummary.map(item => item.red),
+                barPercentage: 1,
+                categoryPercentage: 1,
+                stack: 'main',
+                grouped: true,
             },
         ]
     }
@@ -544,7 +613,7 @@ function getChartData(principlesSummary) {
 const chartDataYours = computed(() => {
 
     if (summary.value.yoursPrinciplesSummarySorted) {
-        return getChartData(summary.value.yoursPrinciplesSummarySorted)
+        return getChartData(summary.value.yoursPrinciplesSummarySorted, summary.value.yourNas)
     }
     return {
         labels: [],
@@ -555,7 +624,7 @@ const chartDataYours = computed(() => {
 const chartDataOthers = computed(() => {
 
     if (summary.value.othersPrinciplesSummarySorted && !summary.value.tooFewOtherProjects) {
-        return getChartData(summary.value.othersPrinciplesSummarySorted)
+        return getChartData(summary.value.othersPrinciplesSummarySorted, summary.value.otherNas)
     }
     return {
         labels: [],
@@ -571,9 +640,10 @@ const chartOptions = ref({
     scales: {
         y: {
             stacked: true,
-
             ticks: {
+                min: 50,
                 mirror: true,
+                align: 'end',
                 z: 1,
                 color: 'black',
                 font: {
@@ -585,21 +655,13 @@ const chartOptions = ref({
             stacked: true,
             max: 100,
         },
+        yNa: {
+            display: false,
+            stacked: false,
+            max: 100,
+        },
     },
     plugins: {
-        // datalabels: {
-        //     color: 'black',
-        //     display: function (context) {
-        //         return context.dataset.data[context.dataIndex] > 10; // hide label if bar is too short
-        //     },
-        //     font: {
-        //         weight: 'bold'
-        //     },
-        //     formatter: function (value, context) {
-        //         return Math.round(value) + "%"
-        //     }
-        // },
-
         tooltip: {
             padding: 14,
             backgroundColor: '#f8f9fa',
@@ -617,13 +679,20 @@ const chartOptions = ref({
                 label: (context) => context.formattedValue,
             },
         },
+        legend: {
+            labels: {
+                // filter out the first dataset label (that dataset is purely to move the 'na' line down slightly)
+                filter: function (item, chart) {
+                    return item.datasetIndex > 3
+                }
+            }
+        }
     },
     barPercentage: 1,
     categoryPercentage: 1,
     barThickness: 'flex',
     borderWidth: 1,
     borderColor: 'lightgrey',
-
 })
 
 </script>

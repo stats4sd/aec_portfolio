@@ -31,3 +31,7 @@ Route::post('exchange-rate', [ExchangeRateController::class, 'index']);
 
 
 require __DIR__.'/auth.php';
+
+Route::middleware('auth')->group(function() {
+    Route::mediaLibrary();
+});

@@ -125,7 +125,7 @@ BEGIN
     SET @SQLText = CONCAT(@SQLText, ' ON p.id = pr.project_id');
     SET @SQLText = CONCAT(@SQLText, ' LEFT JOIN country_project cp');
     SET @SQLText = CONCAT(@SQLText, ' ON p.id = cp.project_id');
-    SET @SQLText = CONCAT(@SQLText, ' WHERE p.id = p.id');
+    SET @SQLText = CONCAT(@SQLText, ' WHERE p.deleted_at IS NULL');
 
 
     -- criteria
@@ -200,7 +200,7 @@ BEGIN
     SET @SQLText = CONCAT(@SQLText, ' ON p.id = pr.project_id');
     SET @SQLText = CONCAT(@SQLText, ' LEFT JOIN country_project cp');
     SET @SQLText = CONCAT(@SQLText, ' ON p.id = cp.project_id');
-    SET @SQLText = CONCAT(@SQLText, ' WHERE p.id = p.id');
+    SET @SQLText = CONCAT(@SQLText, ' WHERE p.deleted_at IS NULL');
 
 
     -- criteria
@@ -374,7 +374,8 @@ BEGIN
         SELECT COUNT(*)
         INTO ssFullyAssessedCount
         FROM assessments
-        WHERE completed_at IS NOT NULL
+        WHERE (assessments.redline_status = 'Failed'
+          OR assessments.principle_status = 'Complete')
           AND id IN
               (SELECT assessment_id FROM dashboard_assessment WHERE dashboard_id = dashboardYoursId);
 
@@ -385,7 +386,8 @@ BEGIN
         WHERE id IN
               (SELECT project_id
                from assessments
-               WHERE completed_at IS NOT NULL
+               WHERE (assessments.redline_status = 'Failed'
+                 OR assessments.principle_status = 'Complete')
                  AND id IN
                      (SELECT assessment_id FROM dashboard_assessment where dashboard_id = dashboardYoursId));
 

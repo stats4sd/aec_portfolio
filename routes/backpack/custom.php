@@ -11,6 +11,8 @@ use App\Http\Controllers\Admin\AdditionalCriteriaScoreTagCrudController;
 use App\Http\Controllers\Admin\AssessmentCrudController;
 use App\Http\Controllers\Admin\ContinentCrudController;
 use App\Http\Controllers\Admin\CountryCrudController;
+use App\Http\Controllers\Admin\HelpTextEntryCrudController;
+use App\Http\Controllers\Admin\UserFeedbackTypeCrudController;
 use App\Http\Controllers\Admin\InitiativeCategoryCrudController;
 use App\Http\Controllers\Admin\InstitutionTypeCrudController;
 use App\Http\Controllers\Admin\OrganisationCrudController;
@@ -23,6 +25,8 @@ use App\Http\Controllers\Admin\RemovalRequestCrudController;
 use App\Http\Controllers\Admin\RoleInviteCrudController;
 use App\Http\Controllers\Admin\ScoreTagCrudController;
 use App\Http\Controllers\Admin\UserCrudController;
+use App\Http\Controllers\Admin\UserFeedbackCrudController;
+use App\Http\Controllers\Admin\RevisionCrudController;
 use App\Http\Controllers\AssessmentController;
 use App\Http\Controllers\GeneratePdfFileController;
 use App\Http\Controllers\GenericDashboardController;
@@ -31,6 +35,9 @@ use App\Http\Controllers\OrganisationController;
 use App\Http\Controllers\OrganisationMemberController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\SelectedOrganisationController;
+use App\Http\Controllers\SessionController;
+use App\Http\Controllers\UserFeedbackController;
+use Backpack\CRUD\app\Http\Controllers\MyAccountController;
 
 
 Route::group([
@@ -81,6 +88,8 @@ Route::group([
 
         Route::get('organisation/show', [OrganisationController::class, 'show'])->name('organisation.self.show');
         Route::get('organisation/export', [OrganisationController::class, 'export'])->name('organisation.export');
+        Route::post('organisation/store-tab', [OrganisationController::class, 'storeTab']);
+
 
         Route::crud('portfolio', PortfolioCrudController::class);
         Route::get('portfolio', function () {
@@ -90,6 +99,9 @@ Route::group([
         Route::crud('project', ProjectCrudController::class);
         Route::get('project', [ProjectController::class, 'index']);
         Route::get('project/{project}/re-assess', [ProjectCrudController::class, 'reAssess']);
+
+        Route::post('session/store', [SessionController::class, 'store']);
+        Route::post('session/reset', [SessionController::class, 'reset']);
 
 
         Route::crud('assessment', AssessmentCrudController::class);
@@ -129,15 +141,26 @@ Route::group([
 
         // download files
         Route::get('files/{filename}', [GeneratePdfFileController::class, 'download'])
-        ->where('filename', '.*');
+            ->where('filename', '.*');
 
         Route::crud('additional-criteria-score-tag', AdditionalCriteriaScoreTagCrudController::class);
+        Route::view('support', 'support');
 
+        Route::get('edit-account-info', [MyAccountController::class, 'getAccountInfoForm'])->name('backpack.account.info');
     });
 
 
+    Route::post('edit-account-info', [MyAccountController::class, 'postAccountInfoForm'])->name('backpack.account.info.store');
+    Route::post('change-password', [MyAccountController::class,'postChangePasswordForm'])->name('backpack.account.password');
     Route::crud('initiative-category', InitiativeCategoryCrudController::class);
     Route::crud('institution-type', InstitutionTypeCrudController::class);
+    Route::crud('user-feedback', UserFeedbackCrudController::class);
+    Route::post('user-feedback', [UserFeedbackController::class, 'store']);
+    Route::crud('feedback-type', UserFeedbackTypeCrudController::class);
+
+    Route::crud('revision', RevisionCrudController::class);
+    Route::crud('help-text-entry', HelpTextEntryCrudController::class);
+    Route::get('help-text-entry/find/{location}', [HelpTextEntryCrudController::class, 'find']);
 });
 
 Route::get('project/{id}/show-as-pdf', [ProjectCrudController::class, 'show'])

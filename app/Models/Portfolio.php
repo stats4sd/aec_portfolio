@@ -29,7 +29,6 @@ class Portfolio extends Model
             $query->where('organisation_id', Session::get('selectedOrganisationId'));
         });
 
-
         // attach event handler, on deleting of a portfolio
 	    static::deleting(function($portfolio) {
             // delete all projects that belong to this portfolio

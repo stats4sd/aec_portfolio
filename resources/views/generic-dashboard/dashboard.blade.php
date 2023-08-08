@@ -5,7 +5,10 @@
     <div class="mt-16 container-fluid" id="dashboard">
 
         <div class="d-flex justify-content-between">
-            <h1 class="font-weight-bold text-deep-green mb-4">{{ $organisation->name }} - Summary</h1>
+            <div class="d-flex align-items-center mb-4">
+            <h1 class="font-weight-bold text-deep-green mb-0">{{ $organisation->name }} - Summary</h1>
+                <x-help-text-link class="font-3xl" location="Dashboard - page title"/>
+            </div>
 
             @if(Auth::user()->can('download project-level data'))
             <div>
@@ -13,6 +16,8 @@
             </div>
             @endif
         </div>
+
+        <x-help-text-entry class="mb-4" location="Dashboard - page title"/>
 
         <v-app>
             <Suspense>
@@ -30,20 +35,5 @@
 @endsection
 
 @section('after_scripts')
-
     @vite('resources/js/dashboard.js')
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/flot/4.2.3/jquery.canvaswrapper.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/flot/4.2.3/jquery.colorhelpers.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/flot/4.2.3/jquery.flot.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/flot/4.2.3/jquery.flot.saturated.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/flot/4.2.3/jquery.flot.browser.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/flot/4.2.3/jquery.flot.drawSeries.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/flot/4.2.3/jquery.flot.uiConstants.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/flot/4.2.3/jquery.flot.axislabels.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/flot/4.2.3/jquery.flot.legend.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/flot/4.2.3/jquery.flot.stack.js"></script>
-
 @endsection

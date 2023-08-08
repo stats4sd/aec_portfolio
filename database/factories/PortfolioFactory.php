@@ -18,8 +18,8 @@ class PortfolioFactory extends Factory
             'name' => $this->faker->catchPhrase(),
             'organisation_id' => Organisation::factory(),
             'budget' => $this->faker->randomNumber(),
+            'description' => $this->faker->paragraph,
             'currency' => $this->faker->currencyCode(),
-            'geographic_reach' => $this->faker->randomElement(GeographicalReach::cases()),
             'created_at' => Carbon::now(),
             'updated_at' => Carbon::now(),
         ];

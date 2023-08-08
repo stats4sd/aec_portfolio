@@ -9,9 +9,12 @@
         <div class="alert alert-warning text-dark my-3">This institution has not yet digitally signed the data sharing agreement. An institution admin should update the settings.</div>
         @endif
 
-        <div class="w-100 mb-4">
-            <h1 class="text-deep-green"><b>{{$organisation->name}} - Information</b></h1>
+        <div class="w-100 mb-4 d-flex align-items-center">
+            <h1 class="text-deep-green mb-0"><b>{{$organisation->name}} - Information</b></h1>
+            <x-help-text-link class="font-2xl" location="My Institution - page title"/>
         </div>
+
+        <x-help-text-entry location="My Institution - page title"/>
 
         <ul class="nav nav-tabs mt-4" id="org-tabs" role="tablist">
             <li class="nav-item" role="presentation">
@@ -93,7 +96,11 @@
                     $(window).scrollTop(0);
                 }, 400);
             } else {
-                $('#org-tabs a[href="#portfolios"]').tab("show");
+
+                let tab = "{{ $tab }}"
+
+                // get from session storage
+                $('#org-tabs a[href="#'+tab+'"]').tab("show");
                 url = location.href.replace(/\/#/, "#");
                 history.replaceState(null, null, url);
                 setTimeout(() => {
@@ -111,6 +118,9 @@
                 }
                 newUrl += "/";
                 history.replaceState(null, null, newUrl);
+
+                // update session storage
+                axios.post('/admin/organisation/store-tab', {tab: hash})
             });
 
             // enable hover tooltips

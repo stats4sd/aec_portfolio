@@ -8,10 +8,13 @@ use App\Models\Country;
 use App\Models\InitiativeCategory;
 use App\Models\Organisation;
 use App\Models\Portfolio;
+use App\Models\Principle;
+use App\Models\PrincipleAssessment;
 use App\Models\Project;
 use App\Models\ProjectRegion;
 use App\Models\Region;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
@@ -272,12 +275,36 @@ class GenericDashboardController extends Controller
 
 
         // add overall score from PHP side because this is already calculated on the Assessment Model.
-        $allAssessments = Assessment::with('principles', 'failingRedlines')->whereIn('id', DB::table('dashboard_assessment')
-            ->select('assessment_id')
-            ->where('dashboard_id', $dashboardYoursId))
-            ->get();
+        $allAssessments = Project::withoutGlobalScope('organisation')->with([
+            'assessments' => ['principleAssessments.principle', 'principles', 'failingRedlines']
+        ])
+            // only initiatives that are fully assessed
+            ->whereHas('assessments', function (Builder $query) {
+                $query->where('redline_status', AssessmentStatus::Failed->value)
+                    ->orWhere('principle_status', AssessmentStatus::Complete->value);
+            })
+            ->get()
+            ->pluck('assessments')
+            ->flatten();
 
-        $noOfInitiativeCompletedAssessment = $allAssessments->where('principle_status', '=', AssessmentStatus::Complete->value)->count();
+        $allAssessmentsYours = $allAssessments->whereIn('id', DB::table('dashboard_project')
+            ->select('project_id')
+            ->where('dashboard_id', $dashboardYoursId)
+            ->get()
+            ->pluck('project_id')
+            ->toArray()
+        );
+
+        $allAssessmentsOthers = $allAssessments->whereIn('id', DB::table('dashboard_project')
+            ->select('project_id')
+            ->where('dashboard_id', $dashboardOthersId)
+            ->get()
+            ->pluck('project_id')
+            ->toArray()
+        );
+
+        $noOfInitiativeCompletedAssessment = $allAssessmentsYours->count();
+
 
         // initialise variables
         $assessmentScore = 'N/A';
@@ -290,9 +317,8 @@ class GenericDashboardController extends Controller
             $message = 'There is no fully assessed initiative';
 
         } else {
-
             // calculate overall score and AE budget if number of fully assess initiative is bigger than zero
-            $assessmentScore = $allAssessments->sum(fn(Assessment $assessment) => $assessment->overall_score)
+            $assessmentScore = $allAssessmentsYours->sum(fn(Assessment $assessment) => $assessment->overall_score)
                 / $noOfInitiativeCompletedAssessment;
 
             $aeBudget = round($results[0]->totalBudget * ($assessmentScore / 100), 0);
@@ -300,6 +326,10 @@ class GenericDashboardController extends Controller
             $assessmentScore = round($assessmentScore, 1);
 
         }
+
+        // count nas for each principle
+        $yourNas = $this->getNaCount($allAssessmentsYours);
+        $otherNas = $this->getNaCount($allAssessmentsOthers);
 
         // construct JSON response
         $jsonRes = [];
@@ -316,11 +346,51 @@ class GenericDashboardController extends Controller
         $jsonRes['yoursPrinciplesSummarySorted'] = $yoursPrinciplesSummarySorted;
         $jsonRes['othersPrinciplesSummarySorted'] = $othersPrinciplesSummarySorted;
 
+        $jsonRes['yourNas'] = $yourNas;
+        $jsonRes['otherNas'] = $otherNas;
+
         // TEMP
         $jsonRes['dashboardYoursId'] = $dashboardYoursId;
 
         return $jsonRes;
 
+    }
+
+    /**
+     * Function to take a set of assessments and return a collection of the total count of "is_na" for each principle.
+     */
+    public function getNaCount(Collection $allAssessments): Collection
+    {
+        return $allAssessments->map(function (Assessment $assessment) {
+            return $assessment->principleAssessments->map(function (PrincipleAssessment $principleAssessment) {
+                return [
+                    'id' => $principleAssessment->principle->id,
+                    'name' => $principleAssessment->principle->name,
+                    'value' => $principleAssessment->is_na ? 1 : 0
+                ];
+            });
+        })->reduce(function ($carry, $naList) {
+            return $carry->map(function ($value, $index) use ($naList) {
+                return [
+                    'id' => $value['id'],
+                    'name' => $value['name'],
+                    'value' => $value['value'] + $naList[$index]['value']
+                ];
+            });
+        }, Principle::all()->map(fn(Principle $principle) => [
+            'id' => $principle->id,
+            'name' => $principle->name,
+            'value' => 0
+        ]))
+            // convert to % of initiative
+
+            ->map(function ($item) use ($allAssessments) {
+
+                if ($allAssessments->count() > 0) {
+                    $item['value'] = ($item['value'] / $allAssessments->count()) * 100;
+                }
+                return $item;
+            });
     }
 
 }
