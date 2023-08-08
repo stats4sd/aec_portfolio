@@ -68,31 +68,7 @@
                             <td>{{ $entry->sub_regions }}</td>
                         </tr>
                     @endif
-                    <tr>
-                        <td class="text-right pr-4 mr-2">Status:</td>
-                        <td>{{ $entry->latest_assessment_status }}</td>
-                    </tr>
 
-                    <tr>
-                        <td class="text-right pr-4 mr-2">Ratings Total:</td>
-                        @if($entry->latest_assessment->principle_status === \App\Enums\AssessmentStatus::Complete->value)
-                            <td>{{ $entry->latest_assessment->total }} / {{ $entry->latest_assessment->total_possible }}</td>
-                        @else
-                            <td class="text-secondary">~~ Assessment not yet completed ~~</td>
-                        @endif
-                    </tr>
-                    <tr>
-                        <td class="text-right pr-4 mr-2">Overall Score:</td>
-                        @if($entry->latest_assessment->principle_status === \App\Enums\AssessmentStatus::Complete->value)
-                            <td>
-                                <span class="font-weight-bold">{{ $entry->latest_assessment->overall_score }} % </span>
-                                <br/>
-                                <span class="text-sm text-secondary">Calculated based on {{ $entry->latest_assessment->principleAssessments()->where('is_na', 0)->count() }} / 13 relevant principles.</span>
-                            </td>
-                        @else
-                            <td class="text-secondary">~~ Assessment not yet completed ~~</td>
-                        @endif
-                    </tr>
                 </table>
             </div>
 
@@ -121,6 +97,21 @@
 
             </div>
         </div>
+
+        @if($entry->latest_assessment->principle_status === \App\Enums\AssessmentStatus::Complete->value || $entry->latest_assessment->redline_status === \App\Enums\AssessmentStatus::Failed->value)
+            <hr/>
+            <div class="row mt-4">
+                <div class="col-12 d-flex justify-content-center align-items-center">
+                    <span class="mr-4 font-lg">Overall Score for this initiative: </span>
+                    <span class="font-weight-bold font-xl">{{ $entry->latest_assessment->overall_score }} % </span>
+                    <x-help-text-link class="no-print" location="Initiatives - score" type="popover"></x-help-text-link>
+                </div>
+                <div class="col-12 mt-4 d-flex align-items-center justify-content-center flex-column">
+                    <span class="text-secondary">Calculated based on the total score, divided by the total possible score for all applicable principles.</span>
+                    <span class="font-weight-bold">( {{ $entry->latest_assessment->total }} / {{ $entry->latest_assessment->total_possible }} ) * 100</span>
+                </div>
+            </div>
+        @endif
 
         <div class="print-page-break">
             <h1 class="only-print mt-16">{{ $entry->organisation->name }} - {{ \Illuminate\Support\Str::title($entry->name) }}</h1>
