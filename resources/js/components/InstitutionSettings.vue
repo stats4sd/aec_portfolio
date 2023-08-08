@@ -3,11 +3,11 @@
 
         <div class="d-flex align-items-center">
         <h2 class="mb-0">Institution Details</h2>
-        <v-help-text-link class="font-2xl" location="My Institution - Settings"/>
+        <v-help-text-link class="font-2xl" location="My Institution - Details"/>
     </div>
         <p class="help-block">Add or edit the relevant information for the institution.</p>
 
-        <v-help-text-entry location="My Institution - Settings"/>
+        <v-help-text-entry location="My Institution - Details"/>
 
 
     </div>
