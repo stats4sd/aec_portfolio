@@ -30,10 +30,8 @@ class GetExchangeRatesForOneDay extends Command
      */
     public function handle()
     {
-        // get the date before yesterday
-        // Freecurrency API provides exchange rate data up to yesterday, consider time difference and time zones,
-        // reserve more buffer to get data of the date before yesterday instead of yesterday
-        $date = Carbon::now()->subDays(2)->toDateString();
+        // get yesterday date
+        $date = Carbon::now()->subDays(1)->toDateString();
 
         // remove existing exchange_rates records for the date, if any
         DB::table('exchange_rates')->where('date', $date)->delete();

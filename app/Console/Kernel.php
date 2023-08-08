@@ -29,7 +29,7 @@ class Kernel extends ConsoleKernel
 
         $schedule->command('senddataremovalreminderemail')->dailyAt('00:11');
 
-        $schedule->command('app:get-one-day-exchange-rates')->dailyAt('00:21');
+        $schedule->command('app:get-one-day-exchange-rates')->dailyAt('06:00');
 
         $schedule->command('app:remove-old-pdf-prints')->weeklyOn('sunday', '01:00');
 
