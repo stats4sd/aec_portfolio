@@ -71,8 +71,8 @@ class ProjectController extends Controller
         }
 
         // get settings from session
-        $sortBy = Session::get('sortBy') ?? '';
-        $sortDir = Session::get('sortDir') ?? '';
+        $sortBy = Session::get('sortBy') ?? 'name';
+        $sortDir = Session::get('sortDir') ?? 1;
         $redlineStatusFilterValue = Session::get('redlineStatusFilterValue') ?? '';
         $principleStatusFilterValue = Session::get('principleStatusFilterValue') ?? '';
         $portfolioFilter = Session::get('portfolioFilter') ?? '';
