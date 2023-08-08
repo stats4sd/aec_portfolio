@@ -4,7 +4,7 @@
 
     @if(! $organisation->agreement_signed_at && $organisation->admins->contains(auth()->user()))
         <div class="alert alert-warning show text-dark my-3">Before continuing, please check and agree to the data sharing agreement, available on the
-            <a href="{{ url('admin/organisation/show#settings') }}">My Institutions Page - Settings tab</a>.
+            <a href="{{ url('admin/organisation/show#settings') }}">My Institution page - Settings tab</a>.
             <br/><br/>
             Once you have signed the agreement, you will be able to add and assess your institution's initiatives.
         </div>
