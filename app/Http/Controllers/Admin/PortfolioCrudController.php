@@ -71,6 +71,7 @@ class PortfolioCrudController extends CrudController
         $this->authorize('create', Portfolio::class);
 
         CRUD::setValidation(PortfolioRequest::class);
+        CRUD::removeSaveActions(['save_and_edit', 'save_and_new', 'save_and_preview']);
 
         $selectedOrganisation = Organisation::find(Session::get('selectedOrganisationId'));
 
@@ -120,7 +121,7 @@ class PortfolioCrudController extends CrudController
         $portfolio->delete();
 
         Alert::add('success', "$portfolio->name was successfully deleted")->flash();
-      
+
         return back();
     }
 
