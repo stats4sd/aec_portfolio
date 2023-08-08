@@ -6,8 +6,8 @@
 
     <div class="container mt-4">
 
-        <h1>Initiative Review Page</h1>
-        <h2>{{ $entry->organisation->name }} - {{ $entry->name }}</h2>
+        <h1>{{ $entry->organisation->name }} - {{ \Illuminate\Support\Str::title($entry->name) }}</h1>
+        <h4 class="text-uppercase">Initiative Summary</h4>
 
         <form method="POST" action="{{ backpack_url("project/$entry->id/generate-pdf") }}">
             @csrf
@@ -26,10 +26,12 @@
                         <td class="text-right pr-4 mr-2">Budget:</td>
                         <td>{{ $entry->currency }} {{ $entry->budget }}</td>
                     </tr>
-                    <tr>
-                        <td class="text-right pr-4 mr-2">Budget (in {{ $entry->organisation->currency }}):</td>
-                        <td>{{ $entry->organisation->currency }} {{ $entry->budget_org }}</td>
-                    </tr>
+                    @if($entry->currency !== $entry->organisation->currency)
+                        <tr>
+                            <td class="text-right pr-4 mr-2">Budget (in {{ $entry->organisation->currency }}):</td>
+                            <td>{{ $entry->organisation->currency }} {{ $entry->budget_org }}</td>
+                        </tr>
+                    @endif
                     <tr>
                         <td class="text-right pr-4 mr-2">Start Date:</td>
                         <td>{{ $entry->start_date->toDateString() }}</td>
@@ -68,31 +70,7 @@
                             <td>{{ $entry->sub_regions }}</td>
                         </tr>
                     @endif
-                    <tr>
-                        <td class="text-right pr-4 mr-2">Status:</td>
-                        <td>{{ $entry->latest_assessment_status }}</td>
-                    </tr>
 
-                    <tr>
-                        <td class="text-right pr-4 mr-2">Ratings Total:</td>
-                        @if($entry->latest_assessment->principle_status === \App\Enums\AssessmentStatus::Complete->value)
-                            <td>{{ $entry->latest_assessment->total }} / {{ $entry->latest_assessment->total_possible }}</td>
-                        @else
-                            <td class="text-secondary">~~ Assessment not yet completed ~~</td>
-                        @endif
-                    </tr>
-                    <tr>
-                        <td class="text-right pr-4 mr-2">Overall Score:</td>
-                        @if($entry->latest_assessment->principle_status === \App\Enums\AssessmentStatus::Complete->value)
-                            <td>
-                                <span class="font-weight-bold">{{ $entry->latest_assessment->overall_score }} % </span>
-                                <br/>
-                                <span class="text-sm text-secondary">Calculated based on {{ $entry->latest_assessment->principleAssessments()->where('is_na', 0)->count() }} / 13 relevant principles.</span>
-                            </td>
-                        @else
-                            <td class="text-secondary">~~ Assessment not yet completed ~~</td>
-                        @endif
-                    </tr>
                 </table>
             </div>
 
@@ -108,66 +86,95 @@
                                     <li>{{ $principleAssessment->principle->name }}</li>
                                 @endforeach
                             </ul>
+                        </div>
                     @endif
 
                 @elseif($entry->latest_assessment->redline_status === \App\Enums\AssessmentStatus::Failed->value)
-                    <p class="text-center text-secondary">~~ Red flag assessment failed ~~<br/>~~ no principle assessment results available ~~</p>
+                    <p class="text-center text-secondary">~~ Red flag assessment failed ~~<br/>~~ no principle assessment results available ~~
+                    </p>
                 @else
-                    <p class="text-center text-secondary">~~ Principle assessment not completed ~~<br/>~~ no results available ~~</p>
+                    <p class="text-center text-secondary">~~ Principle assessment not completed ~~<br/>~~ no results available ~~
+                    </p>
                 @endif
 
             </div>
         </div>
-        <div class="row">
-            <div class="col-12">
-                <table class="table table-borderless table-responsive">
-                    <tr>
-                        <th>Principle</th>
-                        <th>Score</th>
-                        <th>Comments</th>
-                        <th>Shared Examples/Indicators</th>
-                        <th>Custom Examples/Indicators</th>
-                    </tr>
 
-                    @php
-                        $principleAssessments = $entry->latest_assessment->principleAssessments;
-                    @endphp
+        @if($entry->latest_assessment->principle_status === \App\Enums\AssessmentStatus::Complete->value || $entry->latest_assessment->redline_status === \App\Enums\AssessmentStatus::Failed->value)
+            <hr/>
+            <div class="row mt-4">
+                <div class="col-12 d-flex justify-content-center align-items-center">
+                    <span class="mr-4 font-lg">Overall Score for this initiative: </span>
+                    <span class="font-weight-bold font-xl">{{ $entry->latest_assessment->overall_score }} % </span>
+                    <x-help-text-link class="no-print" location="Initiatives - score" type="popover"></x-help-text-link>
+                </div>
+                <div class="col-12 mt-4 d-flex align-items-center justify-content-center flex-column">
+                    @if($entry->latest_assessment->redline_status ===  \App\Enums\AssessmentStatus::Failed->value)
+                        <span class="text-secondary">Initiatives that fail the red flag assessment automatically receive a score of 0%.</span>
+                    @else
+                        <span class="text-secondary">Calculated based on the total score, divided by the total possible score for all applicable principles.</span>
+                        <span class="font-weight-bold">( {{ $entry->latest_assessment->total }} / {{ $entry->latest_assessment->total_possible }} ) * 100</span>
+                    @endif
+                </div>
+            </div>
+        @endif
 
-                    @foreach(\App\Models\Principle::all() as $principle)
+        @if($entry->latest_assessment->principle_status === \App\Enums\AssessmentStatus::Complete->value)
+            <div class="print-page-break">
+                <h1 class="only-print mt-16">{{ $entry->organisation->name }} - {{ \Illuminate\Support\Str::title($entry->name) }}</h1>
+                <h4 class="only-print text-uppercase">Principle Assessment Summary</h4>
+            </div>
+
+            <div class="row mt-4 pt-4">
+                <div class="col-12">
+                    <table class="table table-borderless table-responsive">
+                        <tr>
+                            <th>Principle</th>
+                            <th>Score</th>
+                            <th>Comments</th>
+                            <th>Shared Examples/Indicators</th>
+                            <th>Custom Examples/Indicators</th>
+                        </tr>
 
                         @php
-                            $principleAssessment = $principleAssessments->where('principle_id', $principle->id)->first();
+                            $principleAssessments = $entry->latest_assessment->principleAssessments;
                         @endphp
-                        <tr>
-                            <td>{{ $principle->name }}</td>
-                            <td> {{ $principleAssessment->is_na ? "NA" : $principleAssessment->rating }}</td>
-                            <td> {{ $principleAssessment->is_na ? "-" : $principleAssessment->rating_comment }}</td>
-                            <td>
-                                @if($principleAssessment->scoreTags()->count() > 0)
-                                    <button class="btn btn-link" type="button" data-toggle="modal"
-                                            data-target="#modal-shared-{{$principle->id}}">
-                                        {{ $principleAssessment->scoreTags()->count() }} selected
-                                    </button>
-                                @else
-                                    <span class="btn">0 selected</span>
-                                @endif
-                            </td>
-                            <td>
-                                @if($principleAssessment->customScoreTags()->count() > 0)
-                                    <button class="btn btn-link" type="button" data-toggle="modal"
-                                            data-target="#modal-custom-shared-{{$principle->id}}">
-                                        {{ $principleAssessment->customScoreTags()->count() }} added
-                                    </button>
-                                @else
-                                    <span class="btn">0 added</span>
-                                @endif
-                            </td>
-                        </tr>
-                    @endforeach
 
-                </table>
+                        @foreach(\App\Models\Principle::all() as $principle)
+
+                            @php
+                                $principleAssessment = $principleAssessments->where('principle_id', $principle->id)->first();
+                            @endphp
+                            <tr>
+                                <td>{{ $principle->name }}</td>
+                                <td> {{ $principleAssessment->is_na ? "NA" : $principleAssessment->rating }}</td>
+                                <td> {{ $principleAssessment->is_na ? "-" : $principleAssessment->rating_comment }}</td>
+                                <td>
+                                    @if($principleAssessment->scoreTags()->count() > 0)
+                                        <button class="btn btn-link" type="button" data-toggle="modal"
+                                                data-target="#modal-shared-{{$principle->id}}">
+                                            {{ $principleAssessment->scoreTags()->count() }} selected
+                                        </button>
+                                    @else
+                                        <span class="btn">0 selected</span>
+                                    @endif
+                                </td>
+                                <td>
+                                    @if($principleAssessment->customScoreTags()->count() > 0)
+                                        <button class="btn btn-link" type="button" data-toggle="modal"
+                                                data-target="#modal-custom-shared-{{$principle->id}}">
+                                            {{ $principleAssessment->customScoreTags()->count() }} added
+                                        </button>
+                                    @else
+                                        <span class="btn">0 added</span>
+                                    @endif
+                                </td>
+                            </tr>
+                        @endforeach
+
+                    </table>
+                </div>
             </div>
-        </div>
     </div>
 
     @foreach(\App\Models\Principle::all() as $principle)
@@ -248,6 +255,7 @@
         </div>
     @endforeach
 
+    @endif
 @endsection
 
 @section('after_scripts')
