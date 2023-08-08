@@ -26,10 +26,12 @@
                         <td class="text-right pr-4 mr-2">Budget:</td>
                         <td>{{ $entry->currency }} {{ $entry->budget }}</td>
                     </tr>
-                    <tr>
-                        <td class="text-right pr-4 mr-2">Budget (in {{ $entry->organisation->currency }}):</td>
-                        <td>{{ $entry->organisation->currency }} {{ $entry->budget_org }}</td>
-                    </tr>
+                    @if($entry->currency !== $entry->organisation->currency)
+                        <tr>
+                            <td class="text-right pr-4 mr-2">Budget (in {{ $entry->organisation->currency }}):</td>
+                            <td>{{ $entry->organisation->currency }} {{ $entry->budget_org }}</td>
+                        </tr>
+                    @endif
                     <tr>
                         <td class="text-right pr-4 mr-2">Start Date:</td>
                         <td>{{ $entry->start_date->toDateString() }}</td>
@@ -107,67 +109,72 @@
                     <x-help-text-link class="no-print" location="Initiatives - score" type="popover"></x-help-text-link>
                 </div>
                 <div class="col-12 mt-4 d-flex align-items-center justify-content-center flex-column">
-                    <span class="text-secondary">Calculated based on the total score, divided by the total possible score for all applicable principles.</span>
-                    <span class="font-weight-bold">( {{ $entry->latest_assessment->total }} / {{ $entry->latest_assessment->total_possible }} ) * 100</span>
+                    @if($entry->latest_assessment->redline_status ===  \App\Enums\AssessmentStatus::Failed->value)
+                        <span class="text-secondary">Initiatives that fail the red flag assessment automatically receive a score of 0%.</span>
+                    @else
+                        <span class="text-secondary">Calculated based on the total score, divided by the total possible score for all applicable principles.</span>
+                        <span class="font-weight-bold">( {{ $entry->latest_assessment->total }} / {{ $entry->latest_assessment->total_possible }} ) * 100</span>
+                    @endif
                 </div>
             </div>
         @endif
 
-        <div class="print-page-break">
-            <h1 class="only-print mt-16">{{ $entry->organisation->name }} - {{ \Illuminate\Support\Str::title($entry->name) }}</h1>
-            <h4 class="only-print text-uppercase">Principle Assessment Summary</h4>
-        </div>
+        @if($entry->latest_assessment->principle_status === \App\Enums\AssessmentStatus::Complete->value)
+            <div class="print-page-break">
+                <h1 class="only-print mt-16">{{ $entry->organisation->name }} - {{ \Illuminate\Support\Str::title($entry->name) }}</h1>
+                <h4 class="only-print text-uppercase">Principle Assessment Summary</h4>
+            </div>
 
-        <div class="row mt-4 pt-4">
-            <div class="col-12">
-                <table class="table table-borderless table-responsive">
-                    <tr>
-                        <th>Principle</th>
-                        <th>Score</th>
-                        <th>Comments</th>
-                        <th>Shared Examples/Indicators</th>
-                        <th>Custom Examples/Indicators</th>
-                    </tr>
-
-                    @php
-                        $principleAssessments = $entry->latest_assessment->principleAssessments;
-                    @endphp
-
-                    @foreach(\App\Models\Principle::all() as $principle)
+            <div class="row mt-4 pt-4">
+                <div class="col-12">
+                    <table class="table table-borderless table-responsive">
+                        <tr>
+                            <th>Principle</th>
+                            <th>Score</th>
+                            <th>Comments</th>
+                            <th>Shared Examples/Indicators</th>
+                            <th>Custom Examples/Indicators</th>
+                        </tr>
 
                         @php
-                            $principleAssessment = $principleAssessments->where('principle_id', $principle->id)->first();
+                            $principleAssessments = $entry->latest_assessment->principleAssessments;
                         @endphp
-                        <tr>
-                            <td>{{ $principle->name }}</td>
-                            <td> {{ $principleAssessment->is_na ? "NA" : $principleAssessment->rating }}</td>
-                            <td> {{ $principleAssessment->is_na ? "-" : $principleAssessment->rating_comment }}</td>
-                            <td>
-                                @if($principleAssessment->scoreTags()->count() > 0)
-                                    <button class="btn btn-link" type="button" data-toggle="modal"
-                                            data-target="#modal-shared-{{$principle->id}}">
-                                        {{ $principleAssessment->scoreTags()->count() }} selected
-                                    </button>
-                                @else
-                                    <span class="btn">0 selected</span>
-                                @endif
-                            </td>
-                            <td>
-                                @if($principleAssessment->customScoreTags()->count() > 0)
-                                    <button class="btn btn-link" type="button" data-toggle="modal"
-                                            data-target="#modal-custom-shared-{{$principle->id}}">
-                                        {{ $principleAssessment->customScoreTags()->count() }} added
-                                    </button>
-                                @else
-                                    <span class="btn">0 added</span>
-                                @endif
-                            </td>
-                        </tr>
-                    @endforeach
 
-                </table>
+                        @foreach(\App\Models\Principle::all() as $principle)
+
+                            @php
+                                $principleAssessment = $principleAssessments->where('principle_id', $principle->id)->first();
+                            @endphp
+                            <tr>
+                                <td>{{ $principle->name }}</td>
+                                <td> {{ $principleAssessment->is_na ? "NA" : $principleAssessment->rating }}</td>
+                                <td> {{ $principleAssessment->is_na ? "-" : $principleAssessment->rating_comment }}</td>
+                                <td>
+                                    @if($principleAssessment->scoreTags()->count() > 0)
+                                        <button class="btn btn-link" type="button" data-toggle="modal"
+                                                data-target="#modal-shared-{{$principle->id}}">
+                                            {{ $principleAssessment->scoreTags()->count() }} selected
+                                        </button>
+                                    @else
+                                        <span class="btn">0 selected</span>
+                                    @endif
+                                </td>
+                                <td>
+                                    @if($principleAssessment->customScoreTags()->count() > 0)
+                                        <button class="btn btn-link" type="button" data-toggle="modal"
+                                                data-target="#modal-custom-shared-{{$principle->id}}">
+                                            {{ $principleAssessment->customScoreTags()->count() }} added
+                                        </button>
+                                    @else
+                                        <span class="btn">0 added</span>
+                                    @endif
+                                </td>
+                            </tr>
+                        @endforeach
+
+                    </table>
+                </div>
             </div>
-        </div>
     </div>
 
     @foreach(\App\Models\Principle::all() as $principle)
@@ -248,6 +255,7 @@
         </div>
     @endforeach
 
+    @endif
 @endsection
 
 @section('after_scripts')
