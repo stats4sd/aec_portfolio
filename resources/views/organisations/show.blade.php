@@ -3,6 +3,11 @@
 @section('content')
 
     <div class="mt-16 container-fluid">
+        @if(! $organisation->agreement_signed_at && $organisation->admins->contains(auth()->user()))
+        <div class="alert alert-warning show text-dark my-3">Before continuing, please check and agree to the data sharing agreement, available on the Settings tab.</div>
+        @elseif(! $organisation->agreement_signed_at && !$organisation->admins->contains(auth()->user()))
+        <div class="alert alert-warning text-dark my-3">This institution has not yet digitally signed the data sharing agreement. An institution admin should update the settings.</div>
+        @endif
 
         <div class="w-100 mb-4 d-flex align-items-center">
             <h1 class="text-deep-green mb-0"><b>{{$organisation->name}} - Information</b></h1>

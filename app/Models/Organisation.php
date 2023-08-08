@@ -2,17 +2,19 @@
 
 namespace App\Models;
 
-use App\Enums\AssessmentStatus;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasManyThrough;
+use Carbon\Carbon;
 use Illuminate\Support\Str;
+use App\Enums\AssessmentStatus;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
+use App\Http\Requests\OrganisationRequest;
 use Backpack\CRUD\app\Models\Traits\CrudTrait;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 
 class Organisation extends Model
 {
@@ -29,6 +31,7 @@ class Organisation extends Model
 
     protected $casts = [
         'has_additional_criteria' => 'boolean',
+        'agreement_signed_at' => 'date'
     ];
 
     protected static function booted()
@@ -82,19 +85,26 @@ class Organisation extends Model
 
     public function admins()
     {
-        return $this->belongsToMany(User::class, 'organisation_members')->whereHas('roles', function(Builder $query) {
-            $query->where('roles.name', 'Institutional Admin');
-        });
+        return $this->belongsToMany(User::class, 'organisation_members')
+            ->whereHas('roles', function(Builder $query) {
+                $query->where('name', 'Institutional Admin');
+            });
     }
 
     public function editors()
     {
-        return $this->belongsToMany(User::class, 'organisation_members')->withPivot('role')->wherePivot('role', '=', 'editor');
+        return $this->belongsToMany(User::class, 'organisation_members')
+                        ->whereHas('roles', function(Builder $query) {
+                $query->where('name', 'Institutional Assessor');
+            });
     }
 
     public function viewers()
     {
-        return $this->belongsToMany(User::class, 'organisation_members')->withPivot('role')->wherePivot('role', '=', 'viewer');
+        return $this->belongsToMany(User::class, 'organisation_members')
+                        ->whereHas('roles', function(Builder $query) {
+                $query->where('name', 'Institutional Member');
+            });
     }
 
     public function creator()
@@ -140,4 +150,10 @@ class Organisation extends Model
     {
         return $this->belongsTo(InstitutionType::class);
     }
+
+    public function signee(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'signee_id');
+    }
+
 }
