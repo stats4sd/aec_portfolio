@@ -11,6 +11,7 @@ use App\Http\Controllers\Admin\AdditionalCriteriaScoreTagCrudController;
 use App\Http\Controllers\Admin\AssessmentCrudController;
 use App\Http\Controllers\Admin\ContinentCrudController;
 use App\Http\Controllers\Admin\CountryCrudController;
+use App\Http\Controllers\Admin\HelpTextEntryCrudController;
 use App\Http\Controllers\Admin\UserFeedbackTypeCrudController;
 use App\Http\Controllers\Admin\InitiativeCategoryCrudController;
 use App\Http\Controllers\Admin\InstitutionTypeCrudController;
@@ -158,7 +159,10 @@ Route::group([
     Route::crud('feedback-type', UserFeedbackTypeCrudController::class);
 
     Route::crud('revision', RevisionCrudController::class);
+    Route::crud('help-text-entry', HelpTextEntryCrudController::class);
+    Route::get('help-text-entry/find/{location}', [HelpTextEntryCrudController::class, 'find']);
 });
+
 Route::get('project/{id}/show-as-pdf', [ProjectCrudController::class, 'show'])
     ->middleware('auth.basic')
     ->name('project.show-as-pdf');

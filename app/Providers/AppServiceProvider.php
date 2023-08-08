@@ -11,6 +11,7 @@ use App\Observers\RoleInviteObserver;
 use App\Observers\OrganisationObserver;
 use App\Observers\UserObserver;
 use Illuminate\Cache\RateLimiting\Limit;
+use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
 

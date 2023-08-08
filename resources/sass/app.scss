@@ -10,8 +10,6 @@
 @import "~line-awesome/dist/line-awesome/css/line-awesome.min.css";
 @import "~noty/src/noty";
 
-
-
 @import "backpack-form-tweaks";
 @import "redline-radios";
 @import "print-tweaks";
@@ -281,4 +279,23 @@ label {
 
 .btn.active {
     cursor: pointer;
+}
+
+.bd-callout {
+    padding: 1.25rem;
+    background-color: #fff;
+    border: 1px solid #eee;
+    border-left-width: 0.25rem;
+    border-top-color: #eee !important;
+    border-right-color: #eee !important;
+    border-bottom-color: #eee !important;
+    border-radius: 0.25rem;
+}
+
+*[role=button]  {
+    cursor: pointer;
+}
+
+.popover {
+    font-size: 1em !important;
 }

@@ -1,8 +1,15 @@
 <template>
     <div class="card-header">
 
-        <h2>Institution Details</h2>
+        <div class="d-flex align-items-center">
+        <h2 class="mb-0">Institution Details</h2>
+        <v-help-text-link class="font-2xl" location="My Institution - Details"/>
+    </div>
         <p class="help-block">Add or edit the relevant information for the institution.</p>
+
+        <v-help-text-entry location="My Institution - Details"/>
+
+
     </div>
 
     <div class="card-body">
@@ -165,6 +172,8 @@
 import {onMounted, ref, computed} from "vue";
 import 'vue-select/dist/vue-select.css';
 import vSelect from 'vue-select'
+import VHelpTextEntry from "./vHelpTextEntry.vue";
+import VHelpTextLink from "./vHelpTextLink.vue";
 
 
 const props = defineProps({
