@@ -23,6 +23,7 @@
             :enable-edit-button="{{ $enable_edit_button ? 'true' : 'false' }}"
             :enable-show-button="{{ $enable_show_button ? 'true' : 'false' }}"
             :enable-delete-button="{{ $enable_delete_button ? 'true' : 'false'}}"
+            :enable-reassess-button="{{ $enable_reassess_button ? 'true' : 'false'}}"
             :enable-assess-button="{{ $enable_assess_button ? 'true' : 'false' }}"
             :settings="{{ json_encode($settings) }}"
         />

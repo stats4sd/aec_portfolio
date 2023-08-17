@@ -63,8 +63,11 @@
                             <a class="btn btn-success mr-2" :class="[ enableShowButton ? '' : 'disabled']"
                                :href="`/admin/project/${initiative.id}/show`">Show Information</a>
 
-                            <button class="btn btn-danger" :class="[ enableDeleteButton ? '' : 'disabled']"
-                                    @click="enableDeleteButton ? removeInitiative() : '';">Delete</button>
+                            <button class="btn btn-danger mr-2" :class="[ enableDeleteButton ? '' : 'disabled']"
+                                @click="enableDeleteButton ? removeInitiative() : '';">Delete</button>
+                            
+                            <button class="btn btn-warning" :class="[ enableReassessButton ? '' : 'disabled']"
+                                @click="enableReassessButton ? reassessInitiative() : '';">Reassess</button>
 
                         </div>
 
@@ -151,6 +154,7 @@ const props = defineProps({
     enableShowButton: Boolean,
     enableAssessButton: Boolean,
     enableDeleteButton: Boolean,
+    enableReassessButton: Boolean,
 })
 
 const expanded = ref(false)
@@ -227,6 +231,30 @@ async function removeInitiative() {
         emit('remove_initiative', props.initiative)
     }
 
+}
+
+async function reassessInitiative() {
+    let choice = await Swal.fire({
+        title: 'Are you sure?',
+        text: "The current assessment will be archived and the initiative will be reset to the beginning, allowing you to complete the assessment process again based on the current status of the initiative.",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, reassess!'
+        });
+
+    if (choice.isConfirmed) {
+
+        let result = await axios.post(`/admin/project/${props.initiative.id}/reassess`);
+
+        Swal.fire(
+        'Archived!',
+        'The current assessment has been archived. The initiative can now be reassessed.',
+        'success'
+        );
+
+    }
 }
 
 

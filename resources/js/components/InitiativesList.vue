@@ -92,6 +92,8 @@
         :has-additional-assessment="hasAdditionalAssessment"
         :enable-edit-button="enableEditButton"
         :enable-show-button="enableShowButton"
+        :enable-delete-button="enableDeleteButton"
+        :enable-reassess-button="enableReassessButton"
         :enable-assess-button="enableAssessButton"
     />
 
@@ -117,6 +119,8 @@ const props = defineProps({
     showExportButton: Boolean,
     enableEditButton: Boolean,
     enableShowButton: Boolean,
+    enableDeleteButton: Boolean,
+    enableReassessButton: Boolean,
     enableAssessButton: Boolean,
     settings: Object,
 });

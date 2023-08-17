@@ -396,9 +396,9 @@ class ProjectCrudController extends CrudController
         $assessment = Assessment::create(['project_id' => $id]);
         $assessment->redLines()->sync(RedLine::all()->pluck('id')->toArray());
         $assessment->principles()->sync(Principle::all()->pluck('id')->toArray());
+        // $assessment->additionalCriteria()->sync(Organisation::where('id', Session::get('selectedOrganisationId'))->additionalCriteria->pluck('id')->toArray());
 
-        // refresh CRUD panel
-        return back();
+        return 'ok';
     }
 
     public function destroy($id)
