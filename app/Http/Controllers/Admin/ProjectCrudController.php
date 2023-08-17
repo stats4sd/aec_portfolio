@@ -396,7 +396,9 @@ class ProjectCrudController extends CrudController
         $assessment = Assessment::create(['project_id' => $id]);
         $assessment->redLines()->sync(RedLine::all()->pluck('id')->toArray());
         $assessment->principles()->sync(Principle::all()->pluck('id')->toArray());
-        // $assessment->additionalCriteria()->sync(Organisation::where('id', Session::get('selectedOrganisationId'))->additionalCriteria->pluck('id')->toArray());
+        $currentOrgId = Session::get('selectedOrganisationId');
+        $currentOrg = Organisation::where('id', $currentOrgId)->first();
+        $assessment->additionalCriteria()->sync($currentOrg->additionalCriteria->pluck('id')->toArray());
 
         return 'ok';
     }
