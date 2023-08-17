@@ -27,6 +27,19 @@ class Assessment extends Model
         'assessment_status',
     ];
 
+    protected static function booted()
+    {
+        static::creating(function ($assessment) {
+
+            $org_has_additional_criteria = $assessment->project->organisation->has_additional_criteria;
+
+            if ($org_has_additional_criteria) {
+                $assessment->additional_status = "Not Started";
+            }
+        });
+
+    }
+
     public function getAssessmentStatusAttribute(): string
     {
         // if redlines are not complete, use that status
