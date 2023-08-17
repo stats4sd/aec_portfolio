@@ -12,13 +12,13 @@
                     <div class="d-flex justify-content-between">
                         <div class="w-50">
                             <span class="font-weight-bold text-grey">STATUS</span>
-                            <v-help-text-link location="Initiatives - statuses" type="popover"/>
+                            <v-help-text-link location="Initiatives - statuses" type="popover" :help-text-entry-init="statusHelpText"/>
                             <br/>
                             <span class="font-weight-bold">{{ initiative.latest_assessment.assessment_status }}</span>
                         </div>
                         <div class="w-50">
                             <span class="font-weight-bold text-grey">SCORE</span>
-                            <v-help-text-link location="Initiatives - score" type="popover"/>
+                            <v-help-text-link location="Initiatives - score" type="popover" :help-text-entry-init="scoreHelpText"/>
                             <br/>
                             <span class="font-xl text-bright-green font-weight-bold"
                                   v-if="initiative.latest_assessment.overall_score !== null">{{
@@ -151,6 +151,8 @@ const props = defineProps({
     enableShowButton: Boolean,
     enableAssessButton: Boolean,
     enableDeleteButton: Boolean,
+    statusHelpText: Object,
+    scoreHelpText: Object,
 })
 
 const expanded = ref(false)

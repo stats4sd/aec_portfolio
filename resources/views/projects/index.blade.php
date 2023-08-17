@@ -25,6 +25,8 @@
             :enable-delete-button="{{ $enable_delete_button ? 'true' : 'false'}}"
             :enable-assess-button="{{ $enable_assess_button ? 'true' : 'false' }}"
             :settings="{{ json_encode($settings) }}"
+            :status-help-text="{{ $statusHelpText }}"
+            :score-help-text="{{ $scoreHelpText }}"
         />
     </div>
 

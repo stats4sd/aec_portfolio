@@ -93,6 +93,8 @@
         :enable-edit-button="enableEditButton"
         :enable-show-button="enableShowButton"
         :enable-assess-button="enableAssessButton"
+        :status-help-text="statusHelpText"
+        :score-help-text="scoreHelpText"
     />
 
 </template>
@@ -109,6 +111,8 @@ import VHelpTextEntry from "./vHelpTextEntry.vue";
 
 
 const props = defineProps({
+    statusHelpText: Object,
+    scoreHelpText: Object,
     organisation: Object,
     initialInitiatives: Object,
     hasAdditionalAssessment: Boolean,
