@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\HelpTextEntry;
 use App\Models\Project;
 use App\Models\Portfolio;
 use Illuminate\Support\Str;
@@ -98,6 +99,10 @@ class ProjectController extends Controller
             'searchString' => $searchString,
         ];
 
+        // get help text for cards. We do this manually here so that we don't need to send ajax requests from every card individually.
+        $statusHelpText = HelpTextEntry::firstWhere('location', 'Initiatives - statuses');
+        $scoreHelpText = HelpTextEntry::firstWhere('location', 'Initiatives - score');
+
         return view('projects.index', [
             'organisation' => $org,
             'projects' => $projects,
@@ -111,6 +116,8 @@ class ProjectController extends Controller
             'enable_delete_button' => $enableDeleteButton,
             'enable_reassess_button' => $enableReassessButton,
             'settings' => $settings,
+            'statusHelpText' => $statusHelpText,
+            'scoreHelpText' => $scoreHelpText,
         ]);
     }
 
