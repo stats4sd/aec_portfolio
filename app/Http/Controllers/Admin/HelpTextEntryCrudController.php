@@ -13,7 +13,7 @@ use Backpack\CRUD\app\Library\Widget;
  * @package App\Http\Controllers\Admin
  * @property-read \Backpack\CRUD\app\Library\CrudPanel\CrudPanel $crud
  */
-class HelpTextEntryCrudController extends CrudController
+class HelpTextEntryCrudController extends AdminPanelCrudController
 {
     use \Backpack\CRUD\app\Http\Controllers\Operations\ListOperation;
     use \Backpack\CRUD\app\Http\Controllers\Operations\UpdateOperation;
@@ -33,6 +33,7 @@ class HelpTextEntryCrudController extends CrudController
             CRUD::denyAccess(['list', 'update']);
         }
 
+        parent::setup();
     }
 
     /**
