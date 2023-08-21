@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Auth;
  * @package App\Http\Controllers\Admin
  * @property-read \Backpack\CRUD\app\Library\CrudPanel\CrudPanel $crud
  */
-class UserFeedbackCrudController extends CrudController
+class UserFeedbackCrudController extends AdminPanelCrudController
 {
     use \Backpack\CRUD\app\Http\Controllers\Operations\ListOperation;
     use \Backpack\CRUD\app\Http\Controllers\Operations\UpdateOperation;
@@ -27,6 +27,8 @@ class UserFeedbackCrudController extends CrudController
         CRUD::setModel(\App\Models\UserFeedback::class);
         CRUD::setRoute(config('backpack.base.route_prefix') . '/user-feedback');
         CRUD::setEntityNameStrings('user feedback', 'user feedbacks');
+
+        parent::setup();
     }
 
     /**
@@ -38,8 +40,8 @@ class UserFeedbackCrudController extends CrudController
     protected function setupListOperation()
     {
 
-        CRUD::column('type.name');
-        CRUD::column('user.email');
+        CRUD::column('type.name')->label('Feedback Type');
+        CRUD::column('user.email')->label('User Email');
         CRUD::column('created_at');
         CRUD::column('');
 

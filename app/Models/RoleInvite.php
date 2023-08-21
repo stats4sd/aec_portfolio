@@ -28,8 +28,9 @@ class RoleInvite extends Model
 
     protected static function booted()
     {
+        // add a global scope to only return entries for unconfirmed site admin and site manager
         static::addGlobalScope('unconfirmed', function (Builder $builder) {
-            $builder->where('is_confirmed', false);
+            $builder->where('is_confirmed', false)->whereIn('role_id', [1, 2]);
         });
     }
     /*

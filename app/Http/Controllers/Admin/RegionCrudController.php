@@ -8,7 +8,7 @@ use Backpack\CRUD\app\Http\Controllers\Operations\ListOperation;
 use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
-class RegionCrudController extends CrudController
+class RegionCrudController extends AdminPanelCrudController
 {
     use ListOperation;
 
@@ -19,6 +19,8 @@ class RegionCrudController extends CrudController
         CRUD::setModel(\App\Models\Region::class);
         CRUD::setRoute(config('backpack.base.route_prefix') . '/region');
         CRUD::setEntityNameStrings('region', 'regions');
+
+        parent::setup();
     }
 
     protected function setupListOperation()

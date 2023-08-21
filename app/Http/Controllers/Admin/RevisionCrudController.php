@@ -12,7 +12,7 @@ use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
  * @package App\Http\Controllers\Admin
  * @property-read \Backpack\CRUD\app\Library\CrudPanel\CrudPanel $crud
  */
-class RevisionCrudController extends CrudController
+class RevisionCrudController extends AdminPanelCrudController
 {
     use \Backpack\CRUD\app\Http\Controllers\Operations\ListOperation;
 
@@ -26,6 +26,8 @@ class RevisionCrudController extends CrudController
         CRUD::setModel(\App\Models\Revision::class);
         CRUD::setRoute(config('backpack.base.route_prefix') . '/revision');
         CRUD::setEntityNameStrings('revision', 'revisions');
+
+        parent::setup();
     }
 
     /**

@@ -9,7 +9,7 @@ use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 
-class ContinentCrudController extends CrudController
+class ContinentCrudController extends AdminPanelCrudController
 {
     use ListOperation;
 
@@ -20,6 +20,8 @@ class ContinentCrudController extends CrudController
         CRUD::setModel(Continent::class);
         CRUD::setRoute(config('backpack.base.route_prefix') . '/continent');
         CRUD::setEntityNameStrings('continent', 'continents');
+
+        parent::setup();
     }
 
     protected function setupListOperation()

@@ -30,7 +30,7 @@
           @yield('before_content_widgets')
 
           @yield('content')
-          
+
           @yield('after_content_widgets')
 
         </div>

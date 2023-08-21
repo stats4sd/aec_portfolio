@@ -15,12 +15,12 @@ use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Stats4sd\FileUtil\Http\Controllers\Operations\ImportOperation;
 
-class PrincipleCrudController extends CrudController
+class PrincipleCrudController extends AdminPanelCrudController
 {
     use ListOperation;
     use CreateOperation;
     use UpdateOperation;
-    use DeleteOperation { destroy as traitDestroy; }
+    // use DeleteOperation { destroy as traitDestroy; }
     use ShowOperation { show as traitShow; }
 
     use ImportOperation;
@@ -34,6 +34,8 @@ class PrincipleCrudController extends CrudController
         CRUD::setEntityNameStrings('principle', 'principles');
 
         CRUD::set('import.importer', PrincipleImport::class);
+
+        parent::setup();
     }
 
     protected function setupListOperation()

@@ -17,7 +17,7 @@ use App\Mail\DataRemovalFinalConfirmed;
 use Backpack\CRUD\app\Http\Controllers\CrudController;
 use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
 
-class RemovalRequestCrudController extends CrudController
+class RemovalRequestCrudController extends AdminPanelCrudController
 {
     use ListOperation;
     use ShowOperation;
@@ -27,7 +27,10 @@ class RemovalRequestCrudController extends CrudController
         CRUD::setModel(\App\Models\RemovalRequest::class);
         CRUD::setRoute(config('backpack.base.route_prefix') . '/removal-request');
         CRUD::setEntityNameStrings('removal request', 'removal requests');
+
+        parent::setup();
     }
+
     protected function setupListOperation()
     {
         // add custom buttons
