@@ -1,10 +1,14 @@
 <template>
 
-    <div class="d-flex justify-content-between align-items-center mb-4">
+    <div class="d-flex justify-content-start align-items-center mb-4">
         <h1 class="font-weight-bold text-deep-green my-0">
             {{ organisation.name }} - Initiatives
         </h1>
+        <v-help-text-link class="font-2xl" location="Initiatives - List page"/>
     </div>
+
+    <v-help-text-entry class="mb-4" location="Initiatives - List page"/>
+
     <!-- filters -->
     <div class="d-flex justify-content-between flex-column flex-lg-row">
         <div class="d-flex flex-column mb-0 w-100">
@@ -100,6 +104,8 @@ import vSelect from 'vue-select'
 import {computed, ref, watch, onMounted} from "vue";
 import InitiativeListCard from "./InitiativeListCard.vue";
 import {watchDebounced} from "@vueuse/core";
+import VHelpTextLink from "./vHelpTextLink.vue";
+import VHelpTextEntry from "./vHelpTextEntry.vue";
 
 
 const props = defineProps({
@@ -126,7 +132,7 @@ const sortOptions = ref([
         label: 'Name',
     },
     {
-        id: 'budget',
+        id: 'budget_org',
         label: 'Budget',
     }
 ])
@@ -140,11 +146,11 @@ const propComparator = (propName, sortDir) =>
     (a, b) => a[propName] === b[propName] ? 0 : a[propName] < b[propName] ? -sortDir : sortDir
 
 watch(sortDir, (newSortDir) => {
-    initiatives.value.sort(propComparator(sortBy.value, newSortDir))
+    filteredInitiatives.value.sort(propComparator(sortBy.value, newSortDir))
 })
 
 watch(sortBy, (newSortBy) => {
-    initiatives.value.sort(propComparator(newSortBy, sortDir.value))
+    filteredInitiatives.value.sort(propComparator(newSortBy, sortDir.value))
 })
 
 

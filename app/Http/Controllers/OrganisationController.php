@@ -2,17 +2,18 @@
 
 namespace App\Http\Controllers;
 
-use App\Enums\GeographicalReach;
-use App\Exports\Assessment\AssessmentExportWorkbook;
-use App\Http\Requests\OrganisationRequest;
-use App\Jobs\ExportOrgData;
-use App\Models\Country;
-use App\Models\InstitutionType;
-use App\Models\Organisation;
 use Carbon\Carbon;
+use App\Models\Country;
+use App\Jobs\ExportOrgData;
+use App\Models\Organisation;
+use App\Models\InstitutionType;
+use App\Enums\GeographicalReach;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Str;
 use Maatwebsite\Excel\Facades\Excel;
+use App\Http\Requests\OrganisationRequest;
+use App\Exports\Assessment\AssessmentExportWorkbook;
 
 class OrganisationController extends Controller
 {
@@ -24,11 +25,13 @@ class OrganisationController extends Controller
 
     public function show()
     {
-        $organisation = Organisation::find(Session::get('selectedOrganisationId'))->load(['portfolios.projects.assessments' => [
-            'failingRedlines',
-            'project.organisation',
-            'principles',
-            ]
+        $organisation = Organisation::find(Session::get('selectedOrganisationId'))->load([
+            'portfolios.projects.assessments' => [
+                'failingRedlines',
+                'project.organisation',
+                'principles',
+            ],
+            'signee',
         ]);
         $institutionTypes = InstitutionType::all();
         $geographicReaches = GeographicalReach::cases();
@@ -60,9 +63,23 @@ class OrganisationController extends Controller
             $validated['has_additional_criteria'] = false;
         }
 
+        if (isset($validated['agreement']) && !$organisation->agreement_signed_at) {
+            unset($validated['agreement']);
+            $validated['agreement_signed_at'] = Carbon::now();
+            $validated['signee_id'] = Auth::user()->id;
+        }
+
         $organisation->update($validated);
 
-        return $organisation->id;
+        return $organisation->load([
+            'portfolios.projects.assessments' => [
+                'failingRedlines',
+                'project.organisation',
+                'principles',
+            ],
+            'signee',
+        ]);
+
     }
 
     public function export()

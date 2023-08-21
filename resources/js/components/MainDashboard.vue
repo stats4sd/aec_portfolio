@@ -2,8 +2,6 @@
 
 
     <div class="container">
-
-
     </div>
     <!-- FILTERS -->
     <div
@@ -226,6 +224,7 @@
     <div class="tab-content">
 
         <div class='tab pane' v-if="tab==='summary'">
+
             <div class="mt-8">
                 <div class="card-header d-flex align-items-baseline">
                     <h2 class="mr-4">Summary of Initiatives</h2>
@@ -235,17 +234,22 @@
                     <div class="row">
                         <div class="col-12 col-lg-6 p-0">
                             <ul class="list-group list-group-flush">
-                                <li class="list-group-item d-flex font-lg">
-                                    <span class="w-50 text-right pr-4"># Initiatives Added</span>
+                                <li class="list-group-item d-flex font-lg align-items-center">
+                                    <span class="w-50 text-right pr-4">
+                                        # Initiatives Added
+                                    </span>
                                     <span class="font-weight-bold ">{{ summary.totalCount }}</span>
+                                    <v-help-text-link class="pl-2 font-lg" location="Dashboard - initiatives added" type="popover"/>
                                 </li>
                                 <li
                                     v-for="summaryLine in summary.statusSummary"
-                                    class="list-group-item d-flex font-lg text-deep-green">
+                                    class="list-group-item d-flex font-lg text-deep-green align-items-center">
                                     <span class="w-50 text-right pr-4">{{ summaryLine.status }}</span>
                                     <span class="font-weight-bold ">{{ summaryLine.number }} ({{
                                             summaryLine.percent
                                         }}%)</span>
+                                    <v-help-text-link class="pl-2 font-lg" :location="'Dashboard - '+summaryLine.status" type="popover"/>
+
                                 </li>
                             </ul>
                         </div>
@@ -266,19 +270,21 @@
                     <div class="row">
                         <div class="col-12 col-md-6">
                             <ul class="list-group list-group-flush">
-                                <li class="list-group-item d-flex font-lg">
+                                <li class="list-group-item d-flex font-lg align-items-center">
                                     <span class="w-50 text-right pr-4">OVERALL SCORE</span>
                                     <span class="font-weight-bold">{{ summary.assessmentScore }}%</span>
+                                    <v-help-text-link class="pl-2 font-lg" location="Dashboard - overall score" type="popover"/>
                                 </li>
                             </ul>
                         </div>
                         <div class="col-12 col-md-6">
                             <ul class="list-group list-group-flush">
-                                <li class="list-group-item d-flex font-lg">
+                                <li class="list-group-item d-flex font-lg align-items-center">
                                     <span class="w-50 text-right pr-4">AE-focused Budget</span>
                                     <span class="font-weight-bold ">{{
                                             formatBudget(summary.aeBudget)
                                         }} {{ organisation.currency }}</span>
+                                    <v-help-text-link class="pl-2 font-lg" location="Dashboard - AE focused budget" type="popover" data-placement="top"/>
                                 </li>
                             </ul>
                         </div>
@@ -291,9 +297,10 @@
                 <div class="card-header d-flex align-items-baseline">
                     <h2 class="mr-4">Summary of Red Flags</h2>
                     <h5>({{ filters.portfolio ? filters.portfolio.name.toUpperCase() : 'ALL PORTFOLIOS' }})</h5>
+                    <v-help-text-link class="pl-2 font-lg" location="Dashboard - Redflags summary"/>
                 </div>
                 <div class="card-body">
-
+                    <v-help-text-entry location="Dashboard - Redflags summary"/>
 
                     <!-- red lines summary -->
                     <table class="table" v-if="summary.redlinesSummary != null">
@@ -340,11 +347,15 @@
         </div>
         <div v-if="tab==='principles'">
             <div class="mx-auto mt-8 w-100" style="max-width: 1500px;" v-if="summary.yoursPrinciplesSummarySorted">
-                <div class="card-header">
+                <div class="card-header d-flex align-items-baseline">
                     <h2 class="mr-4">Summary of Principles</h2>
                     <h5>({{ filters.portfolio ? filters.portfolio.name.toUpperCase() : 'ALL PORTFOLIOS' }})</h5>
+                    <v-help-text-link class="pl-2 font-lg" location="Dashboard - Summary of Principles"/>
+
                 </div>
                 <div class="card-body">
+                    <v-help-text-entry location="Dashboard - Summary of Principles"/>
+
                     <div class="row">
                         <div class="col-12 col-lg-6 d-flex flex-column align-items-center">
                             <h2 class="mb-4">Your Initiatives</h2>
@@ -382,13 +393,14 @@
 import 'vue-select/dist/vue-select.css';
 import vSelect from 'vue-select'
 
+import VHelpTextLink from "./vHelpTextLink.vue";
 import VueDatePicker from '@vuepic/vue-datepicker';
 import '@vuepic/vue-datepicker/dist/main.css'
 
 import {ref, computed, onMounted, watch} from "vue";
 import {isNumber} from "lodash";
 
-const tab = ref('principles')
+const tab = ref('summary')
 
 const props = defineProps({
     user: {
@@ -514,6 +526,8 @@ import {
     LinearScale
 } from 'chart.js'
 import {Bar} from 'vue-chartjs'
+import VHelpTextEntry from "./vHelpTextEntry.vue";
+
 // import ChartDataLabels from 'chartjs-plugin-datalabels';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend)

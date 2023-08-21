@@ -45,34 +45,43 @@ class ProjectController extends Controller
         $showImportButton = false;
         $showExportButton = false;
 
-        if (Auth::user()->can('maintain projects')) {
-            $showAddButton = true;
-            $showImportButton = true;
-        }
-
-        if (Auth::user()->can('download project-level data')) {
-            $showExportButton = true;
-        }
 
         $enableEditButton = false;
         $enableShowButton = false;
         $enableAssessButton = false;
+        $enableDeleteButton = false;
 
-        if (Auth::user()->can('maintain projects')) {
-            $enableEditButton = true;
-        }
 
-        if (Auth::user()->can('view projects')) {
-            $enableShowButton = true;
-        }
+        // only enable features if the agreement is signed;
+        if ($org->agreement_signed_at) {
 
-        if (Auth::user()->can('assess project')) {
-            $enableAssessButton = true;
+            if (Auth::user()->can('maintain projects')) {
+                $showAddButton = true;
+                $showImportButton = true;
+            }
+
+            if (Auth::user()->can('download project-level data')) {
+                $showExportButton = true;
+            }
+
+            if (Auth::user()->can('maintain projects')) {
+                $enableEditButton = true;
+                $enableDeleteButton = true;
+            }
+
+            if (Auth::user()->can('view projects')) {
+                $enableShowButton = true;
+            }
+
+            if (Auth::user()->can('assess project')) {
+                $enableAssessButton = true;
+            }
+
         }
 
         // get settings from session
-        $sortBy = Session::get('sortBy') ?? '';
-        $sortDir = Session::get('sortDir') ?? '';
+        $sortBy = Session::get('sortBy') ?? 'name';
+        $sortDir = Session::get('sortDir') ?? 1;
         $redlineStatusFilterValue = Session::get('redlineStatusFilterValue') ?? '';
         $principleStatusFilterValue = Session::get('principleStatusFilterValue') ?? '';
         $portfolioFilter = Session::get('portfolioFilter') ?? '';
@@ -97,6 +106,7 @@ class ProjectController extends Controller
             'enable_edit_button' => $enableEditButton,
             'enable_show_button' => $enableShowButton,
             'enable_assess_button' => $enableAssessButton,
+            'enable_delete_button' => $enableDeleteButton,
             'settings' => $settings,
         ]);
     }

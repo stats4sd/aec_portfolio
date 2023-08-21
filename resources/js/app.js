@@ -8,4 +8,7 @@ window.axios = axios;
 window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 window.swal = Swal;
 
-console.log('hi');
+
+$(function () {
+  $('[data-toggle="popover"]').popover()
+})

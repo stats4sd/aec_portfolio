@@ -30,6 +30,7 @@ class OrganisationRequest extends FormRequest
             'institution_type_other' => 'sometimes|nullable',
             'geographic_reach' => 'sometimes|nullable',
             'hq_country' => 'nullable|exists:countries,id',
+            'agreement' => 'nullable'
         ];
     }
 }

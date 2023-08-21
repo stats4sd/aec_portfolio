@@ -79,9 +79,10 @@ class RoleSeeder extends Seeder
         Permission::updateOrCreate(['name' => 'manage revisions', 'guard_name' => 'web']);
         Permission::updateOrCreate(['name' => 'manage removal requests', 'guard_name' => 'web']);
         Permission::updateOrCreate(['name' => 'manage definitions', 'guard_name' => 'web']);
+        Permission::updateOrCreate(['name' => 'manage help text entries', 'guard_name' => 'web']);
 
 
-
+      
         // roles_has_permissions
         DB::table('role_has_permissions')->delete();
 
@@ -133,6 +134,7 @@ class RoleSeeder extends Seeder
         $admin->givePermissionTo('manage revisions');
         $admin->givePermissionTo('manage removal requests');
         $admin->givePermissionTo('manage definitions');
+        $admin->givePermissionTo('manage help text entries');
 
         
         $manager->givePermissionTo('view red lines');
@@ -153,6 +155,7 @@ class RoleSeeder extends Seeder
         $manager->givePermissionTo('manage revisions');
         $manager->givePermissionTo('manage removal requests');
         $manager->givePermissionTo('manage definitions');
+        $manager->givePermissionTo('manage help text entries');
 
 
         $insAdmin->givePermissionTo('invite institutional members');
@@ -209,7 +212,7 @@ class RoleSeeder extends Seeder
         $insMember->givePermissionTo('request to leave an institution');
         $insMember->givePermissionTo('auto set default institution');
         $insMember->givePermissionTo('view custom principles');
-        $insMember->givePermissionTo('maintain custom principles');
+        $insMember->givePermissionTo('view portfolios');
 
     }
 }

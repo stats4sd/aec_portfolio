@@ -11,6 +11,7 @@ use App\Observers\RoleInviteObserver;
 use App\Observers\OrganisationObserver;
 use App\Observers\UserObserver;
 use Illuminate\Cache\RateLimiting\Limit;
+use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
 
@@ -39,8 +40,8 @@ class AppServiceProvider extends ServiceProvider
 
 
         // add rate limiter for Currency Exchange API jobs
-        RateLimiter::for('exchange_rates', function () {
-            return Limit::perMinute(5);
+        RateLimiter::for('exchange_rates', function (object $job) {
+            return Limit::perMinute(5)->by($job->date);
         });
 
     }
