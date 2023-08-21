@@ -202,7 +202,7 @@ class RoleSeeder extends Seeder
         $insMember->givePermissionTo('request to leave an institution');
         $insMember->givePermissionTo('auto set default institution');
         $insMember->givePermissionTo('view custom principles');
-        $insMember->givePermissionTo('maintain custom principles');
+        $insMember->givePermissionTo('view portfolios');
 
     }
 }
