@@ -40,8 +40,8 @@ class AppServiceProvider extends ServiceProvider
 
 
         // add rate limiter for Currency Exchange API jobs
-        RateLimiter::for('exchange_rates', function () {
-            return Limit::perMinute(5);
+        RateLimiter::for('exchange_rates', function (object $job) {
+            return Limit::perMinute(5)->by($job->date);
         });
 
     }
