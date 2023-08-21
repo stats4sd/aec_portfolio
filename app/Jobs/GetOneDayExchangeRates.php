@@ -10,6 +10,7 @@ use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Http\Client\RequestException;
+use Illuminate\Http\Client\Response;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\Middleware\RateLimited;
 use Illuminate\Queue\Middleware\ThrottlesExceptions;
@@ -38,6 +39,11 @@ class GetOneDayExchangeRates implements ShouldQueue
         ];
     }
 
+    public function retryUntil(): \DateTime
+    {
+        return now()->addMinutes(10);
+    }
+
     /**
      * Execute the job.
      * @throws RequestException
@@ -56,7 +62,9 @@ class GetOneDayExchangeRates implements ShouldQueue
                 'date_from' => $startDate,
                 'date_to' => $endDate,
             ])
-            ->throw()
+            ->throw(function (Response $response, RequestException $exception) {
+                Log::error($exception->getMessage());
+            })
             ->json();
 
 
