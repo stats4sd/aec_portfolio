@@ -179,31 +179,6 @@
                     </table>
                 </div>
             </div>
-
-            @if (count($entry->assessments) > 1)
-                <div class="row mt-4 pt-4">
-                    <h4 class="text-uppercase">Previous Assessments</h4>
-                    <div class="col-12">
-                        <table class="table table-borderless table-responsive">
-                            <tr>
-                                <th>Assessment</th>
-                                <th>Completion Date</th>
-                                <th></th>
-                            </tr>
-                            @foreach ($entry->assessments as $assessment)
-                                @if (!$loop->last)
-                                <tr>
-                                    <td> Assessment {{ $loop->index+1 }}</td>
-                                    <td> {{ $assessment->completed_at }}</td>
-                                    <td><a class="btn btn-success mr-2" href="/admin/assessment/{{$assessment->id}}/show">Show Information</a></td>
-                                </tr>
-                                @endif
-                            @endforeach
-                        </table>
-                    </div>
-                </div>
-            @endif
-
     </div>
 
     @foreach(\App\Models\Principle::all() as $principle)
@@ -285,6 +260,33 @@
     @endforeach
 
     @endif
+
+    <div class="container">
+        @if (count($entry->assessments) > 1)
+            <div class="row mt-4 pt-4">
+                <h4 class="text-uppercase">Previous Assessments</h4>
+                <div class="col-12">
+                    <table class="table table-borderless table-responsive">
+                        <tr>
+                            <th>Assessment</th>
+                            <th>Completion Date</th>
+                            <th></th>
+                        </tr>
+                        @foreach ($entry->assessments as $assessment)
+                            @if (!$loop->last)
+                            <tr>
+                                <td> Assessment {{ $loop->index+1 }}</td>
+                                <td> {{ $assessment->completed_at }}</td>
+                                <td><a class="btn btn-success mr-2" href="/admin/assessment/{{$assessment->id}}/show">Show Information</a></td>
+                            </tr>
+                            @endif
+                        @endforeach
+                    </table>
+                </div>
+            </div>
+        @endif
+    </div>
+
 @endsection
 
 @section('after_scripts')
