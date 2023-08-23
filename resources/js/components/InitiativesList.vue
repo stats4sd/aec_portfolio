@@ -88,6 +88,7 @@
     <InitiativeListCard
         v-for="initiative in filteredInitiatives"
         :key="initiative.id"
+        @remove_initiative="removeInitiative"
         @refresh_initiative="refreshInitiative"
         :initiative="initiative"
         :has-additional-assessment="hasAdditionalAssessment"
