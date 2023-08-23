@@ -31,7 +31,7 @@ class Kernel extends ConsoleKernel
 
         $schedule->command('app:get-one-day-exchange-rates')->dailyAt('06:00');
 
-        $schedule->command('app:remove-old-pdf-prints')->weeklyOn('sunday', '01:00');
+        $schedule->command('app:remove-old-pdf-prints')->weeklyOn(Schedule::SUNDAY, '01:00');
 
         $schedule->command('media-library:delete-old-temporary-uploads')->daily();
     }
