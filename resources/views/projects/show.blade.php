@@ -8,7 +8,7 @@
 
         <h1>{{ $entry->organisation->name }} - {{ \Illuminate\Support\Str::title($entry->name) }}</h1>
         @if (count($entry->assessments) > 1)
-            <h4>INITIATIVE SUMMARY - <span class="text-bright-green">CURRENT ASSESSMENT (Assessment {{count($entry->assessments)}})</span></h4>
+            <h4>INITIATIVE SUMMARY <span class="text-bright-green no-print">- CURRENT ASSESSMENT (Assessment {{count($entry->assessments)}})</span></h4>
         @else
             <h4 class="text-uppercase">Initiative Summary</h4>
         @endif
@@ -261,7 +261,7 @@
 
     @endif
 
-    <div class="container">
+    <div class="container no-print">
         @if (count($entry->assessments) > 1)
             <div class="row mt-4 pt-4">
                 <h4 class="text-uppercase">Previous Assessments</h4>
