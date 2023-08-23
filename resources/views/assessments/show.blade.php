@@ -8,8 +8,8 @@
 
         <h1>{{ $assessment->project->organisation->name }} - {{ \Illuminate\Support\Str::title($assessment->project->name) }}</h1>
             <h4 class="text-uppercase">Initiative Summary - ASSESSMENT {{ $assessment->completed_at }}</h4>
-        
-        <form method="POST" action="{{ backpack_url("project/$assessment->id/generate-pdf") }}">
+
+        <form method="POST" action="{{ backpack_url("assessment/$assessment->id/generate-pdf") }}">
             @csrf
             <input class="no-print" type="submit" value="Generate PDF">
         </form>
