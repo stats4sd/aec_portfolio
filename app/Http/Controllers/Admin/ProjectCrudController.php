@@ -400,7 +400,19 @@ class ProjectCrudController extends CrudController
         $currentOrg = Organisation::where('id', $currentOrgId)->first();
         $assessment->additionalCriteria()->sync($currentOrg->additionalCriteria->pluck('id')->toArray());
 
-        return 'ok';
+        $project = Project::find($id)?->load([
+            'portfolio' => [
+                'organisation'
+            ],
+            'assessments' => [
+                'principles',
+                'failingRedlines',
+                'additionalCriteria',
+            ],
+        ])
+            ->append('latest_assessment');
+
+        return $project;
     }
 
     public function destroy($id)

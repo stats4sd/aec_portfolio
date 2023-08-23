@@ -88,6 +88,7 @@
     <InitiativeListCard
         v-for="initiative in filteredInitiatives"
         :key="initiative.id"
+        @refresh_initiative="refreshInitiative"
         :initiative="initiative"
         :has-additional-assessment="hasAdditionalAssessment"
         :enable-edit-button="enableEditButton"
@@ -320,6 +321,15 @@ function removeInitiative(initiative) {
     initiatives.value.splice(index, 1);
 }
 
+// replace reassessed initiative with new data;
+async function refreshInitiative(newInitiative) {
+    let tempArray = initiatives.value.map(initiative => initiative.id)
+
+    let index = tempArray.indexOf(newInitiative.id)
+
+    initiatives.value.splice(index, 1, newInitiative)
+
+}
 
 onMounted(() => {
     initiatives.value = [...props.initialInitiatives]

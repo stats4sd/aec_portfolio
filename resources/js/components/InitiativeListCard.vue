@@ -65,7 +65,7 @@
 
                             <button class="btn btn-danger mr-2" :class="[ enableDeleteButton ? '' : 'disabled']"
                                 @click="enableDeleteButton ? removeInitiative() : '';">Delete</button>
-                            
+
                             <button class="btn btn-warning" :class="[ enableReassessButton ? (initiative.latest_assessment.principle_status === 'Complete' && initiative.latest_assessment.additional_status != 'Not Started' ? '' : 'disabled') : 'disabled']"
                                 @click="enableReassessButton ? (initiative.latest_assessment.principle_status === 'Complete' && initiative.latest_assessment.additional_status != 'Not Started' ? reassessInitiative() : 'disabled') : '';">Reassess</button>
 
@@ -255,6 +255,9 @@ async function reassessInitiative() {
         'The current assessment has been archived. The initiative can now be reassessed.',
         'success'
         );
+
+        // pass the refreshed initiative out to the list
+        emit('refresh_initiative', result.data)
 
     }
 }
