@@ -27,6 +27,10 @@ const props = defineProps({
     type: {
         type: String,
         default: 'collapse',
+    },
+    helpTextEntryInit: {
+        type: Object,
+        default: null,
     }
 });
 
@@ -42,11 +46,14 @@ onMounted(() => {
 
     $(popoverIcon.value).popover();
 
-    if (props.type === 'popover') {
-        axios.get('/admin/help-text-entry/find/' + props.location)
-            .then((res) => {
-                helpTextEntry.value = res.data
-            })
+    if (props.type === 'popover')
+        if(props.helpTextEntryInit === null) {
+            axios.get('/admin/help-text-entry/find/' + props.location)
+                .then((res) => {
+                    helpTextEntry.value = res.data
+                })
+        } else {
+            helpTextEntry.value = props.helpTextEntryInit;
     }
 })
 

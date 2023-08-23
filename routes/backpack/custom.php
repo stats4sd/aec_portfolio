@@ -99,7 +99,7 @@ Route::group([
 
         Route::crud('project', ProjectCrudController::class);
         Route::get('project', [ProjectController::class, 'index']);
-        Route::get('project/{project}/re-assess', [ProjectCrudController::class, 'reAssess']);
+        Route::post('project/{id}/reassess', [ProjectCrudController::class, 'reAssess']);
 
         Route::post('session/store', [SessionController::class, 'store']);
         Route::post('session/reset', [SessionController::class, 'reset']);
@@ -139,6 +139,8 @@ Route::group([
 
         Route::post('generatePdf', [GeneratePdfFileController::class, 'generatePdfFile']);
         Route::post('project/{project}/generate-pdf', [GeneratePdfFileController::class, 'generateInitiativeSummary']);
+        Route::post('assessment/{assessment}/generate-pdf', [GeneratePdfFileController::class, 'generateAssessmentSummary']);
+
 
         // download files
         Route::get('files/{filename}', [GeneratePdfFileController::class, 'download'])
@@ -168,3 +170,7 @@ Route::group([
 Route::get('project/{id}/show-as-pdf', [ProjectCrudController::class, 'show'])
     ->middleware('auth.basic')
     ->name('project.show-as-pdf');
+
+Route::get('assessment/{id}/show-as-pdf', [ProjectCrudController::class, 'showAssessment'])
+    ->middleware('auth.basic')
+    ->name('assessment.show-as-pdf');

@@ -88,11 +88,16 @@
     <InitiativeListCard
         v-for="initiative in filteredInitiatives"
         :key="initiative.id"
+        @refresh_initiative="refreshInitiative"
         :initiative="initiative"
         :has-additional-assessment="hasAdditionalAssessment"
         :enable-edit-button="enableEditButton"
         :enable-show-button="enableShowButton"
+        :enable-delete-button="enableDeleteButton"
+        :enable-reassess-button="enableReassessButton"
         :enable-assess-button="enableAssessButton"
+        :status-help-text="statusHelpText"
+        :score-help-text="scoreHelpText"
     />
 
 </template>
@@ -109,6 +114,8 @@ import VHelpTextEntry from "./vHelpTextEntry.vue";
 
 
 const props = defineProps({
+    statusHelpText: Object,
+    scoreHelpText: Object,
     organisation: Object,
     initialInitiatives: Object,
     hasAdditionalAssessment: Boolean,
@@ -117,6 +124,8 @@ const props = defineProps({
     showExportButton: Boolean,
     enableEditButton: Boolean,
     enableShowButton: Boolean,
+    enableDeleteButton: Boolean,
+    enableReassessButton: Boolean,
     enableAssessButton: Boolean,
     settings: Object,
 });
@@ -312,6 +321,15 @@ function removeInitiative(initiative) {
     initiatives.value.splice(index, 1);
 }
 
+// replace reassessed initiative with new data;
+async function refreshInitiative(newInitiative) {
+    let tempArray = initiatives.value.map(initiative => initiative.id)
+
+    let index = tempArray.indexOf(newInitiative.id)
+
+    initiatives.value.splice(index, 1, newInitiative)
+
+}
 
 onMounted(() => {
     initiatives.value = [...props.initialInitiatives]

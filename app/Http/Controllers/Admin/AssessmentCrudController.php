@@ -12,7 +12,6 @@ use App\Models\AdditionalCriteriaScoreTag;
 use App\Models\ScoreTag;
 use Backpack\CRUD\app\Http\Controllers\CrudController;
 use Backpack\CRUD\app\Http\Controllers\Operations\CreateOperation;
-use Backpack\CRUD\app\Http\Controllers\Operations\ShowOperation;
 use Backpack\CRUD\app\Http\Controllers\Operations\UpdateOperation;
 use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
 use Backpack\CRUD\app\Library\Widget;
@@ -25,7 +24,6 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 class AssessmentCrudController extends CrudController
 {
-    use ShowOperation;
     use CreateOperation;
     use UpdateOperation;
 
