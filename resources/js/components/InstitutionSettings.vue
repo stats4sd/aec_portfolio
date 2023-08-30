@@ -28,6 +28,26 @@
         </div>
 
         <div class="form-group row">
+                <label for="input_currency" class="col-sm-4 col-form-label text-right pr-2">Main Currency (3-letter
+                    code)</label>
+                <div class="col-sm-8 col-lg-4">
+                    <input
+                        name="currency"
+                        class="form-control"
+                        id="input_currency"
+                        v-model="institution.currency"
+                        :disabled="!canEdit"
+                    >
+                    <span class="text-danger emphasis show" role="alert" v-if="errors.hasOwnProperty('currency')">
+                            <strong v-for="error in errors.currency">{{ error }}</strong><br/>
+                        </span>
+                    <small id="currencyHelp" class="form-text font-sm">This currency will be used for the summary
+                        dashboard. All initiative budgets for your institution will be converted into this
+                        currency.</small>
+                </div>
+            </div>
+
+        <div class="form-group row">
             <div class="col-sm-8 offset-sm-4">
                 <div class="form-check">
                     <input

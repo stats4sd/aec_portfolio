@@ -53,7 +53,7 @@ class OrganisationCrudController extends AdminPanelCrudController
             $this->authorize('create', Organisation::class);
         }
 
-        CRUD::field('name')->label('Enter the Institution name');
+        CRUD::field('name')->label('Enter the Institution name')->validationRules('required');
         CRUD::field('currency')->label('Enter the Institution\'s default currency')
         ->hint('This currency will be used for the summary dashboard. All initiative budgets for your institution will be converted into this currency');
         CRUD::field('institutionType')->label('Select the type of institution.');
