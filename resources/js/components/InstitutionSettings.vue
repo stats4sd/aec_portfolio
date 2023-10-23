@@ -80,7 +80,7 @@
                 <p>The use of the Portfolio Funding Assessment Tool is based on the data sharing agreement made between your institution and the Agroecology Coalition. </p>
                 </div>
 
-                <p><a href="/documents/data_sharing_agreement.pdf" target="_blank">Download a copy of the agreement for review.</a></p>
+                <p><a href="/documents/Data Sharing Terms and Conditions - Agroecology Coalition Funding Assessment Tool.pdf" target="_blank">Download a copy of the agreement for review.</a></p>
 
                 <span class="show"
                     v-if="!institution.agreement_signed_at">
