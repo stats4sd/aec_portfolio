@@ -64,7 +64,8 @@ class HelpTextEntrySeeder extends Seeder
                     The overall score for the initiative is calculated as follows: <ul>
                         <li>The sum of the rating given for each principle, divided by the maximum possible score.</li>
                         <li>The maximum score is 2 per principle. It takes into account any principles marked as NA. For example, an initiative where all 13 principles are relevant will be marked out of 13 x 2 = 26. If 2 principles are marked as NA, the initiative will be marked out of 11 x 2 = 22.</li>
-</ul>
+                        </ul>
+                        <b>NOTE</b>: This score does not include any additional assessment criteria, if your institution uses them. It only counts the assessment against the 13 principles of Agroecology.
                     ",
             ],
             [

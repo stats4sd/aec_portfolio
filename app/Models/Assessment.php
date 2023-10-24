@@ -25,6 +25,7 @@ class Assessment extends Model
     protected $appends = [
         'overall_score',
         'assessment_status',
+        'additional_score',
     ];
 
     protected static function booted()
@@ -215,6 +216,22 @@ class Assessment extends Model
             $totalPossible = $nonNaPrinciples->count() * 2;
 
             $total = $nonNaPrinciples->sum(fn($pr) => $pr->pivot->rating);
+
+            return round($total / $totalPossible * 100, 0);
+        }
+
+        return null;
+    }
+
+    // get additional criteria score if relevant
+    public function getAdditionalScoreAttribute(): ?int
+    {
+        if($this->additional_status === AssessmentStatus::Complete->value) {
+            $additionalCriteria = $this->additionalCriteria;
+
+            $nonNaCriteria = $additionalCriteria->filter(fn($ac) => !$ac->pivot->is_na);
+            $totalPossible = $nonNaCriteria->count() * 2;
+            $total = $nonNaCriteria->sum(fn($ac) => $ac->pivot->rating);
 
             return round($total / $totalPossible * 100, 0);
         }
