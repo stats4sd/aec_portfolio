@@ -40,6 +40,27 @@ class Assessment extends Model
 
     }
 
+    public function getCompletedAttribute()
+    {
+        if ($this->completed_at !== null) {
+            return true;
+        }
+
+        if ($this->redline_status === AssessmentStatus::Failed->value){
+            return true;
+        }
+
+        if(!$this->project->organisation->has_additional_criteria && $this->principle_status === AssessmentStatus::Complete->value){
+            return true;
+        }
+
+        if($this->project->organisation->has_additional_criteria && $this->additional_status === AssessmentStatus::Complete->value){
+            return true;
+        }
+
+        return false;
+    }
+
     public function getAssessmentStatusAttribute(): string
     {
         // if redlines are not complete, use that status
@@ -92,7 +113,7 @@ class Assessment extends Model
     public function project()
     {
         return $this->belongsTo(Project::class)
-         ->withoutGlobalScope('organisation');
+            ->withoutGlobalScope('organisation');
     }
 
     public function customScoreTags(): HasMany

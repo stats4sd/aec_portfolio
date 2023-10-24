@@ -34,7 +34,7 @@
                     <td>{{ $organisation->currency }} {{ $portfolio->budget }}</td>
                     <td>{{ $portfolio->description }}</td>
                     <td>{{ $portfolio->projects->count() }}</td>
-                    <td>{{ $portfolio->projects->filter(fn(\App\Models\Project $initiative): bool => $initiative->latest_assessment->completed_at !== null)->count() }}</td>
+                    <td>{{ $portfolio->projects->filter(fn(\App\Models\Project $initiative): bool => $initiative->latest_assessment->completed)->count() }}</td>
                     <td>
                         <div class="btn-group">
 
