@@ -12,7 +12,6 @@
         @else
             <h4 class="text-uppercase">Initiative Summary</h4>
         @endif
-        
         <form method="POST" action="{{ backpack_url("project/$entry->id/generate-pdf") }}">
             @csrf
             <input class="no-print" type="submit" value="Generate PDF">
@@ -260,7 +259,7 @@
     @endforeach
 
     @endif
-
+    
     <div class="container no-print">
         @if (count($entry->assessments) > 1)
             <div class="row mt-4 pt-4">
@@ -286,6 +285,7 @@
             </div>
         @endif
     </div>
+
 
 @endsection
 
