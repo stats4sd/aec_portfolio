@@ -243,9 +243,10 @@
                                 </li>
                                 <li
                                     v-for="summaryLine in summary.statusSummary"
-                                    class="list-group-item d-flex font-lg text-deep-green align-items-center">
+                                    class="list-group-item d-flex font-lg align-items-center"
+                                    :class="summaryLine.status === 'Failed at least one red flag' ? 'text-red' : 'text-deep-green'">
                                     <span class="w-50 text-right pr-4">{{ summaryLine.status }}</span>
-                                    <span class="font-weight-bold ">{{ summaryLine.number }} ({{
+                                    <span class="w-25 font-weight-bold ">{{ summaryLine.number }} ({{
                                             summaryLine.percent
                                         }}%)</span>
                                     <v-help-text-link class="pl-2 font-lg" :location="'Dashboard - '+summaryLine.status" type="popover"/>

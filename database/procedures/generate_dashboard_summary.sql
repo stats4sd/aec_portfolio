@@ -414,6 +414,9 @@ BEGIN
                                    '{\"status\":\"Passed all red flags\",\"number\":', ssPassedAllCount,
                                    ',\"percent\":', ssPassedAllPercent, ',\"budget\":\"', FORMAT(ssPassedAllBudget, 0),
                                    '\"},',
+                                    '{\"status\":\"Failed at least one red flag\",\"number\":', ssFailedAnyCount,
+                                     ',\"percent\":', ssFailedAnyPercent, ',\"budget\":\"', FORMAT(ssFailedAnyBudget, 0),
+                                    '\"},',
                                    '{\"status\":\"Fully assessed\",\"number\":', ssFullyAssessedCount, ',\"percent\":',
                                    ssFullyAssessedPercent, ',\"budget\":\"', FORMAT(ssFullyAssessedBudget, 0), '\"}]');
 

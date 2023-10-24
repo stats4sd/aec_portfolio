@@ -64,7 +64,8 @@ class HelpTextEntrySeeder extends Seeder
                     The overall score for the initiative is calculated as follows: <ul>
                         <li>The sum of the rating given for each principle, divided by the maximum possible score.</li>
                         <li>The maximum score is 2 per principle. It takes into account any principles marked as NA. For example, an initiative where all 13 principles are relevant will be marked out of 13 x 2 = 26. If 2 principles are marked as NA, the initiative will be marked out of 11 x 2 = 22.</li>
-</ul>
+                        </ul>
+                        <b>NOTE</b>: This score does not include any additional assessment criteria, if your institution uses them. It only counts the assessment against the 13 principles of Agroecology.
                     ",
             ],
             [
@@ -85,6 +86,10 @@ class HelpTextEntrySeeder extends Seeder
             [
                 'location' => 'Dashboard - Passed all red flags',
                 'text' => "The number of initiatives that have completed and passed the red flag assessment.",
+            ],
+                        [
+                'location' => 'Dashboard - Failed at  least one flag',
+                'text' => "The number of initiatives that have completed and failed the red flag assessment.",
             ],
             [
                 'location' => 'Dashboard - Fully assessed',
@@ -119,6 +124,10 @@ class HelpTextEntrySeeder extends Seeder
                    There is also a grey line under some of the principle names - this line represents the % of initiatives that marked the principle as 'not applicable' in the assessment. <br/><br/>
                    You can hover over the graph to view the actual %s for each principle. You may also hide any of the categories by clicking on that category in the legend above the graph. For example, to view the graph without the grey 'na' line, you can click the grey square and 'NA' label. Click again to display it.
                 ",
+            ],
+            [
+                'location' => 'My Institution - Additional Assessment Criteria',
+                'text' => "This tool supports the assessment of initiatives against the 13 Principles of Agroecology. However, we recognize that some institutions may wish to add additional criteria to the assessment. To enable this feature, tick this box. ",
             ],
         ];
 

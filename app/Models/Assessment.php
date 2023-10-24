@@ -25,6 +25,7 @@ class Assessment extends Model
     protected $appends = [
         'overall_score',
         'assessment_status',
+        'additional_score',
     ];
 
     protected static function booted()
@@ -38,6 +39,27 @@ class Assessment extends Model
             }
         });
 
+    }
+
+    public function getCompletedAttribute()
+    {
+        if ($this->completed_at !== null) {
+            return true;
+        }
+
+        if ($this->redline_status === AssessmentStatus::Failed->value){
+            return true;
+        }
+
+        if(!$this->project->organisation->has_additional_criteria && $this->principle_status === AssessmentStatus::Complete->value){
+            return true;
+        }
+
+        if($this->project->organisation->has_additional_criteria && $this->additional_status === AssessmentStatus::Complete->value){
+            return true;
+        }
+
+        return false;
     }
 
     public function getAssessmentStatusAttribute(): string
@@ -92,7 +114,7 @@ class Assessment extends Model
     public function project()
     {
         return $this->belongsTo(Project::class)
-         ->withoutGlobalScope('organisation');
+            ->withoutGlobalScope('organisation');
     }
 
     public function customScoreTags(): HasMany
@@ -194,6 +216,22 @@ class Assessment extends Model
             $totalPossible = $nonNaPrinciples->count() * 2;
 
             $total = $nonNaPrinciples->sum(fn($pr) => $pr->pivot->rating);
+
+            return round($total / $totalPossible * 100, 0);
+        }
+
+        return null;
+    }
+
+    // get additional criteria score if relevant
+    public function getAdditionalScoreAttribute(): ?int
+    {
+        if($this->additional_status === AssessmentStatus::Complete->value) {
+            $additionalCriteria = $this->additionalCriteria;
+
+            $nonNaCriteria = $additionalCriteria->filter(fn($ac) => !$ac->pivot->is_na);
+            $totalPossible = $nonNaCriteria->count() * 2;
+            $total = $nonNaCriteria->sum(fn($ac) => $ac->pivot->rating);
 
             return round($total / $totalPossible * 100, 0);
         }
