@@ -82,6 +82,12 @@ class OrganisationController extends Controller
 
     }
 
+    public function saved()
+    {
+        \Alert::add('success', 'Organisation settings saved')->flash();
+        return redirect('admin/organisation/show');
+    }
+
     public function export()
     {
         $organisation = Organisation::find(Session::get('selectedOrganisationId'));

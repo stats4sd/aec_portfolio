@@ -88,6 +88,11 @@ Route::group([
     ], function () {
 
         Route::get('organisation/show', [OrganisationController::class, 'show'])->name('organisation.self.show');
+
+        // redirect route for saving org settings (used to reload page if has_additional_assessment is changed)
+        Route::get('organisation/saved', [OrganisationController::class, 'saved'])->name('organisation.saved');
+
+
         Route::get('organisation/export', [OrganisationController::class, 'export'])->name('organisation.export');
         Route::post('organisation/store-tab', [OrganisationController::class, 'storeTab']);
 

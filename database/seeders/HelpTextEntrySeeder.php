@@ -120,6 +120,10 @@ class HelpTextEntrySeeder extends Seeder
                    You can hover over the graph to view the actual %s for each principle. You may also hide any of the categories by clicking on that category in the legend above the graph. For example, to view the graph without the grey 'na' line, you can click the grey square and 'NA' label. Click again to display it.
                 ",
             ],
+            [
+                'location' => 'My Institution - Additional Assessment Criteria',
+                'text' => "This tool supports the assessment of initiatives against the 13 Principles of Agroecology. However, we recognize that some institutions may wish to add additional criteria to the assessment. To enable this feature, tick this box. ",
+            ],
         ];
 
         foreach ($helpTextEntries as $helpTextEntry) {
