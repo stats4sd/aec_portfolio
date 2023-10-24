@@ -87,6 +87,10 @@ class HelpTextEntrySeeder extends Seeder
                 'location' => 'Dashboard - Passed all red flags',
                 'text' => "The number of initiatives that have completed and passed the red flag assessment.",
             ],
+                        [
+                'location' => 'Dashboard - Failed at  least one flag',
+                'text' => "The number of initiatives that have completed and failed the red flag assessment.",
+            ],
             [
                 'location' => 'Dashboard - Fully assessed',
                 'text' => "The number of initiatives that have completed the full assessment. This means the initiative has either failed the red flags assessment, or passed the red flags and completed the principle assessment step.",
