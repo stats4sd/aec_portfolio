@@ -25,7 +25,7 @@ class UserObserver
             $invite->confirm();
         }
 
-        $roleInvites = RoleInvite::where('email', '=', $user->email)->get();
+        $roleInvites = RoleInvite::withoutGlobalScope('unconfirmed')->where('email', '=', $user->email)->get();
 
         foreach ($roleInvites as $invite) {
             $user->roles()->syncWithoutDetaching($invite->role->id);

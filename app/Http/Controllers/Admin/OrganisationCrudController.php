@@ -16,28 +16,24 @@ use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Facades\Auth;
 
 
-class OrganisationCrudController extends CrudController
+class OrganisationCrudController extends AdminPanelCrudController
 {
     use ListOperation;
     use CreateOperation;
     use UpdateOperation;
-    use DeleteOperation {
-        destroy as traitDestroy;
-    }
+    use DeleteOperation { destroy as traitDestroy; }
 
     use AuthorizesRequests;
 
-
     public function setup()
     {
-
         CRUD::setModel(\App\Models\Organisation::class);
         CRUD::setRoute(config('backpack.base.route_prefix') . '/organisation-crud');
         CRUD::setEntityNameStrings('institution', 'institutions');
 
         CRUD::denyAccess('delete');
 
-
+        parent::setup();
     }
 
     protected function setupListOperation()
@@ -57,7 +53,7 @@ class OrganisationCrudController extends CrudController
             $this->authorize('create', Organisation::class);
         }
 
-        CRUD::field('name')->label('Enter the Institution name');
+        CRUD::field('name')->label('Enter the Institution name')->validationRules('required');
         CRUD::field('currency')->label('Enter the Institution\'s default currency')
         ->hint('This currency will be used for the summary dashboard. All initiative budgets for your institution will be converted into this currency');
         CRUD::field('institutionType')->label('Select the type of institution.');

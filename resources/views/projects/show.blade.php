@@ -7,8 +7,11 @@
     <div class="container mt-4">
 
         <h1>{{ $entry->organisation->name }} - {{ \Illuminate\Support\Str::title($entry->name) }}</h1>
-        <h4 class="text-uppercase">Initiative Summary</h4>
-
+        @if (count($entry->assessments) > 1)
+            <h4>INITIATIVE SUMMARY <span class="text-bright-green no-print">- CURRENT ASSESSMENT (Assessment {{count($entry->assessments)}})</span></h4>
+        @else
+            <h4 class="text-uppercase">Initiative Summary</h4>
+        @endif
         <form method="POST" action="{{ backpack_url("project/$entry->id/generate-pdf") }}">
             @csrf
             <input class="no-print" type="submit" value="Generate PDF">
@@ -256,6 +259,34 @@
     @endforeach
 
     @endif
+    
+    <div class="container no-print">
+        @if (count($entry->assessments) > 1)
+            <div class="row mt-4 pt-4">
+                <h4 class="text-uppercase">Previous Assessments</h4>
+                <div class="col-12">
+                    <table class="table table-borderless table-responsive">
+                        <tr>
+                            <th>Assessment</th>
+                            <th>Completion Date</th>
+                            <th></th>
+                        </tr>
+                        @foreach ($entry->assessments as $assessment)
+                            @if (!$loop->last)
+                            <tr>
+                                <td> Assessment {{ $loop->index+1 }}</td>
+                                <td> {{ $assessment->completed_at }}</td>
+                                <td><a class="btn btn-success mr-2" href="/admin/assessment/{{$assessment->id}}/show">Show Information</a></td>
+                            </tr>
+                            @endif
+                        @endforeach
+                    </table>
+                </div>
+            </div>
+        @endif
+    </div>
+
+
 @endsection
 
 @section('after_scripts')

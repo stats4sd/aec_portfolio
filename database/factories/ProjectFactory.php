@@ -31,7 +31,7 @@ class ProjectFactory extends Factory
             'initiative_category_id' => $initiativeCategory,
             'initiative_category_other' => $initiativeCategoryOther,
             'budget' => $this->faker->randomNumber(),
-            'created_at' => Carbon::now(),
+            'created_at' => $this->faker->dateTimeBetween('- 2 years', 'now'),
             'updated_at' => Carbon::now(),
             'currency' => $this->faker->currencyCode(),
             'exchange_rate' => $this->faker->numberBetween(1, 20) / 10,

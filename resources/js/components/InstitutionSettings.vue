@@ -2,52 +2,51 @@
     <div class="card-header">
 
         <div class="d-flex align-items-center">
-        <h2 class="mb-0">Institution Details</h2>
-        <v-help-text-link class="font-2xl" location="My Institution - Details"/>
-    </div>
+            <h2 class="mb-0">Institution Details</h2>
+            <v-help-text-link class="font-2xl" location="My Institution - Details"/>
+        </div>
         <p class="help-block">Add or edit the relevant information for the institution.</p>
 
         <v-help-text-entry location="My Institution - Details"/>
 
-
     </div>
 
     <div class="card-body">
-        <div class="form-group row mt-16">
+        <div class="form-group row mt-12">
             <label for="input_name" class="col-sm-4 col-form-label text-right pr-2">Institution Name</label>
             <div class="col-sm-8">
                 <input name="name"
-                       class="form-control"
-                       id="input_name"
-                       v-model="institution.name"
-                       :disabled="!canEdit"
+                        class="form-control"
+                        id="input_name"
+                        v-model="institution.name"
+                        :disabled="!canEdit"
                 >
                 <span class="text-danger emphasis show" role="alert" v-if="errors.hasOwnProperty('name')">
-                            <strong v-for="error in errors.name">{{ error }}</strong><br/>
-                        </span>
+                        <strong v-for="error in errors.name">{{ error }}</strong><br/>
+                    </span>
             </div>
         </div>
 
         <div class="form-group row">
-            <label for="input_currency" class="col-sm-4 col-form-label text-right pr-2">Main Currency (3-letter
-                code)</label>
-            <div class="col-sm-8 col-lg-4">
-                <input
-                    name="currency"
-                    class="form-control"
-                    id="input_currency"
-                    v-model="institution.currency"
-                    :disabled="!canEdit"
-
-                >
-                <span class="text-danger emphasis show" role="alert" v-if="errors.hasOwnProperty('currency')">
+                <label for="input_currency" class="col-sm-4 col-form-label text-right pr-2">Main Currency (3-letter
+                    code)</label>
+                <div class="col-sm-8 col-lg-4">
+                    <input
+                        name="currency"
+                        class="form-control"
+                        id="input_currency"
+                        v-model="institution.currency"
+                        :disabled="!canEdit"
+                    >
+                    <span class="text-danger emphasis show" role="alert" v-if="errors.hasOwnProperty('currency')">
                             <strong v-for="error in errors.currency">{{ error }}</strong><br/>
                         </span>
-                <small id="currencyHelp" class="form-text font-sm">This currency will be used for the summary
-                    dashboard. All initiative budgets for your institution will be converted into this
-                    currency.</small>
+                    <small id="currencyHelp" class="form-text font-sm">This currency will be used for the summary
+                        dashboard. All initiative budgets for your institution will be converted into this
+                        currency.</small>
+                </div>
             </div>
-        </div>
+
         <div class="form-group row">
             <div class="col-sm-8 offset-sm-4">
                 <div class="form-check">
@@ -66,11 +65,50 @@
                     <span class="text-danger emphasis show" role="alert"
                           v-if="errors.hasOwnProperty('has_additional_criteria')">
                             <strong v-for="error in errors.has_additional_criteria">{{ error }}</strong><br/>
-                        </span>
+                    </span>
                 </div>
             </div>
         </div>
+
+        <div class="form-group row">
+            <label for="data_sharing" class="mt-12 col-md-4 col-form-label text-md-right">
+                Data Sharing Agreement
+            </label>
+
+            <div class="col-md-8 mt-12">
+                <div class="alert alert-info">
+                <p>The use of the Portfolio Funding Assessment Tool is based on the data sharing agreement made between your institution and the Agroecology Coalition. </p>
+                </div>
+
+                <p><a href="/documents/Data Sharing Terms and Conditions - Agroecology Coalition Funding Assessment Tool.pdf" target="_blank">Download a copy of the agreement for review.</a></p>
+
+                <span class="show"
+                    v-if="!institution.agreement_signed_at">
+                    <p>Please tick the box below as a digital signature to confirm you agree to this data sharing agreement. The signature will be recorded when you submit this form.</p>
+                    <div class="form-check">
+                        <input
+                            class="form-check-input"
+                            type="checkbox"
+                            id="agreement"
+                            name="agreement"
+                            v-model="institution.agreement"
+                            :value="1"
+                            :disabled="!canEdit"
+                        >
+                        <label class="form-check-label" for="agreement">
+                            On behalf of {{institution.name}}, I agree to abide by the data sharing agreement.
+                        </label>
+                    </div>
+                </span>
+                <span class="show"
+                        v-if="institution.agreement_signed_at">
+                        <p><b>This agreement was digitally signed on behalf of {{ institution.name }} on {{ moment(institution.agreement_signed_at).utc().format('YYYY-MM-DD') }} by {{ institution.signee.name }}.</b></p>
+                </span>
+
+            </div>
+        </div>
         <hr/>
+
         <div class="form-group row">
             <div class="col-sm-4">
                 <h3>Optional Information</h3>
@@ -80,9 +118,9 @@
         <hr/>
 
         <div class="form-group row">
-            <label for="input_type" class="col-sm-4 col-form-label text-right pr-2">Select the Institution
+            <label for="input_type" class="mt-12 col-sm-4 col-form-label text-right pr-2">Select the Institution
                 Type</label>
-            <div class="col-sm-8 col-lg-4">
+            <div class="mt-12 col-sm-8 col-lg-4">
                 <v-select
                     name="institution_type"
                     id="input_type"
@@ -94,7 +132,7 @@
 
                 />
                 <span class="text-danger emphasis show" role="alert"
-                      v-if="errors.hasOwnProperty('institution_type_id')">
+                        v-if="errors.hasOwnProperty('institution_type_id')">
                             <strong v-for="error in errors.institution_type_id">{{ error }}</strong><br/>
                         </span>
                 <small id="institution_type_help" class="form-text font-sm">This can be used as an additional
@@ -172,6 +210,7 @@
 import {onMounted, ref, computed} from "vue";
 import 'vue-select/dist/vue-select.css';
 import vSelect from 'vue-select'
+import moment from "moment";
 import VHelpTextEntry from "./vHelpTextEntry.vue";
 import VHelpTextLink from "./vHelpTextLink.vue";
 
@@ -199,6 +238,8 @@ async function save() {
 
     try {
         const result = await axios.post(props.updateRoute, institution.value)
+
+        institution.value = result.data
 
         new Noty({
             type: "success",

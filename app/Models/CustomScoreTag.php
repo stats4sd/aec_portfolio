@@ -3,16 +3,31 @@
 namespace App\Models;
 
 use Backpack\CRUD\app\Models\Traits\CrudTrait;
-use App\Imports\PrincipleImport;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Imports\PrincipleImport;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+
 
 class CustomScoreTag extends Model
 {
     use CrudTrait;
+    use HasFactory;
 
+    /*
+    |--------------------------------------------------------------------------
+    | GLOBAL VARIABLES
+    |--------------------------------------------------------------------------
+    */
+
+    protected $table = 'custom_score_tags';
     protected $guarded = ['id'];
+
+    /*
+    |--------------------------------------------------------------------------
+    | RELATIONS
+    |--------------------------------------------------------------------------
+    */
 
     public function principleAssessment(): BelongsTo
     {
@@ -28,4 +43,5 @@ class CustomScoreTag extends Model
     {
         return $this->belongsTo(Assessment::class);
     }
+
 }

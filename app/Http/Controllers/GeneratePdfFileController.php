@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Assessment;
 use App\Models\Project;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -43,6 +44,13 @@ class GeneratePdfFileController extends Controller
         $filename = $project->name . '-summary-' . Carbon::now()->toDateString();
 
         return $this->generatePdfFile(route('project.show-as-pdf', ['id' => $project->id]), $filename);
+    }
+
+    public function generateAssessmentSummary(Assessment $assessment)
+    {
+        $filename = $assessment->project->name . '-assessed-on-' . $assessment->completed_at . '-summary-' . Carbon::now()->toDateString();
+
+        return $this->generatePdfFile(route('assessment.show-as-pdf', ['id' => $assessment->id]), $filename);
     }
 
     public function download(string $filename)

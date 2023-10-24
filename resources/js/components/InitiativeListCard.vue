@@ -12,13 +12,13 @@
                     <div class="d-flex justify-content-between">
                         <div class="w-50">
                             <span class="font-weight-bold text-grey">STATUS</span>
-                            <v-help-text-link location="Initiatives - statuses" type="popover"/>
+                            <v-help-text-link location="Initiatives - statuses" type="popover" :help-text-entry-init="statusHelpText"/>
                             <br/>
                             <span class="font-weight-bold">{{ initiative.latest_assessment.assessment_status }}</span>
                         </div>
                         <div class="w-50">
                             <span class="font-weight-bold text-grey">SCORE</span>
-                            <v-help-text-link location="Initiatives - score" type="popover"/>
+                            <v-help-text-link location="Initiatives - score" type="popover" :help-text-entry-init="scoreHelpText"/>
                             <br/>
                             <span class="font-xl text-bright-green font-weight-bold"
                                   v-if="initiative.latest_assessment.overall_score !== null">{{
@@ -63,7 +63,11 @@
                             <a class="btn btn-success mr-2" :class="[ enableShowButton ? '' : 'disabled']"
                                :href="`/admin/project/${initiative.id}/show`">Show Information</a>
 
-                            <button class="btn btn-danger" @click="removeInitiative();">Delete</button>
+                            <button class="btn btn-danger mr-2" :class="[ enableDeleteButton ? '' : 'disabled']"
+                                @click="enableDeleteButton ? removeInitiative() : '';">Delete</button>
+
+                            <button class="btn btn-warning" :class="[ enableReassessButton ? (initiative.latest_assessment.principle_status === 'Complete' && initiative.latest_assessment.additional_status != 'Not Started' ? '' : 'disabled') : 'disabled']"
+                                @click="enableReassessButton ? (initiative.latest_assessment.principle_status === 'Complete' && initiative.latest_assessment.additional_status != 'Not Started' ? reassessInitiative() : 'disabled') : '';">Reassess</button>
 
                         </div>
 
@@ -149,6 +153,10 @@ const props = defineProps({
     enableEditButton: Boolean,
     enableShowButton: Boolean,
     enableAssessButton: Boolean,
+    enableDeleteButton: Boolean,
+    enableReassessButton: Boolean,
+    statusHelpText: Object,
+    scoreHelpText: Object,
 })
 
 const expanded = ref(false)
@@ -225,6 +233,33 @@ async function removeInitiative() {
         emit('remove_initiative', props.initiative)
     }
 
+}
+
+async function reassessInitiative() {
+    let choice = await Swal.fire({
+        title: 'Are you sure?',
+        text: "The current assessment will be archived and the initiative will be reset to the beginning, allowing you to complete the assessment process again based on the current status of the initiative.",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, reassess!'
+        });
+
+    if (choice.isConfirmed) {
+
+        let result = await axios.post(`/admin/project/${props.initiative.id}/reassess`);
+
+        Swal.fire(
+        'Archived!',
+        'The current assessment has been archived. The initiative can now be reassessed.',
+        'success'
+        );
+
+        // pass the refreshed initiative out to the list
+        emit('refresh_initiative', result.data)
+
+    }
 }
 
 
