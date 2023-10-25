@@ -1,17 +1,11 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-
-/**
- * No seperate Front-end
- *
- * Use these routes for platforms that only use the
- * Laravel Backpack interface and do not require a seperate
- * front-end.
- *
- * The routes here will automatically redirect any users to the
- * Backpack admin root. Logins will still be handled with Laravel / Breeze.
- */
+use App\Http\Controllers\ExchangeRateController;
+use App\Http\Controllers\OrganisationController;
+use App\Http\Controllers\Admin\ProjectCrudController;
+use App\Http\Controllers\PrincipleAssessmentController;
+use App\Http\Controllers\AdditionalAssessmentController;
 
 Route::get('/', function () {
     return redirect(config('backpack.base.route_prefix'));
@@ -21,21 +15,26 @@ Route::get(config('backpack.base.route_prefix') . '/login', function () {
     return redirect('login');
 });
 
-/**
- * For platforms that *do* require a seperate front-end and
- * admin panel, use the routes below. This will not automatically redirect.
- * The groups are to seperate out front-end pages that are public vs
- * front-end pages that require authentication.
- */
 
-// Route::get('/', function () {
-//     return view('welcome');
-// })->name('home');
+Route::post('organisation/update', [OrganisationController::class, 'update'])->name('organisation.self.update');
 
-// Route::group([
-//     'middleware' => ['web', 'auth'],
-// ], function () {
-//     Route::view('dashboard')->name('dashboard');
-// });
+
+
+
+// `API` calls for Vue components
+
+Route::apiResource('principle-assessment', PrincipleAssessmentController::class);
+Route::apiResource('additional-assessment', AdditionalAssessmentController::class);
+
+Route::get('assessment/{assessment}/principle-assessments', [PrincipleAssessmentController::class, 'index']);
+Route::get('assessment/{assessment}/additional-assessments', [AdditionalAssessmentController::class, 'index']);
+
+
+Route::post('exchange-rate', [ExchangeRateController::class, 'index']);
+
 
 require __DIR__.'/auth.php';
+
+Route::middleware('auth')->group(function() {
+    Route::mediaLibrary();
+});

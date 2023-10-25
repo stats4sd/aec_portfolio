@@ -2,9 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Organisation;
+
 use App\Models\User;
-use Illuminate\Http\Request;
+use App\Models\Organisation;
+use App\Models\OrganisationMember;
+use Spatie\Permission\Models\Role;
+use Illuminate\Support\Facades\Session;
 use Illuminate\Database\Eloquent\Builder;
 use App\Http\Requests\OrganisationMemberStoreRequest;
 use App\Http\Requests\OrganisationMemberUpdateRequest;
@@ -13,26 +16,25 @@ class OrganisationMemberController extends Controller
 {
     public function create(Organisation $organisation)
     {
+        $this->authorize('create', OrganisationMember::class);
+
         $users = User::whereDoesntHave('organisations', function (Builder $query) use ($organisation) {
             $query->where('organisations.id', '=', $organisation->id);
         })->get();
 
-        return view('organisations.create-members', ['organisation' => $organisation, 'users' => $users]);
+        $institutionalRoles = Role::where('name', 'like', 'Institutional%')->orderBy('name', 'ASC')->get();
+
+        return view('organisations.create-members', [
+            'organisation' => $organisation,
+            'users' => $users,
+            'institutionalRoles' => $institutionalRoles,
+        ]);
     }
 
 
-    /**
-     * Attach users to the organisation, or send email invites to non-users.
-     * New Members are automatically not admins.
-     *
-     * @param OrganisationMemberStoreRequest $request
-     * @param Organisation $organisation
-     * @return void
-     */
-
     public function store(OrganisationMemberStoreRequest $request, Organisation $organisation)
     {
-        $this->authorize('update', $organisation);
+        $this->authorize('create', OrganisationMember::class);
 
         $data = $request->validated();
 
@@ -41,49 +43,49 @@ class OrganisationMemberController extends Controller
         }
 
         if (isset($data['emails']) && count(array_filter($data['emails'])) > 0) {
-            $organisation->sendInvites($data['emails']);
+            $organisation->sendInvites($data['emails'], $data['role_id']);
         }
 
-        return redirect()->route('organisation.show', ['id' => $organisation->id]);
+        return redirect('/admin/organisation/show#members');
     }
+
 
     public function edit(Organisation $organisation, User $user)
     {
+        $this->authorize('update', OrganisationMember::class);
 
         //use the relationship to get the pivot attributes for user
         $user = $organisation->users->find($user->id);
 
-        return view('organisations.edit-members', ['organisation' => $organisation, 'user' => $user]);
+        $institutionalRoles = Role::where('name', 'like', 'Institutional%')->orderBy('name', 'ASC')->get();
+
+        return view('organisations.edit-members', [
+            'organisation' => $organisation,
+            'user' => $user,
+            'institutionalRoles' => $institutionalRoles,
+        ]);
     }
 
-
-    /**
-     * Update the access level for existing organisation member
-     *
-     * @param OrganisationMemberUpdateRequest $request
-     * @param Organisation $organisation
-     * @param User $user
-     */
 
     public function update(OrganisationMemberUpdateRequest $request, Organisation $organisation, User $user)
     {
+        $this->authorize('update', OrganisationMember::class);
+
         $data = $request->validated();
 
-        $organisation->users()->syncWithoutDetaching([$user->id => ['role' => $data['role']]]);
+        // remove old role
+        $user->removeRole($data['old_system_role']);
 
-        return redirect()->route('organisation.show', ['id' => $organisation->id]);
+        // add new role
+        $user->assignRole($data['new_system_role']);
+
+        return redirect('/admin/organisation/show#members');
     }
 
-    /**
-     * Remove a user from the organisation.
-     *
-     * @param Organisation $organisation
-     * @param User $user
-     * @return void
-     */
+
     public function destroy(Organisation $organisation, User $user)
     {
-        $this->authorize('update', $organisation);
+        $this->authorize('delete', OrganisationMember::class);
 
         $admins = $organisation->admins()->get();
         // if the $user is a $organisation admin AND is the ONLY organisation admin... prevent
@@ -95,6 +97,18 @@ class OrganisationMemberController extends Controller
             \Alert::add('success', 'User ' . $user->name . ' successfully removed from the institution')->flash();
         }
 
-        return redirect()->route('organisation.show', [$organisation, 'members']);
+        return redirect('/admin/organisation/show#members');
+    }
+
+
+    // redirect to organisation members page of the selected organisation
+    public function show()
+    {
+        $this->authorize('viewAny', OrganisationMember::class);
+
+        $selectedOrganisationId = Session::get('selectedOrganisationId');
+
+        return redirect('/admin/organisation/show#members');
+
     }
 }

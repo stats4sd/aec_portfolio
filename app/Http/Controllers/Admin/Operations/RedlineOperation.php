@@ -3,25 +3,24 @@
 namespace App\Http\Controllers\Admin\Operations;
 
 use App\Enums\AssessmentStatus;
+use App\Models\Assessment;
+use App\Models\AssessmentRedLine;
 use App\Models\Principle;
-use App\Models\PrincipleProject;
 use App\Models\Project;
 use App\Models\RedLine;
+use Carbon\Carbon;
+use Cron\AbstractField;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Validation\ValidationException;
 
 trait RedlineOperation
 {
-    /**
-     * Define which routes are needed for this operation.
-     *
-     * @param string $segment Name of the current entity (singular). Used as first URL segment.
-     * @param string $routeName Prefix of the route name.
-     * @param string $controller Name of the current CrudController.
-     */
+
     protected function setupRedlineRoutes($segment, $routeName, $controller)
     {
+        // logger("RedlineOperation.setupRedlineRoutes()");
+
         Route::get($segment . '/{id}/redline', [
             'as' => $routeName . '.redline',
             'uses' => $controller . '@redline',
@@ -57,8 +56,6 @@ trait RedlineOperation
 
     /**
      * Show the view for performing the operation.
-     *
-     * @return Response
      */
     public function redline($id)
     {
@@ -66,8 +63,8 @@ trait RedlineOperation
 
         $id = $this->crud->getCurrentEntryId() ?? $id;
 
-
         $this->data['entry'] = $this->crud->getEntryWithLocale($id);
+
         $this->crud->setOperationSetting('fields', $this->crud->getUpdateFields());
 
         $this->data['crud'] = $this->crud;
@@ -82,12 +79,11 @@ trait RedlineOperation
     public function postRedlineForm(Request $request)
     {
 
+        if ($request->has('redlines_compelete') && $request->redlines_complete === 1) {
+            foreach (RedLine::all() as $redline) {
+                if ($request->has('redline_value_' . $redline->id)) {
 
-        if($request->has('redlines_compelete') && $request->redlines_complete === 1) {
-            foreach(RedLine::all() as $redline) {
-                if($request->has('redline_value_' . $redline->id)) {
-
-                    if($request->{'redline_value'.$redline->id} === null) {
+                    if ($request->{'redline_value' . $redline->id} === null) {
                         $field = 'redline_value_' . $redline->id;
                         throw ValidationException::withMessages([
                             $field => 'You must select an option for every Redline before marking the assessment as complete',
@@ -97,32 +93,42 @@ trait RedlineOperation
             }
         }
 
+        $latestAssessment = Assessment::findOrFail($request->id);
         $updates = [];
+
+
         // custom handling of redline-project relationship data
-        foreach (Redline::all() as $redline) {
+        foreach (RedLine::all() as $redline) {
             if ($request->has('redline_value_' . $redline->id)) {
-                $updates[$redline->id] = ['value' => $request->{'redline_value_' . $redline->id}];
+
+                // Need to call save() on the AssessmentRedline model directly in order to save the update via the Revisionable trait:
+                $assessmentRedLine = AssessmentRedLine::where('assessment_id', $latestAssessment->id)
+                    ->where('red_line_id', $redline->id)
+                    ->first();
+
+                $assessmentRedLine->value = $request->{'redline_value_' . $redline->id};
+                $assessmentRedLine->save();
+
             }
         }
-        $project = Project::findOrFail($request->id);
-        $project->redlines()->sync($updates);
 
-        // if the main assessment is already in progress, only update the status if the redlines are 'no longer' complete:
-        if (collect(AssessmentStatus::InProgress, AssessmentStatus::Complete)->contains($project->assessment_status)) {
-            $project->assessment_status = !$request->redlines_complete ? AssessmentStatus::RedlinesIncomplete : $project->assessment_status;
-        } else {
-            // if a redline fails, the assessment is complete!
-            if($project->failingRedlines()->count() > 0) {
-                $project->assessment_status = AssessmentStatus::Complete;
+        // set redline status
+        $latestAssessment->redline_status = AssessmentStatus::InProgress;
+
+        if ($request->redlines_complete) {
+            if ($latestAssessment->failingRedlines()->count() > 0) {
+                $latestAssessment->redline_status = AssessmentStatus::Failed;
+                $latestAssessment->principle_status = AssessmentStatus::Complete;
+                $latestAssessment->additional_status = AssessmentStatus::Complete;
+                $latestAssessment->completed_at = Carbon::now();
             } else {
-                $project->assessment_status = $request->redlines_complete ? AssessmentStatus::RedlinesComplete : AssessmentStatus::RedlinesIncomplete;
-
+                $latestAssessment->redline_status = AssessmentStatus::Complete;
             }
         }
 
-        $project->save();
+        $latestAssessment->save();
 
-
-        return redirect($this->crud->route);
+        // use redirect from request to determine redirect
+        return redirect(backpack_url($request->input('_redirect') ?? 'project'));
     }
 }

@@ -9,7 +9,7 @@
 @section('after_scripts')
     <!-- D3.js -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js" charset="utf-8"></script>
-    <script src="{{asset('js/radarChart.js')}}"></script>
+    @vite('resources/js/radarChart.js')
 
 
     <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
@@ -207,6 +207,12 @@
 
 @section('content')
     <h1 class="mt-4">Portfolio Analysis</h1>
+
+    <form method="POST" action="/admin/generatePdf">
+        @csrf
+        <input type="submit" value="Generate PDF">
+    </form>
+
     <h3 class="mt-4">{{ $organisation->name }}</h3>
     <ul class="nav nav-tabs" id="top-tabs" role="tablist">
         <li class="nav-item" role="presentation">

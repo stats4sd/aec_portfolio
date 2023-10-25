@@ -20,3 +20,10 @@ npm install
 npm run dev
 ```
 6.	Migrate the database: `php aritsan migrate:fresh --seed`
+
+
+## TESTS
+- [ ] Workflow for creating a new institution + inviting members
+- [ ] Workflow for a member deleting their account
+- 
+----

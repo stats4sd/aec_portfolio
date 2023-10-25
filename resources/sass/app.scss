@@ -1,40 +1,301 @@
-@import url("https://fonts.googleapis.com/css?family=Open+Sans");
+@import url("https://fonts.googleapis.com/css?family=Hind");
+@import "../../vendor/spatie/laravel-medialibrary-pro/resources/js/media-library-pro-styles";
 
 @import "variables";
-
-// Backpack stuff
-// @import "~bootstrap/scss/bootstrap";
 
 @import "~@digitallyhappy/backstrap/src/scss/style";
 @import "~@digitallyhappy/backstrap/src/scss/_variables";
 @import "~@coreui/coreui/scss/coreui";
 @import "~@digitallyhappy/backstrap/src/scss/_custom";
 @import "~line-awesome/dist/line-awesome/css/line-awesome.min.css";
-//@import "~animate.css/source/_base";
 @import "~noty/src/noty";
 
-.full-width-choices .select2-selection__choice {
-    width: 85%;
-    padding-top: 0.5em !important;
-    padding-bottom: 0.5em !important;
-    font-size: medium;
-    border-radius: 0.5em;
-    padding-left: 0 !important;
-    white-space:  normal;
-    word-wrap: break-word;
+@import "backpack-form-tweaks";
+@import "redline-radios";
+@import "print-tweaks";
 
-    .select2-selection__choice__remove {
-        padding-left: 1em;
-        padding-right: 1em;
-        top: -0.5em !important;
-        position: relative;
-        margin-right: 1em !important;
-        background-color: lightgrey;
-        border-right: grey;
+// Basic styling
+body {
+    background: #F6F6F6;
+    font-family: "Hind", sans-serif !important;
+}
+
+.container-fluid {
+    max-width: 1500px !important;
+}
+
+.app-header {
+    height: 100px !important;
+    flex-basis: 100px !important;
+}
+
+.navbar-logo {
+    width: 250px;
+    justify-content: left;
+    padding: 0 2.25rem;
+    display: inline-flex;
+    align-items: center;
+    opacity: 1;
+}
+
+.text-deep-green {
+    color: $deep-green !important;
+}
+
+.text-ae-green {
+    color: $ae-green !important;
+}
+
+.text-bright-green {
+    color: $bright-green !important;
+}
+
+.text-grey {
+    color: $gray-700 !important;
+}
+
+.bg-bright-green, .bg-success {
+    background-color: $bright-green !important;
+}
+
+.bg-deep-green {
+    background-color: $deep-green !important;
+}
+
+.bg-light-success {
+    background-color: #c7eed8 !important;
+
+    .list-group-item {
+        background-color: #c7eed8 !important;
     }
 }
 
-form .form-group.required > label:not(:empty):not(.form-check-label)::after {
-  color: red;
-  content: " *";
+.ae-slider {
+
+    .v-slider-track__tick, .v-slider-track__tick--filled {
+        background-color: transparent !important;
+    }
+
+    .v-slider-thumb__label {
+        background-color: $bright-green;
+
+        &::before {
+            border-top: 6px solid $bright-green !important;
+        }
+    }
+
+}
+
+.v-application {
+    background: #F6F6F6 !important;
+}
+
+label {
+    margin-bottom: 0 !important;
+}
+
+// custom margins + padding (from vuetify)
+
+.px-8 {
+    padding-right: 32px !important;
+    padding-left: 32px !important;
+}
+
+.px-12 {
+    padding-right: 48px !important;
+    padding-left: 48px !important;
+}
+
+.px-16 {
+    padding-right: 64px !important;
+    padding-left: 64px !important;
+}
+
+
+.mx-8 {
+    margin-right: 32px !important;
+    margin-left: 32px !important;
+}
+
+.mx-12 {
+    margin-right: 48px !important;
+    margin-left: 48px !important;
+}
+
+.mx-16 {
+    margin-right: 64px !important;
+    margin-left: 64px !important;
+}
+
+.py-8 {
+    padding-top: 32px !important;
+    padding-bottom: 32px !important;
+}
+
+.py-12 {
+    padding-top: 48px !important;
+    padding-bottom: 48px !important;
+}
+
+.py-16 {
+    padding-top: 64px !important;
+    padding-bottom: 64px !important;
+}
+
+
+.my-8 {
+    margin-top: 32px !important;
+    margin-bottom: 32px !important;
+}
+
+.my-12 {
+    margin-top: 48px !important;
+    margin-bottom: 48px !important;
+}
+
+.my-16 {
+    margin-top: 64px !important;
+    margin-bottom: 64px !important;
+}
+
+.pr-8 {
+    padding-right: 32px !important;
+}
+
+.pr-12 {
+    padding-right: 48px !important;
+}
+
+.pr-16 {
+    padding-right: 64px !important;
+}
+
+
+.mr-8 {
+    margin-right: 32px !important;
+}
+
+.mr-12 {
+    margin-right: 48px !important;
+}
+
+.mr-16 {
+    margin-right: 64px !important;
+}
+
+
+.pl-8 {
+    padding-left: 32px !important;
+}
+
+.pl-12 {
+    padding-left: 48px !important;
+}
+
+.pl-16 {
+    padding-left: 64px !important;
+}
+
+
+.ml-8 {
+    margin-left: 32px !important;
+}
+
+.ml-12 {
+    margin-left: 48px !important;
+}
+
+.ml-16 {
+    margin-left: 64px !important;
+}
+
+
+.pt-8 {
+    padding-top: 32px !important;
+}
+
+.pt-12 {
+    padding-top: 48px !important;
+}
+
+.pt-16 {
+    padding-top: 64px !important;
+}
+
+
+.mt-8 {
+    margin-top: 32px !important;
+}
+
+.mt-12 {
+    margin-top: 48px !important;
+}
+
+.mt-16 {
+    margin-top: 64px !important;
+}
+
+
+.pb-8 {
+    padding-bottom: 32px !important;
+}
+
+.pb-12 {
+    padding-bottom: 48px !important;
+}
+
+.pb-16 {
+    padding-bottom: 64px !important;
+}
+
+
+.mb-8 {
+    margin-bottom: 32px !important;
+}
+
+.mb-12 {
+    margin-bottom: 48px !important;
+}
+
+.mb-16 {
+    margin-bottom: 64px !important;
+}
+
+
+.vs__selected {
+    position: relative !important;
+}
+
+@media(min-width: 992px) {
+    .mt-lg-0.mt-8 {
+        margin-top: 0 !important;
+    }
+
+}
+
+.example-list label {
+    margin-left: 10px;
+}
+
+.btn.active {
+    cursor: pointer;
+}
+
+.bd-callout {
+    padding: 1.25rem;
+    background-color: #fff;
+    border: 1px solid #eee;
+    border-left-width: 0.25rem;
+    border-top-color: #eee !important;
+    border-right-color: #eee !important;
+    border-bottom-color: #eee !important;
+    border-radius: 0.25rem;
+}
+
+*[role=button]  {
+    cursor: pointer;
+}
+
+.popover {
+    font-size: 1em !important;
 }

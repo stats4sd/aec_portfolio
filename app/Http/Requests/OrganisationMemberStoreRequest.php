@@ -36,6 +36,7 @@ class OrganisationMemberStoreRequest extends FormRequest
                 'nullable',
                 Rule::in(User::all()->pluck('id', 'id')->toArray()),
             ],
+            'role_id' => 'required|integer',
         ];
     }
 

@@ -33,12 +33,18 @@ return [
         'local' => [
             'driver' => 'local',
             'root' => storage_path('app'),
+            'url' => implode('/', [
+                env('APP_URL'),
+                config('backpack.base.route_prefix'),
+                'files',
+                ]),
         ],
+
 
         'public' => [
             'driver' => 'local',
             'root' => storage_path('app/public'),
-            'url' => env('APP_URL').'/storage',
+            'url' => env('APP_URL'). '/storage',
             'visibility' => 'public',
         ],
 

@@ -1,6 +1,7 @@
 <!-- =================================================== -->
 <!-- ========== Top menu items (ordered left) ========== -->
 <!-- =================================================== -->
+
 <ul class="nav navbar-nav d-md-down-none">
 
     @if (backpack_auth()->check())
@@ -11,7 +12,14 @@
 </ul>
 <!-- ========== End of top menu left items ========== -->
 
-
+<ul class="nav navbar-nav ml-auto mr-auto d-flex">
+    <li class="nav-item mx-3 font-weight-bold"><a class="nav-link text-deep-green" href="{{ backpack_url('dashboard') }}">Dashboard</a>
+        </li>
+    <li class="nav-item mx-3 font-weight-bold"><a class="nav-link text-deep-green" href="{{ backpack_url('organisation/show') }}">My Institution</a>
+        </li>
+    <li class="nav-item mx-3 font-weight-bold"><a class="nav-link text-deep-green" href="{{ backpack_url('project') }}">Initiatives</a>
+        </li>
+</ul>
 
 
 <!-- ========================================================= -->
@@ -28,15 +36,52 @@
         <!-- Topbar. Contains the right part -->
         @include(backpack_view('inc.topbar_right_content'))
 
+
         <li class="nav-item pr-4">
-            <a class="nav-link" href="{{ route('backpack.account.info') }}">My Account</a>
+            <a class="nav-link d-flex justify-content-between align-items-center"
+               href="{{ backpack_url('support') }}"
+            >
+                <i class="la la-question-circle font-3xl pr-2"></i>
+                <span>Support</span>
+            </a>
         </li>
+
+        <li class="nav-item pr-4">
+            <a class="nav-link d-flex justify-content-between align-items-center"
+               href="{{ route('backpack.account.info') }}"
+            >
+                <i class="la la-user-circle font-3xl pr-2"></i>
+                <span>My Account</span>
+            </a>
+        </li>
+
+        @if(\App\Models\Organisation::count() > 1)
+        <li class="nav-item pr-4">
+            <a class="nav-link d-flex justify-content-between align-items-center"
+               href="{{ backpack_url('selected_organisation') }}"
+            >
+                <i class="la la-exclamation-circle font-3xl pr-2"></i>
+                <span>Change Institution</span>
+            </a>
+        </li>
+        @endif
+
+        @if(Auth::user()->can('maintain institutions'))
+        <li class="nav-item pr-4">
+            <a class="nav-link d-flex justify-content-between align-items-center"
+               href="{{ backpack_url('organisation-crud') }}"
+            >
+                <i class="la la-user-tie font-3xl pr-2"></i>
+                <span>Admin Panel</span>
+            </a>
+        </li>
+        @endif
 
         <!-- Logout button - tailored to use Laravel Breeze -->
         <li class="nav-item pr-4">
             <form method="POST" action={{ route('logout') }}>
             @csrf
-            <button class="btn btn-link text-dark" type="submit"><i class="la la-lock"></i> {{ trans('backpack::base.logout') }}</button>
+            <button class="btn btn-link text-dark" type="submit">{{ trans('backpack::base.logout') }}</button>
             </form>
         </li>
 

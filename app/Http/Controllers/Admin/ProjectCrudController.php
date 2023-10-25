@@ -2,26 +2,38 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Enums\GeographicalReach;
-use App\Models\Country;
-use App\Models\RedLine;
+use App\Imports\ProjectWorkbookImport;
 use App\Models\Region;
-use App\Models\ScoreTag;
-use App\Models\CustomScoreTag;
+use App\Models\Country;
+use App\Models\Project;
+use App\Models\RedLine;
+use App\Models\AdditionalCriteriaScoreTag;
+use App\Models\Portfolio;
 use App\Models\Principle;
+use App\Models\Assessment;
+use Backpack\CRUD\app\Http\Controllers\Operations\CreateOperation;
+use Backpack\CRUD\app\Http\Controllers\Operations\DeleteOperation;
 use Backpack\CRUD\app\Http\Controllers\Operations\ShowOperation;
+use Backpack\CRUD\app\Http\Controllers\Operations\UpdateOperation;
+use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use App\Models\Organisation;
 use App\Imports\ProjectImport;
+use App\Models\CustomScoreTag;
 use App\Enums\AssessmentStatus;
-use phpDocumentor\Reflection\Types\True_;
+use App\Enums\GeographicalReach;
+use App\Models\OrganisationMember;
+use Illuminate\Support\Facades\DB;
 use Prologue\Alerts\Facades\Alert;
-use Illuminate\Support\Facades\Auth;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Http\Requests\ProjectRequest;
 use Backpack\CRUD\app\Library\Widget;
 use function mysql_xdevapi\getSession;
+use Illuminate\Support\Facades\Session;
+use phpDocumentor\Reflection\Types\True_;
 use Backpack\CRUD\app\Http\Controllers\CrudController;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use App\Http\Controllers\Admin\Operations\AssessOperation;
 use App\Http\Controllers\Admin\Operations\ImportOperation;
 use App\Http\Controllers\Admin\Operations\RedlineOperation;
@@ -29,183 +41,316 @@ use App\Http\Controllers\Admin\Traits\UsesSaveAndNextAction;
 use Backpack\Pro\Http\Controllers\Operations\FetchOperation;
 use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
 
-/**
- * Class ProjectCrudController
- * @package App\Http\Controllers\Admin
- * @property-read \Backpack\CRUD\app\Library\CrudPanel\CrudPanel $crud
- */
 class ProjectCrudController extends CrudController
 {
-    use \Backpack\CRUD\app\Http\Controllers\Operations\ListOperation;
-    use \Backpack\CRUD\app\Http\Controllers\Operations\CreateOperation;
-    use \Backpack\CRUD\app\Http\Controllers\Operations\UpdateOperation;
-    use \Backpack\CRUD\app\Http\Controllers\Operations\DeleteOperation;
-
+    use CreateOperation;
+    use UpdateOperation;
+    use DeleteOperation {
+        destroy as traitDestroy;
+    }
     use ShowOperation;
+
+    use AuthorizesRequests;
+
     use ImportOperation;
-    use AssessOperation;
     use RedlineOperation;
     use FetchOperation;
     use UsesSaveAndNextAction;
 
-    /**
-     * Configure the CrudPanel object. Apply settings to all operations.
-     *
-     * @return void
-     */
     public function setup()
     {
-        CRUD::setModel(\App\Models\Project::class);
-        CRUD::setRoute(config('backpack.base.route_prefix') . '/project');
-        CRUD::setEntityNameStrings('project', 'projects');
 
-        CRUD::set('import.importer', ProjectImport::class);
-        CRUD::set('import.template-path', 'AE Marker - Project Import Template.xlsx');
+        CRUD::setModel(Project::class);
+        CRUD::setRoute(config('backpack.base.route_prefix') . '/project');
+        CRUD::setEntityNameStrings('initiative', 'initiatives');
+
+        CRUD::set('import.importer', ProjectWorkbookImport::class);
+        CRUD::set('import.template-path', 'Agroecology Funding Tool - Initiative Import Template.xlsx');
 
         CRUD::setShowView('projects.show');
-
     }
 
     public function show($id)
     {
-        $this->crud->hasAccessOrFail('show');
+        //$this->authorize('view', Project::find($id));
+
+        //$this->crud->hasAccessOrFail('show');
 
         // get entry ID from Request (makes sure its the last ID for nested resources)
         $id = $this->crud->getCurrentEntryId() ?? $id;
 
         // get the info for that entry (include softDeleted items if the trait is used)
         if ($this->crud->get('show.softDeletes') && in_array('Illuminate\Database\Eloquent\SoftDeletes', class_uses($this->crud->model))) {
-            $this->data['entry'] = $this->crud->getModel()->withTrashed()->findOrFail($id);
+            $this->data['entry'] = $this->crud->getModel()
+                ->withoutGlobalScopes('organisation')
+                ->withTrashed()
+                ->findOrFail($id);
         } else {
-            $this->data['entry'] = $this->crud->getEntryWithLocale($id);
+            $this->data['entry'] = Project::withoutGlobalScopes(['organisation'])->find($id);
         }
 
-        $this->data['crud'] = $this->crud;
-        $this->data['title'] = $this->crud->getTitle() ?? trans('backpack::crud.preview') . ' ' . $this->crud->entity_name;
+        $this->data = self::getShowData($this->data);
 
+        // load the view from /resources/views/vendor/backpack/crud/ if it exists, otherwise load the one in the package
+        return view($this->crud->getShowView(), $this->data);
+    }
+
+    public static function getShowData(array $data)
+    {
+        $data['entry']->load([
+            'assessments' => [
+                'failingRedLines'
+            ],
+        ]);
 
         // #### ADD SPIDER CHART DATA ###
-        $this->data['spiderData'] = $this->data['entry']->principleProjects->map(function ($principleProject) {
+        $data['spiderData'] = $data['entry']->assessments->last()->principleAssessments->map(function ($principleProject) {
             return [
                 'axis' => $principleProject->principle->name,
                 'value' => $principleProject->rating,
             ];
         });
 
-        // load the view from /resources/views/vendor/backpack/crud/ if it exists, otherwise load the one in the package
-        return view($this->crud->getShowView(), $this->data);
+        return $data;
     }
 
-    /**
-     * Define what happens when the List operation is loaded.
-     *
-     * @see  https://backpackforlaravel.com/docs/crud-operation-list-entries
-     * @return void
-     */
-    protected function setupListOperation()
+
+    public function showAssessment($id)
     {
-        CRUD::setPersistentTable(false);
-        CRUD::setResponsiveTable(false);
-        Widget::add()
-            ->type('card')
-            ->wrapper([
-                'class' => 'col-md-10'
-            ])
-            ->content([
-                'body' => 'This page lists all of your projects within the platform. You may add new projects or import from an Excel file. You may also edit existing project details, and perform the 2 types of assessment for each project: <br/><br/>
-                    <ol>
-                    <li><b>Review Redlines:</b> As the first step, you will screen your project against a list of "red lines". Projects with any red lines do not qualify as agroecological no matter what the rest of the assessment might be. Therefore, any project failing this stage do not go through to the main assessment.</li>
-                    <li><b>Assess Project:</b>. You will evaluate the project under each of the 13 principles of Agroecology.</li>
-                    </ol>
-                    The table below shows all the projects, and the current state of the assessment. Use the buttons in the table below to begin or continue an assessment.
-                ',
-            ]);
+        $assessment = Assessment::find($id);
 
-        CRUD::column('organisation')->type('relationship')->label('Institution');
-        CRUD::column('name');
-        CRUD::column('code');
-        CRUD::column('budget')->type('closure')->function(function ($entry) {
+        $project = $assessment->project;
 
-            $value = number_format($entry->budget, 2, '.', ',');
-            return "{$entry->currency} {$value}";
+        $this->authorize('view', $project);
+
+        $this->crud->hasAccessOrFail('show');
+
+        $this->data['entry'] = $project;
+        $this->data['assessment'] = $assessment;
+
+        $this->data['crud'] = $this->crud;
+        $this->data['title'] = $this->crud->getTitle() ?? trans('backpack::crud.preview') . ' ' . $this->crud->entity_name;
+
+
+        // #### ADD SPIDER CHART DATA ###
+        $this->data['spiderData'] = $assessment->principleAssessments->map(function ($principleAssessment) {
+            return [
+                'axis' => $principleAssessment->principle->name,
+                'value' => $principleAssessment->rating,
+            ];
         });
-        CRUD::column('assessment_status')->type('closure')->function(function ($entry) {
-            return $entry->assessment_status?->value;
-        });
-        CRUD::column('overall_score')->type('number')->decimals(1)->suffix('%');
 
-        CRUD::filter('assessment_status')
-            ->type('select2')
-            ->label('Filter by Status')
-            ->options(collect(AssessmentStatus::cases())->pluck('value', 'value')->toArray())
-            ->active(function ($value) {
-                $this->crud->query->where('assessment_status', $value);
-            });
-
-        if (Auth::user()->hasRole('admin')) {
-
-            CRUD::filter('organisation_id')
-                ->type('select2')
-                ->label('Filter by Institution')
-                ->options(Organisation::all()->pluck('name', 'id')->toArray())
-                ->active(function ($value) {
-                    $this->crud->query->where('organisation_id', $value);
-                });
-        }
-
+        return view('assessments.show', $this->data);
     }
 
-    /**
-     * Define what happens when the Create operation is loaded.
-     *
-     * @see https://backpackforlaravel.com/docs/crud-operation-create
-     * @return void
-     */
+
     protected function setupCreateOperation()
     {
+        Widget::add()->type('script')
+            ->content('assets/js/admin/forms/project_create.js');
+
+        $this->authorize('create', Project::class);
+
         CRUD::setValidation(ProjectRequest::class);
 
         CRUD::field('title')->type('section-title')
             ->content('Enter the key project details below.')
             ->view_namespace('stats4sd.laravel-backpack-section-title::fields');
 
-        if (Auth::user()?->hasRole('admin') || Auth::user()?->organisations()->count() > 1)
-            CRUD::field('organisation_id')->type('relationship')->label('Institution');
-        else {
-            $organisation = Auth::user()?->organisations()->first();
-            CRUD::field('organisation_id')->type('hidden')->value($organisation->id);
-            CRUD::field('organisation_title')->type('section-title')->view_namespace('stats4sd.laravel-backpack-section-title::fields')->content('Creating a Project for <b>' . $organisation->name . '</b>');
-        }
+        $selectedOrganisationId = Session::get('selectedOrganisationId');
+        CRUD::field('organisation_id')->type('hidden')->value($selectedOrganisationId);
+
+        $selectedOrganisation = Organisation::find($selectedOrganisationId);
+
+        $this->crud->addFields([
+            [
+                'name' => 'portfolio_id',
+                'type' => 'select',
+                'label' => 'Portfolio',
+                'model' => "App\Models\PortFolio",
+                'attribute' => 'name',
+                'options' => (function ($query) {
+                    return $query->where('organisation_id', Session::get('selectedOrganisationId'))->orderBy('name', 'ASC')->get();
+                }),
+            ],
+        ]);
+
         CRUD::field('name');
         CRUD::field('code')->hint('The code should uniquely identify the project within your institution\'s porfolio. Leave blank for an auto-generated code.');
+        CRUD::field('initiativeCategory')->label('Select the initiative category.')
+            ->hint('Select the one that best matches. If none of the options fit, select "other".');
+        CRUD::field('initiative_category_other')->label('Enter the "other" category of initiative.');
         CRUD::field('description')->hint('This is optional, but will help to provide context for the AE assessment');
 
-        CRUD::field('currency')
-            ->wrapper(['class' => 'form-group col-sm-3 required'])
-            ->attributes(['class' => 'form-control text-right'])
-            ->hint('Enter the 3-digit code for the currency, e.g. "EUR", or "USD"');
-        CRUD::field('budget')
-            ->wrapper(['class' => 'form-group col-sm-9 required'])
-            ->hint('Enter the overall budget for the project');
+        CRUD::field('initiative-timing-title')
+            ->type('section-title')
+            ->view_namespace('stats4sd.laravel-backpack-section-title::fields')
+            ->title('Initiative Timing');
+
 
         CRUD::field('start_date')->type('date_picker')->label('Enter the start date for the project.');
         CRUD::field('end_date')->type('date_picker')->label('Enter the end date for the project.')
             ->hint('This is optional');
 
+        CRUD::field('currency-info')
+            ->type('section-title')
+            ->view_namespace('stats4sd.laravel-backpack-section-title::fields')
+            ->title('Currency and Budget')
+            ->content("$selectedOrganisation->name uses $selectedOrganisation->currency as the default currency. You may change the currency for this initiative if you wish. For analysis, the budget will be converted into $selectedOrganisation->currency.
+            <br/><br/>
+            The Platform can automatically convert the most common currencies using the exchange rate for the insitiative's start date (or today, if the initiative start is in the future).
+            <br/><br/>
+            For less commonly used currencies, or if you know the exchange rate to use, you can enter a custom exchange rate below.
+             <br/><br/>
+            <div class='btn btn-link' id='currencyListLabel' data-toggle='modal' data-target='#currencyList'><i class='la la-info-circle'></i> Which currencies can be automatically converted?</div>
+
+            <div class='modal fade' id='currencyList' tabindex=' - 1' aria-labelledby='currencyListLabel' aria-hidden='true'>
+              <div class='modal-dialog'>
+                <div class='modal-content'>
+                  <div class='modal-header'>
+                    <h5 class='modal-title' id='exampleModalLabel'>Currencies</h5>
+                    <button type='button' class='close' data-dismiss='modal' aria-label='Close'>
+                      <span aria-hidden='true'>&times;</span>
+                    </button>
+                  </div>
+                  <div class='modal-body'>
+                    The platform currently has exchange rate information available for the following currencies:
+                    <ul>
+                        <li>EUR	Euro</li>
+                        <li>USD	(US Dollar)</li>
+                        <li>JPY	(Japanese Yen)</li>
+                        <li>BGN	(Bulgarian Lev)</li>
+                        <li>CZK	(Czech Republic Koruna)</li>
+                        <li>DKK	(Danish Krone)</li>
+                        <li>GBP	(British Pound Sterling)</li>
+                        <li>HUF	(Hungarian Forint)</li>
+                        <li>PLN	(Polish Zloty)</li>
+                        <li>RON	(Romanian Leu)</li>
+                        <li>SEK	(Swedish Krona)</li>
+                        <li>CHF	(Swiss Franc)</li>
+                        <li>ISK	(Icelandic Króna)</li>
+                        <li>NOK	(Norwegian Krone)</li>
+                        <li>HRK	(Croatian Kuna)</li>
+                        <li>RUB	(Russian Ruble)</li>
+                        <li>TRY	(Turkish Lira)</li>
+                        <li>AUD	(Australian Dollar)</li>
+                        <li>BRL	(Brazilian Real)</li>
+                        <li>CAD	(Canadian Dollar)</li>
+                        <li>CNY	(Chinese Yuan)</li>
+                        <li>HKD	(Hong Kong Dollar)</li>
+                        <li>IDR	(Indonesian Rupiah)</li>
+                        <li>ILS	(Israeli New Sheqel)</li>
+                        <li>INR	(Indian Rupee)</li>
+                        <li>KRW	(South Korean Won)</li>
+                        <li>MXN	(Mexican Peso)</li>
+                        <li>MYR	(Malaysian Ringgit)</li>
+                        <li>NZD	(New Zealand Dollar)</li>
+                        <li>PHP	(Philippine Peso)</li>
+                        <li>SGD	(Singapore Dollar)</li>
+                        <li>THB	(Thai Baht)</li>
+                        <li>ZAR	(South African Rand)</li>
+                    </ul>
+                  </div>
+                  <div class='modal-footer'>
+                    <button type='button' class='btn btn - secondary' data-dismiss='modal'>Close</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+ ");
+
+        CRUD::field('currency')
+            ->wrapper(['class' => 'form-group col-sm-4 required'])
+            ->attributes(['class' => 'form-control text-right'])
+            ->default($selectedOrganisation->currency)
+            ->hint('Enter the 3-digit code for the currency, e.g. "EUR", or "USD"');
+
+        CRUD::field('budget')
+            ->wrapper(['class' => 'form-group col-sm-8 required'])
+            ->hint('Enter the overall budget for the project');
+
+
+        CRUD::field('get_exchange_rate_button')
+            ->type('custom_html')
+            ->wrapper(['class' => 'form-group col-sm-4'])
+            ->value('
+                <div class="d-flex flex-column align-items-center">
+
+                <label>Automatically get exchange rate...</label>
+                <div class="btn btn-primary" onclick="getExchangeRate()">Get Exchange Rate</div>
+</div>
+            ');
+
+        CRUD::field('org_currency')
+            ->type('hidden')
+            ->value($selectedOrganisation->currency);
+
+        CRUD::field('exchange_rate')
+            ->label('... or enter the exchange rate to be used:')
+            ->hint('1 of this initiative\'s currency = XXX ' . $selectedOrganisation->currency . '.')
+            ->type('number')
+            ->attributes(['step' => 'any'])
+            ->wrapper(['class' => 'form-group col-sm-8']);
+
+
+        CRUD::field('funding_sources_title')
+            ->type('section-title')
+            ->view_namespace('stats4sd.laravel-backpack-section-title::fields')
+            ->title('Funding Source and Recipient')
+            ->content("To enable a high-level analysis of funding flows towards Agroecology, please answer the following questions.");
+
+        CRUD::field('uses_only_own_funds')
+            ->type('radio')
+            ->label('Is this initiative entirely funded through your own institutional funds, or are there external funding sources?')
+            ->options([
+                0 => 'This initiative is <b>entirely</b> self-funded',
+                1 => 'This initiative has external funding sources',
+            ]);
+
+        CRUD::field('fundingSources')
+            ->label('Funding Sources')
+            ->new_item_label('Add funding source')
+            ->type('relationship')
+            ->attribute('source')
+            ->subfields([
+                [
+                    'name' => 'institution_id',
+                    'type' => 'relationship',
+                    'label' => 'Select the funding source...',
+                    'ajax' => true,
+                    'data_source' => url('/admin/project/fetch/funding-sources'),
+                    'minimum_input_length' => 0,
+                    'wrapper' => ['class' => 'form-group col-md-6'],
+                ],
+                [
+                    'name' => 'source',
+                    'type' => 'text',
+                    'label' => '...or type in the name here',
+                    'wrapper' => ['class' => 'form-group col-md-6'],
+                ],
+                [
+                    'name' => 'amount',
+                    'type' => 'number',
+                    'label' => 'Enter the amount of funding given by this source',
+                ],
+            ]);
+
+        CRUD::field('main_recipient')
+            ->label('Please enter the main recipient of the funds for this initiative')
+            ->hint('E.g., the institution or entity that directly receives the majority of the funds for this initiative');
+
+
         CRUD::field('geo-title')
             ->type('section-title')
             ->view_namespace('stats4sd.laravel-backpack-section-title::fields')
             ->title('Geographical Reach')
-            ->content('The next questions are about where the project operates. The first question is required to understand the scope of the project. You may also choose to add more information below about where your project works. This is not required but, if completed, it will allow you to explore your institutional profile by geographical area. You can choose which level is useful for your institutional analysis.');
+            ->content('The next questions are about where the project operates. This information is important as it will allow you to compare your own initiatives based on region/country with other institutions\' initiatives in those same locations.');
 
 
         CRUD::field('geographic_reach')
             ->type('select2_from_array')
-            ->options([
-                'global' => 'Global Level',
-                'multi-country' => 'Multi Country Level',
-                'country' => 'Country Level'
-            ]);
+            ->options(Arr::mapWithKeys(GeographicalReach::cases(), fn($enum) => [$enum->value => $enum->value]));
 
         CRUD::field('continents')->type('relationship')
             ->label('Select the continent / continents that this project works in.')
@@ -225,251 +370,58 @@ class ProjectCrudController extends CrudController
             ->ajax(true)
             ->minimum_input_length(0)
             ->dependencies(['continents,regions'])
-            ->allows_null(true);;
+            ->allows_null(true);
 
         CRUD::field('sub_regions')->type('textarea')
             ->label('Optionally, add the specific regions within each country where the project works.');
 
+
+        $this->removeAllSaveActions();
+        $this->addSaveAndReturnToProjectListAction();
+
     }
 
-    /**
-     * Define what happens when the Update operation is loaded.
-     *
-     * @see https://backpackforlaravel.com/docs/crud-operation-update
-     * @return void
-     */
     protected function setupUpdateOperation()
     {
+        $this->authorize('update', CRUD::getCurrentEntry());
+
         $this->setupCreateOperation();
         CRUD::modifyField('code', ['hint' => '', 'validationRules' => 'required', 'validationMessages' => ['required' => 'The code field is required']]);
         $this->crud->setValidation();
     }
 
-    public function setupAssessOperation()
+    // create related records for a new assessment
+    public function reAssess($id)
     {
-        Widget::add()->type('script')->content('assets/js/admin/forms/project_assess.js');
+        $assessment = Assessment::create(['project_id' => $id]);
+        $assessment->redLines()->sync(RedLine::all()->pluck('id')->toArray());
+        $assessment->principles()->sync(Principle::all()->pluck('id')->toArray());
+        $currentOrgId = Session::get('selectedOrganisationId');
+        $currentOrg = Organisation::where('id', $currentOrgId)->first();
+        $assessment->additionalCriteria()->sync($currentOrg->additionalCriteria->pluck('id')->toArray());
 
-        CRUD::field('section-title')
-            ->type('section-title')
-            ->view_namespace('stats4sd.laravel-backpack-section-title::fields')
-            ->title(function ($entry) {
-                return "Assess Project: " . $entry->name;
-            })
-            ->content('
-                    This is the main section of the review. Below are the 13 Agroecology Principles, and you should rate the project against each one. <br/><br/>
-                    For each principle, you should give:
-                        <ul>
-                            <li><b>A rating:</b> This is a number between 0 and 2, based on your appreciation of the value of the principle in the project design / activities, and following the Spectrum defined for each principle. Decimal digits are allowed.</li>
-                            <li><b>A comment:</b> Please add any comments to help explain the rating, and about how the principle is seen within the project.</li>
-                        </ul>
-                    Each principle also lists a set of example activities relevant to that principle. Please tick all activities that are present in the project.<br/><br/>
-                    To help track progress, once a rating is given for a principle, that principle name will turn green. Once you have completed and reviewed every principle, please proceed to the final "Confirmation" tab, where you can mark the assessment as complete. Once done, you will return to the main projects list to view the final result.
-          ');
+        $project = Project::find($id)?->load([
+            'portfolio' => [
+                'organisation'
+            ],
+            'assessments' => [
+                'principles',
+                'failingRedlines',
+                'additionalCriteria',
+            ],
+        ])
+            ->append('latest_assessment');
 
-
-        CRUD::enableVerticalTabs();
-        // cannot use relationship with repeatable because we need to filter the scoretags...
-        $entry = CRUD::getCurrentEntry();
-
-        foreach ($entry->principles as $principle) {
-            $ratingZeroDefintionRow = '<span class="text-secondary">This principle cannot be marked as not applicable</span>';
-            if ($principle->can_be_na) {
-                $ratingZeroDefintionRow = "
-                                            <tr>
-                                                <td>na</td>
-                                                <td>{$principle->rating_na}</td>
-                                            </tr>";
-            }
-
-            CRUD::field($principle->id . '_title')
-                ->tab($principle->name)
-                ->type('section-title')
-                ->view_namespace('stats4sd.laravel-backpack-section-title::fields')
-                ->title($principle->name)
-                ->content("<table class='table table - striped'>
-                                <tr>
-                                    <th>Score</th>
-                                    <th>Definition</th>
-                                </tr>
-                                <tr>
-                                    <td>2</td>
-                                    <td>{$principle->rating_two}</td>
-                                </tr>
-                                <tr>
-                                    <td>1</td>
-                                    <td>{$principle->rating_one}</td>
-                                </tr>
-                                <tr>
-                                    <td>0</td>
-                                    <td>{$principle->rating_zero}</td>
-                                </tr>
-                                {$ratingZeroDefintionRow}
-                            </table>");
-
-            if ($principle->can_be_na) {
-                CRUD::field($principle->id . "_is_na")
-                    ->tab($principle->name)
-                    ->attributes([
-                        'data-to-disable' => $principle->id,
-                    ])
-                    ->type('boolean')
-                    ->label('If this principle is not applicable for this project, tick this box.')
-                    ->default($principle->pivot->is_na);
-
-            }
-
-
-            CRUD::field($principle->id . '_rating')
-                ->tab($principle->name)
-                ->label('Rating for ' . $principle->name)
-                ->attributes([
-                    'data-tab' => Str::slug($principle->name),
-                    'data-update-tab' => '1',
-                ])
-                ->min(0)
-                ->max(2)
-                ->default($principle->pivot->rating);
-
-
-            CRUD::field($principle->id . '_rating_comment')
-                ->tab($principle->name)
-                ->label('Comment for ' . $principle->name)
-                ->hint('Please add a comment, even if the principle is not applicable to this project.')
-                ->type('textarea')
-                ->default($principle->pivot->rating_comment);
-
-            CRUD::field('scoreTags' . $principle->id)
-                ->tab($principle->name)
-                ->label('Presence of Examples/Indicators for ' . $principle->name)
-                ->type('checklist_filtered')
-                ->number_of_columns(1)
-                ->model(ScoreTag::class)
-                ->options(function ($query) use ($principle) {
-                    return $query->where('principle_id', $principle->id)->get()->pluck('name', 'id')->toArray();
-                });
-
-            CRUD::field('customScoreTags' . $principle->id)
-                ->tab($principle->name)
-                ->label('New Example/Indicator for ' . $principle->name)
-                ->type('table')
-                ->columns([
-                    'name' => 'Name',
-                    'description' => 'Description (optional)'],
-                );
-        }
-
-        CRUD::field('complete_title')
-            ->type('section-title')
-            ->tab('Confirm Assessment')
-            ->view_namespace('stats4sd.laravel-backpack-section-title::fields')
-            ->content('
-                Once you have completed the review of each principle, and are satisfied that the above entries are correct, please tick this box to confirm the review.<br/>
-                <i>(Note: You may still edit this review after marking it as complete)</i>
-            ');
-
-        CRUD::field('assessment_incomplete_note')
-            ->type('section-title')
-            ->tab('Confirm Assessment')
-            ->view_namespace('stats4sd.laravel-backpack-section-title::fields')
-            ->content('You have not given a rating for every principle. You must complete each principle before marking the assessment as complete.')
-            ->variant('warning');
-
-        CRUD::field('assessment_complete')
-            ->type('boolean')
-            ->tab('Confirm Assessment')
-            ->label('I confirm the assessment is complete')
-            ->attributes([
-                'data-check-complete' => '1',
-            ])
-            ->default($entry->assessment_status === AssessmentStatus::Complete);
-
-
-        CRUD::field('assessment_incomplete')
-            ->type('boolean')
-            ->tab('Confirm Assessment')
-            ->label('I confirm the assessment is complete')
-            ->attributes([
-                'disabled' => 'disabled',
-                'readonly' => 'readonly',
-            ]);
-
-        $this->setupCustomSaveActions('assess');
-
-
+        return $project;
     }
 
-    public function setupRedlineOperation()
+    public function destroy($id)
     {
+        $this->authorize('delete', Project::find($id));
 
-        Widget::add()->type('script')->content('assets/js/admin/forms/project_redlines.js');
+        $this->crud->hasAccessOrFail('delete');
 
-
-        CRUD::setHeading('');
-        $entry = CRUD::getCurrentEntry();
-
-        CRUD::field('section-title')
-            ->type('section-title')
-            ->view_namespace('stats4sd.laravel-backpack-section-title::fields')
-            ->title(function ($entry) {
-                return "Assess Redlines for " . $entry->name;
-            })
-            ->content('
-                    Listed below is the set of red lines to check for each project.<br/><br/>
-                    These are the Red Line elements, which are counter-productive or harmful to the values and principles of agroecology. If any one of these is present in the project being rated, then the Agroecology Overall Score is 0.
-                          ');
-
-        // We cannot use the relationship with subfields field here, because we do not want the user to be able to unassign any redlines from the project.
-        foreach ($entry->redLines as $redline) {
-            CRUD::field('redline_title_' . $redline->id)
-                ->wrapper([
-                    'class' => 'col-md-6'
-                ])
-                ->type('custom_html')
-                ->value("<h4>{$redline->name}</h4><p>{$redline->description}</p>");
-
-            CRUD::field('redline_value_' . $redline->id)
-                ->label('Present?')
-                ->default($redline->pivot->value)
-                ->type('radio')
-                ->attributes([
-                    'data-required' => '1',
-                ])
-                ->wrapper([
-                    'class' => 'col-md-6',
-                    'data-required-wrapper' => '1',
-                ])
-                ->options([
-                    1 => 'Yes',
-                    0 => 'No',
-                ]);
-
-            CRUD::field('redline_divider_' . $redline->id)
-                ->type('custom_html')
-                ->value('<hr/>');
-
-        }
-
-        CRUD::field('complete_title')
-            ->type('section-title')
-            ->view_namespace('stats4sd.laravel-backpack-section-title::fields')
-            ->content('
-                Once you have completed the review of each redline, and are satisfied that the above entries are correct, please tick this box to confirm the review.<br/>
-                <i>(Note: You may still edit this review after marking it as complete)</i>
-                ');
-
-
-        CRUD::field('redlines_complete')
-            ->type('boolean')
-            ->label('I confirm the Redlines assessment is complete')
-            ->default($entry->assessment_status !== AssessmentStatus::NotStarted && $entry->assessment_status !== AssessmentStatus::RedlinesIncomplete);
-
-        CRUD::field('redlines_incomplete')
-            ->type('boolean')
-            ->label('I confirm the Redlines assessment is complete')
-            ->hint('You must assign a value (or mark as NA) for every redline above before marking the redline assessment as complete.')
-            ->attributes([
-                'disabled' => 'disabled',
-            ]);
+        return $this->crud->delete($id);
     }
 
 
@@ -488,10 +440,23 @@ class ProjectCrudController extends CrudController
 
         $this->data['title'] = 'Import ' . $this->crud->entity_name . ' from excel file';
 
+        $this->crud->addField([
+            'name' => 'import-template',
+            'type' => 'section-title',
+            'view_namespace' => 'stats4sd.laravel-backpack-section-title::fields',
+            'title' => 'Import Initiatives from Excel File',
+            'content' => '
+            Instead of manually entering details for individual initiatives, you may choose to import them in bulk, and then add additional details using the edit feature within the platform. To ensure a successful import, please download the template provided below, and ensure your Excel file is in the correct format. The template file includes an example initiative.
+            <br/><br/>
+            <a href="' . url($this->crud->route . '/import-template') . '" class="btn btn-link" data-button-type="import-template"><i class="la la-download"></i> Download Template for Imports</a></br>
+
+            '
+        ]);
+
 
         $this->crud->addField([
-            'name' => 'organisation',
-            'label' => 'Institution',
+            'name' => 'portfolio',
+            'label' => 'Portfolio',
             'type' => 'relationship',
             'validationRules' => 'required',
         ]);
@@ -513,13 +478,18 @@ class ProjectCrudController extends CrudController
         if (!$importer) {
             return response("Importer Class not found - please check the importer is properly setup for this page", 500);
         }
-
         $request = $this->crud->validateRequest();
 
 
+        Validator::make($request->all(), [
+            'portfolio' => 'required',
+            'importFile' => 'required',
+        ])->validate();
+
+
         // pass organisation to importer;
-        $organisation = Organisation::find($request->organisation);
-        Excel::import(new $importer($organisation), $request->importFile);
+        $portfolio = Portfolio::find($request->portfolio);
+        Excel::import(new $importer($portfolio), $request->importFile);
 
 
         Alert::success(trans('backpack::crud.insert_success'))->flash();
@@ -719,5 +689,18 @@ class ProjectCrudController extends CrudController
         ]);
     }
 
+    public function fetchFundingSources()
+    {
+
+        $currentOrgId = Session::get('selectedOrganisationId');
+
+        return $this->fetch([
+            'model' => Organisation::class,
+            'query' => function (Organisation $model) use ($currentOrgId) {
+                return $model->withoutGlobalScopes(['owned'])
+                    ->whereNot('id', $currentOrgId);
+            }
+        ]);
+    }
 
 }

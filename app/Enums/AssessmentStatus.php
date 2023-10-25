@@ -5,8 +5,8 @@ namespace App\Enums;
 enum AssessmentStatus: string
 {
     case NotStarted = "Not Started";
-    case RedlinesIncomplete = "Redlines Incomplete";
-    case RedlinesComplete = "Redlines Complete";
-    case InProgress = "Assessment In Progress";
-    case Complete = "Assessment complete";
+    case InProgress = "In Progress";
+    case Complete = "Complete";
+    case Na = "Not Applicable";
+    case Failed = "Failed"; // only for redlines
 }
