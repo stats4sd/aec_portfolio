@@ -156,4 +156,8 @@ class Organisation extends Model
         return $this->belongsTo(User::class, 'signee_id');
     }
 
+    public function getFundingFlowAnalysisAttribute() {
+        return $this->contributes_to_funding_flow == 1 ? 'Yes' : 'No';
+    }
+
 }

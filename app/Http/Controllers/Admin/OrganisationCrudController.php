@@ -43,7 +43,8 @@ class OrganisationCrudController extends AdminPanelCrudController
 
         CRUD::setResponsiveTable(false);
         CRUD::column('name');
-        CRUD::column('institutionType');
+        CRUD::column('institutionType')->label('Institution Type');
+        CRUD::column('fundingFlowAnalysis')->label('Contribute to Funding Flow Analysis');
         CRUD::column('projects')->type('relationship_count');
     }
 
