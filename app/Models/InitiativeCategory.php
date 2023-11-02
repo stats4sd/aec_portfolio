@@ -18,6 +18,13 @@ class InitiativeCategory extends Model
     protected $table = 'initiative_categories';
     protected $guarded = ['id'];
 
+    protected static function booted()
+    {
+        static::addGlobalScope('ordering', function (Builder $builder) {
+            $builder->orderBy('lft');
+        });
+    }
+
 
     public function projects(): HasMany
     {
