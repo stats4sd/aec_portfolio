@@ -226,6 +226,11 @@ class Assessment extends Model
     // get additional criteria score if relevant
     public function getAdditionalScoreAttribute(): ?int
     {
+
+        if(!$this->project->organisation->has_additional_criteria || $this->project->organisation->additionalCriteria->count() === 0) {
+            return null;
+        }
+
         if($this->additional_status === AssessmentStatus::Complete->value) {
             $additionalCriteria = $this->additionalCriteria;
 
