@@ -227,7 +227,7 @@ class Assessment extends Model
     public function getAdditionalScoreAttribute(): ?int
     {
 
-        if(!$this->project->organisation->has_additional_criteria || $this->project->organisation->additionalCriteria->count() === 0) {
+        if(!$this->project?->organisation->has_additional_criteria || $this->project?->organisation->additionalCriteria->count() === 0) {
             return null;
         }
 
