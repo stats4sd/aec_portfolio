@@ -91,6 +91,7 @@ class PortfolioCrudController extends CrudController
             ->prefix($selectedOrganisation->currency)
             ->hint('Enter the overall budget for the portfolio');
 
+        CRUD::field('contributes_to_funding_flow')->label('Contributes to Funding Flow Analysis');
 
     }
 
