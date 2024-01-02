@@ -79,4 +79,9 @@ class Portfolio extends Model
     | MUTATORS
     |--------------------------------------------------------------------------
     */
+
+    public function getFundingFlowAnalysisAttribute() {
+        return $this->contributes_to_funding_flow == 1 ? 'Yes' : 'No';
+    }
+
 }

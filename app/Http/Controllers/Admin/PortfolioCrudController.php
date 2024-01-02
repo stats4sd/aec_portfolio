@@ -92,6 +92,13 @@ class PortfolioCrudController extends CrudController
             ->hint('Enter the overall budget for the portfolio');
 
 
+        CRUD::field('funding-flow-info')
+            ->type('section-title')
+            ->view_namespace('stats4sd.laravel-backpack-section-title::fields')
+            ->title('Funding Flow Analysis')
+            ->content('Please indicate whether this portfolio should be included in the Funding Flow Analysis conducted by the Agroecology Coalition. If this portfolio contains real projects (past or present) that are funded by or through your institution (even if the funds originated elsewhere), please tick this box. If you are using this portfolio to test the system, to enter projects that are being planned, or you are a partner organisation that is not directly funding the projects, please leave this box unticked. If you are unsure, please contact the Agroecology Coalition for guidance.');
+        CRUD::field('contributes_to_funding_flow')->label('Contributes to Funding Flow Analysis');
+
     }
 
     /**

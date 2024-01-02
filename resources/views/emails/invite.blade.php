@@ -2,7 +2,7 @@
 
 {{ $invite->inviter->name }} ({{ $invite->inviter->email }}) has invited you to join the following institution on the {{ config('app.name') }}.
 
-**Team:** {{ $invite->organisation->name }}
+**Institution:** {{ $invite->organisation->name }}
 
 Click the link below to register on the platform. If you use the same email address, you will be automatically added to the institution after registration.
 

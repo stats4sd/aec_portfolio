@@ -19,6 +19,7 @@
             <th scope="col">Portfolio Name</th>
             <th scope="col">Budget</th>
             <th scope="col">Description</th>
+            <th scope="col">Contributes to Funding Flow Analysis</th>
             <th scope="col"># of Initiatives</th>
             <th scope="col"># of Fully Assessed Initiatives</th>
             <th scope="col">Actions</th>
@@ -33,10 +34,11 @@
                     </td>
                     <td>{{ $organisation->currency }} {{ $portfolio->budget }}</td>
                     <td>{{ $portfolio->description }}</td>
+                    <td>{{ $portfolio->fundingFlowAnalysis }}</td>
                     <td>{{ $portfolio->projects->count() }}</td>
                     <td>{{ $portfolio->projects->filter(fn(\App\Models\Project $initiative): bool => $initiative->latest_assessment->completed)->count() }}</td>
                     <td>
-                        <div class="btn-group">
+                        <div class="btn-group text-nowrap">
 
                             <a href="{{ url("admin/project?portfolioFilter=$portfolio->name") }}" class="btn btn-success btn-sm">SHOW INITIATIVES</a>
                             @if(Auth::user()->can('maintain portfolios'))
