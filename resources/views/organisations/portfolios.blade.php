@@ -38,7 +38,7 @@
                     <td>{{ $portfolio->projects->count() }}</td>
                     <td>{{ $portfolio->projects->filter(fn(\App\Models\Project $initiative): bool => $initiative->latest_assessment->completed)->count() }}</td>
                     <td>
-                        <div class="btn-group">
+                        <div class="btn-group text-nowrap">
 
                             <a href="{{ url("admin/project?portfolioFilter=$portfolio->name") }}" class="btn btn-success btn-sm">SHOW INITIATIVES</a>
                             @if(Auth::user()->can('maintain portfolios'))
