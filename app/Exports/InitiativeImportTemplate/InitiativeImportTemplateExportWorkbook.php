@@ -17,7 +17,6 @@ class InitiativeImportTemplateExportWorkbook implements WithMultipleSheets
         return [
             new InitiativeImportTemplateExportSheet($this->organisation),
             new InitiativeCategoryExportSheet(),
-            new PortfolioExportSheet($this->organisation),
             new GeographicReachesExportSheet(),
             new CountriesExportSheet(),
             new YesNoExportSheet(),

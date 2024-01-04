@@ -35,7 +35,6 @@ class InitiativeImportTemplateExportSheet implements FromCollection, WithHeading
     {
         return collect([
             [
-                'portfolio' => 'select the portfolio. The dropdown list includes the portfolios your institution has created on the web platform',
                 'code' => 'enter a unique code for the initiative.',
                 'name' => 'enter the name of the initiative',
                 'category' => 'select the category of the initiative',
@@ -56,7 +55,6 @@ class InitiativeImportTemplateExportSheet implements FromCollection, WithHeading
                 'country_2' => 'if there are more than 4 countries, you can add new columns. Please title them in the same format (country_5, country_6, etc.)',
             ],
             [
-                'Portfolio Name',
                 'example',
                 'initiative name',
                 'Field projects',
@@ -84,7 +82,6 @@ class InitiativeImportTemplateExportSheet implements FromCollection, WithHeading
     public function headings(): array
     {
         return [
-            'portfolio',
             'code',
             'name',
             'category',
@@ -139,18 +136,18 @@ class InitiativeImportTemplateExportSheet implements FromCollection, WithHeading
     public function columnWidths(): array
     {
         return [
-            'A' => 30,
-            'B' => 10,
-            'C' => 20,
-            'D' => 15,
-            'E' => 20,
-            'F' => 10,
-            'G' => 15,
-            'H' => 10,
-            'I' => 19,
-            'J' => 18,
+            'A' => 10,
+            'B' => 20,
+            'C' => 15,
+            'D' => 20,
+            'E' => 10,
+            'F' => 15,
+            'G' => 10,
+            'H' => 19,
+            'I' => 18,
+            'J' => 14,
             'K' => 14,
-            'L' => 14,
+            'L' => 15,
             'M' => 15,
             'N' => 15,
             'O' => 15,
@@ -159,21 +156,12 @@ class InitiativeImportTemplateExportSheet implements FromCollection, WithHeading
             'R' => 15,
             'S' => 15,
             'T' => 15,
-            'U' => 15,
         ];
     }
 
     // after the sheet generation, add custom validation to setup dropdown lists in the main worksheet
     public static function afterSheet(AfterSheet $event)
     {
-        $sheet = $event->sheet->getDelegate();
-
-        $portfolioVal = self::createDefaultDropdownValidation();
-        $portfolioVal->setError('The entered value is not in the list of portfolios for your institution.');
-        $portfolioVal->setPromptTitle('Select Portfolio');
-        $portfolioVal->setPrompt('Please select from the list of your institution\'s portfolios');
-        $portfolioVal->setFormula1('\'portfolios\'!$A:$A');
-
         $categoryVal = self::createDefaultDropdownValidation();
         $categoryVal->setError('The entered value is not in the list of initiative categories.');
         $categoryVal->setPromptTitle('Select Category');
@@ -210,26 +198,28 @@ class InitiativeImportTemplateExportSheet implements FromCollection, WithHeading
         $countryVal->setPrompt('Please select from the list of countries. You can start typing to filter the list');
         $countryVal->setFormula1('\'countries\'!$C:$C');
 
+
+        $sheet = $event->sheet->getDelegate();
+
         for ($i = 3; $i <= 1000; $i++) {
-            $sheet->setDataValidation("A$i", $portfolioVal);
-            $sheet->setDataValidation("D$i", $categoryVal);
-            $sheet->setDataValidation("I$i", $ynVal);
-            $sheet->setDataValidation("M$i", $geoVal);
+            $sheet->setDataValidation("C$i", $categoryVal);
+            $sheet->setDataValidation("H$i", $ynVal);
+            $sheet->setDataValidation("L$i", $geoVal);
+            $sheet->setDataValidation("M$i", $continentVal);
             $sheet->setDataValidation("N$i", $continentVal);
-            $sheet->setDataValidation("O$i", $continentVal);
+            $sheet->setDataValidation("O$i", $regionVal);
             $sheet->setDataValidation("P$i", $regionVal);
-            $sheet->setDataValidation("Q$i", $regionVal);
+            $sheet->setDataValidation("Q$i", $countryVal);
             $sheet->setDataValidation("R$i", $countryVal);
             $sheet->setDataValidation("S$i", $countryVal);
             $sheet->setDataValidation("T$i", $countryVal);
-            $sheet->setDataValidation("U$i", $countryVal);
 
             // update date columns to use sensible ISO format;
+            $sheet->getCell("J$i")->setDataType(DataType::TYPE_ISO_DATE);
+            $sheet->getStyle("J$i")->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_DATE_YYYYMMDD);
+
             $sheet->getCell("K$i")->setDataType(DataType::TYPE_ISO_DATE);
             $sheet->getStyle("K$i")->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_DATE_YYYYMMDD);
-
-            $sheet->getCell("L$i")->setDataType(DataType::TYPE_ISO_DATE);
-            $sheet->getStyle("L$i")->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_DATE_YYYYMMDD);
         }
 
 
