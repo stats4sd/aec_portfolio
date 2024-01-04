@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers\Admin\Operations;
 
+use App\Helpers\OrganisationSelector;
 use App\Http\Requests\ImportRequest;
 use App\Models\Organisation;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Maatwebsite\Excel\Facades\Excel;
 use Prologue\Alerts\Facades\Alert;
 
@@ -106,9 +108,10 @@ trait ImportOperation
 
     public function getImportTemplate()
     {
-        if (!$this->crud->get('import.template-path')) {
-            abort(500, 'No import template provided');
-        }
-        return Storage::download($this->crud->get('import.template-path'));
+
+        $importTemplate = $this->crud->get('import.template');
+        $importTemplateName = $this->crud->get('import.template-name');
+
+        return Excel::download(new $importTemplate(OrganisationSelector::getSelectedOrganisation()), $importTemplateName);
     }
 }
