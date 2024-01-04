@@ -4,15 +4,20 @@ namespace App\Imports;
 
 use App\Enums\GeographicalReach;
 use App\Http\Requests\ProjectRequest;
+use App\Models\Continent;
+use App\Models\Country;
+use App\Models\InitiativeCategory;
 use App\Models\Organisation;
 use App\Models\Portfolio;
 use App\Models\Project;
+use App\Models\Region;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Maatwebsite\Excel\Concerns\Importable;
+use Maatwebsite\Excel\Concerns\OnEachRow;
 use Maatwebsite\Excel\Concerns\SkipsEmptyRows;
 use Maatwebsite\Excel\Concerns\ToArray;
 use Maatwebsite\Excel\Concerns\ToCollection;
@@ -21,9 +26,10 @@ use Maatwebsite\Excel\Concerns\WithCalculatedFormulas;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use Maatwebsite\Excel\Concerns\WithUpserts;
 use Maatwebsite\Excel\Concerns\WithValidation;
+use Maatwebsite\Excel\Row;
 use PhpOffice\PhpSpreadsheet\Shared\Date;
 
-class ProjectImport implements ToModel, WithHeadingRow, SkipsEmptyRows, WithCalculatedFormulas, WithValidation
+class ProjectImport implements OnEachRow, WithHeadingRow, SkipsEmptyRows, WithCalculatedFormulas, WithValidation
 {
 
     use Importable;
@@ -33,52 +39,72 @@ class ProjectImport implements ToModel, WithHeadingRow, SkipsEmptyRows, WithCalc
     public function __construct(public Portfolio $portfolio)
     {
         $this->ignoreCodes = [
-            'enter a unique code for the initiative',
+            'enter a unique code for the initiative.',
             'example',
             'optional',
             'required',
         ];
     }
 
-    public function model(array $row)
+    public function onRow(Row $row)
     {
+
+        $data = $row->toArray();
+
         // skip instructions and example row from template;
-        if (isset($row['code']) && in_array($row['code'], $this->ignoreCodes, true)) {
+        if (isset($data['code']) && in_array($data['code'], $this->ignoreCodes, true)) {
             return null;
         }
 
         $startDate = null;
         $endDate = null;
 
-        if ($row['start_date']) {
-            $startDate = Date::excelToDateTimeObject($row['start_date']);
+        if ($data['start_date']) {
+            $startDate = Date::excelToDateTimeObject($data['start_date']);
         }
 
-        if ($row['end_date']) {
-            $endDate = Date::excelToDateTimeObject($row['end_date']);
+        if ($data['end_date']) {
+            $endDate = Date::excelToDateTimeObject($data['end_date']);
         }
 
-        if ($row['uses_only_own_funds'] == 'Yes') {
+        if ($data['uses_only_own_funds'] == 'Yes') {
             $usesOnlyOwnFunds = 1;
         } else {
             $usesOnlyOwnFunds = 0;
         }
 
-        return new Project([
+        $project = Project::create([
             'portfolio_id' => $this->portfolio->id,
             'organisation_id' => $this->portfolio->organisation_id,
-            'code' => $row['code'],
-            'name' => $row['name'],
-            'description' => $row['description'] ?? null,
-            'currency' => $row['currency'],
-            'exchange_rate' => $row['exchange_rate'],
-            'budget' => $row['budget'],
+            'code' => $data['code'],
+            'name' => $data['name'],
+            'description' => $data['description'] ?? null,
+            'currency' => $data['currency'],
+            'exchange_rate' => $data['exchange_rate'],
+            'budget' => $data['budget'],
             'uses_only_own_funds' => $usesOnlyOwnFunds,
-            'main_recipient' => $row['main_recipient'],
+            'main_recipient' => $data['main_recipient'],
             'start_date' => $startDate,
             'end_date' => $endDate,
-            'geographic_reach' => $row['geographic_reach'],
+            'geographic_reach' => $data['geographic_reach'],
         ]);
+
+        $continentIds = collect($data['continents'])
+            ->map(fn($continent) => Continent::where('name', $continent)->first()?->id)
+            ->toArray();
+
+        $regionIds = collect($data['regions'])
+            ->map(fn($region) => Region::where('name', $region)->first()?->id)
+            ->toArray();
+
+        $countryIds = collect($data['countries'])
+            ->map(fn($country) => Country::where('name', $country)->first()?->id)
+            ->toArray();
+
+        $project->continents()->sync($continentIds);
+        $project->regions()->sync($regionIds);
+        $project->countries()->sync($countryIds);
+
 
     }
 
@@ -87,47 +113,49 @@ class ProjectImport implements ToModel, WithHeadingRow, SkipsEmptyRows, WithCalc
         return (new ProjectRequest())->rules();
     }
 
+    public function isEmptyWhen(array $row): bool
+    {
+        return in_array($row['code'], $this->ignoreCodes, true);
+    }
+
     // FIXME: This hack is only here until the isEmptyWhen() functionality is added to the toModel import (https://github.com/SpartnerNL/Laravel-Excel/pull/3828).
     // Until then, we need to manually make sure the instructions and example rows pass validation...
     public function prepareForValidation($data, $index)
     {
-        Log::info($data);
-
-        if (isset($data['code']) && in_array($data['code'], $this->ignoreCodes, true)) {
-            return [
-                'organisation_id' => 1,
-                'portfolio_id' => 1,
-                'code' => 'example',
-                'name' => 'something for required',
-                'budget'  => 1234,
-                'currency' => 'TTT',
-                'exchange_rate' => 1,
-                'uses_only_own_funds' => 1,
-                'main_recipient' => 'SELF',
-                'start_date' => '1900-01-01',
-                'geographic_reach' => GeographicalReach::Global->name,
-                'continents' => 'DUMMY',
-                'regions' => 'DUMMY',
-                'countries' => 'DUMMY',
-            ];
-        }
 
         $data['portfolio_id'] = $this->portfolio->id;
         $data['organisation_id'] = $this->portfolio->organisation_id;
 
-        if ($data['uses_only_own_funds'] == 'Yes') {
+        $data['initiativeCategory'] =
+            InitiativeCategory::where('name', $data['category'])->first()?->id;
+
+        if (Str::lower($data['uses_only_own_funds']) === 'yes') {
             $data['uses_only_own_funds'] = 1;
         } else {
             $data['uses_only_own_funds'] = 0;
         }
 
-        // add DUMMY to continents, regions and countries.
-        // This is to fake the validation rules as they are required.
-        // Continents, regions and countries will be empty for the imported initiative.
-        // User can edit the imported initiative and fill in them in front end.
-        $data['continents'] = 'DUMMY';
-        $data['regions'] = 'DUMMY';
-        $data['countries'] = 'DUMMY';
+        // collect up locations
+        $continentKeys = collect($data)
+            ->keys()
+            ->map(fn($key) => Str::startsWith($key, 'continent_') ? $key : null)
+            ->filter(fn($key) => $key !== null);
+
+        $data['continents'] = $continentKeys->map(fn($key) => $data[$key])->filter(fn($continent) => $continent !== null)->toArray();
+
+        $regionKeys = collect($data)
+            ->keys()
+            ->map(fn($key) => Str::startsWith($key, 'region_') ? $key : null)
+            ->filter(fn($key) => $key !== null);
+
+        $data['regions'] = $regionKeys->map(fn($key) => $data[$key])->filter(fn($region) => $region !== null)->toArray();
+
+        $countryKeys = collect($data)
+            ->keys()
+            ->map(fn($key) => Str::startsWith($key, 'country_') ? $key : null)
+            ->filter(fn($key) => $key !== null);
+
+        $data['countries'] = $countryKeys->map(fn($key) => $data[$key])->filter(fn($country) => $country !== null)->toArray();
 
         return $data;
     }

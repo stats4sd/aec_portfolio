@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Exports\InitiativeImportTemplate\InitiativeImportTemplateExportWorkbook;
 use App\Imports\ProjectWorkbookImport;
 use App\Models\Region;
 use App\Models\Country;
@@ -65,7 +66,8 @@ class ProjectCrudController extends CrudController
         CRUD::setEntityNameStrings('initiative', 'initiatives');
 
         CRUD::set('import.importer', ProjectWorkbookImport::class);
-        CRUD::set('import.template-path', 'Agroecology Funding Tool - Initiative Import Template.xlsx');
+        CRUD::set('import.template', InitiativeImportTemplateExportWorkbook::class);
+        CRUD::set('import.template-name', 'Agroecology Funding Tool - Initiative Import Template.xlsx');
 
         CRUD::setShowView('projects.show');
     }
