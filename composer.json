@@ -20,7 +20,7 @@
         "laravel/framework": "^10.0",
         "laravel/telescope": "^4.14",
         "laravel/tinker": "^2.5",
-        "maatwebsite/excel": "^3.1",
+        "maatwebsite/excel": "^3.1.51",
         "orangehill/iseed": "^3.0",
         "spatie/browsershot": "^3.57",
         "spatie/laravel-ignition": "^2.1",

@@ -30,7 +30,7 @@ class ProjectWorkbookImport implements WithMultipleSheets
     public function sheets(): array
     {
         return [
-            'projects' => new ProjectImport($this->portfolio),
+            'initiatives' => new ProjectImport($this->portfolio),
         ];
     }
 
