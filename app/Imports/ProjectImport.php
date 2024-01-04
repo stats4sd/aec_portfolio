@@ -115,7 +115,8 @@ class ProjectImport implements OnEachRow, WithHeadingRow, SkipsEmptyRows, WithCa
 
     public function isEmptyWhen(array $row): bool
     {
-        return in_array($row['code'], $this->ignoreCodes, true);
+        return in_array($row['code'], $this->ignoreCodes, true) ||
+            ($row['code'] === null && $row['name'] === null);
     }
 
     // FIXME: This hack is only here until the isEmptyWhen() functionality is added to the toModel import (https://github.com/SpartnerNL/Laravel-Excel/pull/3828).
@@ -134,6 +135,15 @@ class ProjectImport implements OnEachRow, WithHeadingRow, SkipsEmptyRows, WithCa
         } else {
             $data['uses_only_own_funds'] = 0;
         }
+
+        if ($data['start_date'] && (is_int($data['start_date']) || is_float($data['start_date']))) {
+            $data['start_date'] = Date::excelToDateTimeObject($data['start_date']);
+        }
+
+        if ($data['end_date'] && (is_int($data['end_date']) || is_float($data['end_date']))) {
+            $data['end_date'] = Date::excelToDateTimeObject($data['end_date']);
+        }
+
 
         // collect up locations
         $continentKeys = collect($data)
