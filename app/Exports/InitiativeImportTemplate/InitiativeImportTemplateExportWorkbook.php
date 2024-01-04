@@ -15,10 +15,11 @@ class InitiativeImportTemplateExportWorkbook implements WithMultipleSheets
     public function sheets(): array
     {
         return [
-            new InitiativeImportTemplateExportSheet(),
+            new InitiativeImportTemplateExportSheet($this->organisation),
             new InitiativeCategoryExportSheet(),
             new PortfolioExportSheet($this->organisation),
             new GeographicReachesExportSheet(),
+            new CountriesExportSheet(),
             new YesNoExportSheet(),
         ];
     }

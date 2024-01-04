@@ -2,21 +2,34 @@
 
 namespace App\Exports\InitiativeImportTemplate;
 
+use App\Models\Organisation;
+use Dflydev\DotAccessData\Data;
 use Illuminate\Support\Collection;
 use Maatwebsite\Excel\Concerns\FromCollection;
+use Maatwebsite\Excel\Concerns\RegistersEventListeners;
 use Maatwebsite\Excel\Concerns\WithColumnWidths;
+use Maatwebsite\Excel\Concerns\WithEvents;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithStyles;
 use Maatwebsite\Excel\Concerns\WithTitle;
+use Maatwebsite\Excel\Events\AfterSheet;
+use PhpOffice\PhpSpreadsheet\Cell\DataType;
+use PhpOffice\PhpSpreadsheet\Cell\DataValidation;
 use PhpOffice\PhpSpreadsheet\Style\Color;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
+use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
 use PhpOffice\PhpSpreadsheet\Style\Style;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
-class InitiativeImportTemplateExportSheet implements FromCollection, WithHeadings, WithTitle, WithStyles, WithColumnWidths
+class InitiativeImportTemplateExportSheet implements FromCollection, WithHeadings, WithTitle, WithStyles, WithColumnWidths, WithEvents
 {
 
+    use RegistersEventListeners;
+
+    public function __construct(public Organisation $organisation)
+    {
+    }
 
     public function collection(): Collection
     {
@@ -148,5 +161,91 @@ class InitiativeImportTemplateExportSheet implements FromCollection, WithHeading
             'T' => 15,
             'U' => 15,
         ];
+    }
+
+    // after the sheet generation, add custom validation to setup dropdown lists in the main worksheet
+    public static function afterSheet(AfterSheet $event)
+    {
+        $sheet = $event->sheet->getDelegate();
+
+        $portfolioVal = self::createDefaultDropdownValidation();
+        $portfolioVal->setError('The entered value is not in the list of portfolios for your institution.');
+        $portfolioVal->setPromptTitle('Select Portfolio');
+        $portfolioVal->setPrompt('Please select from the list of your institution\'s portfolios');
+        $portfolioVal->setFormula1('\'portfolios\'!$A:$A');
+
+        $categoryVal = self::createDefaultDropdownValidation();
+        $categoryVal->setError('The entered value is not in the list of initiative categories.');
+        $categoryVal->setPromptTitle('Select Category');
+        $categoryVal->setPrompt('Please select from the list of available categories. If none fit, please select \'Other\'.');
+        $categoryVal->setFormula1('\'initiative_categories\'!$A:$A');
+
+        $ynVal = self::createDefaultDropdownValidation();
+        $ynVal->setError('Please enter yes or no.');
+        $ynVal->setPromptTitle('Yes or No');
+        $ynVal->setPrompt('Please select yes or no.');
+        $ynVal->setFormula1('\'yes_no\'!$A:$A');
+
+        $geoVal = self::createDefaultDropdownValidation();
+        $geoVal->setError('The entered value is not in the list of geographic reaches.');
+        $geoVal->setPromptTitle('Select Geographic Reach');
+        $geoVal->setPrompt('Please select from the list of available geographic reaches.');
+        $geoVal->setFormula1('\'geographic_reaches\'!$A:$A');
+
+        $continentVal = self::createDefaultDropdownValidation();
+        $continentVal->setError('The entered value is not in the list of continents.');
+        $continentVal->setPromptTitle('Select Continent');
+        $continentVal->setPrompt('Please select from the list of continents.');
+        $continentVal->setFormula1('\'countries\'!$A:$A');
+
+        $regionVal = self::createDefaultDropdownValidation();
+        $regionVal->setError('The entered value is not in the list of regions.');
+        $regionVal->setPromptTitle('Select Region');
+        $regionVal->setPrompt('Please select from the list of regions. You can start typing to filter the list.');
+        $regionVal->setFormula1('\'countries\'!$B:$B');
+
+        $countryVal = self::createDefaultDropdownValidation();
+        $countryVal->setError('The entered value is not in the list of countries.');
+        $countryVal->setPromptTitle('Select Country');
+        $countryVal->setPrompt('Please select from the list of countries. You can start typing to filter the list');
+        $countryVal->setFormula1('\'countries\'!$C:$C');
+
+        for ($i = 3; $i <= 1000; $i++) {
+            $sheet->setDataValidation("A$i", $portfolioVal);
+            $sheet->setDataValidation("D$i", $categoryVal);
+            $sheet->setDataValidation("I$i", $ynVal);
+            $sheet->setDataValidation("M$i", $geoVal);
+            $sheet->setDataValidation("N$i", $continentVal);
+            $sheet->setDataValidation("O$i", $continentVal);
+            $sheet->setDataValidation("P$i", $regionVal);
+            $sheet->setDataValidation("Q$i", $regionVal);
+            $sheet->setDataValidation("R$i", $countryVal);
+            $sheet->setDataValidation("S$i", $countryVal);
+            $sheet->setDataValidation("T$i", $countryVal);
+            $sheet->setDataValidation("U$i", $countryVal);
+
+            // update date columns to use sensible ISO format;
+            $sheet->getCell("K$i")->setDataType(DataType::TYPE_ISO_DATE);
+            $sheet->getStyle("K$i")->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_DATE_YYYYMMDD);
+
+            $sheet->getCell("L$i")->setDataType(DataType::TYPE_ISO_DATE);
+            $sheet->getStyle("L$i")->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_DATE_YYYYMMDD);
+        }
+
+
+    }
+
+    public static function createDefaultDropdownValidation(): DataValidation
+    {
+        $validation = new DataValidation();
+        $validation->setType(DataValidation::TYPE_LIST);
+        $validation->setErrorStyle(DataValidation::STYLE_INFORMATION);
+        $validation->setAllowBlank(true);
+        $validation->setShowInputMessage(true);
+        $validation->setShowErrorMessage(true);
+        $validation->setShowDropDown(true);
+        $validation->setErrorTitle('Input Error');
+
+        return $validation;
     }
 }
