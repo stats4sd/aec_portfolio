@@ -120,7 +120,7 @@ BEGIN
     SET @SQLText = '';
     SET @SQLText = CONCAT(@SQLText, ' INSERT INTO dashboard_project (dashboard_id, project_id)');
     SET @SQLText = CONCAT(@SQLText, ' SELECT ', dashboardYoursId, ', p.id');
-    SET @SQLText = CONCAT(@SQLText, ' ON p.portfolio_id = po.id');
+    SET @SQLText = CONCAT(@SQLText, ' FROM projects p');
     SET @SQLText = CONCAT(@SQLText, ' LEFT JOIN project_region pr');
     SET @SQLText = CONCAT(@SQLText, ' ON p.id = pr.project_id');
     SET @SQLText = CONCAT(@SQLText, ' LEFT JOIN country_project cp');
