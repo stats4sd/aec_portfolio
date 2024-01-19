@@ -44,11 +44,18 @@ use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
 
 class ProjectCrudController extends CrudController
 {
-    use CreateOperation;
-    use UpdateOperation;
+    use CreateOperation {
+        store as traitStore;
+    }
+
+    use UpdateOperation {
+        update as traitUpdate;
+    }
+
     use DeleteOperation {
         destroy as traitDestroy;
     }
+
     use ShowOperation;
 
     use AuthorizesRequests;
@@ -281,7 +288,7 @@ class ProjectCrudController extends CrudController
 
                 <label>Automatically get exchange rate...</label>
                 <div class="btn btn-primary" onclick="getExchangeRate()">Get Exchange Rate</div>
-</div>
+                </div>
             ');
 
         CRUD::field('org_currency')
@@ -295,6 +302,8 @@ class ProjectCrudController extends CrudController
             ->attributes(['step' => 'any'])
             ->wrapper(['class' => 'form-group col-sm-8']);
 
+        CRUD::field('budget_eur')
+            ->type('hidden');
 
         CRUD::field('funding_sources_title')
             ->type('section-title')
@@ -415,6 +424,26 @@ class ProjectCrudController extends CrudController
             ->append('latest_assessment');
 
         return $project;
+    }
+
+    public function store()
+    {
+        $this->calculateBudgetEur();
+
+        return $this->traitStore();
+    }
+
+    public function update()
+    {
+        $this->calculateBudgetEur();
+
+        return $this->traitUpdate();
+    }
+
+    public function calculateBudgetEur() {
+        $budget = $this->crud->getRequest()->budget;
+        $exchangeRate = $this->crud->getRequest()->exchange_rate;
+        $this->crud->getRequest()->request->set('budget_eur', $budget * $exchangeRate);
     }
 
     public function destroy($id)

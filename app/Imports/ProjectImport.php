@@ -82,6 +82,7 @@ class ProjectImport implements OnEachRow, WithHeadingRow, SkipsEmptyRows, WithCa
             'currency' => $data['currency'],
             'exchange_rate' => $data['exchange_rate'],
             'budget' => $data['budget'],
+            'budget_eur' => $data['budget'] * $data['exchange_rate'],
             'uses_only_own_funds' => $usesOnlyOwnFunds,
             'main_recipient' => $data['main_recipient'],
             'start_date' => $startDate,
