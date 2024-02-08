@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Models\Project;
+use App\Models\ExchangeRate;
 use Illuminate\Console\Command;
 
 class UpdateInitiativeBudgetEur extends Command
@@ -30,8 +31,26 @@ class UpdateInitiativeBudgetEur extends Command
         $projects = Project::withoutGlobalScope('organisation')->where('budget_eur', 0)->get();
 
         foreach ($projects as $project) {
-            $project->budget_eur = $project->budget * $project->exchange_rate;
-            $project->save();
+            $this->info('Processing project with ID ' . $project->id);
+
+            if ($project->currency == 'EUR') {
+                $this->info('Initiative currency is EUR, copy budget to budget_eur');
+                $project->exchange_rate_eur = 1.0;
+                $project->budget_eur = $project->budget;
+                $project->save();
+            } else {
+                // find exchange rate from project currency to EUR on project start date
+                $exchangeRate = ExchangeRate::where('base_currency_id', $project->currency)->where('target_currency_id', 'EUR')->where('date', $project->start_date->format('Y-m-d'))->first();
+
+                if ($exchangeRate != null) {
+                    $this->info('+ Found exchange rate for ' . $project->currency . ' => EUR, on ' . $project->start_date->format('Y-m-d'));
+                    $project->exchange_rate_eur = $exchangeRate->rate;
+                    $project->budget_eur = $project->budget * $exchangeRate->rate;
+                    $project->save();
+                } else {
+                    $this->info('- Cannot find exchange rate for ' . $project->currency . ' => EUR, on ' . $project->start_date->format('Y-m-d'));
+                }
+            }
         }
 
         $this->info(count($projects) . ' initatives processed');

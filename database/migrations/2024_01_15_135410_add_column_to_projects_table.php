@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::table('projects', function (Blueprint $table) {
             $table->integer('budget_eur')->after('budget');
+            $table->decimal('exchange_rate_eur', 10, 6)->after('budget_eur');
         });
     }
 
@@ -23,6 +24,7 @@ return new class extends Migration
     {
         Schema::table('projects', function (Blueprint $table) {
             $table->dropColumn('budget_eur');
+            $table->dropColumn('exchange_rate_eur');
         });
     }
 };
