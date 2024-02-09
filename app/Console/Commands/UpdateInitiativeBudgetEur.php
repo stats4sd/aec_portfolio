@@ -28,7 +28,7 @@ class UpdateInitiativeBudgetEur extends Command
     public function handle()
     {
         // remove global scope applied to Project model, soft delete is still applied
-        $projects = Project::withoutGlobalScope('organisation')->where('budget_eur', 0)->get();
+        $projects = Project::withoutGlobalScope('organisation')->where('exchange_rate_eur', null)->get();
 
         foreach ($projects as $project) {
             $this->info('Processing project with ID ' . $project->id);

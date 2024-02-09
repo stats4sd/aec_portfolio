@@ -12,8 +12,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('projects', function (Blueprint $table) {
-            $table->integer('budget_eur')->after('budget');
-            $table->decimal('exchange_rate_eur', 10, 6)->after('budget_eur');
+            $table->integer('budget_eur')->after('budget')->nullable();
+            $table->decimal('exchange_rate_eur', 10, 6)->after('budget_eur')->nullable();
         });
     }
 
