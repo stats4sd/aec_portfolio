@@ -207,7 +207,7 @@ class ProjectCrudController extends CrudController
             ->title('Currency and Budget')
             ->content("$selectedOrganisation->name uses $selectedOrganisation->currency as the default currency. You may change the currency for this initiative if you wish. For analysis, the budget will be converted into $selectedOrganisation->currency.
             <br/><br/>
-            The Platform can automatically convert the most common currencies using the exchange rate for the insitiative's start date (or today, if the initiative start is in the future).
+            The Platform can automatically convert the most common currencies using the exchange rate for the initiative's start date (or today, if the initiative start is in the future).
             <br/><br/>
             For less commonly used currencies, or if you know the exchange rate to use, you can enter a custom exchange rate below.
              <br/><br/>
@@ -302,8 +302,28 @@ class ProjectCrudController extends CrudController
             ->attributes(['step' => 'any'])
             ->wrapper(['class' => 'form-group col-sm-8']);
 
+
+        CRUD::field('get_exchange_rate_eur_button')
+            ->type('custom_html')
+            ->wrapper(['class' => 'form-group col-sm-4'])
+            ->value('
+                <div class="d-flex flex-column align-items-center">
+
+                <label>Automatically get exchange rate for EUR</label>
+                <div class="btn btn-primary" onclick="getExchangeRateEur()">Get Exchange Rate for EUR</div>
+                </div>
+            ');
+
         CRUD::field('budget_eur')
             ->type('hidden');
+
+        CRUD::field('exchange_rate_eur')
+            ->label('... or enter the exchange rate to be used:')
+            ->hint('1 of this initiative\'s currency = XXX EUR.')
+            ->type('number')
+            ->attributes(['step' => 'any'])
+            ->wrapper(['class' => 'form-group col-sm-8']);
+
 
         CRUD::field('funding_sources_title')
             ->type('section-title')
@@ -442,8 +462,8 @@ class ProjectCrudController extends CrudController
 
     public function calculateBudgetEur() {
         $budget = $this->crud->getRequest()->budget;
-        $exchangeRate = $this->crud->getRequest()->exchange_rate;
-        $this->crud->getRequest()->request->set('budget_eur', $budget * $exchangeRate);
+        $exchangeRateEur = $this->crud->getRequest()->exchange_rate_eur;
+        $this->crud->getRequest()->request->set('budget_eur', $budget * $exchangeRateEur);
     }
 
     public function destroy($id)
