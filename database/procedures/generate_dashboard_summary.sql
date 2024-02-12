@@ -110,7 +110,7 @@ BEGIN
     AND p.organisation_id = 9
     AND p.portfolio_id = 20
     AND YEAR(p.start_date) BETWEEN 2020 AND 2030'
-    AND p.budget BETWEEN 200 AND 1000
+    AND p.budget_eur BETWEEN 200 AND 1000
     AND pr.region_id = 11
     AND cp.country_id = 132;
 
@@ -146,11 +146,11 @@ BEGIN
     END IF;
 
     IF budgetFrom IS NOT NULL THEN
-        SET @SQLText = CONCAT(@SQLText, ' AND p.budget_org >= ', budgetFrom);
+        SET @SQLText = CONCAT(@SQLText, ' AND p.budget_eur >= ', budgetFrom);
     END IF;
 
     IF budgetTo IS NOT NULL THEN
-        SET @SQLText = CONCAT(@SQLText, ' AND p.budget_org <= ', budgetTo);
+        SET @SQLText = CONCAT(@SQLText, ' AND p.budget_eur <= ', budgetTo);
     END IF;
 
     IF regionIds IS NOT NULL THEN
@@ -220,11 +220,11 @@ BEGIN
     END IF;
 
     IF budgetFrom IS NOT NULL THEN
-        SET @SQLText = CONCAT(@SQLText, ' AND p.budget_org >= ', budgetFrom);
+        SET @SQLText = CONCAT(@SQLText, ' AND p.budget_eur >= ', budgetFrom);
     END IF;
 
     IF budgetTo IS NOT NULL THEN
-        SET @SQLText = CONCAT(@SQLText, ' AND p.budget_org <= ', budgetTo);
+        SET @SQLText = CONCAT(@SQLText, ' AND p.budget_eur <= ', budgetTo);
     END IF;
 
     IF regionIds IS NOT NULL THEN
@@ -293,7 +293,7 @@ BEGIN
 
 
     -- CREATED PROJECTS
-    SELECT COUNT(*), IFNULL(SUM(budget_org), 0)
+    SELECT COUNT(*), IFNULL(SUM(budget_eur), 0)
     INTO ssCreatedCount, ssCreatedBudget
     FROM projects
     WHERE id IN
@@ -326,7 +326,7 @@ BEGIN
               HAVING SUM(value) = 0) AS passed_all_red_lines;
 
         -- find budget that passed all red lines
-        SELECT IFNULL(SUM(budget_org), 0)
+        SELECT IFNULL(SUM(budget_eur), 0)
         INTO ssPassedAllBudget
         FROM projects
         WHERE id IN
@@ -355,7 +355,7 @@ BEGIN
               HAVING SUM(value) > 0) AS failed_any_red_lines;
 
         -- find budget that failed at least one red line
-        SELECT IFNULL(SUM(budget_org), 0)
+        SELECT IFNULL(SUM(budget_eur), 0)
         INTO ssFailedAnyBudget
         FROM projects
         WHERE id IN
@@ -383,7 +383,7 @@ BEGIN
               (SELECT assessment_id FROM dashboard_assessment WHERE dashboard_id = dashboardYoursId);
 
         -- budget for fully assessed projects
-        SELECT IFNULL(SUM(budget_org), 0)
+        SELECT IFNULL(SUM(budget_eur), 0)
         INTO ssFullyAssessedBudget
         FROM projects
         WHERE id IN
