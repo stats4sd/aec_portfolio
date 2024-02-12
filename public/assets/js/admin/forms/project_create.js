@@ -1,26 +1,46 @@
 currencyField = crud.field('currency')
 orgCurrencyField = crud.field('org_currency')
 startDateField = crud.field('start_date')
+exchangeRateTitle = crud.field('exchange_rate_title')
 exchangeRateField = crud.field('exchange_rate')
 exchangeRateEurField = crud.field('exchange_rate_eur')
 
 crud.field('currency').onChange(function (field) {
 
-    crud.field('get_exchange_rate_button').hide(field.value.toUpperCase() == orgCurrencyField.value).disable(field.value.toUpperCase() == orgCurrencyField.value);
+    // only hide "Get Exchange Rate" button if organisation currency, initiative currency are both EUR, no exchange rate is required
+    if ((field.value.toUpperCase() == orgCurrencyField.value) && (field.value.toUpperCase() === 'EUR')) {
+        crud.field('exchange_rate_title').hide();
+        crud.field('get_exchange_rate_button').hide();
+    } else {
+        crud.field('exchange_rate_title').show();
+        crud.field('get_exchange_rate_button').show();
+    }
+
     crud.field('exchange_rate').hide(field.value.toUpperCase() == orgCurrencyField.value)
 
     if (field.value.toUpperCase() == orgCurrencyField.value) {
         crud.field('exchange_rate').input.value = 1;
     }
 
-    crud.field('get_exchange_rate_eur_button').hide(field.value.toUpperCase() == 'EUR').disable(field.value.toUpperCase() == 'EUR');
-    crud.field('exchange_rate_eur').hide(field.value.toUpperCase() == "EUR")
+    crud.field('exchange_rate_eur').hide(field.value.toUpperCase() == "EUR" || orgCurrencyField.value == "EUR")
 
     if (field.value.toUpperCase() == 'EUR') {
         crud.field('exchange_rate_eur').input.value = 1;
     }
 
 }).change();
+
+
+crud.field('exchange_rate').onChange(function (field) {
+
+    // exchange_rate_eur is hidden when organisation currency is EUR, because it is not necessary to show two same exchange rate in front end.
+    // copy exchange_rate value to exchange_rate_eur when exchange_rate value changed
+    if (orgCurrencyField.value == 'EUR') {
+        crud.field('exchange_rate_eur').input.value = crud.field('exchange_rate').input.value;
+    }
+
+}).change();
+
 
 async function getConversionRatio(baseCurrency, currency, date) {
 
@@ -40,7 +60,9 @@ async function getExchangeRate() {
         return
     }
 
-    const result = await getConversionRatio(currencyField.value, orgCurrencyField.value, startDateField.value)
+    const result = await getConversionRatio(currencyField.value, orgCurrencyField.value, startDateField.value);
+
+    const result2 = await getConversionRatio(currencyField.value, 'EUR', startDateField.value);
 
 
     if (result) {
@@ -63,22 +85,10 @@ async function getExchangeRate() {
     }
 
 
-}
-
-
-async function getExchangeRateEur() {
-    if (currencyField.value === null || currencyField.value === '') {
-        alert('Please enter the currency');
-        return
-    }
-
-    const result = await getConversionRatio(currencyField.value, 'EUR', startDateField.value)
-
-
-    if (result) {
-        console.log('result', result)
-        console.log(Number(result.rate))
-        exchangeRateEurField.input.value = Number(result.rate)
+    if (result2) {
+        console.log('result2', result2)
+        console.log(Number(result2.rate))
+        exchangeRateEurField.input.value = Number(result2.rate)
 
         exchangeRateEurField.input.classList.add('border-success');
         exchangeRateEurField.input.classList.add('bg-light-success');
@@ -93,9 +103,8 @@ async function getExchangeRateEur() {
         exchangeRateEurField.input.classList.remove('bg-light-success');
 
     }
-    
-}
 
+}
 
 
 function checkInitiativeCategoryOtherField() {

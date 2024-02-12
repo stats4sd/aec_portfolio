@@ -280,6 +280,12 @@ class ProjectCrudController extends CrudController
             ->hint('Enter the overall budget for the project');
 
 
+        CRUD::field('exchange_rate_title')
+            ->type('section-title')
+            ->view_namespace('stats4sd.laravel-backpack-section-title::fields')
+            ->title('Exchange Rate')
+            ->content("To get exchange rate automatically or enter manually.");
+
         CRUD::field('get_exchange_rate_button')
             ->type('custom_html')
             ->wrapper(['class' => 'form-group col-sm-4'])
@@ -300,30 +306,19 @@ class ProjectCrudController extends CrudController
             ->hint('1 of this initiative\'s currency = XXX ' . $selectedOrganisation->currency . '.')
             ->type('number')
             ->attributes(['step' => 'any'])
-            ->wrapper(['class' => 'form-group col-sm-8']);
+            ->wrapper(['class' => 'form-group col-sm-12']);
 
 
-        CRUD::field('get_exchange_rate_eur_button')
-            ->type('custom_html')
-            ->wrapper(['class' => 'form-group col-sm-4'])
-            ->value('
-                <div class="d-flex flex-column align-items-center">
-
-                <label>Automatically get exchange rate for EUR</label>
-                <div class="btn btn-primary" onclick="getExchangeRateEur()">Get Exchange Rate for EUR</div>
-                </div>
-            ');
-
-        CRUD::field('budget_eur')
-            ->type('hidden');
-
-        CRUD::field('exchange_rate_eur')
+            CRUD::field('exchange_rate_eur')
             ->label('... or enter the exchange rate to be used:')
             ->hint('1 of this initiative\'s currency = XXX EUR.')
             ->type('number')
             ->attributes(['step' => 'any'])
-            ->wrapper(['class' => 'form-group col-sm-8']);
+            ->wrapper(['class' => 'form-group col-sm-12']);
 
+
+        CRUD::field('budget_eur')
+            ->type('hidden');
 
         CRUD::field('funding_sources_title')
             ->type('section-title')
