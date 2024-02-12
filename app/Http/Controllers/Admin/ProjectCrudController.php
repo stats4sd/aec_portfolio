@@ -300,7 +300,7 @@ class ProjectCrudController extends CrudController
             ->value($selectedOrganisation->currency);
 
         CRUD::field('exchange_rate')
-            ->label("Exchange rate from the initiative's currency and  $selectedOrganisation->currency (Organisation currency)")
+            ->label("Exchange rate from the initiative's currency to  $selectedOrganisation->currency (Organisation currency)")
             ->hint('1 of this initiative\'s currency = XXX ' . $selectedOrganisation->currency . '.')
             ->type('number')
             ->attributes(['step' => 'any'])
@@ -308,7 +308,7 @@ class ProjectCrudController extends CrudController
 
 
             CRUD::field('exchange_rate_eur')
-            ->label("Exchange rate from the initiative's currency and EUR")
+            ->label("Exchange rate from the initiative's currency to EUR")
             ->hint('1 of this initiative\'s currency = XXX EUR.')
             ->type('number')
             ->attributes(['step' => 'any'])
