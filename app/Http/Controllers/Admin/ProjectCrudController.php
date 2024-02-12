@@ -205,7 +205,7 @@ class ProjectCrudController extends CrudController
             ->type('section-title')
             ->view_namespace('stats4sd.laravel-backpack-section-title::fields')
             ->title('Currency and Budget')
-            ->content("$selectedOrganisation->name uses $selectedOrganisation->currency as the default currency. You may change the currency for this initiative if you wish. For analysis, the budget will be converted into $selectedOrganisation->currency.
+            ->content("$selectedOrganisation->name uses $selectedOrganisation->currency as the default currency. You may change the currency for this initiative if you wish. For analysis, the budget will be converted into $selectedOrganisation->currency. The platform also requires initiave budgets in EUR, to enable anonymous cross-organisation analysis. Below you can enter the budget, the initiative's currency, and the exchange rate to convert to $selectedOrganisation->currency and EUR (if needed).
             <br/><br/>
             The Platform can automatically convert the most common currencies using the exchange rate for the initiative's start date (or today, if the initiative start is in the future).
             <br/><br/>
@@ -284,16 +284,14 @@ class ProjectCrudController extends CrudController
             ->type('section-title')
             ->view_namespace('stats4sd.laravel-backpack-section-title::fields')
             ->title('Exchange Rate')
-            ->content("To get exchange rate automatically or enter manually.");
+            ->content("To attempt to get the exchange rates automatically, click the button below. You will have the option to edit the rates. Alternatively, you may enter the exchange rates manually below.");
 
         CRUD::field('get_exchange_rate_button')
             ->type('custom_html')
             ->wrapper(['class' => 'form-group col-sm-4'])
             ->value('
                 <div class="d-flex flex-column align-items-center">
-
-                <label>Automatically get exchange rate...</label>
-                <div class="btn btn-primary" onclick="getExchangeRate()">Get Exchange Rate</div>
+                <div class="btn btn-primary" onclick="getExchangeRate()">Get Exchange Rate(s)</div>
                 </div>
             ');
 
@@ -302,7 +300,7 @@ class ProjectCrudController extends CrudController
             ->value($selectedOrganisation->currency);
 
         CRUD::field('exchange_rate')
-            ->label('... or enter the exchange rate to be used:')
+            ->label("Exchange rate from the initiative's currency and  $selectedOrganisation->currency (Organisation currency)")
             ->hint('1 of this initiative\'s currency = XXX ' . $selectedOrganisation->currency . '.')
             ->type('number')
             ->attributes(['step' => 'any'])
@@ -310,7 +308,7 @@ class ProjectCrudController extends CrudController
 
 
             CRUD::field('exchange_rate_eur')
-            ->label('... or enter the exchange rate to be used:')
+            ->label("Exchange rate from the initiative's currency and EUR")
             ->hint('1 of this initiative\'s currency = XXX EUR.')
             ->type('number')
             ->attributes(['step' => 'any'])
