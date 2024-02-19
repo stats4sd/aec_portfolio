@@ -72,7 +72,7 @@
                 />
 
                 <div class="flex-grow-1">
-                    <input style="min-width: 250px" class="form-control" placeholder="Search Initiatives By Name" v-model="searchString"/>
+                    <input style="min-width: 250px" class="form-control" placeholder="Search Initiatives By Name or Code" v-model="searchString"/>
                 </div>
 
             </div>
@@ -249,6 +249,7 @@ const filteredInitiatives = computed(() => {
     if (searchString.value !== '') {
         tempInitiatives = tempInitiatives.filter(
             initiative => initiative.name.toLowerCase().includes(searchString.value.toLowerCase())
+            || initiative.code.toLowerCase().includes(searchString.value.toLowerCase())
         )
     }
 
