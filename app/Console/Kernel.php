@@ -34,6 +34,8 @@ class Kernel extends ConsoleKernel
         $schedule->command('app:remove-old-pdf-prints')->weeklyOn(Schedule::SUNDAY, '01:00');
 
         $schedule->command('media-library:delete-old-temporary-uploads')->daily();
+
+        $schedule->command('app:write-log-message')->dailyAt('14:06');
     }
 
     /**
