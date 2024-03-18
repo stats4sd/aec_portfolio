@@ -269,22 +269,24 @@ BEGIN
 
     -- find number of projects
     SELECT COUNT(DISTINCT project_id) AS number_of_project
+    INTO ssOtherProjectCount
     FROM dashboard_project
     WHERE dashboard_id = dashboardOthersId;
 
     -- find number of organisations
     SELECT COUNT(DISTINCT p.organisation_id) AS number_of_organisation
+    INTO ssOtherOrganisationCount
     FROM dashboard_project AS dp,
          projects AS p
     WHERE dp.project_id = p.id
       AND dp.dashboard_id = dashboardOthersId;
 
-    #     -- Must have 10 or more projects
-#     IF (ssOtherProjectCount < 10 OR ssOtherOrganisationCount < 3) THEN
-#         SET tooFewOtherProjects = 1;
-#     ELSE
-    SET tooFewOtherProjects = 0;
-    #     END IF;
+    -- Must have 10 or more projects
+    IF (ssOtherProjectCount < 10 OR ssOtherOrganisationCount < 3) THEN
+        SET tooFewOtherProjects = 1;
+    ELSE
+        SET tooFewOtherProjects = 0;
+    END IF;
 
 
     -- -------------------------
