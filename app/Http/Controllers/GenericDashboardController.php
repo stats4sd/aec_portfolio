@@ -293,6 +293,15 @@ class GenericDashboardController extends Controller
             ->pluck('assessments')
             ->flatten();
 
+        // find latest assessment id for all projects
+        $latestAssessmentIds = Assessment::select(DB::raw('MAX(id) as id'))
+            ->groupBy('project_id')
+            ->get()
+            ->pluck('id');
+
+        // only keep latest assessment from all assessments, previously completed assessments will be removed
+        $allAssessments = $allAssessments->whereIn('id', $latestAssessmentIds);
+
         $allAssessmentsYours = $allAssessments->whereIn(
             'project_id',
             DB::table('dashboard_project')
