@@ -52,33 +52,39 @@ class GenericDashboardController extends Controller
         ])->find(Session::get('selectedOrganisationId'));
 
         $regions = $org->portfolios
-            ->map(fn(Portfolio $portfolio): Collection => $portfolio
-                ->projects
-                ->map(fn(Project $project): Collection => $project
-                    ->regions
-                )
+            ->map(
+                fn (Portfolio $portfolio): Collection => $portfolio
+                    ->projects
+                    ->map(
+                        fn (Project $project): Collection => $project
+                            ->regions
+                    )
             )
             ->flatten()
             ->unique('id')
             ->values();
 
         $countries = $org->portfolios
-            ->map(fn(Portfolio $portfolio): Collection => $portfolio
-                ->projects
-                ->map(fn(Project $project): Collection => $project
-                    ->countries
-                )
+            ->map(
+                fn (Portfolio $portfolio): Collection => $portfolio
+                    ->projects
+                    ->map(
+                        fn (Project $project): Collection => $project
+                            ->countries
+                    )
             )
             ->flatten()
             ->unique()
             ->values();
 
         $categories = $org->portfolios
-            ->map(fn(Portfolio $portfolio): Collection => $portfolio
-                ->projects
-                ->map(fn(Project $project): ?InitiativeCategory => $project
-                    ->initiativeCategory
-                )
+            ->map(
+                fn (Portfolio $portfolio): Collection => $portfolio
+                    ->projects
+                    ->map(
+                        fn (Project $project): ?InitiativeCategory => $project
+                            ->initiativeCategory
+                    )
             )
             ->flatten()
             ->unique()
@@ -187,7 +193,7 @@ class GenericDashboardController extends Controller
         }
 
         // prepare principles summary with sorting preference
-        $yoursPrinciplesSummarySorted = collect($yoursPrinciplesSummary)->filter(fn($summary) => $summary !== null)->toArray();
+        $yoursPrinciplesSummarySorted = collect($yoursPrinciplesSummary)->filter(fn ($summary) => $summary !== null)->toArray();
         $othersPrinciplesSummarySorted = [];
 
 
@@ -282,26 +288,63 @@ class GenericDashboardController extends Controller
             ->whereHas('assessments', function (Builder $query) {
                 $query->where('redline_status', AssessmentStatus::Failed->value)
                     ->orWhere('principle_status', AssessmentStatus::Complete->value);
+
+                // id: 574, 737 are "Not Started", not "Complete"
+                // $query->where('redline_status', AssessmentStatus::Complete->value);
+
+                // $query->where('redline_status', 'Complete')
+                //     ->where('id', '<>', 574)
+                //     ->where('id', '<>', 737);
             })
             ->get()
             ->pluck('assessments')
             ->flatten();
 
-        $allAssessmentsYours = $allAssessments->whereIn('id', DB::table('dashboard_project')
-            ->select('project_id')
-            ->where('dashboard_id', $dashboardYoursId)
-            ->get()
-            ->pluck('project_id')
-            ->toArray()
+        //££
+        logger("==========");
+        logger('count($allAssessments): ' . count($allAssessments));
+        $allAssessmentsId = $allAssessments->pluck('id');
+        logger($allAssessmentsId);
+        //££
+
+        $allAssessmentsYours = $allAssessments->whereIn(
+            // 'id',
+            'project_id',
+            DB::table('dashboard_project')
+                ->select('project_id')
+                ->where('dashboard_id', $dashboardYoursId)
+                ->get()
+                ->pluck('project_id')
+                ->toArray()
         );
 
-        $allAssessmentsOthers = $allAssessments->whereIn('id', DB::table('dashboard_project')
-            ->select('project_id')
-            ->where('dashboard_id', $dashboardOthersId)
-            ->get()
-            ->pluck('project_id')
-            ->toArray()
+        //££
+        logger("++++++++++");
+        logger('$dashboardYoursId: ' . $dashboardYoursId);
+        logger('count($allAssessmentsYours): ' . count($allAssessmentsYours));
+        $allAssessmentsYoursId = $allAssessmentsYours->pluck('id');
+        logger($allAssessmentsYoursId);
+        //££
+
+        $allAssessmentsOthers = $allAssessments->whereIn(
+            // 'id',
+            'project_id',
+            DB::table('dashboard_project')
+                ->select('project_id')
+                ->where('dashboard_id', $dashboardOthersId)
+                ->get()
+                ->pluck('project_id')
+                ->toArray()
         );
+
+        //££
+        logger("++++++++++");
+        logger('$dashboardYoursId: ' . $dashboardYoursId);
+        logger('count($allAssessmentsYours): ' . count($allAssessmentsOthers));
+        $allAssessmentsOthersId = $allAssessmentsOthers->pluck('id');
+        logger($allAssessmentsOthersId);
+        //££
+
 
         $noOfInitiativeCompletedAssessment = $allAssessmentsYours->count();
 
@@ -315,16 +358,14 @@ class GenericDashboardController extends Controller
 
             $status = 2001;
             $message = 'There is no fully assessed initiative';
-
         } else {
             // calculate overall score and AE budget if number of fully assess initiative is bigger than zero
-            $assessmentScore = $allAssessmentsYours->sum(fn(Assessment $assessment) => $assessment->overall_score)
+            $assessmentScore = $allAssessmentsYours->sum(fn (Assessment $assessment) => $assessment->overall_score)
                 / $noOfInitiativeCompletedAssessment;
 
             $aeBudget = round($results[0]->totalBudget * ($assessmentScore / 100), 0);
 
             $assessmentScore = round($assessmentScore, 1);
-
         }
 
         // count nas for each principle
@@ -353,7 +394,6 @@ class GenericDashboardController extends Controller
         $jsonRes['dashboardYoursId'] = $dashboardYoursId;
 
         return $jsonRes;
-
     }
 
     /**
@@ -377,7 +417,7 @@ class GenericDashboardController extends Controller
                     'value' => $value['value'] + $naList[$index]['value']
                 ];
             });
-        }, Principle::all()->map(fn(Principle $principle) => [
+        }, Principle::all()->map(fn (Principle $principle) => [
             'id' => $principle->id,
             'name' => $principle->name,
             'value' => 0
@@ -392,5 +432,4 @@ class GenericDashboardController extends Controller
                 return $item;
             });
     }
-
 }
