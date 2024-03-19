@@ -288,27 +288,12 @@ class GenericDashboardController extends Controller
             ->whereHas('assessments', function (Builder $query) {
                 $query->where('redline_status', AssessmentStatus::Failed->value)
                     ->orWhere('principle_status', AssessmentStatus::Complete->value);
-
-                // id: 574, 737 are "Not Started", not "Complete"
-                // $query->where('redline_status', AssessmentStatus::Complete->value);
-
-                // $query->where('redline_status', 'Complete')
-                //     ->where('id', '<>', 574)
-                //     ->where('id', '<>', 737);
             })
             ->get()
             ->pluck('assessments')
             ->flatten();
 
-        //££
-        logger("==========");
-        logger('count($allAssessments): ' . count($allAssessments));
-        $allAssessmentsId = $allAssessments->pluck('id');
-        logger($allAssessmentsId);
-        //££
-
         $allAssessmentsYours = $allAssessments->whereIn(
-            // 'id',
             'project_id',
             DB::table('dashboard_project')
                 ->select('project_id')
@@ -318,16 +303,7 @@ class GenericDashboardController extends Controller
                 ->toArray()
         );
 
-        //££
-        logger("++++++++++");
-        logger('$dashboardYoursId: ' . $dashboardYoursId);
-        logger('count($allAssessmentsYours): ' . count($allAssessmentsYours));
-        $allAssessmentsYoursId = $allAssessmentsYours->pluck('id');
-        logger($allAssessmentsYoursId);
-        //££
-
         $allAssessmentsOthers = $allAssessments->whereIn(
-            // 'id',
             'project_id',
             DB::table('dashboard_project')
                 ->select('project_id')
@@ -336,14 +312,6 @@ class GenericDashboardController extends Controller
                 ->pluck('project_id')
                 ->toArray()
         );
-
-        //££
-        logger("++++++++++");
-        logger('$dashboardYoursId: ' . $dashboardYoursId);
-        logger('count($allAssessmentsYours): ' . count($allAssessmentsOthers));
-        $allAssessmentsOthersId = $allAssessmentsOthers->pluck('id');
-        logger($allAssessmentsOthersId);
-        //££
 
 
         $noOfInitiativeCompletedAssessment = $allAssessmentsYours->count();
