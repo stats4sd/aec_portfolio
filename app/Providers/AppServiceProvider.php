@@ -38,11 +38,17 @@ class AppServiceProvider extends ServiceProvider
         User::observe(UserObserver::class);
         RoleInvite::observe(RoleInviteObserver::class);
 
-
         // add rate limiter for Currency Exchange API jobs
         RateLimiter::for('exchange_rates', function (object $job) {
-            return Limit::perMinute(5)->by($job->date);
-        });
+            // use different attribute according to different job
+            // Note: Laravel queue needs to be restarted to take effect
+            $jobClassName = class_basename($job);
 
+            if ($jobClassName == 'GetOneDayExchangeRates') {
+                return Limit::perMinute(5)->by($job->date);
+            } else if ($jobClassName == 'GetHistoricExchangeRates') {
+                return Limit::perMinute(5)->by($job->year);
+            }
+        });
     }
 }
