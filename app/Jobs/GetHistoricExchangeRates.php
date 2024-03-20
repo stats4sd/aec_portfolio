@@ -2,20 +2,22 @@
 
 namespace App\Jobs;
 
+use Carbon\Carbon;
+use App\Services\DBLog;
 use App\Models\Currency;
 use App\Models\ExchangeRate;
-use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldBeUnique;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Http\Client\Response;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Queue\SerializesModels;
+use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Http\Client\RequestException;
-use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\Middleware\RateLimited;
+use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Queue\Middleware\ThrottlesExceptions;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Log;
 
 class GetHistoricExchangeRates implements ShouldQueue
 {
@@ -62,7 +64,9 @@ class GetHistoricExchangeRates implements ShouldQueue
                 'date_from' => $startDate,
                 'date_to' => $endDate,
             ])
-            ->throw()
+            ->throw(function (Response $response, RequestException $exception) {
+                Log::error($exception->getMessage());
+            })
             ->json();
 
 
@@ -78,12 +82,9 @@ class GetHistoricExchangeRates implements ShouldQueue
                     'date' => $date,
                     'rate' => $value,
                 ];
-
             }
         }
 
         $this->currency->exchangeRates()->createMany($rates);
-
     }
-
 }
