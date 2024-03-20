@@ -12,7 +12,7 @@
 </ul>
 <!-- ========== End of top menu left items ========== -->
 
-<ul class="nav navbar-nav ml-auto mr-auto d-flex">
+<ul class="nav navbar-nav ml-auto mr-0 d-flex">
     <li class="nav-item mx-3 font-weight-bold"><a class="nav-link text-deep-green" href="{{ backpack_url('dashboard') }}">Dashboard</a>
         </li>
     <li class="nav-item mx-3 font-weight-bold"><a class="nav-link text-deep-green" href="{{ backpack_url('organisation/show') }}">My Institution</a>
@@ -25,7 +25,7 @@
 <!-- ========================================================= -->
 <!-- ========= Top menu right items (ordered right) ========== -->
 <!-- ========================================================= -->
-<ul class="nav navbar-nav ml-auto @if(config('backpack.base.html_direction') == 'rtl') mr-0 @endif">
+<ul class="nav navbar-nav ml-auto mr-0">
     @if (backpack_auth()->guest())
         <li class="nav-item"><a class="nav-link" href="{{ route('backpack.auth.login') }}">{{ trans('backpack::base.login') }}</a>
         </li>

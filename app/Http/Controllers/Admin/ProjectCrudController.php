@@ -44,11 +44,18 @@ use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
 
 class ProjectCrudController extends CrudController
 {
-    use CreateOperation;
-    use UpdateOperation;
+    use CreateOperation {
+        store as traitStore;
+    }
+
+    use UpdateOperation {
+        update as traitUpdate;
+    }
+
     use DeleteOperation {
         destroy as traitDestroy;
     }
+
     use ShowOperation;
 
     use AuthorizesRequests;
@@ -198,9 +205,9 @@ class ProjectCrudController extends CrudController
             ->type('section-title')
             ->view_namespace('stats4sd.laravel-backpack-section-title::fields')
             ->title('Currency and Budget')
-            ->content("$selectedOrganisation->name uses $selectedOrganisation->currency as the default currency. You may change the currency for this initiative if you wish. For analysis, the budget will be converted into $selectedOrganisation->currency.
+            ->content("$selectedOrganisation->name uses $selectedOrganisation->currency as the default currency. You may change the currency for this initiative if you wish. For analysis, the budget will be converted into $selectedOrganisation->currency. The platform also requires initiave budgets in EUR, to enable anonymous cross-organisation analysis. Below you can enter the budget, the initiative's currency, and the exchange rate to convert to $selectedOrganisation->currency and EUR (if needed).
             <br/><br/>
-            The Platform can automatically convert the most common currencies using the exchange rate for the insitiative's start date (or today, if the initiative start is in the future).
+            The Platform can automatically convert the most common currencies using the exchange rate for the initiative's start date (or today, if the initiative start is in the future).
             <br/><br/>
             For less commonly used currencies, or if you know the exchange rate to use, you can enter a custom exchange rate below.
              <br/><br/>
@@ -273,15 +280,19 @@ class ProjectCrudController extends CrudController
             ->hint('Enter the overall budget for the project');
 
 
+        CRUD::field('exchange_rate_title')
+            ->type('section-title')
+            ->view_namespace('stats4sd.laravel-backpack-section-title::fields')
+            ->title('Exchange Rate')
+            ->content("To attempt to get the exchange rates automatically, click the button below. You will have the option to edit the rates. Alternatively, you may enter the exchange rates manually below.");
+
         CRUD::field('get_exchange_rate_button')
             ->type('custom_html')
             ->wrapper(['class' => 'form-group col-sm-4'])
             ->value('
                 <div class="d-flex flex-column align-items-center">
-
-                <label>Automatically get exchange rate...</label>
-                <div class="btn btn-primary" onclick="getExchangeRate()">Get Exchange Rate</div>
-</div>
+                <div class="btn btn-primary" onclick="getExchangeRate()">Get Exchange Rate(s)</div>
+                </div>
             ');
 
         CRUD::field('org_currency')
@@ -289,12 +300,23 @@ class ProjectCrudController extends CrudController
             ->value($selectedOrganisation->currency);
 
         CRUD::field('exchange_rate')
-            ->label('... or enter the exchange rate to be used:')
+            ->label("Exchange rate from the initiative's currency to  $selectedOrganisation->currency (Organisation currency)")
             ->hint('1 of this initiative\'s currency = XXX ' . $selectedOrganisation->currency . '.')
             ->type('number')
             ->attributes(['step' => 'any'])
-            ->wrapper(['class' => 'form-group col-sm-8']);
+            ->wrapper(['class' => 'form-group col-sm-12']);
 
+
+            CRUD::field('exchange_rate_eur')
+            ->label("Exchange rate from the initiative's currency to EUR")
+            ->hint('1 of this initiative\'s currency = XXX EUR.')
+            ->type('number')
+            ->attributes(['step' => 'any'])
+            ->wrapper(['class' => 'form-group col-sm-12']);
+
+
+        CRUD::field('budget_eur')
+            ->type('hidden');
 
         CRUD::field('funding_sources_title')
             ->type('section-title')
@@ -415,6 +437,26 @@ class ProjectCrudController extends CrudController
             ->append('latest_assessment');
 
         return $project;
+    }
+
+    public function store()
+    {
+        $this->calculateBudgetEur();
+
+        return $this->traitStore();
+    }
+
+    public function update()
+    {
+        $this->calculateBudgetEur();
+
+        return $this->traitUpdate();
+    }
+
+    public function calculateBudgetEur() {
+        $budget = $this->crud->getRequest()->budget;
+        $exchangeRateEur = $this->crud->getRequest()->exchange_rate_eur;
+        $this->crud->getRequest()->request->set('budget_eur', $budget * $exchangeRateEur);
     }
 
     public function destroy($id)

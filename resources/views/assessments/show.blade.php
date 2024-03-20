@@ -32,6 +32,12 @@
                             <td>{{ $assessment->project->organisation->currency }} {{ $assessment->project->budget_org }}</td>
                         </tr>
                     @endif
+                    @if($assessment->project->currency !== 'EUR')
+                        <tr>
+                            <td class="text-right pr-4 mr-2">Budget (in EUR):</td>
+                            <td>EUR {{ $assessment->project->budget_eur }}</td>
+                        </tr>
+                    @endif
                     <tr>
                         <td class="text-right pr-4 mr-2">Start Date:</td>
                         <td>{{ $assessment->project->start_date->toDateString() }}</td>

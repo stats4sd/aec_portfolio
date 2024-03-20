@@ -38,6 +38,7 @@ class ProjectRequest extends FormRequest
             'budget' => 'required|integer|gte:0',
             'currency' => 'required|max:3',
             'exchange_rate' => 'sometimes|required',
+            'exchange_rate_eur' => 'sometimes|required',
             'uses_only_own_funds' => 'required|boolean',
             'main_recipient_id' => 'nullable',
             'main_recipient' => 'required',

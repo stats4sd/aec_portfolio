@@ -35,6 +35,12 @@
                             <td>{{ $entry->organisation->currency }} {{ $entry->budget_org }}</td>
                         </tr>
                     @endif
+                    @if($entry->currency !== 'EUR')
+                        <tr>
+                            <td class="text-right pr-4 mr-2">Budget (in EUR):</td>
+                            <td>EUR {{ $entry->budget_eur }}</td>
+                        </tr>
+                    @endif
                     <tr>
                         <td class="text-right pr-4 mr-2">Start Date:</td>
                         <td>{{ $entry->start_date->toDateString() }}</td>
