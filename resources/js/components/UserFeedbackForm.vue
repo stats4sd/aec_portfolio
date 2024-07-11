@@ -87,7 +87,7 @@
 
 <script setup>
 
-import {ref, watch} from "vue";
+import {ref, watch, onMounted} from "vue";
 import 'vue-select/dist/vue-select.css'
 import vSelect from "vue-select";
 import Swal from "sweetalert2";
@@ -104,6 +104,10 @@ const props = defineProps({
 
 const errors = ref({})
 const form = ref({})
+
+onMounted(() => {
+    includeDetails.value = true;
+})
 
 async function save() {
     try {
@@ -122,7 +126,7 @@ async function save() {
 
         // reset form
         form.value = {}
-        includeDetails.value = false;
+        includeDetails.value = true;
         mediaCollectionComponent.value.mediaLibrary.state.media = [];
 
 
@@ -153,5 +157,6 @@ function changeMedia(media) {
 
     console.log(mediaCollectionComponent.value.mediaLibrary)
 }
+
 
 </script>
