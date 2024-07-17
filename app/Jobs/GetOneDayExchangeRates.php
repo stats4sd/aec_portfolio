@@ -2,21 +2,22 @@
 
 namespace App\Jobs;
 
+use Carbon\Carbon;
+use App\Services\DBLog;
 use App\Models\Currency;
 use App\Models\ExchangeRate;
-use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldBeUnique;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Http\Client\Response;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Queue\SerializesModels;
+use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Http\Client\RequestException;
-use Illuminate\Http\Client\Response;
-use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\Middleware\RateLimited;
+use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Queue\Middleware\ThrottlesExceptions;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Log;
 
 class GetOneDayExchangeRates implements ShouldQueue
 {
@@ -28,11 +29,14 @@ class GetOneDayExchangeRates implements ShouldQueue
     public function __construct(public Currency $currency, public string $date)
     {
         //
+        DBLog::info('GetOneDayExchangeRates', 'SYSTEM', 'construct() start');
     }
 
     // what middleware should the job pass through?
     public function middleware(): array
     {
+        DBLog::info('GetOneDayExchangeRates', 'SYSTEM', 'middleware() start');
+
         return [
             new RateLimited('exchange_rates'),
             //new ThrottlesExceptions(1, 1),
@@ -41,6 +45,8 @@ class GetOneDayExchangeRates implements ShouldQueue
 
     public function retryUntil(): \DateTime
     {
+        DBLog::info('GetOneDayExchangeRates', 'SYSTEM', 'retryUntil() start, add 10 minutes');
+
         return now()->addMinutes(10);
     }
 
@@ -50,6 +56,8 @@ class GetOneDayExchangeRates implements ShouldQueue
      */
     public function handle(): void
     {
+        DBLog::info('GetOneDayExchangeRates', 'SYSTEM', 'handle() start');
+
         $startDate = $this->date;
         $endDate = $this->date;
 
@@ -64,6 +72,7 @@ class GetOneDayExchangeRates implements ShouldQueue
             ])
             ->throw(function (Response $response, RequestException $exception) {
                 Log::error($exception->getMessage());
+                DBLog::error('GetOneDayExchangeRates', 'SYSTEM', $exception->getMessage());
             })
             ->json();
 
@@ -80,12 +89,12 @@ class GetOneDayExchangeRates implements ShouldQueue
                     'date' => $date,
                     'rate' => $value,
                 ];
-
             }
         }
 
         $this->currency->exchangeRates()->createMany($rates);
+        DBLog::debug('GetOneDayExchangeRates', 'SYSTEM', 'create ' . count($rates) . ' exchange rate records');
 
+        DBLog::info('GetOneDayExchangeRates', 'SYSTEM', 'handle() end');
     }
-
 }

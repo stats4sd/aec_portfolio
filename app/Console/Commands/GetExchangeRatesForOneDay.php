@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use Carbon\Carbon;
+use App\Services\DBLog;
 use App\Models\Currency;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
@@ -30,6 +31,8 @@ class GetExchangeRatesForOneDay extends Command
      */
     public function handle()
     {
+        DBLog::info('GetExchangeRatesForOneDay', 'SYSTEM', 'start');
+
         // get yesterday date
         $date = Carbon::now()->subDays(1)->toDateString();
 
@@ -41,10 +44,11 @@ class GetExchangeRatesForOneDay extends Command
         foreach ($currencies as $currency) {
             GetOneDayExchangeRates::dispatch($currency, $date);
             $this->comment('dispatched job for ' . $currency . ' and the date ' . $date);
+            DBLog::debug('GetExchangeRatesForOneDay', 'SYSTEM', 'dispatched job for ' . $currency . ' and the date ' . $date);
         }
 
         $this->info('done!');
 
+        DBLog::info('GetExchangeRatesForOneDay', 'SYSTEM', 'end');
     }
-
 }
