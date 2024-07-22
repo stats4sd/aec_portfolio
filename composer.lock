@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "02b949580fc481b91db6ef4c8d9c0449",
+    "content-hash": "7aab7167e7b308da8a988dd2390e0159",
     "packages": [
         {
             "name": "backpack/crud",
@@ -2565,37 +2565,35 @@
         },
         {
             "name": "laravel/telescope",
-            "version": "v4.17.3",
+            "version": "v5.1.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/telescope.git",
-                "reference": "17a420d0121b03ea90648dd4484b62abe6d3e261"
+                "reference": "7355643b998027f8fa9393e6c8c884f126204a80"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/telescope/zipball/17a420d0121b03ea90648dd4484b62abe6d3e261",
-                "reference": "17a420d0121b03ea90648dd4484b62abe6d3e261",
+                "url": "https://api.github.com/repos/laravel/telescope/zipball/7355643b998027f8fa9393e6c8c884f126204a80",
+                "reference": "7355643b998027f8fa9393e6c8c884f126204a80",
                 "shasum": ""
             },
             "require": {
                 "ext-json": "*",
-                "laravel/framework": "^8.37|^9.0|^10.0",
+                "laravel/framework": "^8.37|^9.0|^10.0|^11.0",
                 "php": "^8.0",
-                "symfony/var-dumper": "^5.0|^6.0"
+                "symfony/console": "^5.3|^6.0|^7.0",
+                "symfony/var-dumper": "^5.0|^6.0|^7.0"
             },
             "require-dev": {
                 "ext-gd": "*",
                 "guzzlehttp/guzzle": "^6.0|^7.0",
-                "laravel/octane": "^1.4",
-                "orchestra/testbench": "^6.0|^7.0|^8.0",
+                "laravel/octane": "^1.4|^2.0|dev-develop",
+                "orchestra/testbench": "^6.40|^7.37|^8.17|^9.0",
                 "phpstan/phpstan": "^1.10",
-                "phpunit/phpunit": "^9.0"
+                "phpunit/phpunit": "^9.0|^10.5"
             },
             "type": "library",
             "extra": {
-                "branch-alias": {
-                    "dev-master": "4.x-dev"
-                },
                 "laravel": {
                     "providers": [
                         "Laravel\\Telescope\\TelescopeServiceProvider"
@@ -2630,9 +2628,9 @@
             ],
             "support": {
                 "issues": "https://github.com/laravel/telescope/issues",
-                "source": "https://github.com/laravel/telescope/tree/v4.17.3"
+                "source": "https://github.com/laravel/telescope/tree/v5.1.1"
             },
-            "time": "2023-12-11T22:00:12+00:00"
+            "time": "2024-06-27T07:12:23+00:00"
         },
         {
             "name": "laravel/tinker",
