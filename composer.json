@@ -18,7 +18,7 @@
         "everapi/freecurrencyapi-php": "dev-master",
         "guzzlehttp/guzzle": "^7.0.1",
         "laravel/framework": "^10.0",
-        "laravel/telescope": "^4.14",
+        "laravel/telescope": "^5.1.1",
         "laravel/tinker": "^2.5",
         "maatwebsite/excel": "^3.1.51",
         "orangehill/iseed": "^3.0",
