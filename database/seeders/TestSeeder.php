@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Enums\GeographicalReach;
+use App\Models\Continent;
 use App\Models\Organisation;
 use App\Models\User;
 use Illuminate\Database\Seeder;
@@ -49,10 +50,37 @@ class TestSeeder extends Seeder
             'code' => 'TP1',
             'description' => 'A project for testing',
             'budget' => '1000000',
+            'budget_eur' => '1000000',
+            'budget_org' => '1000000',
+            'exchange_rate_eur' => 1,
             'exchange_rate' => 1,
             'currency' => 'EUR',
             'start_date' => '2023-01-01',
             'geographic_reach' => GeographicalReach::Global->name,
+            'main_recipient' => 'Test Recipient',
+            'initiative_category_id' => 1,
+            'sub_regions' => 'Test Sub Region',
+        ]);
+
+        $continents = Continent::take(2);
+        $regions = $continents->first()->regions()->take(2);
+        $countries = $regions->first()->countries()->take(4);
+
+        $initiative->continents()->sync($continents->pluck('id'));
+        $initiative->regions()->sync($regions->pluck('id'));
+        $initiative->countries()->sync($countries->pluck('id'));
+
+        $donorInstitution = Organisation::create([
+            'name' => 'Test Donor 1',
+            'geographic_reach' => GeographicalReach::Global->value,
+            'currency' => 'EUR',
+            'has_additional_criteria' => 0,
+            'description' => 'This is a test donor organisation',
+        ]);
+
+        $initiative->fundingSources()->createMany([
+            ['source' => 'Funding Source 1', 'amount' => 500000],
+            ['institution_id' => $donorInstitution->id, 'amount' => 500000],
         ]);
 
         $user1->organisations()->sync([$institution->id]);

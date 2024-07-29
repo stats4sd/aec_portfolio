@@ -4,7 +4,10 @@ namespace App\Http\Controllers\Admin;
 
 use App\Exports\InitiativeImportTemplate\InitiativeImportTemplateExportWorkbook;
 use App\Imports\ProjectWorkbookImport;
+use App\Models\AdditionalCriteriaAssessment;
+use App\Models\AdditionalCriteriaCustomScoreTag;
 use App\Models\FundingSource;
+use App\Models\PrincipleAssessment;
 use App\Models\Region;
 use App\Models\Country;
 use App\Models\Project;
@@ -13,6 +16,7 @@ use App\Models\AdditionalCriteriaScoreTag;
 use App\Models\Portfolio;
 use App\Models\Principle;
 use App\Models\Assessment;
+use App\Models\ScoreTag;
 use Backpack\CRUD\app\Http\Controllers\Operations\CreateOperation;
 use Backpack\CRUD\app\Http\Controllers\Operations\DeleteOperation;
 use Backpack\CRUD\app\Http\Controllers\Operations\ShowOperation;
@@ -27,6 +31,7 @@ use App\Enums\AssessmentStatus;
 use App\Enums\GeographicalReach;
 use App\Models\OrganisationMember;
 use Illuminate\Support\Facades\DB;
+use Maatwebsite\Excel\Concerns\WithCustomStartCell;
 use Prologue\Alerts\Facades\Alert;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Http\Requests\ProjectRequest;
@@ -460,20 +465,24 @@ class ProjectCrudController extends CrudController
         $clone->countries()->sync($countries->pluck('id')->toArray());
 
 
-
         // *** Handle 'has Many' relationships:
         // duplicate funding sources
         $project->fundingSources->each(function (FundingSource $fundingSource) use ($clone) {
             unset($fundingSource->id);
             unset($fundingSource->project_id);
 
-
             $clone->fundingSources()->create($fundingSource->toArray());
         });
 
 
         // duplicate assessments
-        $project->assessments->each(function (Assessment $assessment) use ($clone) {
+        $project->assessments->load([
+            'principleAssessments.scoreTags',
+            'principleAssessments.customScoreTags',
+            'additionalCriteriaAssessment.scoreTags',
+            'additionalCriteriaAssessment.customScoreTags',
+            ])
+            ->each(function (Assessment $assessment) use ($clone) {
             $newAssessment = $assessment->replicate();
             $newAssessment->project_id = $clone->id;
             $newAssessment->save();
@@ -485,24 +494,64 @@ class ProjectCrudController extends CrudController
                 ];
             });
 
-
-
             $newAssessment->redLines()->sync($redlinesWithPivot->toArray());
 
 
+            // iterate through the principleAssessments and create new ones (along with score tags and custom score tags)
+            $assessment->principleAssessments->each(function (PrincipleAssessment $principleAssessment) use ($newAssessment) {
 
-            $principlesWithPivot = $assessment->principles->mapWithKeys(function (Principle $principle) {
-                return [
-                    $principle->id => [
-                        'rating' => $principle->pivot->rating,
-                        'rating_comment' => $principle->pivot->rating_comment,
-                        'is_na' => $principle->pivot->is_na,
-                    ],
-                ];
+                unset($principleAssessment->id);
+                unset($principleAssessment->assessment_id);
+
+                $newPrincipleAssessment = $newAssessment->principleAssessments()->create($principleAssessment->toArray());
+
+                // for each scoreTag linked to the original PrincipleAssessment, also sync it to the new PrincipleAssessment
+                $scoreTagsWithPivot = $principleAssessment->scoreTags->mapWithKeys(function (ScoreTag $scoreTag) use ($newAssessment) {
+                    return [
+                        $scoreTag->id => [
+                            'assessment_id' => $newAssessment->id,
+                        ],
+                    ];
+                });
+
+                ray($scoreTagsWithPivot);
+
+                $newPrincipleAssessment->scoreTags()->sync($scoreTagsWithPivot->toArray());
+
+                $principleAssessment->customScoreTags->each(function (CustomScoreTag $customScoreTag) use ($newPrincipleAssessment) {
+                    unset($customScoreTag->id);
+                    unset($customScoreTag->principle_assessment_id);
+
+                    $newPrincipleAssessment->customScoreTags()->create($customScoreTag->toArray());
+                });
+
             });
 
-            $newAssessment->principles()->sync($principlesWithPivot->toArray());
+            $assessment->additionalCriteriaAssessment->each(function (AdditionalCriteriaAssessment $additionalCriteriaAssessment) use ($newAssessment){
 
+                unset($additionalCriteriaAssessment->id);
+                unset($additionalCriteriaAssessment->assessment_id);
+
+                $newAdditionalCriteriaAssessment = $newAssessment->additionalCriteriaAssessment()->create($additionalCriteriaAssessment->toArray());
+
+                $scoreTagsWithPivot = $additionalCriteriaAssessment->scoreTags->mapWithKeys(function (AdditionalCriteriaScoreTag $scoreTag) use ($newAssessment) {
+                    return [
+                        $scoreTag->id => [
+                            'assessment_id' => $newAssessment->id,
+                        ],
+                    ];
+                });
+
+                $additionalCriteriaAssessment->scoreTags()->sync($scoreTagsWithPivot);
+
+                $additionalCriteriaAssessment->customScoreTags->each(function (AdditionalCriteriaCustomScoreTag $customScoreTag) use ($newAssessment) {
+                    unset($customScoreTag->id);
+                    unset($customScoreTag->additional_criteria_assessment_id);
+
+                    $newAssessment->customScoreTags()->create($customScoreTag->toArray());
+                });
+
+            });
 
             $additionalCriteriaWithPivot = $assessment->additionalCriteria->mapWithKeys(function (AdditionalCriteriaScoreTag $additionalCriteria) {
                 return [
@@ -516,23 +565,7 @@ class ProjectCrudController extends CrudController
 
             $newAssessment->additionalCriteria()->sync($additionalCriteriaWithPivot->toArray());
 
-
-            $newAssessment->customScoreTags()->createMany($assessment->customScoreTags->except(['assessment_id', 'id'])->toArray());
-            $newAssessment->additionalCriteriaCustomScoreTag()->createMany($assessment->additionalCriteriaCustomScoreTag->except(['assessment_id', 'id'])->toArray());
-
-            $scoreTagsWithPivot = $assessment->scoreTags->mapWithKeys(function (CustomScoreTag $scoreTag) {
-                return [
-                    $scoreTag->id => [
-                        'principle_assessment_id' => $scoreTag->pivot->principle_assessment_id,
-                    ],
-                ];
-            });
-
-            $newAssessment->scoreTags()->sync($scoreTagsWithPivot->toArray());
-
-
         });
-
 
         // as the clone was created without events; save it again to trigger any "on save" events
         $clone->save();
