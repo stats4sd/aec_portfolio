@@ -18,7 +18,7 @@ class PrincipleAssessment extends Model
     use CrudTrait;
     use RevisionableTrait;
 
-    protected $guarded = ['id', 'principle_id', 'assessment_id'];
+    protected $guarded = ['id', 'assessment_id'];
 
     public $table = 'principle_assessment';
 

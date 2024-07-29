@@ -57,19 +57,22 @@
                                 </div>
                             </div>
 
-                            <a class="btn btn-primary mr-2" :class="[ enableEditButton ? '' : 'disabled']"
+                            <a class="btn btn-primary mr-2 mb-2" :class="[ enableEditButton ? '' : 'disabled']"
                                :href="`/admin/project/${initiative.id}/edit`">Edit Details</a>
 
-                            <a class="btn btn-success mr-2" :class="[ enableShowButton ? '' : 'disabled']"
+                            <a class="btn btn-success mr-2 mb-2" :class="[ enableShowButton ? '' : 'disabled']"
                                :href="`/admin/project/${initiative.id}/show`">Show Information</a>
 
-                            <button class="btn btn-danger mr-2" :class="[ enableDeleteButton ? '' : 'disabled']"
+                            <button class="btn btn-danger mr-2 mb-2" :class="[ enableDeleteButton ? '' : 'disabled']"
                                     @click="enableDeleteButton ? removeInitiative() : '';">Delete
                             </button>
 
-                            <button class="btn btn-warning" :class="[ enableReassessButton ? (initiative.latest_assessment.principle_status === 'Complete' && initiative.latest_assessment.additional_status != 'Not Started' ? '' : 'disabled') : 'disabled']"
+                            <button class="btn btn-warning mr-2 mb-2" :class="[ enableReassessButton ? (initiative.latest_assessment.principle_status === 'Complete' && initiative.latest_assessment.additional_status != 'Not Started' ? '' : 'disabled') : 'disabled']"
                                     @click="enableReassessButton ? (initiative.latest_assessment.principle_status === 'Complete' && initiative.latest_assessment.additional_status != 'Not Started' ? reassessInitiative() : 'disabled') : '';">Reassess
                             </button>
+
+                            <button class="btn btn-warning mr-2 mb-2" :class="[ enableDeleteButton ? '' : 'disabled']"
+                               @click="enableDeleteButton ? duplicateInitiative() : '';">Duplicate</button>
 
                         </div>
 
@@ -279,6 +282,29 @@ async function reassessInitiative() {
         // pass the refreshed initiative out to the list
         emit('refresh_initiative', result.data)
 
+    }
+}
+
+async function duplicateInitiative() {
+    let choice = await Swal.fire({
+        title: "Are you sure?",
+        text: "This initiative will be duplicated, along with any associated assessments, complete or in progress. You will be taken to the edit page for the new initiative.",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Yes, duplicate it!",
+    });
+
+    if(choice.isConfirmed) {
+        let result = await axios.post(`/admin/project/${props.initiative.id}/duplicate`);
+
+        new Noty({
+            type: "success",
+            text: `You have successfully duplicated the initiative ${props.initiative.name}`,
+        }).show();
+
+        window.location.href = `/admin/project/${result.data.id}/edit`;
     }
 }
 

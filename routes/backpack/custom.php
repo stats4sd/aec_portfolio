@@ -105,6 +105,7 @@ Route::group([
         Route::crud('project', ProjectCrudController::class);
         Route::get('project', [ProjectController::class, 'index']);
         Route::post('project/{id}/reassess', [ProjectCrudController::class, 'reAssess']);
+        Route::post('project/{project}/duplicate', [ProjectCrudController::class, 'duplicate']);
 
         Route::post('session/store', [SessionController::class, 'store']);
         Route::post('session/reset', [SessionController::class, 'reset']);
