@@ -72,7 +72,7 @@ class TestSeeder extends Seeder
 
         $donorInstitution = Organisation::create([
             'name' => 'Test Donor 1',
-            'geographic_reach' => GeographicalReach::Global->value,
+            'geographic_reach' => GeographicalReach::Global->name,
             'currency' => 'EUR',
             'has_additional_criteria' => 0,
             'description' => 'This is a test donor organisation',
