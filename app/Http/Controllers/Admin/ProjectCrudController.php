@@ -544,11 +544,11 @@ class ProjectCrudController extends CrudController
 
                 $additionalCriteriaAssessment->scoreTags()->sync($scoreTagsWithPivot);
 
-                $additionalCriteriaAssessment->customScoreTags->each(function (AdditionalCriteriaCustomScoreTag $customScoreTag) use ($newAssessment) {
+                $additionalCriteriaAssessment->customScoreTags->each(function (AdditionalCriteriaCustomScoreTag $customScoreTag) use ($newAdditionalCriteriaAssessment) {
                     unset($customScoreTag->id);
                     unset($customScoreTag->additional_criteria_assessment_id);
 
-                    $newAssessment->customScoreTags()->create($customScoreTag->toArray());
+                    $newAdditionalCriteriaAssessment->customScoreTags()->create($customScoreTag->toArray());
                 });
 
             });
