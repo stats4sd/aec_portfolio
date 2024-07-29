@@ -142,9 +142,14 @@ const sortOptions = ref([
         label: 'Name',
     },
     {
+        id: 'code',
+        label: 'Code',
+    },
+    {
         id: 'budget_org',
         label: 'Budget',
-    }
+    },
+
 ])
 
 // default value for sortBy and sortDir, which is sorted by name in ascending order
