@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Exports\InitiativeImportTemplate\InitiativeImportTemplateExportWorkbook;
 use App\Imports\ProjectWorkbookImport;
+use App\Models\AdditionalCriteria;
 use App\Models\AdditionalCriteriaAssessment;
 use App\Models\AdditionalCriteriaCustomScoreTag;
 use App\Models\FundingSource;
@@ -551,17 +552,6 @@ class ProjectCrudController extends CrudController
 
             });
 
-            $additionalCriteriaWithPivot = $assessment->additionalCriteria->mapWithKeys(function (AdditionalCriteriaScoreTag $additionalCriteria) {
-                return [
-                    $additionalCriteria->id => [
-                        'rating' => $additionalCriteria->pivot->rating,
-                        'rating_comment' => $additionalCriteria->pivot->rating_comment,
-                        'is_na' => $additionalCriteria->pivot->is_na,
-                    ],
-                ];
-            });
-
-            $newAssessment->additionalCriteria()->sync($additionalCriteriaWithPivot->toArray());
 
         });
 
