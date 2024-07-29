@@ -503,6 +503,8 @@ class ProjectCrudController extends CrudController
 
                 unset($principleAssessment->id);
                 unset($principleAssessment->assessment_id);
+                unset($principleAssessment->created_at);
+                unset($principleAssessment->updated_at);
 
                 $newPrincipleAssessment = $newAssessment->principleAssessments()->create($principleAssessment->toArray());
 
@@ -520,6 +522,9 @@ class ProjectCrudController extends CrudController
                 $principleAssessment->customScoreTags->each(function (CustomScoreTag $customScoreTag) use ($newPrincipleAssessment) {
                     unset($customScoreTag->id);
                     unset($customScoreTag->principle_assessment_id);
+                    unset($customScoreTag->created_at);
+                    unset($customScoreTag->updated_at);
+
                     $customScoreTag->assessment_id = $newPrincipleAssessment->assessment_id;
 
                     $newPrincipleAssessment->customScoreTags()->create($customScoreTag->toArray());
@@ -531,6 +536,8 @@ class ProjectCrudController extends CrudController
 
                 unset($additionalCriteriaAssessment->id);
                 unset($additionalCriteriaAssessment->assessment_id);
+                unset($additionalCriteriaAssessment->created_at);
+                unset($additionalCriteriaAssessment->updated_at);
 
                 $newAdditionalCriteriaAssessment = $newAssessment->additionalCriteriaAssessment()->create($additionalCriteriaAssessment->toArray());
 
@@ -542,11 +549,13 @@ class ProjectCrudController extends CrudController
                     ];
                 });
 
-                $additionalCriteriaAssessment->scoreTags()->sync($scoreTagsWithPivot);
+                $newAdditionalCriteriaAssessment->scoreTags()->sync($scoreTagsWithPivot);
 
                 $additionalCriteriaAssessment->customScoreTags->each(function (AdditionalCriteriaCustomScoreTag $customScoreTag) use ($newAdditionalCriteriaAssessment) {
                     unset($customScoreTag->id);
                     unset($customScoreTag->additional_criteria_assessment_id);
+                    unset($customScoreTag->created_at);
+                    unset($customScoreTag->updated_at);
 
                     $customScoreTag->assessment_id = $newAdditionalCriteriaAssessment->assessment_id;
 
