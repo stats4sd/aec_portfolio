@@ -35,7 +35,7 @@ class Assessment extends Model
 
             $org_has_additional_criteria = $assessment->project->organisation->has_additional_criteria;
 
-            if ($org_has_additional_criteria) {
+            if ($org_has_additional_criteria && !$assessment->additional_status) {
                 $assessment->additional_status = "Not Started";
             }
         });
