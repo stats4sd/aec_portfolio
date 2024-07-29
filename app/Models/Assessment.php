@@ -6,6 +6,7 @@ use App\Enums\AssessmentStatus;
 use Illuminate\Database\Eloquent\Model;
 use Backpack\CRUD\app\Models\Traits\CrudTrait;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Arr;
@@ -34,7 +35,7 @@ class Assessment extends Model
 
             $org_has_additional_criteria = $assessment->project->organisation->has_additional_criteria;
 
-            if ($org_has_additional_criteria) {
+            if ($org_has_additional_criteria && !$assessment->additional_status) {
                 $assessment->additional_status = "Not Started";
             }
         });
@@ -89,7 +90,7 @@ class Assessment extends Model
             || $this->additionalCriteriaAssessment->some(fn(AdditionalCriteriaAssessment $entry) => count($entry->revisionHistory));
     }
 
-    public function getRevisionHistoryAttribute()
+    public function getRevisionHistoryAttribute(): \Illuminate\Support\Collection
     {
         return
             collect([
@@ -100,7 +101,7 @@ class Assessment extends Model
                 ->flatten();
     }
 
-    public function appendExtrasToRevision($item, $relation)
+    public function appendExtrasToRevision($item, $relation): \Illuminate\Support\Collection
     {
         return $item->revisionHistory->map(function (Revision $history) use ($item, $relation) {
             $history->relation = Str::lower(Arr::join(Str::ucsplit($relation), ' '));
@@ -110,8 +111,7 @@ class Assessment extends Model
         });
     }
 
-
-    public function project()
+    public function project(): BelongsTo
     {
         return $this->belongsTo(Project::class)
             ->withoutGlobalScope('organisation');
@@ -127,7 +127,7 @@ class Assessment extends Model
         return $this->hasMany(AdditionalCriteriaCustomScoreTag::class);
     }
 
-    public function redLines()
+    public function redLines(): BelongsToMany
     {
         return $this->belongsToMany(RedLine::class)
             ->withPivot([
@@ -261,6 +261,14 @@ class Assessment extends Model
         return $this->hasMany(AdditionalCriteriaAssessment::class);
     }
 
+
+    public function scoreTags(): BelongsToMany
+    {
+        return $this->belongsToMany(ScoreTag::class, 'principle_assessment_score_tag', 'assessment_id', 'score_tag_id')
+            ->withPivot([
+                'principle_assessment_id'
+            ]);
+    }
 
     // Custom relationships to load scoreTags filtered by each of the 13 principles
     // hard-coded principles, so careful if we change our definition of AE!
