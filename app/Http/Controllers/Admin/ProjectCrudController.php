@@ -514,8 +514,6 @@ class ProjectCrudController extends CrudController
                     ];
                 });
 
-                ray($scoreTagsWithPivot);
-
                 $newPrincipleAssessment->scoreTags()->sync($scoreTagsWithPivot->toArray());
 
                 $principleAssessment->customScoreTags->each(function (CustomScoreTag $customScoreTag) use ($newPrincipleAssessment) {
