@@ -520,6 +520,7 @@ class ProjectCrudController extends CrudController
                 $principleAssessment->customScoreTags->each(function (CustomScoreTag $customScoreTag) use ($newPrincipleAssessment) {
                     unset($customScoreTag->id);
                     unset($customScoreTag->principle_assessment_id);
+                    $customScoreTag->assessment_id = $newPrincipleAssessment->assessment_id;
 
                     $newPrincipleAssessment->customScoreTags()->create($customScoreTag->toArray());
                 });
@@ -546,6 +547,8 @@ class ProjectCrudController extends CrudController
                 $additionalCriteriaAssessment->customScoreTags->each(function (AdditionalCriteriaCustomScoreTag $customScoreTag) use ($newAdditionalCriteriaAssessment) {
                     unset($customScoreTag->id);
                     unset($customScoreTag->additional_criteria_assessment_id);
+
+                    $customScoreTag->assessment_id = $newAdditionalCriteriaAssessment->assessment_id;
 
                     $newAdditionalCriteriaAssessment->customScoreTags()->create($customScoreTag->toArray());
                 });
