@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Exports\InitiativeImportTemplate\InitiativeImportTemplateExportWorkbook;
 use App\Imports\ProjectWorkbookImport;
+use App\Models\FundingSource;
 use App\Models\Region;
 use App\Models\Country;
 use App\Models\Project;
@@ -108,7 +109,7 @@ class ProjectCrudController extends CrudController
     {
         $data['entry']->load([
             'assessments' => [
-                'failingRedLines'
+                'failingRedLines',
             ],
         ]);
 
@@ -307,7 +308,7 @@ class ProjectCrudController extends CrudController
             ->wrapper(['class' => 'form-group col-sm-12']);
 
 
-            CRUD::field('exchange_rate_eur')
+        CRUD::field('exchange_rate_eur')
             ->label("Exchange rate from the initiative's currency to EUR")
             ->hint('1 of this initiative\'s currency = XXX EUR.')
             ->type('number')
@@ -426,7 +427,7 @@ class ProjectCrudController extends CrudController
 
         $project = Project::find($id)?->load([
             'portfolio' => [
-                'organisation'
+                'organisation',
             ],
             'assessments' => [
                 'principles',
@@ -437,6 +438,107 @@ class ProjectCrudController extends CrudController
             ->append('latest_assessment');
 
         return $project;
+    }
+
+    public function duplicate(Project $project)
+    {
+        $this->authorize('create', Project::class);
+
+        $clone = $project->replicate();
+
+        // do not automatically create a new assessment - the existing assessment(s) will be copied over.
+        $clone->saveQuietly();
+
+        // *** Handle belongsToMany relationships
+        $continents = $project->continents;
+        $regions = $project->regions;
+        $countries = $project->countries;
+
+
+        $clone->continents()->sync($continents->pluck('id')->toArray());
+        $clone->regions()->sync($regions->pluck('id')->toArray());
+        $clone->countries()->sync($countries->pluck('id')->toArray());
+
+
+
+        // *** Handle 'has Many' relationships:
+        // duplicate funding sources
+        $project->fundingSources->each(function (FundingSource $fundingSource) use ($clone) {
+            unset($fundingSource->id);
+            unset($fundingSource->project_id);
+
+
+            $clone->fundingSources()->create($fundingSource->toArray());
+        });
+
+
+        // duplicate assessments
+        $project->assessments->each(function (Assessment $assessment) use ($clone) {
+            $newAssessment = $assessment->replicate();
+            $newAssessment->project_id = $clone->id;
+            $newAssessment->save();
+
+
+            $redlinesWithPivot = $assessment->redlines->mapWithKeys(function (Redline $redline) {
+                return [
+                    $redline->id => ['value' => $redline->pivot->value],
+                ];
+            });
+
+
+
+            $newAssessment->redLines()->sync($redlinesWithPivot->toArray());
+
+
+
+            $principlesWithPivot = $assessment->principles->mapWithKeys(function (Principle $principle) {
+                return [
+                    $principle->id => [
+                        'rating' => $principle->pivot->rating,
+                        'rating_comment' => $principle->pivot->rating_comment,
+                        'is_na' => $principle->pivot->is_na,
+                    ],
+                ];
+            });
+
+            $newAssessment->principles()->sync($principlesWithPivot->toArray());
+
+
+            $additionalCriteriaWithPivot = $assessment->additionalCriteria->mapWithKeys(function (AdditionalCriteriaScoreTag $additionalCriteria) {
+                return [
+                    $additionalCriteria->id => [
+                        'rating' => $additionalCriteria->pivot->rating,
+                        'rating_comment' => $additionalCriteria->pivot->rating_comment,
+                        'is_na' => $additionalCriteria->pivot->is_na,
+                    ],
+                ];
+            });
+
+            $newAssessment->additionalCriteria()->sync($additionalCriteriaWithPivot->toArray());
+
+
+            $newAssessment->customScoreTags()->createMany($assessment->customScoreTags->except(['assessment_id', 'id'])->toArray());
+            $newAssessment->additionalCriteriaCustomScoreTag()->createMany($assessment->additionalCriteriaCustomScoreTag->except(['assessment_id', 'id'])->toArray());
+
+            $scoreTagsWithPivot = $assessment->scoreTags->mapWithKeys(function (CustomScoreTag $scoreTag) {
+                return [
+                    $scoreTag->id => [
+                        'principle_assessment_id' => $scoreTag->pivot->principle_assessment_id,
+                    ],
+                ];
+            });
+
+            $newAssessment->scoreTags()->sync($scoreTagsWithPivot->toArray());
+
+
+        });
+
+
+        // as the clone was created without events; save it again to trigger any "on save" events
+        $clone->save();
+
+        return $clone;
+
     }
 
     public function store()
@@ -453,7 +555,8 @@ class ProjectCrudController extends CrudController
         return $this->traitUpdate();
     }
 
-    public function calculateBudgetEur() {
+    public function calculateBudgetEur()
+    {
         $budget = $this->crud->getRequest()->budget;
         $exchangeRateEur = $this->crud->getRequest()->exchange_rate_eur;
         $this->crud->getRequest()->request->set('budget_eur', $budget * $exchangeRateEur);
@@ -494,7 +597,7 @@ class ProjectCrudController extends CrudController
             <br/><br/>
             <a href="' . url($this->crud->route . '/import-template') . '" class="btn btn-link" data-button-type="import-template"><i class="la la-download"></i> Download Template for Imports</a></br>
 
-            '
+            ',
         ]);
 
 
@@ -551,7 +654,7 @@ class ProjectCrudController extends CrudController
             'model' => CustomScoreTag::class,
             'query' => function ($model) {
                 return $model->where('principle_id', 1);
-            }
+            },
         ]);
     }
 
@@ -561,7 +664,7 @@ class ProjectCrudController extends CrudController
             'model' => CustomScoreTag::class,
             'query' => function ($model) {
                 return $model->where('principle_id', 2);
-            }
+            },
         ]);
     }
 
@@ -571,7 +674,7 @@ class ProjectCrudController extends CrudController
             'model' => CustomScoreTag::class,
             'query' => function ($model) {
                 return $model->where('principle_id', 3);
-            }
+            },
         ]);
     }
 
@@ -581,7 +684,7 @@ class ProjectCrudController extends CrudController
             'model' => CustomScoreTag::class,
             'query' => function ($model) {
                 return $model->where('principle_id', 4);
-            }
+            },
         ]);
     }
 
@@ -591,7 +694,7 @@ class ProjectCrudController extends CrudController
             'model' => CustomScoreTag::class,
             'query' => function ($model) {
                 return $model->where('principle_id', 5);
-            }
+            },
         ]);
     }
 
@@ -601,7 +704,7 @@ class ProjectCrudController extends CrudController
             'model' => CustomScoreTag::class,
             'query' => function ($model) {
                 return $model->where('principle_id', 6);
-            }
+            },
         ]);
     }
 
@@ -611,7 +714,7 @@ class ProjectCrudController extends CrudController
             'model' => CustomScoreTag::class,
             'query' => function ($model) {
                 return $model->where('principle_id', 7);
-            }
+            },
         ]);
     }
 
@@ -621,7 +724,7 @@ class ProjectCrudController extends CrudController
             'model' => CustomScoreTag::class,
             'query' => function ($model) {
                 return $model->where('principle_id', 8);
-            }
+            },
         ]);
     }
 
@@ -631,7 +734,7 @@ class ProjectCrudController extends CrudController
             'model' => CustomScoreTag::class,
             'query' => function ($model) {
                 return $model->where('principle_id', 9);
-            }
+            },
         ]);
     }
 
@@ -641,7 +744,7 @@ class ProjectCrudController extends CrudController
             'model' => CustomScoreTag::class,
             'query' => function ($model) {
                 return $model->where('principle_id', 10);
-            }
+            },
         ]);
     }
 
@@ -651,7 +754,7 @@ class ProjectCrudController extends CrudController
             'model' => CustomScoreTag::class,
             'query' => function ($model) {
                 return $model->where('principle_id', 11);
-            }
+            },
         ]);
     }
 
@@ -661,7 +764,7 @@ class ProjectCrudController extends CrudController
             'model' => CustomScoreTag::class,
             'query' => function ($model) {
                 return $model->where('principle_id', 12);
-            }
+            },
         ]);
     }
 
@@ -672,7 +775,7 @@ class ProjectCrudController extends CrudController
             'model' => CustomScoreTag::class,
             'query' => function ($model) {
                 return $model->where('principle_id', 13);
-            }
+            },
         ]);
     }
 
@@ -692,7 +795,7 @@ class ProjectCrudController extends CrudController
             'model' => Region::class,
             'query' => function ($model) use ($continents) {
                 return $model->whereIn('continent_id', $continents);
-            }
+            },
         ]);
     }
 
@@ -720,7 +823,7 @@ class ProjectCrudController extends CrudController
                     return $model->whereHas('region', function ($query) use ($continents) {
                         $query->whereIn('continent_id', $continents);
                     });
-                }
+                },
             ]);
         }
 
@@ -729,7 +832,7 @@ class ProjectCrudController extends CrudController
             'model' => Country::class,
             'query' => function ($model) use ($regions) {
                 return $model->whereIn('region_id', $regions);
-            }
+            },
         ]);
     }
 
@@ -743,7 +846,7 @@ class ProjectCrudController extends CrudController
             'query' => function (Organisation $model) use ($currentOrgId) {
                 return $model->withoutGlobalScopes(['owned'])
                     ->whereNot('id', $currentOrgId);
-            }
+            },
         ]);
     }
 
