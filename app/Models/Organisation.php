@@ -55,7 +55,7 @@ class Organisation extends Model
 
         // If assessment_criteria are used, set additional_criteria status
         static::saved(function (Organisation $organisation) {
-            if($organisation->has_additional_criteria) {
+            if ($organisation->has_additional_criteria) {
                 $organisation->assessments()->where('additional_status', AssessmentStatus::Na->value)
                     ->orWhere('additional_status', null)
                     ->update(['additional_status' => AssessmentStatus::NotStarted->value]);
@@ -88,7 +88,7 @@ class Organisation extends Model
     public function admins()
     {
         return $this->belongsToMany(User::class, 'organisation_members')
-            ->whereHas('roles', function(Builder $query) {
+            ->whereHas('roles', function (Builder $query) {
                 $query->where('name', 'Institutional Admin');
             });
     }
@@ -96,7 +96,7 @@ class Organisation extends Model
     public function editors()
     {
         return $this->belongsToMany(User::class, 'organisation_members')
-                        ->whereHas('roles', function(Builder $query) {
+            ->whereHas('roles', function (Builder $query) {
                 $query->where('name', 'Institutional Assessor');
             });
     }
@@ -104,7 +104,7 @@ class Organisation extends Model
     public function viewers()
     {
         return $this->belongsToMany(User::class, 'organisation_members')
-                        ->whereHas('roles', function(Builder $query) {
+            ->whereHas('roles', function (Builder $query) {
                 $query->where('name', 'Institutional Member');
             });
     }
@@ -134,7 +134,12 @@ class Organisation extends Model
     public function sendInvites($emails, $roleId)
     {
         foreach ($emails as $email) {
-            
+
+            // if email is empty, skip to next email
+            if ($email == null || $email == '') {
+                continue;
+            }
+
             // check whether email address belongs to existing user
             $user = User::where('email', $email)->first();
 
@@ -151,10 +156,12 @@ class Organisation extends Model
                 // create role_invites record with same token from corresponding invites record
                 // P.S. tried to do the same by RoleInvite::create() but another invitation email with role will be sent
                 // To avoid sending the additional invitation email regarding role, insert a role_invites record via DB facade directly
-                DB::insert('insert into role_invites (email, role_id, inviter_id, token, created_at, updated_at) values (?, ?, ?, ?, NOW(), NOW())',
-                    [$email, $roleId, auth()->user()->id, $invite->token]);
+                DB::insert(
+                    'insert into role_invites (email, role_id, inviter_id, token, created_at, updated_at) values (?, ?, ?, ?, NOW(), NOW())',
+                    [$email, $roleId, auth()->user()->id, $invite->token]
+                );
 
-            // for existing user, send email confirmation instead of email invitation
+                // for existing user, send email confirmation instead of email invitation
             } else {
 
                 // check whether this existing user is already in this institution
@@ -164,19 +171,18 @@ class Organisation extends Model
                     Mail::to($email)->send(new AddMemberConfirmed(auth()->user()->name, auth()->user()->email, $this->name));
 
                     // create role_invites record for recording purpose
-                    DB::insert('insert into role_invites (email, role_id, inviter_id, token, is_confirmed, created_at, updated_at) values (?, ?, ?, ?, ?, NOW(), NOW())',
-                        [$email, $roleId, auth()->user()->id, 'N/A', 1]);
+                    DB::insert(
+                        'insert into role_invites (email, role_id, inviter_id, token, is_confirmed, created_at, updated_at) values (?, ?, ?, ?, ?, NOW(), NOW())',
+                        [$email, $roleId, auth()->user()->id, 'N/A', 1]
+                    );
 
                     // add organisation_member record, existing user will belong to this institution immediately
                     OrganisationMember::create([
                         'user_id' => $user->id,
                         'organisation_id' => $this->id,
                     ]);
-
                 }
-
             }
-
         }
     }
 
@@ -190,8 +196,8 @@ class Organisation extends Model
         return $this->belongsTo(User::class, 'signee_id');
     }
 
-    public function getFundingFlowAnalysisAttribute() {
+    public function getFundingFlowAnalysisAttribute()
+    {
         return $this->contributes_to_funding_flow == 1 ? 'Yes' : 'No';
     }
-
 }
