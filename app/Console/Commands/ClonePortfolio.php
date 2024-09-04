@@ -87,8 +87,13 @@ class ClonePortfolio extends Command
 
         auth()->login($admin);
 
+
+        $this->info('Cloning portfolio...');
+
         // clone each project
         $projects->each(function(Project $project) use ($newPortfolio) {
+
+            $this->comment('Cloning project: ' . $project->name);
 
             $projectCrud = new ProjectCrudController;
 
@@ -104,6 +109,8 @@ class ClonePortfolio extends Command
         });
 
         auth()->logout();
+
+        $this->info('Done!');
 
     }
 }
