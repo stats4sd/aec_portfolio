@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Enums\AssessmentStatus;
 use App\Models\Assessment;
+use App\Models\ExchangeRate;
 use App\Models\Organisation;
 use App\Models\Portfolio;
 use App\Models\Principle;
@@ -36,7 +37,7 @@ class ProjectSeeder extends Seeder
      */
     public function run(): void
     {
-        $organisations = Organisation::factory(['has_additional_criteria' => 0])->count(2)->create();
+        $organisations = Organisation::factory(['has_additional_criteria' => 0, 'agreement_signed_at' => Carbon::now(), 'signee_id' => 1])->count(2)->create();
 
         foreach ($organisations as $organisation) {
 
@@ -54,7 +55,6 @@ class ProjectSeeder extends Seeder
             }
         }
 
-
         $redlines = RedLine::all();
         $principles = Principle::all();
         $regions = Region::with('countries')->get();
@@ -63,7 +63,15 @@ class ProjectSeeder extends Seeder
         // add complete assessments for projects
         foreach (Project::withoutGlobalScopes()->get() as $project) {
 
-            // save the project to calculate budget_org
+            // Get the first exchange rate (doesn't matter for test data if it's accurate)
+            $project->exchange_rate = ExchangeRate::where('base_currency_id', $project->currency)->where('target_currency_id', $project->organisation->currency)->first()?->rate ?? '1.2';
+
+            $project->exchange_rate_eur = ExchangeRate::where('base_currency_id', $project->currency)->where('target_currency_id', 'EUR')->first()?->rate ?? '1.2';
+
+            $project->budget_org = $project->budget * $project->exchange_rate;
+            $project->budget_eur = $project->budget * $project->exchange_rate_eur;
+
+            $project->save();
 
             // assign 80% of projects to regions
             if ($this->faker->boolean(80)) {

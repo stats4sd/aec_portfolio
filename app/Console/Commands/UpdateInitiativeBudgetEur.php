@@ -39,23 +39,37 @@ class UpdateInitiativeBudgetEur extends Command
                 $project->budget_eur = $project->budget;
                 $project->save();
             } else {
-                // find exchange rate from project currency to EUR on project start date
-                $exchangeRate = ExchangeRate::where('base_currency_id', $project->currency)->where('target_currency_id', 'EUR')->where('date', $project->start_date->format('Y-m-d'))->first();
 
-                if ($exchangeRate != null) {
-                    $this->info('+ Found exchange rate for ' . $project->currency . ' => EUR, on ' . $project->start_date->format('Y-m-d'));
-                    $project->exchange_rate_eur = $exchangeRate->rate;
-                    $project->budget_eur = $project->budget * $exchangeRate->rate;
-                    $project->save();
-                } else {
-                    $this->info('- Cannot find exchange rate for ' . $project->currency . ' => EUR, on ' . $project->start_date->format('Y-m-d'));
-                }
+                $exchangeRate = $this->getEURExchangeRateFor($project->currency, $project->start_date);
+                $project->exchange_rate_eur = $exchangeRate->rate;
+                $project->budget_eur = $project->budget * $exchangeRate->rate;
+                $project->save();
+
             }
         }
 
         $this->info(count($projects) . ' initatives processed');
 
         $this->info('done!');
+    }
+
+    private function getEURExchangeRateFor($projectCurrency, $date): ?ExchangeRate
+    {
+        // find exchange rate from project currency to EUR on project start date
+        $exchangeRate = ExchangeRate::where('base_currency_id', $projectCurrency)->where('target_currency_id', 'EUR')->where('date', $date)->first();
+
+        if(!$exchangeRate) {
+            $this->info('Cannot find exchange rate for ' . $projectCurrency . ' => EUR, on ' . $date);
+
+            if($date === '2020-01-01') {
+                $this->error('Cannot find exchange rate for ' . $projectCurrency . ' => EUR, on ' . $date . ' and no fallback date available');
+                return null;
+            }
+
+            // try for the day before
+            $exchangeRate = $this->getEURExchangeRateFor($projectCurrency, $date->subDay());
+        }
+
     }
 
 }
