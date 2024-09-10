@@ -15,13 +15,11 @@ const vuetify = createVuetify({
 
 
 import InitiativesList from "./components/InitiativesList.vue"
-import Dashboard from "./components/Dashboard.vue";
 import MainDashboard from "./components/MainDashboard.vue";
 
 
 createApp()
     .use(vuetify)
-    .component('dashboard', Dashboard)
     .component('Suspense', Suspense)
     .component('main-dashboard', MainDashboard)
     .mount('#dashboard');

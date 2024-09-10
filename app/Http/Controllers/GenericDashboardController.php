@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Enums\AssessmentStatus;
 use App\Models\Assessment;
 use App\Models\Country;
+use App\Models\Currency;
+use App\Models\ExchangeRate;
 use App\Models\InitiativeCategory;
 use App\Models\Organisation;
 use App\Models\Portfolio;
@@ -24,16 +26,6 @@ use Illuminate\Support\Facades\Session;
 class GenericDashboardController extends Controller
 {
 
-    // TEMP
-    // TODO: OLD ONE TO BE REMOVED
-    public function new(Request $request)
-    {
-        $data = $this->getData($request);
-
-        $data['portfolios'] = $data['organisation']['portfolios'];
-
-        return view('generic-dashboard.new-dashboard', $data);
-    }
 
     public function show(Request $request)
     {
@@ -48,7 +40,7 @@ class GenericDashboardController extends Controller
             'portfolios.projects' => [
                 'regions',
                 'countries',
-            ]
+            ],
         ])->find(Session::get('selectedOrganisationId'));
 
         $regions = $org->portfolios
@@ -118,6 +110,21 @@ class GenericDashboardController extends Controller
         $projectStartTo = $request['endDate'] ?? 'null';
         $budgetFrom = $request['minBudget'] ?? 'null';
         $budgetTo = $request['maxBudget'] ?? 'null';
+
+        // convert budget into EUR for filtering
+        if($budgetFrom !== 'null' || $budgetTo !== 'null') {
+
+
+        $orgCurrency = Organisation::find($organisationId)->currency;
+        $exchangeRate = ExchangeRate::where('base_currency_id', $orgCurrency)
+            ->where('target_currency_id', 'EUR')
+            ->orderBy('date', 'desc')
+            ->first(); // get the latest exchange rate
+
+            $budgetFrom = $budgetFrom !== 'null'  ? $budgetFrom * $exchangeRate->rate : 'null';
+            $budgetTo = $budgetTo !== 'null' ? $budgetTo * $exchangeRate->rate : 'null';
+
+        }
 
         // sort principles by principle number by default
         $sortBy = $request['sortBy'] ?? '3';
@@ -340,14 +347,19 @@ class GenericDashboardController extends Controller
             $assessmentScore = $allAssessmentsYours->sum(fn (Assessment $assessment) => $assessment->overall_score)
                 / $noOfInitiativeCompletedAssessment;
 
-            $aeBudget = round($results[0]->totalBudget * ($assessmentScore / 100), 0);
-
+            // get the AE-budget for each project
+            // calculate AE Budget per-project then sum.
+            $aeBudget = $allAssessmentsYours->map(function (Assessment $assessment) {
+                return $assessment->project->ae_budget;
+            })
+                ->sum();
             $assessmentScore = round($assessmentScore, 1);
         }
 
         // count nas for each principle
         $yourNas = $this->getNaCount($allAssessmentsYours);
         $otherNas = $this->getNaCount($allAssessmentsOthers);
+
 
         // construct JSON response
         $jsonRes = [];
