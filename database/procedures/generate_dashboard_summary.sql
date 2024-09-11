@@ -110,7 +110,7 @@ BEGIN
     AND p.organisation_id = 9
     AND p.portfolio_id = 20
     AND YEAR(p.start_date) BETWEEN 2020 AND 2030'
-    AND p.budget_org BETWEEN 200 AND 1000
+    AND p.budget_eur BETWEEN 200 AND 1000
     AND pr.region_id = 11
     AND cp.country_id = 132;
 
