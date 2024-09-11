@@ -93,7 +93,8 @@
                                 </div>
                             </div>
                             <hr/>
-                            <h4 class="mt-8 mb-4">Filter by Initiative Budget</h4>
+                            <h4 class="mt-8 mb-0">Filter by Initiative Budget</h4>
+                            <p class="text-sm mb-4">For comparison with other organisations, the filters you enter here will be converted to EUR and then used to filter the aggregated results from other organisations.</p>
                             <div class="d-flex align-items-center justify-content-between mb-8">
                                 <div class="pr-8 pr-xl-16">
                                     <b>MINIMUM BUDGET ({{ organisation.currency }}):</b>
@@ -505,7 +506,7 @@ async function getData() {
 
     data.organisation_id = props.organisation.id
 
-    const res = await axios.post("/admin/generic-dashboard/enquire", data)
+    const res = await axios.post("/admin/dashboard/enquire", data)
     summary.value = res.data
 }
 

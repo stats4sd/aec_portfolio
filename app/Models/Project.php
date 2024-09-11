@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Support\Str;
 use App\Services\XeCurrency;
 use App\Enums\AssessmentStatus;
@@ -60,12 +61,12 @@ Project extends Model
         static::saved(function (Project $project) {
 
             // in case the exchange_rate has changed, re-calculate the budget_org
-           $project->budget_org = $project->budget * $project->exchange_rate;
-           $project->saveQuietly();
+            $project->budget_org = $project->budget * $project->exchange_rate;
+            $project->saveQuietly();
         });
 
         static::addGlobalScope('organisation', function (Builder $builder) {
-             $builder->where('organisation_id', Session::get('selectedOrganisationId'));
+            $builder->where('organisation_id', Session::get('selectedOrganisationId'));
         });
     }
 
@@ -123,5 +124,18 @@ Project extends Model
     public function initiativeCategory(): BelongsTo
     {
         return $this->belongsTo(InitiativeCategory::class);
+    }
+
+    public function aeBudget(): Attribute
+    {
+        return new Attribute(
+            get: function () {
+                if ($this->latest_assessment_status === 'Principles Complete' || $this->latest_assessment_status === 'Additional Criteria Complete') {
+                    return $this->budget_org * $this->latest_assessment->overall_score / 100;
+                }
+                return 0;
+
+            }
+        );
     }
 }

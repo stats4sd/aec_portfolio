@@ -15,6 +15,7 @@ class DatabaseSeeder extends Seeder
     {
         $this->call(ContinentSeeder::class);
         $this->call(CurrencySeeder::class);
+        $this->call(ExchangeRatesTableSeeder::class);
         $this->call(RoleSeeder::class);
         $this->call(RedLinesTableSeeder::class);
         $this->call(PrinciplesTableSeeder::class);
@@ -25,7 +26,6 @@ class DatabaseSeeder extends Seeder
         $this->call(DashboardRatingSeeder::class);
         $this->call(ProjectSeeder::class);
         $this->call(ScoreTagsTableSeeder::class);
-        $this->call(ExchangeRatesTableSeeder::class);
         $this->call(HelpTextEntrySeeder::class);
     }
 }
