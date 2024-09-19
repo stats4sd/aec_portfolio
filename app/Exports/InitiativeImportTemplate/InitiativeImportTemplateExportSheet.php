@@ -27,9 +27,7 @@ class InitiativeImportTemplateExportSheet implements FromCollection, WithHeading
 
     use RegistersEventListeners;
 
-    public function __construct(public Organisation $organisation)
-    {
-    }
+    public function __construct(public Organisation $organisation) {}
 
     public function collection(): Collection
     {
@@ -41,6 +39,7 @@ class InitiativeImportTemplateExportSheet implements FromCollection, WithHeading
                 'description' => 'enter a description of the initiative (optional)',
                 'currency' => 'enter the 3-letter currency code of the initiative',
                 'exchange_rate' => '1 of this initiative\'s currency = XXX of your institution\'s default currency',
+                'exchange_rate_eur' => '1 of this initiative\'s currency = XXX of  currency EUR',
                 'budget' => 'enter the budget of the initiative in the initiative\'s currency',
                 'uses_only_own_funds' => 'enter yes if the initiative uses only your institution\'s funds, no if the funds come from other sources.',
                 'main_recipient' => 'the institution or entity t hat directly receives the majority of the funds for this initiative',
@@ -61,12 +60,13 @@ class InitiativeImportTemplateExportSheet implements FromCollection, WithHeading
                 'description of the initiative',
                 'EUR',
                 '1',
+                '1',
                 '100000',
                 'yes',
                 'Self',
                 '2021-01-01',
                 '2021-12-31',
-                'Global',
+                'Global level',
                 'Africa',
                 '',
                 'Eastern Africa',
@@ -88,6 +88,7 @@ class InitiativeImportTemplateExportSheet implements FromCollection, WithHeading
             'description',
             'currency',
             'exchange_rate',
+            'exchange_rate_eur',
             'budget',
             'uses_only_own_funds',
             'main_recipient',
@@ -142,12 +143,12 @@ class InitiativeImportTemplateExportSheet implements FromCollection, WithHeading
             'D' => 20,
             'E' => 10,
             'F' => 15,
-            'G' => 10,
-            'H' => 19,
-            'I' => 18,
-            'J' => 14,
+            'G' => 18,
+            'H' => 10,
+            'I' => 19,
+            'J' => 18,
             'K' => 14,
-            'L' => 15,
+            'L' => 14,
             'M' => 15,
             'N' => 15,
             'O' => 15,
@@ -156,6 +157,7 @@ class InitiativeImportTemplateExportSheet implements FromCollection, WithHeading
             'R' => 15,
             'S' => 15,
             'T' => 15,
+            'U' => 15,
         ];
     }
 
@@ -203,26 +205,24 @@ class InitiativeImportTemplateExportSheet implements FromCollection, WithHeading
 
         for ($i = 3; $i <= 1000; $i++) {
             $sheet->setDataValidation("C$i", $categoryVal);
-            $sheet->setDataValidation("H$i", $ynVal);
-            $sheet->setDataValidation("L$i", $geoVal);
-            $sheet->setDataValidation("M$i", $continentVal);
+            $sheet->setDataValidation("I$i", $ynVal);
+            $sheet->setDataValidation("M$i", $geoVal);
             $sheet->setDataValidation("N$i", $continentVal);
-            $sheet->setDataValidation("O$i", $regionVal);
+            $sheet->setDataValidation("O$i", $continentVal);
             $sheet->setDataValidation("P$i", $regionVal);
-            $sheet->setDataValidation("Q$i", $countryVal);
+            $sheet->setDataValidation("Q$i", $regionVal);
             $sheet->setDataValidation("R$i", $countryVal);
             $sheet->setDataValidation("S$i", $countryVal);
             $sheet->setDataValidation("T$i", $countryVal);
+            $sheet->setDataValidation("U$i", $countryVal);
 
             // update date columns to use sensible ISO format;
-            $sheet->getCell("J$i")->setDataType(DataType::TYPE_ISO_DATE);
-            $sheet->getStyle("J$i")->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_DATE_YYYYMMDD);
-
             $sheet->getCell("K$i")->setDataType(DataType::TYPE_ISO_DATE);
             $sheet->getStyle("K$i")->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_DATE_YYYYMMDD);
+
+            $sheet->getCell("L$i")->setDataType(DataType::TYPE_ISO_DATE);
+            $sheet->getStyle("L$i")->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_DATE_YYYYMMDD);
         }
-
-
     }
 
     public static function createDefaultDropdownValidation(): DataValidation
