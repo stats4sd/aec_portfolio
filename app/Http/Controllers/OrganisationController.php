@@ -48,7 +48,6 @@ class OrganisationController extends Controller
             'countries' => $countries,
             'tab' => $tab,
         ]);
-
     }
 
     // can only be used when an organisation is selected in the current session
@@ -63,7 +62,9 @@ class OrganisationController extends Controller
             $validated['has_additional_criteria'] = false;
         }
 
-        if (isset($validated['agreement']) && !$organisation->agreement_signed_at) {
+        // Agreement should be signed only when it is not yet signed.
+        // Once it is signed, it is not necessary to sign again
+        if (isset($validated['agreement']) && $organisation->agreement_signed_at == null) {
             unset($validated['agreement']);
             $validated['agreement_signed_at'] = Carbon::now();
             $validated['signee_id'] = Auth::user()->id;
@@ -79,7 +80,6 @@ class OrganisationController extends Controller
             ],
             'signee',
         ]);
-
     }
 
     public function saved()
@@ -105,7 +105,6 @@ class OrganisationController extends Controller
             $timestamp = Carbon::now()->toDateTimeString();
 
             ExportOrgData::dispatch($organisation, $timestamp);
-
         }
 
         return 'done - queued';
@@ -123,5 +122,4 @@ class OrganisationController extends Controller
 
         return response('success', 200);
     }
-
 }
