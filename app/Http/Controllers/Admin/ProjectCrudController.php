@@ -204,8 +204,8 @@ class ProjectCrudController extends CrudController
             ->title('Initiative Timing');
 
 
-        CRUD::field('start_date')->type('date_picker')->label('Enter the start date for the project.');
-        CRUD::field('end_date')->type('date_picker')->label('Enter the end date for the project.')
+        CRUD::field('start_date')->type('date')->label('Enter the start date for the project.');
+        CRUD::field('end_date')->type('date')->label('Enter the end date for the project.')
             ->hint('This is optional');
 
         CRUD::field('currency-info')
@@ -409,7 +409,6 @@ class ProjectCrudController extends CrudController
 
         $this->removeAllSaveActions();
         $this->addSaveAndReturnToProjectListAction();
-
     }
 
     protected function setupUpdateOperation()
@@ -482,96 +481,91 @@ class ProjectCrudController extends CrudController
             'principleAssessments.customScoreTags',
             'additionalCriteriaAssessment.scoreTags',
             'additionalCriteriaAssessment.customScoreTags',
-            ])
+        ])
             ->each(function (Assessment $assessment) use ($clone) {
-            $newAssessment = $assessment->replicate();
-            $newAssessment->project_id = $clone->id;
-            $newAssessment->save();
+                $newAssessment = $assessment->replicate();
+                $newAssessment->project_id = $clone->id;
+                $newAssessment->save();
 
 
-            $redlinesWithPivot = $assessment->redlines->mapWithKeys(function (Redline $redline) {
-                return [
-                    $redline->id => ['value' => $redline->pivot->value],
-                ];
-            });
-
-            $newAssessment->redLines()->sync($redlinesWithPivot->toArray());
-
-
-            // iterate through the principleAssessments and create new ones (along with score tags and custom score tags)
-            $assessment->principleAssessments->each(function (PrincipleAssessment $principleAssessment) use ($newAssessment) {
-
-                unset($principleAssessment->id);
-                unset($principleAssessment->assessment_id);
-                unset($principleAssessment->created_at);
-                unset($principleAssessment->updated_at);
-
-                $newPrincipleAssessment = $newAssessment->principleAssessments()->create($principleAssessment->toArray());
-
-                // for each scoreTag linked to the original PrincipleAssessment, also sync it to the new PrincipleAssessment
-                $scoreTagsWithPivot = $principleAssessment->scoreTags->mapWithKeys(function (ScoreTag $scoreTag) use ($newAssessment) {
+                $redlinesWithPivot = $assessment->redlines->mapWithKeys(function (Redline $redline) {
                     return [
-                        $scoreTag->id => [
-                            'assessment_id' => $newAssessment->id,
-                        ],
+                        $redline->id => ['value' => $redline->pivot->value],
                     ];
                 });
 
-                $newPrincipleAssessment->scoreTags()->sync($scoreTagsWithPivot->toArray());
+                $newAssessment->redLines()->sync($redlinesWithPivot->toArray());
 
-                $principleAssessment->customScoreTags->each(function (CustomScoreTag $customScoreTag) use ($newPrincipleAssessment) {
-                    unset($customScoreTag->id);
-                    unset($customScoreTag->principle_assessment_id);
-                    unset($customScoreTag->created_at);
-                    unset($customScoreTag->updated_at);
 
-                    $customScoreTag->assessment_id = $newPrincipleAssessment->assessment_id;
+                // iterate through the principleAssessments and create new ones (along with score tags and custom score tags)
+                $assessment->principleAssessments->each(function (PrincipleAssessment $principleAssessment) use ($newAssessment) {
 
-                    $newPrincipleAssessment->customScoreTags()->create($customScoreTag->toArray());
+                    unset($principleAssessment->id);
+                    unset($principleAssessment->assessment_id);
+                    unset($principleAssessment->created_at);
+                    unset($principleAssessment->updated_at);
+
+                    $newPrincipleAssessment = $newAssessment->principleAssessments()->create($principleAssessment->toArray());
+
+                    // for each scoreTag linked to the original PrincipleAssessment, also sync it to the new PrincipleAssessment
+                    $scoreTagsWithPivot = $principleAssessment->scoreTags->mapWithKeys(function (ScoreTag $scoreTag) use ($newAssessment) {
+                        return [
+                            $scoreTag->id => [
+                                'assessment_id' => $newAssessment->id,
+                            ],
+                        ];
+                    });
+
+                    $newPrincipleAssessment->scoreTags()->sync($scoreTagsWithPivot->toArray());
+
+                    $principleAssessment->customScoreTags->each(function (CustomScoreTag $customScoreTag) use ($newPrincipleAssessment) {
+                        unset($customScoreTag->id);
+                        unset($customScoreTag->principle_assessment_id);
+                        unset($customScoreTag->created_at);
+                        unset($customScoreTag->updated_at);
+
+                        $customScoreTag->assessment_id = $newPrincipleAssessment->assessment_id;
+
+                        $newPrincipleAssessment->customScoreTags()->create($customScoreTag->toArray());
+                    });
                 });
 
+                $assessment->additionalCriteriaAssessment->each(function (AdditionalCriteriaAssessment $additionalCriteriaAssessment) use ($newAssessment) {
+
+                    unset($additionalCriteriaAssessment->id);
+                    unset($additionalCriteriaAssessment->assessment_id);
+                    unset($additionalCriteriaAssessment->created_at);
+                    unset($additionalCriteriaAssessment->updated_at);
+
+                    $newAdditionalCriteriaAssessment = $newAssessment->additionalCriteriaAssessment()->create($additionalCriteriaAssessment->toArray());
+
+                    $scoreTagsWithPivot = $additionalCriteriaAssessment->scoreTags->mapWithKeys(function (AdditionalCriteriaScoreTag $scoreTag) use ($newAssessment) {
+                        return [
+                            $scoreTag->id => [
+                                'assessment_id' => $newAssessment->id,
+                            ],
+                        ];
+                    });
+
+                    $newAdditionalCriteriaAssessment->scoreTags()->sync($scoreTagsWithPivot);
+
+                    $additionalCriteriaAssessment->customScoreTags->each(function (AdditionalCriteriaCustomScoreTag $customScoreTag) use ($newAdditionalCriteriaAssessment) {
+                        unset($customScoreTag->id);
+                        unset($customScoreTag->additional_criteria_assessment_id);
+                        unset($customScoreTag->created_at);
+                        unset($customScoreTag->updated_at);
+
+                        $customScoreTag->assessment_id = $newAdditionalCriteriaAssessment->assessment_id;
+
+                        $newAdditionalCriteriaAssessment->customScoreTags()->create($customScoreTag->toArray());
+                    });
+                });
             });
-
-            $assessment->additionalCriteriaAssessment->each(function (AdditionalCriteriaAssessment $additionalCriteriaAssessment) use ($newAssessment){
-
-                unset($additionalCriteriaAssessment->id);
-                unset($additionalCriteriaAssessment->assessment_id);
-                unset($additionalCriteriaAssessment->created_at);
-                unset($additionalCriteriaAssessment->updated_at);
-
-                $newAdditionalCriteriaAssessment = $newAssessment->additionalCriteriaAssessment()->create($additionalCriteriaAssessment->toArray());
-
-                $scoreTagsWithPivot = $additionalCriteriaAssessment->scoreTags->mapWithKeys(function (AdditionalCriteriaScoreTag $scoreTag) use ($newAssessment) {
-                    return [
-                        $scoreTag->id => [
-                            'assessment_id' => $newAssessment->id,
-                        ],
-                    ];
-                });
-
-                $newAdditionalCriteriaAssessment->scoreTags()->sync($scoreTagsWithPivot);
-
-                $additionalCriteriaAssessment->customScoreTags->each(function (AdditionalCriteriaCustomScoreTag $customScoreTag) use ($newAdditionalCriteriaAssessment) {
-                    unset($customScoreTag->id);
-                    unset($customScoreTag->additional_criteria_assessment_id);
-                    unset($customScoreTag->created_at);
-                    unset($customScoreTag->updated_at);
-
-                    $customScoreTag->assessment_id = $newAdditionalCriteriaAssessment->assessment_id;
-
-                    $newAdditionalCriteriaAssessment->customScoreTags()->create($customScoreTag->toArray());
-                });
-
-            });
-
-
-        });
 
         // as the clone was created without events; save it again to trigger any "on save" events
         $clone->save();
 
         return $clone;
-
     }
 
     public function store()
@@ -882,5 +876,4 @@ class ProjectCrudController extends CrudController
             },
         ]);
     }
-
 }
