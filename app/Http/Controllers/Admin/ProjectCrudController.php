@@ -282,10 +282,14 @@ class ProjectCrudController extends CrudController
             ->default($selectedOrganisation->currency)
             ->hint('Enter the 3-digit code for the currency, e.g. "EUR", or "USD"');
 
+        // TODO: change budget field to a hidden field
         CRUD::field('budget')
             ->wrapper(['class' => 'form-group col-sm-8 required'])
             ->hint('Enter the overall budget for the project');
 
+        // TODO: use display_budget to accept budget with thousand separators
+        // TODO: show budget value with thousand separator in edit view
+        CRUD::field('display_budget');
 
         CRUD::field('exchange_rate_title')
             ->type('section-title')
@@ -570,6 +574,8 @@ class ProjectCrudController extends CrudController
 
     public function store()
     {
+        $this->calculateBudget();
+
         $this->calculateBudgetEur();
 
         return $this->traitStore();
@@ -577,9 +583,23 @@ class ProjectCrudController extends CrudController
 
     public function update()
     {
+        $this->calculateBudget();
+
         $this->calculateBudgetEur();
 
         return $this->traitUpdate();
+    }
+
+    public function calculateBudget()
+    {
+        // get display budget with thousand separator
+        $displayBudget = $this->crud->getRequest()->display_budget;
+
+        // remove possible thousand separators, e.g. comma, dot
+        $budget = Str::replace(',', '', $displayBudget);
+        $budget = Str::replace('.', '', $budget);
+
+        $this->crud->getRequest()->request->set('budget', $budget);
     }
 
     public function calculateBudgetEur()
