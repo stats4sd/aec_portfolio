@@ -19,7 +19,7 @@ class ProjectController extends Controller
     public function index(Request $request)
     {
         // handle portfolio url - override existing session
-        if($request->has('portfolioFilter'))  {
+        if ($request->has('portfolioFilter')) {
             Session::put('portfolioFilter', $request->get('portfolioFilter'));
         }
 
@@ -79,7 +79,6 @@ class ProjectController extends Controller
             if (Auth::user()->can('assess project')) {
                 $enableAssessButton = true;
             }
-
         }
 
         // get settings from session
@@ -89,6 +88,11 @@ class ProjectController extends Controller
         $principleStatusFilterValue = Session::get('principleStatusFilterValue') ?? '';
         $portfolioFilter = Session::get('portfolioFilter') ?? '';
         $searchString = Session::get('searchString') ?? '';
+
+
+        // get previously editing project id from session
+        $projectId = Session::get('projectId') ?? '';
+        logger('projectId: ' . $projectId);
 
         $settings = [
             'sortBy' => $sortBy,
@@ -118,6 +122,7 @@ class ProjectController extends Controller
             'settings' => $settings,
             'statusHelpText' => $statusHelpText,
             'scoreHelpText' => $scoreHelpText,
+            'projectId' => $projectId,
         ]);
     }
 
@@ -161,5 +166,4 @@ class ProjectController extends Controller
     {
         //
     }
-
 }

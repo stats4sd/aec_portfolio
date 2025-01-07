@@ -99,6 +99,7 @@
         :enable-assess-button="enableAssessButton"
         :status-help-text="statusHelpText"
         :score-help-text="scoreHelpText"
+        :project-id="projectId"
     />
 
 </template>
@@ -117,6 +118,7 @@ import VHelpTextEntry from "./vHelpTextEntry.vue";
 const props = defineProps({
     statusHelpText: Object,
     scoreHelpText: Object,
+    projectId: Object,
     organisation: Object,
     initialInitiatives: Object,
     hasAdditionalAssessment: Boolean,
