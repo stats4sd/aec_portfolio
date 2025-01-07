@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use App\Enums\GeographicalReach;
+use App\Rules\DisplayBudgetRule;
 use App\Rules\UniqueProjectCode;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -36,6 +37,7 @@ class ProjectRequest extends FormRequest
             'initiativeCategory' => 'required|exists:initiative_categories,id',
             'initiative_category_other' => 'nullable',
             'budget' => 'required|integer|gte:0',
+            'displayBudget' => ['required', new DisplayBudgetRule],
             'currency' => 'required|max:3',
             'exchange_rate' => 'sometimes|required',
             'exchange_rate_eur' => 'sometimes|required',
@@ -72,7 +74,7 @@ class ProjectRequest extends FormRequest
     public function messages()
     {
         return [
-            //
+            'displayBudget.required' => 'The budget field is required.',
         ];
     }
 }
