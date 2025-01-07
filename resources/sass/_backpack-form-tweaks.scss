@@ -22,5 +22,37 @@
 form .form-group.required>label:not(:empty):not(.form-check-label)::after {
   color: red;
   content: " *";
-  background-color: lightyellow;
+}
+
+// change background color for required text field
+form .form-group.required>input {
+  background-color: pink;
+}
+
+// change background color for required textarea field
+form .form-group.required>textarea {
+  background-color: pink;
+}
+
+// change background color for required selection box
+form .form-group.required>select {
+  background-color: pink;
+}
+
+
+
+
+// TODO: change background color for required checkbox field
+form .form-group.required>checkbox {
+  background-color: pink;
+}
+
+// TODO: change background color for required select2 selection box
+form .form-group.required>select2 {
+  background-color: pink;
+}
+
+// TODO: change background color for required radio button
+form .form-group.required>radio {
+  background-color: pink;
 }
