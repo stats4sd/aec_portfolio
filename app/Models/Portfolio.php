@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Session;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Backpack\CRUD\app\Models\Traits\CrudTrait;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Portfolio extends Model
@@ -25,18 +26,17 @@ class Portfolio extends Model
     protected static function booted()
     {
         // add global scope to filter by currently selected organisation.
-        static::addGlobalScope('organisation',  function(Builder $query) {
+        static::addGlobalScope('organisation',  function (Builder $query) {
             $query->where('organisation_id', Session::get('selectedOrganisationId'));
         });
 
         // attach event handler, on deleting of a portfolio
-	    static::deleting(function($portfolio) {
+        static::deleting(function ($portfolio) {
             // delete all projects that belong to this portfolio
             foreach ($portfolio->projects as $project) {
                 $project->delete();
             }
-	    });
-
+        });
     }
 
 
@@ -80,8 +80,16 @@ class Portfolio extends Model
     |--------------------------------------------------------------------------
     */
 
-    public function getFundingFlowAnalysisAttribute() {
+    public function getFundingFlowAnalysisAttribute()
+    {
         return $this->contributes_to_funding_flow == 1 ? 'Yes' : 'No';
     }
 
+    // computed field to show budget with thousand separator
+    public function displayBudget(): Attribute
+    {
+        return new Attribute(
+            get: fn() => number_format($this->budget),
+        );
+    }
 }

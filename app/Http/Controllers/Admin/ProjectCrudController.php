@@ -2,44 +2,39 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Exports\InitiativeImportTemplate\InitiativeImportTemplateExportWorkbook;
-use App\Imports\ProjectWorkbookImport;
-use App\Models\AdditionalCriteria;
-use App\Models\AdditionalCriteriaAssessment;
-use App\Models\AdditionalCriteriaCustomScoreTag;
-use App\Models\FundingSource;
-use App\Models\PrincipleAssessment;
 use App\Models\Region;
 use App\Models\Country;
 use App\Models\Project;
 use App\Models\RedLine;
-use App\Models\AdditionalCriteriaScoreTag;
+use App\Models\ScoreTag;
 use App\Models\Portfolio;
 use App\Models\Principle;
 use App\Models\Assessment;
-use App\Models\ScoreTag;
-use Backpack\CRUD\app\Http\Controllers\Operations\CreateOperation;
-use Backpack\CRUD\app\Http\Controllers\Operations\DeleteOperation;
-use Backpack\CRUD\app\Http\Controllers\Operations\ShowOperation;
-use Backpack\CRUD\app\Http\Controllers\Operations\UpdateOperation;
 use Illuminate\Support\Arr;
-use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use App\Models\Organisation;
+use App\Models\FundingSource;
 use App\Imports\ProjectImport;
 use App\Models\CustomScoreTag;
 use App\Enums\AssessmentStatus;
 use App\Enums\GeographicalReach;
+use App\Models\AdditionalCriteria;
 use App\Models\OrganisationMember;
 use Illuminate\Support\Facades\DB;
-use Maatwebsite\Excel\Concerns\WithCustomStartCell;
 use Prologue\Alerts\Facades\Alert;
+use App\Models\PrincipleAssessment;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Http\Requests\ProjectRequest;
 use Backpack\CRUD\app\Library\Widget;
+use App\Imports\ProjectWorkbookImport;
 use function mysql_xdevapi\getSession;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Validator;
 use phpDocumentor\Reflection\Types\True_;
+use App\Models\AdditionalCriteriaScoreTag;
+use App\Models\AdditionalCriteriaAssessment;
+use App\Models\AdditionalCriteriaCustomScoreTag;
+use Maatwebsite\Excel\Concerns\WithCustomStartCell;
 use Backpack\CRUD\app\Http\Controllers\CrudController;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use App\Http\Controllers\Admin\Operations\AssessOperation;
@@ -47,7 +42,12 @@ use App\Http\Controllers\Admin\Operations\ImportOperation;
 use App\Http\Controllers\Admin\Operations\RedlineOperation;
 use App\Http\Controllers\Admin\Traits\UsesSaveAndNextAction;
 use Backpack\Pro\Http\Controllers\Operations\FetchOperation;
+use Backpack\CRUD\app\Http\Controllers\Operations\ShowOperation;
 use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
+use Backpack\CRUD\app\Http\Controllers\Operations\CreateOperation;
+use Backpack\CRUD\app\Http\Controllers\Operations\DeleteOperation;
+use Backpack\CRUD\app\Http\Controllers\Operations\UpdateOperation;
+use App\Exports\InitiativeImportTemplate\InitiativeImportTemplateExportWorkbook;
 
 class ProjectCrudController extends CrudController
 {
@@ -282,10 +282,17 @@ class ProjectCrudController extends CrudController
             ->default($selectedOrganisation->currency)
             ->hint('Enter the 3-digit code for the currency, e.g. "EUR", or "USD"');
 
+        // change budget field to a hidden field
         CRUD::field('budget')
-            ->wrapper(['class' => 'form-group col-sm-8 required'])
+            ->type('hidden')
+            // ->wrapper(['class' => 'form-group col-sm-8 required'])
             ->hint('Enter the overall budget for the project');
 
+        // use displayBudget to accept budget with thousand separators
+        CRUD::field('displayBudget')
+            ->label('Budget')
+            ->wrapper(['class' => 'form-group col-sm-8 required'])
+            ->hint('Enter the overall budget for the project');
 
         CRUD::field('exchange_rate_title')
             ->type('section-title')
@@ -417,6 +424,7 @@ class ProjectCrudController extends CrudController
 
         $this->setupCreateOperation();
         CRUD::modifyField('code', ['hint' => '', 'validationRules' => 'required', 'validationMessages' => ['required' => 'The code field is required']]);
+
         $this->crud->setValidation();
     }
 
@@ -570,6 +578,8 @@ class ProjectCrudController extends CrudController
 
     public function store()
     {
+        $this->calculateBudget();
+
         $this->calculateBudgetEur();
 
         return $this->traitStore();
@@ -577,9 +587,33 @@ class ProjectCrudController extends CrudController
 
     public function update()
     {
+        $this->calculateBudget();
+
         $this->calculateBudgetEur();
 
         return $this->traitUpdate();
+    }
+
+    // convert displayBudget to a number, set it to budget
+    public function calculateBudget()
+    {
+        // get display budget with thousand separator
+        $displayBudget = $this->crud->getRequest()->displayBudget;
+
+        // possible improvement:
+        // when displayBudget lost focus, show error message if it is not a number
+
+        // remove possible thousand separators, e.g. comma, dot
+        $budget = Str::replace(',', '', $displayBudget);
+        $budget = Str::replace('.', '', $budget);
+
+        // check if displayBudget can be converted into a number
+        // to keep it simple, return 0 if it is not a number
+        if (!ctype_digit($budget)) {
+            $budget = 0;
+        }
+
+        $this->crud->getRequest()->request->set('budget', $budget);
     }
 
     public function calculateBudgetEur()

@@ -29,6 +29,7 @@ class PortfolioRequest extends FormRequest
             'description' => 'nullable',
             'currency' => 'nullable',
             'budget' => 'nullable|gte:0|max:18446744073709551615',
+            'displayBudget' => 'nullable',
         ];
     }
 

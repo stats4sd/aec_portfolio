@@ -8,7 +8,9 @@
 
         <h1>{{ $entry->organisation->name }} - {{ \Illuminate\Support\Str::title($entry->name) }}</h1>
         @if (count($entry->assessments) > 1)
-            <h4>INITIATIVE SUMMARY <span class="text-bright-green no-print">- CURRENT ASSESSMENT (Assessment {{count($entry->assessments)}})</span></h4>
+            <h4>INITIATIVE SUMMARY
+                <span class="text-bright-green no-print">- CURRENT ASSESSMENT (Assessment {{count($entry->assessments)}})</span>
+            </h4>
         @else
             <h4 class="text-uppercase">Initiative Summary</h4>
         @endif
@@ -27,18 +29,18 @@
                     </tr>
                     <tr>
                         <td class="text-right pr-4 mr-2">Budget:</td>
-                        <td>{{ $entry->currency }} {{ $entry->budget }}</td>
+                        <td>{{ $entry->currency }} {{ $entry->displayBudget }}</td>
                     </tr>
                     @if($entry->currency !== $entry->organisation->currency)
                         <tr>
                             <td class="text-right pr-4 mr-2">Budget (in {{ $entry->organisation->currency }}):</td>
-                            <td>{{ $entry->organisation->currency }} {{ $entry->budget_org }}</td>
+                            <td>{{ $entry->organisation->currency }} {{ $entry->displayBudgetOrg }}</td>
                         </tr>
                     @endif
                     @if($entry->currency !== 'EUR')
                         <tr>
                             <td class="text-right pr-4 mr-2">Budget (in EUR):</td>
-                            <td>EUR {{ $entry->budget_eur }}</td>
+                            <td>EUR {{ $entry->displayBudgetEur }}</td>
                         </tr>
                     @endif
                     <tr>
@@ -118,7 +120,7 @@
                     <x-help-text-link class="no-print" location="Initiatives - score" type="popover"></x-help-text-link>
                 </div>
                 <div class="col-12 mt-4 d-flex align-items-center justify-content-center flex-column">
-                    @if($entry->latest_assessment->redline_status ===  \App\Enums\AssessmentStatus::Failed->value)
+                    @if($entry->latest_assessment->redline_status === \App\Enums\AssessmentStatus::Failed->value)
                         <span class="text-secondary">Initiatives that fail the red flag assessment automatically receive a score of 0%.</span>
                     @else
                         <span class="text-secondary">Calculated based on the total score, divided by the total possible score for all applicable principles.</span>
@@ -265,7 +267,7 @@
     @endforeach
 
     @endif
-    
+
     <div class="container no-print">
         @if (count($entry->assessments) > 1)
             <div class="row mt-4 pt-4">
@@ -279,11 +281,13 @@
                         </tr>
                         @foreach ($entry->assessments as $assessment)
                             @if (!$loop->last)
-                            <tr>
-                                <td> Assessment {{ $loop->index+1 }}</td>
-                                <td> {{ $assessment->completed_at }}</td>
-                                <td><a class="btn btn-success mr-2" href="/admin/assessment/{{$assessment->id}}/show">Show Information</a></td>
-                            </tr>
+                                <tr>
+                                    <td> Assessment {{ $loop->index+1 }}</td>
+                                    <td> {{ $assessment->completed_at }}</td>
+                                    <td>
+                                        <a class="btn btn-success mr-2" href="/admin/assessment/{{$assessment->id}}/show">Show Information</a>
+                                    </td>
+                                </tr>
                             @endif
                         @endforeach
                     </table>
@@ -291,7 +295,6 @@
             </div>
         @endif
     </div>
-
 
 @endsection
 
@@ -301,7 +304,6 @@
 
     @vite('resources/js/radarChart.js')
     <script type="module">
-
         /* Radar chart design created by Nadieh Bremer - VisualCinnamon.com */
 
         //////////////////////////////////////////////////////////////
@@ -327,7 +329,7 @@
         ////////////////////////// Data //////////////////////////////
         //////////////////////////////////////////////////////////////
 
-        var data = [{!! $spiderData->values()->toJson() !!}];
+        var data = [{!!$spiderData->values()->toJson() !!}];
         //////////////////////////////////////////////////////////////
         //////////////////// Draw the Chart //////////////////////////
         //////////////////////////////////////////////////////////////
