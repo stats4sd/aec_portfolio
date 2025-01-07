@@ -33,7 +33,7 @@
                 <td>
                     {{ $portfolio->name }}
                 </td>
-                <td>{{ $organisation->currency }} {{ $portfolio->budget }}</td>
+                <td>{{ $organisation->currency }} {{ $portfolio->displayBudget }}</td>
                 <td>{{ $portfolio->description }}</td>
                 <td>{{ $portfolio->fundingFlowAnalysis }}</td>
                 <td>{{ $portfolio->projects->count() }}</td>

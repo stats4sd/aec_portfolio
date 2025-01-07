@@ -600,16 +600,16 @@ class ProjectCrudController extends CrudController
         // get display budget with thousand separator
         $displayBudget = $this->crud->getRequest()->displayBudget;
 
-        // check if displayBudget can be converted into a number
-        // to keep it simple, return 0 if it is not a number
-
         // possible improvement:
         // when displayBudget lost focus, show error message if it is not a number
-        if (ctype_digit($displayBudget)) {
-            // remove possible thousand separators, e.g. comma, dot
-            $budget = Str::replace(',', '', $displayBudget);
-            $budget = Str::replace('.', '', $budget);
-        } else {
+
+        // remove possible thousand separators, e.g. comma, dot
+        $budget = Str::replace(',', '', $displayBudget);
+        $budget = Str::replace('.', '', $budget);
+
+        // check if displayBudget can be converted into a number
+        // to keep it simple, return 0 if it is not a number
+        if (!ctype_digit($budget)) {
             $budget = 0;
         }
 
