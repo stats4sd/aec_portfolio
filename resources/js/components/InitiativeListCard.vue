@@ -3,6 +3,9 @@
         <div class="card-body p-4">
             <div class="row">
                 <div class="col-12 col-lg-4 border border-top-0 border-left-0 border-bottom-0">
+                    <!-- Add project anchor here -->
+                    <p :id='initiative.id'></p>
+
                     <h4 class="font-weight-bold text-deep-green">{{ initiative.name.toUpperCase() }}</h4>
                 </div>
                 <div
