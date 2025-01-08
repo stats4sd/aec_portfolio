@@ -41,12 +41,13 @@
 
 <?php
 
-// TODO: set project id into session when user expand a project in project list page
-
-// get project id from session
+// get project id from session for redirection
 $projectId = Session::get('projectId') ?? '';
 
-// remove project id in session
+// get project id from session for expanding a project
+$expandProjectId = Session::get('expandProjectId') ?? '';
+
+// remove project id in session, to avoid redirects again and again
 Session::put('projectId', '');
 
 // construct full url from server variables
@@ -54,16 +55,19 @@ $url = env('APP_URL') . "$_SERVER[REQUEST_URI]";
 
 // redirect if project id existed in session before
 if ($projectId != '') {
-
-    // redirect to current page with project id as anchor
-    // Note:
-    // 1. The redirection works when user goes to project list page by clicking a link
-    // 2. The redirection does not work when user click browser Back button
     $location = 'Location: ' . $url . '#' . $projectId;
     header($location);
-
-    // TODO: call javascript to expand that project
-    // echo '<script>alert(1);</script>';
 }
 
 ?>
+
+
+<script>
+    // expand previous project when page is fully loaded
+    window.addEventListener("load", (event) => {
+        // alert(<?php echo $expandProjectId; ?>);
+
+        // get project Id from PHP
+        document.getElementById("btnExpand<?php echo $expandProjectId; ?>").click();
+    });
+</script>

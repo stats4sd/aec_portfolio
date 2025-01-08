@@ -89,10 +89,8 @@ class ProjectController extends Controller
         $portfolioFilter = Session::get('portfolioFilter') ?? '';
         $searchString = Session::get('searchString') ?? '';
 
-
         // get previously editing project id from session
         $projectId = Session::get('projectId') ?? '';
-        logger('projectId: ' . $projectId);
 
         $settings = [
             'sortBy' => $sortBy,
@@ -172,6 +170,10 @@ class ProjectController extends Controller
     {
         $projectId = request('projectId');
 
+        // use for redirection
         Session::put('projectId', $projectId);
+
+        // use for expanding a project
+        Session::put('expandProjectId', $projectId);
     }
 }

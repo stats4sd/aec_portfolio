@@ -41,6 +41,21 @@
                         <i class="la"
                            :class="expanded ? 'la-caret-down' : 'la-caret-right'"></i>
                     </div>
+
+                    <!--
+                        Tried to call toggleExpand() in index.blade.php directly but failed.
+
+                        Need to use below indirect approach instead:
+                        Add an invisible button to call toggleExpand() in click event,
+                        then call the click event programatically in index.blade.php
+                    -->
+
+                    <input
+                        type="button"
+                        style="display:none"
+                        :id="'btnExpand'+initiative.id"
+                        @click="toggleExpand(initiative.id)" />
+
                 </div>
             </div>
             <Transition>
@@ -190,6 +205,8 @@ const expanded = ref(false)
 const emit = defineEmits(['remove_initiative'])
 
 function toggleExpand(projectId) {
+    // alert('toggleExpand');
+
     expanded.value = !expanded.value
 
     // after user expanding a project, make a ajax call to add project Id to session
