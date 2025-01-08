@@ -45,19 +45,25 @@
 
 // get project id from session
 $projectId = Session::get('projectId') ?? '';
-dump($projectId);
 
 // remove project id in session
 Session::put('projectId', '');
 
 // construct full url from server variables
 $url = env('APP_URL') . "$_SERVER[REQUEST_URI]";
-dump($url);
 
 // redirect if project id existed in session before
 if ($projectId != '') {
+
+    // redirect to current page with project id as anchor
+    // Note:
+    // 1. The redirection works when user goes to project list page by clicking a link
+    // 2. The redirection does not work when user click browser Back button
     $location = 'Location: ' . $url . '#' . $projectId;
     header($location);
+
+    // TODO: call javascript to expand that project
+    // echo '<script>alert(1);</script>';
 }
 
 ?>

@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\ExchangeRateController;
 use App\Http\Controllers\OrganisationController;
 use App\Http\Controllers\Admin\ProjectCrudController;
@@ -33,8 +34,12 @@ Route::get('assessment/{assessment}/additional-assessments', [AdditionalAssessme
 Route::post('exchange-rate', [ExchangeRateController::class, 'index']);
 
 
-require __DIR__.'/auth.php';
+// add a route to store project Id in session
+Route::get('store-project-id-in-session', [ProjectController::class, 'storeProjectIdInSession']);
 
-Route::middleware('auth')->group(function() {
+
+require __DIR__ . '/auth.php';
+
+Route::middleware('auth')->group(function () {
     Route::mediaLibrary();
 });

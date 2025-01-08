@@ -166,4 +166,12 @@ class ProjectController extends Controller
     {
         //
     }
+
+    // store project Id into session
+    public function storeProjectIdInSession()
+    {
+        $projectId = request('projectId');
+
+        Session::put('projectId', $projectId);
+    }
 }

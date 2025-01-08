@@ -36,7 +36,7 @@
                        :class="enableAssessButton ? 'btn-success' : 'btn-info disabled'" v-if="nextAction">
                         {{ nextAction.label }}
                     </a>
-                    <div class="btn btn-info" @click="toggleExpand" data-toggle="collapse"
+                    <div class="btn btn-info" @click="toggleExpand(initiative.id)" data-toggle="collapse"
                          :data-target="'.initiative-collapse_'+initiative.id">
                         <i class="la"
                            :class="expanded ? 'la-caret-down' : 'la-caret-right'"></i>
@@ -189,8 +189,13 @@ const expanded = ref(false)
 
 const emit = defineEmits(['remove_initiative'])
 
-function toggleExpand() {
+function toggleExpand(projectId) {
     expanded.value = !expanded.value
+
+    // after user expanding a project, make a ajax call to add project Id to session
+    if (expanded.value) {
+        let result = axios.get('/store-project-id-in-session?projectId=' + projectId);
+    }
 }
 
 const nextAction = computed(() => {
