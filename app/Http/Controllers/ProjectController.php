@@ -137,7 +137,7 @@ class ProjectController extends Controller
             'settings' => $settings,
             'statusHelpText' => $statusHelpText,
             'scoreHelpText' => $scoreHelpText,
-            'expandedProjects' => $expandedProjects,
+            'expandedProjects' => $expandedProjects != null ? $expandedProjects : '',
         ]);
     }
 
@@ -190,10 +190,10 @@ class ProjectController extends Controller
 
         // use for expanding a project
 
-        if($expanded) {
-            Session::put('expandProject.'.$projectId, $projectId);
+        if ($expanded) {
+            Session::put('expandProject.' . $projectId, $projectId);
         } else {
-            Session::pull('expandProject.'.$projectId);
+            Session::pull('expandProject.' . $projectId);
         }
 
         return Session::get('expandProject');
