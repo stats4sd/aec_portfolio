@@ -49,7 +49,7 @@ class ProjectRequest extends FormRequest
             'geographic_reach' => ['required', Rule::in(collect(GeographicalReach::cases())->pluck('value')->toArray())],
             'continents' => 'required',
             'regions' => 'required',
-            'countries' => 'required',
+            'countries' => 'required_if:has_all_countries,0',
             'sub_regions' => 'nullable'
         ];
     }
@@ -75,6 +75,7 @@ class ProjectRequest extends FormRequest
     {
         return [
             'displayBudget.required' => 'The budget field is required.',
+            'countries.required_if' => 'The countries field is required if "has all countries" is not ticked.'
         ];
     }
 }

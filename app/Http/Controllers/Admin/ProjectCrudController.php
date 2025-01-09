@@ -402,6 +402,10 @@ class ProjectCrudController extends CrudController
             ->dependencies(['continents'])
             ->allows_null(true);
 
+        CRUD::field('has_all_countries')->type('checkbox')
+            ->label('Does this project work in all the countries in the chosen regions?')
+            ->hint('If this box is ticked, the project will be assigned to every country from the chosen regions when you save your changes.');
+
         CRUD::field('countries')->type('relationship')
             ->label('Select the country / countries that this project works in.')
             ->hint('Start typing to filter the results.')
@@ -582,6 +586,8 @@ class ProjectCrudController extends CrudController
 
         $this->calculateBudgetEur();
 
+        $this->handleAllCountrySelection();
+
         return $this->traitStore();
     }
 
@@ -590,6 +596,9 @@ class ProjectCrudController extends CrudController
         $this->calculateBudget();
 
         $this->calculateBudgetEur();
+
+        $this->handleAllCountrySelection();
+
 
         return $this->traitUpdate();
     }
@@ -909,5 +918,24 @@ class ProjectCrudController extends CrudController
                     ->whereNot('id', $currentOrgId);
             },
         ]);
+    }
+
+    private function handleAllCountrySelection()
+    {
+        $hasAllCountries = $this->crud->getRequest()->has_all_countries;
+
+        if($hasAllCountries) {
+
+            $regions = $this->crud->getRequest()->regions;
+
+            $countries = Country::whereHas('region', function ($query) use ($regions) {
+                $query->whereIn('regions.id', $regions);
+            })
+            ->get()
+            ->pluck('id')
+            ->toArray();
+
+            $this->crud->getRequest()->request->set('countries', $countries);
+        }
     }
 }

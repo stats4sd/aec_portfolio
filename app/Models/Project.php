@@ -30,6 +30,7 @@ Project extends Model
     protected $casts = [
         'start_date' => 'date',
         'end_date' => 'date',
+        'has_all_countries' => 'boolean',
     ];
 
     protected static function booted()
