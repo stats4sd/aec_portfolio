@@ -42,17 +42,39 @@ form .form-group.required>select {
 
 
 
+
+
+
+// TODO: change background color for required select2 selection box
+span.select2-selection__rendered {
+  background-color: pink;
+}
+
+
+
+
+
+
+
 // TODO: change background color for required checkbox field
 form .form-group.required>checkbox {
   background-color: pink;
 }
 
-// TODO: change background color for required select2 selection box
-form .form-group.required>select2 {
+
+
+
+// change background color for label of all radio buttons, no matter it is a required field or not
+// Note: it affects the Yes button and No button in Red Flag Assessment form
+form .form-check>input[type="radio"]+label {
   background-color: pink;
 }
 
-// TODO: change background color for required radio button
-form .form-group.required>radio {
-  background-color: pink;
+
+
+
+// TODO: change background color for label of all required radio buttons
+// Question: why it does not work...?
+form .form-check.required>input[type="radio"]+label {
+  background-color: lightgreen;
 }
