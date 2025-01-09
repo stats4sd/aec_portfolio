@@ -35,7 +35,7 @@ Route::post('exchange-rate', [ExchangeRateController::class, 'index']);
 
 
 // add a route to store project Id in session
-Route::get('store-project-id-in-session', [ProjectController::class, 'storeProjectIdInSession']);
+Route::post('store-project-id-in-session', [ProjectController::class, 'storeProjectIdInSession']);
 
 
 require __DIR__ . '/auth.php';

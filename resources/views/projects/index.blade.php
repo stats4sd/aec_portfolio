@@ -28,7 +28,8 @@
         :settings="{{ json_encode($settings) }}"
         :status-help-text="{{ $statusHelpText }}"
         :score-help-text="{{ $scoreHelpText }}"
-        :project-id="{{ $projectId }}" />
+        :expanded-projects="{{ json_encode($expandedProjects) }}"
+        />
 </div>
 
 @endsection
@@ -36,38 +37,3 @@
 @section('after_scripts')
 @vite('resources/js/initiatives.js')
 @endsection
-
-
-
-<?php
-
-// get project id from session for redirection
-$projectId = Session::get('projectId') ?? '';
-
-// get project id from session for expanding a project
-$expandProjectId = Session::get('expandProjectId') ?? '';
-
-// remove project id in session, to avoid redirects again and again
-Session::put('projectId', '');
-
-// construct full url from server variables
-$url = env('APP_URL') . "$_SERVER[REQUEST_URI]";
-
-// redirect if project id existed in session before
-if ($projectId != '') {
-    $location = 'Location: ' . $url . '#' . $projectId;
-    header($location);
-}
-
-?>
-
-
-<script>
-    // expand previous project when page is fully loaded
-    window.addEventListener("load", (event) => {
-        // alert(<?php echo $expandProjectId; ?>);
-
-        // get project Id from PHP
-        document.getElementById("btnExpand<?php echo $expandProjectId; ?>").click();
-    });
-</script>

@@ -3,9 +3,6 @@
         <div class="card-body p-4">
             <div class="row">
                 <div class="col-12 col-lg-4 border border-top-0 border-left-0 border-bottom-0">
-                    <!-- Add project anchor here -->
-                    <p :id='initiative.id'></p>
-
                     <h4 class="font-weight-bold text-deep-green">{{ initiative.name.toUpperCase() }}</h4>
                 </div>
                 <div
@@ -41,21 +38,6 @@
                         <i class="la"
                            :class="expanded ? 'la-caret-down' : 'la-caret-right'"></i>
                     </div>
-
-                    <!--
-                        Tried to call toggleExpand() in index.blade.php directly but failed.
-
-                        Need to use below indirect approach instead:
-                        Add an invisible button to call toggleExpand() in click event,
-                        then call the click event programatically in index.blade.php
-                    -->
-
-                    <input
-                        type="button"
-                        style="display:none"
-                        :id="'btnExpand'+initiative.id"
-                        @click="toggleExpand(initiative.id)" />
-
                 </div>
             </div>
             <Transition>
@@ -198,21 +180,23 @@ const props = defineProps({
     enableReassessButton: Boolean,
     statusHelpText: Object,
     scoreHelpText: Object,
+    expandedStart: Boolean
 })
 
-const expanded = ref(false)
+const expanded = ref(props.expandedStart)
 
 const emit = defineEmits(['remove_initiative'])
 
-function toggleExpand(projectId) {
+function toggleExpand(){
     // alert('toggleExpand');
 
     expanded.value = !expanded.value
 
-    // after user expanding a project, make a ajax call to add project Id to session
-    if (expanded.value) {
-        let result = axios.get('/store-project-id-in-session?projectId=' + projectId);
-    }
+    let result = axios.post('/store-project-id-in-session', {
+        projectId: props.initiative.id,
+        expanded: expanded.value
+    });
+
 }
 
 const nextAction = computed(() => {

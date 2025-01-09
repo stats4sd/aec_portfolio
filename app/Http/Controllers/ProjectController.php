@@ -18,6 +18,23 @@ class ProjectController extends Controller
      */
     public function index(Request $request)
     {
+
+        // get project id from session for redirection
+        $projectId = Session::get('projectId');
+
+        ray('project id: ' . $projectId);
+
+        // redirect if project id existed in session before
+        if ($projectId) {
+
+            ray('redirecting');
+            Session::put('projectId', '');
+            return redirect(url('admin/project#' . $projectId));
+        }
+
+        $expandedProjects = Session::get('expandProject');
+
+
         // handle portfolio url - override existing session
         if ($request->has('portfolioFilter')) {
             Session::put('portfolioFilter', $request->get('portfolioFilter'));
@@ -25,7 +42,7 @@ class ProjectController extends Controller
 
         $projects = Project::with([
             'portfolio' => [
-                'organisation'
+                'organisation',
             ],
             'assessments' => [
                 'principles',
@@ -120,7 +137,7 @@ class ProjectController extends Controller
             'settings' => $settings,
             'statusHelpText' => $statusHelpText,
             'scoreHelpText' => $scoreHelpText,
-            'projectId' => $projectId,
+            'expandedProjects' => $expandedProjects,
         ]);
     }
 
@@ -169,11 +186,16 @@ class ProjectController extends Controller
     public function storeProjectIdInSession()
     {
         $projectId = request('projectId');
-
-        // use for redirection
-        Session::put('projectId', $projectId);
+        $expanded = request('expanded');
 
         // use for expanding a project
-        Session::put('expandProjectId', $projectId);
+
+        if($expanded) {
+            Session::put('expandProject.'.$projectId, $projectId);
+        } else {
+            Session::pull('expandProject.'.$projectId);
+        }
+
+        return Session::get('expandProject');
     }
 }

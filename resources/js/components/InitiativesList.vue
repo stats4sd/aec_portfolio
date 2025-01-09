@@ -87,6 +87,7 @@
 
     <InitiativeListCard
         v-for="initiative in filteredInitiatives"
+        :id="initiative.id"
         :key="initiative.id"
         @remove_initiative="removeInitiative"
         @refresh_initiative="refreshInitiative"
@@ -99,7 +100,7 @@
         :enable-assess-button="enableAssessButton"
         :status-help-text="statusHelpText"
         :score-help-text="scoreHelpText"
-        :project-id="projectId"
+        :expanded-start="expandedProjects[initiative.id]"
     />
 
 </template>
@@ -118,7 +119,6 @@ import VHelpTextEntry from "./vHelpTextEntry.vue";
 const props = defineProps({
     statusHelpText: Object,
     scoreHelpText: Object,
-    projectId: Object,
     organisation: Object,
     initialInitiatives: Object,
     hasAdditionalAssessment: Boolean,
@@ -131,6 +131,7 @@ const props = defineProps({
     enableReassessButton: Boolean,
     enableAssessButton: Boolean,
     settings: Object,
+    expandedProjects: Object,
 });
 
 // Sorting
