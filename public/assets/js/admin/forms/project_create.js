@@ -122,6 +122,18 @@ crud.field('initiativeCategory').onChange(function (field) {
 })
 
 
+// *********** Handle All Region Checkbox
+
+crud.field('has_all_regions').onChange(function (field) {
+    if (field.value == 1) {
+        crud.field('regions').disable();
+    } else {
+        crud.field('regions').enable();
+    }
+
+}).change()
+
+
 // *********** Handle All Country Checkbox
 
 crud.field('has_all_countries').onChange(function (field) {

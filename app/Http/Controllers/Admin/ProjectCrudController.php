@@ -48,6 +48,7 @@ use Backpack\CRUD\app\Http\Controllers\Operations\CreateOperation;
 use Backpack\CRUD\app\Http\Controllers\Operations\DeleteOperation;
 use Backpack\CRUD\app\Http\Controllers\Operations\UpdateOperation;
 use App\Exports\InitiativeImportTemplate\InitiativeImportTemplateExportWorkbook;
+use App\Models\Continent;
 
 class ProjectCrudController extends CrudController
 {
@@ -394,6 +395,10 @@ class ProjectCrudController extends CrudController
             ->label('Select the continent / continents that this project works in.')
             ->allows_null(true);
 
+        CRUD::field('has_all_regions')->type('checkbox')
+            ->label('Does this project work in all the regions in the chosen continents?')
+            ->hint('If this box is ticked, the project will be assigned to every region from the chosen continents when you save your changes.');
+
         CRUD::field('regions')->type('relationship')
             ->label('Select the regions that this project works in')
             ->hint('Using the UN geo-scheme standard 49 list of regions/sub-regions (more information <a href="https://www.eea.europa.eu/data-and-maps/data/external/un-geoscheme-standard-m49">here</a>)')
@@ -586,6 +591,8 @@ class ProjectCrudController extends CrudController
 
         $this->calculateBudgetEur();
 
+        $this->handleAllRegionSelection();
+
         $this->handleAllCountrySelection();
 
         return $this->traitStore();
@@ -597,8 +604,9 @@ class ProjectCrudController extends CrudController
 
         $this->calculateBudgetEur();
 
-        $this->handleAllCountrySelection();
+        $this->handleAllRegionSelection();
 
+        $this->handleAllCountrySelection();
 
         return $this->traitUpdate();
     }
@@ -920,20 +928,50 @@ class ProjectCrudController extends CrudController
         ]);
     }
 
+    private function handleAllRegionSelection()
+    {
+        $hasAllRegions = $this->crud->getRequest()->has_all_regions;
+
+        if ($hasAllRegions) {
+
+            $continents = $this->crud->getRequest()->continents;
+
+            $regions = Region::whereHas('continent', function ($query) use ($continents) {
+                $query->whereIn('continents.id', $continents);
+            })
+                ->get()
+                ->pluck('id')
+                ->toArray();
+
+            $this->crud->getRequest()->request->set('regions', $regions);
+        }
+    }
+
     private function handleAllCountrySelection()
     {
         $hasAllCountries = $this->crud->getRequest()->has_all_countries;
 
-        if($hasAllCountries) {
+        if ($hasAllCountries) {
 
             $regions = $this->crud->getRequest()->regions;
 
-            $countries = Country::whereHas('region', function ($query) use ($regions) {
-                $query->whereIn('regions.id', $regions);
-            })
-            ->get()
-            ->pluck('id')
-            ->toArray();
+            // Error handling for below combination
+            // 1. has_all_regions is false (user does not want to include all regions) AND
+            // 2. regions selection box is empty (user does not choose any region) AND
+            // 3. has_all_countries is true (user want to include all countries from region, but there is no region chosen...)
+            //
+            // It is not possible to find any country from no region...
+            // return null for countries to avoid throwing error, appropriate validation message will be showed in front end
+            $countries = null;
+
+            if ($regions) {
+                $countries = Country::whereHas('region', function ($query) use ($regions) {
+                    $query->whereIn('regions.id', $regions);
+                })
+                    ->get()
+                    ->pluck('id')
+                    ->toArray();
+            }
 
             $this->crud->getRequest()->request->set('countries', $countries);
         }
