@@ -19,10 +19,19 @@
   }
 }
 
-form .form-group.required>label:not(:empty):not(.form-check-label)::after {
+form .form-group.required>label:not(:empty):not(.form-check-label)::before {
   color: red;
-  content: " *";
+  content: "* ";
 }
+
+
+form .form-group.required>label:not(:empty):not(.form-check-label) {
+  background-color: lightgreen;
+}
+
+
+
+/*
 
 // change background color for required text field
 form .form-group.required>input {
@@ -43,7 +52,7 @@ form .form-group.required>select {
   background-color: pink;
 }
 
-
+*/
 
 
 
@@ -62,6 +71,9 @@ span.select2-selection__rendered {
 */
 
 
+
+/*
+
 span.select2-hidden-accessible {
   background-color: green;
 }
@@ -76,3 +88,6 @@ span.select2-hidden-accessible {
 form .form-check>input[type="radio"]+label {
   background-color: pink;
 }
+
+
+*/

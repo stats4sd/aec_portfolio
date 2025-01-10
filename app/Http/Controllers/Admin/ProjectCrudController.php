@@ -204,7 +204,8 @@ class ProjectCrudController extends CrudController
             // 1. Background color applied to the background of select2 instead of select2 itself... Field label background has been changed too
             // 2. CSS class bg-danger-subtle (i.e. pink color) is not available until Bootstrap v5.3 (we are not using Bootstrap v5.3 yet...)
             //
-            ->wrapper(['class' => 'form-group col-sm-12 bg-danger']);
+            // ->wrapper(['class' => 'form-group col-sm-12 bg-danger']);
+        ;
 
 
         CRUD::field('initiative_category_other')->label('Enter the "other" category of initiative.');
@@ -360,7 +361,8 @@ class ProjectCrudController extends CrudController
             // add a CSS class to change background color of this form field.
             // Note:
             // 1. Background color applied to whole part of radio button, instead of radio button options only
-            ->wrapper(['class' => 'form-group col-sm-12 bg-danger']);
+            // ->wrapper(['class' => 'form-group col-sm-12 bg-danger']);
+        ;
 
         CRUD::field('fundingSources')
             ->label('Funding Sources')
