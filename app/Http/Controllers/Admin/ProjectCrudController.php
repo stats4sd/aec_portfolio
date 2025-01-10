@@ -193,8 +193,20 @@ class ProjectCrudController extends CrudController
 
         CRUD::field('name');
         CRUD::field('code')->hint('The code should uniquely identify the project within your institution\'s porfolio. Leave blank for an auto-generated code.');
+
         CRUD::field('initiativeCategory')->label('Select the initiative category.')
-            ->hint('Select the one that best matches. If none of the options fit, select "other".');
+            ->hint('Select the one that best matches. If none of the options fit, select "other".')
+            // add CSS class "form-group", background color changed to pink at the beginning, then it changed back to white.
+            // it proved that CSS classs can be applied to a specific form field
+            //
+            // add a CSS class to change background color of this form field.
+            // Note:
+            // 1. Background color applied to the background of select2 instead of select2 itself... Field label background has been changed too
+            // 2. CSS class bg-danger-subtle (i.e. pink color) is not available until Bootstrap v5.3 (we are not using Bootstrap v5.3 yet...)
+            //
+            ->wrapper(['class' => 'form-group col-sm-12 bg-danger']);
+
+
         CRUD::field('initiative_category_other')->label('Enter the "other" category of initiative.');
         CRUD::field('description')->hint('This is optional, but will help to provide context for the AE assessment');
 
@@ -344,7 +356,11 @@ class ProjectCrudController extends CrudController
             ->options([
                 0 => 'This initiative is <b>entirely</b> self-funded',
                 1 => 'This initiative has external funding sources',
-            ]);
+            ])
+            // add a CSS class to change background color of this form field.
+            // Note:
+            // 1. Background color applied to whole part of radio button, instead of radio button options only
+            ->wrapper(['class' => 'form-group col-sm-12 bg-danger']);
 
         CRUD::field('fundingSources')
             ->label('Funding Sources')

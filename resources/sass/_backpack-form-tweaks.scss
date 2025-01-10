@@ -34,7 +34,11 @@ form .form-group.required>textarea {
   background-color: pink;
 }
 
+
 // change background color for required selection box
+// Note:
+// 1. it changes background color of normal selection box
+// 2. it changes select2 background color at the beginning after loading page, then select2 background color changed back to white
 form .form-group.required>select {
   background-color: pink;
 }
@@ -44,37 +48,31 @@ form .form-group.required>select {
 
 
 
+/*
 
 // TODO: change background color for required select2 selection box
+// Note:
+// 1. it applies to select2 drop down selection box only
+// 2. it changes the background color of select2 inner part instead of the whole select2 selection box
+// 3. select2 options background color does not change (do the same for CSS class for select2 options?)
 span.select2-selection__rendered {
   background-color: pink;
 }
 
+*/
 
 
-
-
-
-
-// TODO: change background color for required checkbox field
-form .form-group.required>checkbox {
-  background-color: pink;
+span.select2-hidden-accessible {
+  background-color: green;
 }
 
 
 
 
-// change background color for label of all radio buttons, no matter it is a required field or not
-// Note: it affects the Yes button and No button in Red Flag Assessment form
+// change background color for radio button options label
+// Note:
+// 1. it affects the Yes button and No button in Red Flag Assessment form
+// 2. it affects all radio button options label, no matter it is a required field or not
 form .form-check>input[type="radio"]+label {
   background-color: pink;
-}
-
-
-
-
-// TODO: change background color for label of all required radio buttons
-// Question: why it does not work...?
-form .form-check.required>input[type="radio"]+label {
-  background-color: lightgreen;
 }
