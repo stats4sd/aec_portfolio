@@ -33,7 +33,7 @@
                        :class="enableAssessButton ? 'btn-success' : 'btn-info disabled'" v-if="nextAction">
                         {{ nextAction.label }}
                     </a>
-                    <div class="btn btn-info" @click="toggleExpand" data-toggle="collapse"
+                    <div class="btn btn-info" @click="toggleExpand(initiative.id)" data-toggle="collapse"
                          :data-target="'.initiative-collapse_'+initiative.id">
                         <i class="la"
                            :class="expanded ? 'la-caret-down' : 'la-caret-right'"></i>
@@ -180,14 +180,23 @@ const props = defineProps({
     enableReassessButton: Boolean,
     statusHelpText: Object,
     scoreHelpText: Object,
+    expandedStart: Boolean
 })
 
-const expanded = ref(false)
+const expanded = ref(props.expandedStart)
 
 const emit = defineEmits(['remove_initiative'])
 
-function toggleExpand() {
+function toggleExpand(){
+    // alert('toggleExpand');
+
     expanded.value = !expanded.value
+
+    let result = axios.post('/store-project-id-in-session', {
+        projectId: props.initiative.id,
+        expanded: expanded.value
+    });
+
 }
 
 const nextAction = computed(() => {

@@ -102,20 +102,31 @@ Route::group([
             return redirect("admin/organisation/show");
         })->name('portfolio.index');
 
-        Route::crud('project', ProjectCrudController::class);
-        Route::get('project', [ProjectController::class, 'index']);
-        Route::post('project/{id}/reassess', [ProjectCrudController::class, 'reAssess']);
-        Route::post('project/{project}/duplicate', [ProjectCrudController::class, 'duplicate']);
+        Route::group([
+            'middleware' => ['project.set'],
+            ],
+            function () {
+
+                Route::crud('project', ProjectCrudController::class);
+                Route::get('project', [ProjectController::class, 'index']);
+                Route::post('project/{id}/reassess', [ProjectCrudController::class, 'reAssess']);
+                Route::post('project/{project}/duplicate', [ProjectCrudController::class, 'duplicate']);
+
+                Route::crud('assessment', AssessmentCrudController::class);
+                Route::get('assessment/{assessment}/show', [ProjectCrudController::class, 'showAssessment']);
+                Route::get('assessment/{assessment}/assess', [AssessmentController::class, 'assess']);
+                Route::get('assessment/{assessment}/assess-custom', [AssessmentController::class, 'assessCustom']);
+                Route::post('assessment/{assessment}/finalise', [AssessmentController::class, 'finaliseAssessment']);
+
+                Route::post('project/{project}/generate-pdf', [GeneratePdfFileController::class, 'generateInitiativeSummary']);
+                Route::post('assessment/{assessment}/generate-pdf', [GeneratePdfFileController::class, 'generateAssessmentSummary']);
+
+
+            });
 
         Route::post('session/store', [SessionController::class, 'store']);
         Route::post('session/reset', [SessionController::class, 'reset']);
 
-
-        Route::crud('assessment', AssessmentCrudController::class);
-        Route::get('assessment/{assessment}/show', [ProjectCrudController::class, 'showAssessment']);
-        Route::get('assessment/{assessment}/assess', [AssessmentController::class, 'assess']);
-        Route::get('assessment/{assessment}/assess-custom', [AssessmentController::class, 'assessCustom']);
-        Route::post('assessment/{assessment}/finalise', [AssessmentController::class, 'finaliseAssessment']);
 
         Route::post('additional/{assessment}/finalise', [AssessmentController::class, 'finaliseAssessmentCustom']);
 
@@ -143,8 +154,6 @@ Route::group([
         Route::get('data-removal/{removeRequest}/perform', [RemovalRequestCrudController::class, 'perform']);
 
         Route::post('generatePdf', [GeneratePdfFileController::class, 'generatePdfFile']);
-        Route::post('project/{project}/generate-pdf', [GeneratePdfFileController::class, 'generateInitiativeSummary']);
-        Route::post('assessment/{assessment}/generate-pdf', [GeneratePdfFileController::class, 'generateAssessmentSummary']);
 
 
         // download files
@@ -159,7 +168,7 @@ Route::group([
 
 
     Route::post('edit-account-info', [MyAccountController::class, 'postAccountInfoForm'])->name('backpack.account.info.store');
-    Route::post('change-password', [MyAccountController::class,'postChangePasswordForm'])->name('backpack.account.password');
+    Route::post('change-password', [MyAccountController::class, 'postChangePasswordForm'])->name('backpack.account.password');
     Route::crud('initiative-category', InitiativeCategoryCrudController::class);
     Route::crud('institution-type', InstitutionTypeCrudController::class);
     Route::crud('user-feedback', UserFeedbackCrudController::class);

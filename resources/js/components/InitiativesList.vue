@@ -87,6 +87,7 @@
 
     <InitiativeListCard
         v-for="initiative in filteredInitiatives"
+        :id="initiative.id"
         :key="initiative.id"
         @remove_initiative="removeInitiative"
         @refresh_initiative="refreshInitiative"
@@ -99,6 +100,7 @@
         :enable-assess-button="enableAssessButton"
         :status-help-text="statusHelpText"
         :score-help-text="scoreHelpText"
+        :expanded-start="expandedProjects[initiative.id]"
     />
 
 </template>
@@ -129,6 +131,7 @@ const props = defineProps({
     enableReassessButton: Boolean,
     enableAssessButton: Boolean,
     settings: Object,
+    expandedProjects: Object,
 });
 
 // Sorting
