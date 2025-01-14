@@ -96,6 +96,23 @@
                             </div>
                         </div>
 
+                        <div>
+                            <p><b>Add new examples</b><br/>Type to add your own custom examples to support your rating. Click the + button or press Enter to add an example. You may add as many as you wish.</p>
+
+                            <div class="d-flex form-group">
+
+                                <v-text-field
+                                    ref="temp"
+                                    label="Enter a descriptive name for the example / indicator"
+                                    density="compact"
+                                    variant="underlined"
+                                    append-icon="mdi-plus-circle"
+                                    @click:append="addCustomScoreTagWithScoreTagName()"
+                                />
+                            </div>
+
+                        </div>
+
                         <div class="mt-8">
                             <div v-for="(tag, index) in principleAssessment.custom_score_tags" class="d-flex form-group">
 
@@ -105,14 +122,24 @@
                                     label="Enter a descriptive name for the example / indicator"
                                     density="compact"
                                     variant="underlined"
+                                    prepend-icon="mdi-check"
                                     append-icon="mdi-delete"
                                     @click:append="removeCustomScoreTag(index)"
                                 />
                             </div>
 
+                            <!-- TODO: remove it -->
+                            <!--
                             <button class="btn btn-secondary" @click="addCustomScoreTag">
                                 <i class="la la-plus"></i> Add New Example
                             </button>
+                            -->
+
+                            <!-- TODO: remove it, it is for testing -->
+                            <button class="btn btn-secondary" @click="addCustomScoreTagWithScoreTagName('abc')">
+                                <i class="la la-plus"></i> Add New Example
+                            </button>
+
                         </div>
 
                     </div>
@@ -138,11 +165,16 @@ const props = defineProps({
     principleAssessment: Object,
     assessmentType: String,
     closing: Boolean,
+    // how to add props to extract form value?
+    temp: String,
 })
 
 const principle = computed(() => props.principleAssessment.principle ?? null)
 const assessment = computed(() => props.principleAssessment.assessment ?? null)
 const has_rating = computed(() => props.principleAssessment.rating !== null || props.principleAssessment.is_na)
+
+// TODO: how to extract form value?
+const temp = '123';
 
 // score tags
 const tagNameRefs = ref([])
@@ -157,6 +189,25 @@ function addCustomScoreTag() {
 
     nextTick(() => tagNameRefs.value[index].focus())
 }
+
+function addCustomScoreTagWithScoreTagName(scoreTagName) {
+    alert(props.temp);
+
+    alert(scoreTagName);
+
+    return;
+
+
+    props.principleAssessment.custom_score_tags.push({
+        name: scoreTagName,
+        description: '',
+    })
+
+    const index = props.principleAssessment.custom_score_tags.length - 1;
+
+    nextTick(() => tagNameRefs.value[index].focus())
+}
+
 
 function removeCustomScoreTag(index) {
     console.log('hi', index)
