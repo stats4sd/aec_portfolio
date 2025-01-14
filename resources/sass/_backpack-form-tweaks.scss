@@ -19,75 +19,18 @@
   }
 }
 
+// show the red * AFTER field label instead of BEFORE field label
 form .form-group.required>label:not(:empty):not(.form-check-label)::before {
   color: red;
   content: "* ";
 }
 
-
-form .form-group.required>label:not(:empty):not(.form-check-label) {
-  background-color: lightgreen;
+// change border of all form fields
+form .form-group .form-control {
+  border: 1px solid black !important;
 }
 
-
-
-/*
-
-// change background color for required text field
-form .form-group.required>input {
-  background-color: pink;
+// change border of select2
+span.select2 {
+  border: 1px solid black !important;
 }
-
-// change background color for required textarea field
-form .form-group.required>textarea {
-  background-color: pink;
-}
-
-
-// change background color for required selection box
-// Note:
-// 1. it changes background color of normal selection box
-// 2. it changes select2 background color at the beginning after loading page, then select2 background color changed back to white
-form .form-group.required>select {
-  background-color: pink;
-}
-
-*/
-
-
-
-
-/*
-
-// TODO: change background color for required select2 selection box
-// Note:
-// 1. it applies to select2 drop down selection box only
-// 2. it changes the background color of select2 inner part instead of the whole select2 selection box
-// 3. select2 options background color does not change (do the same for CSS class for select2 options?)
-span.select2-selection__rendered {
-  background-color: pink;
-}
-
-*/
-
-
-
-/*
-
-span.select2-hidden-accessible {
-  background-color: green;
-}
-
-
-
-
-// change background color for radio button options label
-// Note:
-// 1. it affects the Yes button and No button in Red Flag Assessment form
-// 2. it affects all radio button options label, no matter it is a required field or not
-form .form-check>input[type="radio"]+label {
-  background-color: pink;
-}
-
-
-*/
