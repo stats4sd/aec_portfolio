@@ -22,12 +22,12 @@ class ProjectController extends Controller
         // get project id from session for redirection
         $projectId = Session::get('projectId');
 
-        ray('project id: ' . $projectId);
+        // ray('project id: ' . $projectId);
 
         // redirect if project id existed in session before
         if ($projectId) {
 
-            ray('redirecting');
+            // ray('redirecting');
             Session::put('projectId', '');
             return redirect(url('admin/project#' . $projectId));
         }
