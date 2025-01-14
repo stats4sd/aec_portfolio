@@ -33,7 +33,18 @@
                 <div class="card-body bg-blue-lighten-4">
                     <div class="row">
                         <div class="col-lg-6 col-12 px-12">
-                            <h4 class="mb-4">Filter By Region / Country</h4>
+                            <h4 class="mb-4">Filter By Geographic Reach / Region / Country</h4>
+                            <b>GEOGRAPHIC REACH:</b>
+                            <v-select
+                                class="bg-white mb-8"
+                                v-model="filters.geographicReaches"
+                                :options="geographicReaches"
+                                label="name"
+                                placeholder="SELECT GEOGRAPHIC REACH"
+                                multiple="true"
+                                :clearable="true"
+                            />
+
                             <b>REGIONS:</b>
                             <v-select
                                 class="bg-white mb-8"
@@ -129,6 +140,15 @@
                 <span class="text-dark pr-8" v-if="anyFilters === 0">
                     NO FILTERS APPLIED
                 </span>
+
+                <div v-if="filters.geographicReaches" class="px-2 mb-1 d-flex flex-wrap">
+                    GEOGRAPHIC REACH:
+                </div>
+                <span
+                    v-for="geographicReach in filters.geographicReaches"
+                    class="badge-pill badge-info mr-2 mb-1">
+                        {{ geographicReach.name }}
+                    </span>
 
                 <div v-if="filters.regions" class="px-2 mb-1 d-flex flex-wrap">
                     REGIONS:
@@ -415,6 +435,10 @@ const props = defineProps({
         default: () => {
         },
     },
+    geographicReaches: {
+        type: Array,
+        default: () => [],
+    },
     regions: {
         type: Array,
         default: () => [],
@@ -439,6 +463,7 @@ const showFilters = ref(false)
 
 const filters = ref({
     portfolio: null,
+    geographicReaches: null,
     regions: null,
     countries: null,
     categories: null,
