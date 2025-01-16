@@ -18,6 +18,7 @@ use App\Models\ProjectRegion;
 use App\Enums\AssessmentStatus;
 use App\Enums\GeographicalReach;
 use App\Models\InitiativeCategory;
+use App\Models\InstitutionType;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use App\Models\PrincipleAssessment;
@@ -44,21 +45,6 @@ class GenericDashboardController extends Controller
                 'countries',
             ],
         ])->find(Session::get('selectedOrganisationId'));
-
-
-        // TODO: get geographic reach of all projects of all portfolios of an institution
-        //
-        // Questions:
-        // 1. Um... to keep it simple, should we simply get all 3 options instead?
-        // 2. geographic reach is different from region / country / categories, we do not have a table and model class for it
-        // 3. How to construct the same data model as categories? Or should we change to store geographic reach into a table then create a model class?
-
-        $geographicReaches = [];
-        array_push($geographicReaches, array("id" => "1", "name" => "One", "value" => "One"));
-        array_push($geographicReaches, array("id" => "2", "name" => "Two", "value" => "Two"));
-        array_push($geographicReaches, array("id" => "3", "name" => "Three", "value" => "Three"));
-        ray($geographicReaches);
-
 
         $regions = $org->portfolios
             ->map(
@@ -99,14 +85,14 @@ class GenericDashboardController extends Controller
             ->unique()
             ->values();
 
-        ray($categories);
+        $itypes = InstitutionType::all();
 
         return [
             'organisation' => $org,
-            'geographicReaches' => $geographicReaches,
             'regions' => $regions,
             'countries' => $countries,
             'categories' => $categories,
+            'itypes' => $itypes,
         ];
     }
 
@@ -123,6 +109,7 @@ class GenericDashboardController extends Controller
 
         // nullable items are cast to "null" string for inclusion into SQL query
         $portfolioId = $request['portfolio']['id'] ?? 'null';
+        $greaches = $request['greaches'] ? "'" . implode(",", $request['greaches']) . "'" : 'null';
         $regionIds = $request['regions'] ? "'" . collect($request['regions'])->pluck('id')->join(', ') . "'" : 'null';
         $countryIds = $request['countries'] ? "'" . collect($request['countries'])->pluck('id')->join(', ') . "'" : 'null';
         $categoryIds = $request['categories'] ? "'" . collect($request['categories'])->pluck('id')->join(', ') . "'" : 'null';
@@ -130,6 +117,8 @@ class GenericDashboardController extends Controller
         $projectStartTo = $request['endDate'] ?? 'null';
         $budgetFrom = $request['minBudget'] ?? 'null';
         $budgetTo = $request['maxBudget'] ?? 'null';
+        $institutionTypeIds = $request['itypes'] ? "'" . collect($request['itypes'])->pluck('id')->join(', ') . "'" : 'null';
+
 
         // convert budget into EUR for filtering
         if ($budgetFrom !== 'null' || $budgetTo !== 'null') {
@@ -154,6 +143,7 @@ class GenericDashboardController extends Controller
             {$dashboardOthersId},
             {$organisationId},
             {$portfolioId},
+            {$greaches},
             {$regionIds},
             {$countryIds},
             {$categoryIds},
@@ -161,6 +151,7 @@ class GenericDashboardController extends Controller
             {$projectStartTo},
             {$budgetFrom},
             {$budgetTo},
+            {$institutionTypeIds},
             @status,
             @message,
             @totalCount,

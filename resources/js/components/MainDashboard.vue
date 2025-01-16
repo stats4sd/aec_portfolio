@@ -37,8 +37,8 @@
                             <b>GEOGRAPHIC REACH:</b>
                             <v-select
                                 class="bg-white mb-8"
-                                v-model="filters.geographicReaches"
-                                :options="geographicReaches"
+                                v-model="filters.greaches"
+                                :options="['Global level', 'Multi-country level', 'Country level']"
                                 label="name"
                                 placeholder="SELECT GEOGRAPHIC REACH"
                                 multiple="true"
@@ -129,6 +129,21 @@
                                        v-if="minBudgetError || maxBudgetError">{{ maxBudgetError }}</p>
                                 </div>
                             </div>
+
+                            <hr/>
+                            <h4>Filter Other institutions by Institution Type</h4>
+                            <b>Institution Types</b>
+                            <v-select
+                                v-model="filters.itypes"
+                                class="bg-white"
+                                :options="itypes"
+                                label="name"
+                                placeholder="SELECT INSTITUTION TYPES"
+                                multiple="true"
+                                :clearable="true"
+                            />
+
+
                         </div>
                     </div>
                 </div>
@@ -137,29 +152,29 @@
         <div class="card-footer bg-blue-lighten-4 d-flex justify-content-between align-items-center px-12 font-lg">
             <b class="pr-8">Filters:</b>
             <div class="d-flex flex-wrap justify-content-start">
-                <span class="text-dark pr-8" v-if="anyFilters === 0">
+                <span class="text-dark pr-8" v-if="anyFilters == 0">
                     NO FILTERS APPLIED
                 </span>
 
-                <div v-if="filters.geographicReaches" class="px-2 mb-1 d-flex flex-wrap">
+                <div v-if="filters.greaches && filters.greaches.length > 0" class="px-2 mb-1 d-flex flex-wrap">
                     GEOGRAPHIC REACH:
                 </div>
                 <span
-                    v-for="geographicReach in filters.geographicReaches"
+                    v-for="greach in filters.greaches"
                     class="badge-pill badge-info mr-2 mb-1">
-                        {{ geographicReach.name }}
-                    </span>
+                        {{ greach }}
+                </span>
 
-                <div v-if="filters.regions" class="px-2 mb-1 d-flex flex-wrap">
+                <div v-if="filters.regions && filters.regions.length > 0" class="px-2 mb-1 d-flex flex-wrap">
                     REGIONS:
                 </div>
                 <span
                     v-for="region in filters.regions"
                     class="badge-pill badge-info mr-2 mb-1">
                         {{ region.name }}
-                    </span>
+                </span>
 
-                <div v-if="filters.countries" class="px-2 mb-1 d-flex flex-wrap">
+                <div v-if="filters.countries && filters.countries.length > 0" class="px-2 mb-1 d-flex flex-wrap">
                     <span class="pr-2">COUNTRIES:</span>
                 </div>
                 <div
@@ -167,6 +182,17 @@
                     class="badge-pill badge-info mr-2 mb-1">
                     {{ country.name }}
                 </div>
+
+                <div v-if="filters.categories && filters.categories.length > 0" class="px-2 mb-1 d-flex flex-wrap">
+                    INITIATIVE CATEGORIES:
+                </div>
+                <span
+                    v-for="category in filters.categories"
+                    class="badge-pill badge-info mr-2 mb-1">
+                        {{ category.name }}
+                </span>
+
+
                 <div v-if="filters.startDate || filters.endDate" class="mr-3 mb-1">
                     <span class="px-2">DATES:</span>
                     <span class="badge-pill badge-info"
@@ -191,8 +217,18 @@
                             organisation.currency
                         }} {{ filters.minBudget }} - {{ filters.maxBudget }}</span>
                 </div>
+
+                <div v-if="filters.itypes && filters.itypes.length > 0" class="px-2 mb-1 d-flex flex-wrap">
+                    INSTITUTION TYPES:
+                </div>
+                <span
+                    v-for="itype in filters.itypes"
+                    class="badge-pill badge-info mr-2 mb-1">
+                        {{ itype.name }}
+                </span>
+
             </div>
-            <div class="btn btn-warning text-dark" @click="resetFilters" v-if="anyFilters">Reset Filters</div>
+            <div class="btn btn-warning text-dark" @click="resetFilters" v-if="anyFilters != 0">Reset Filters</div>
             <div class="btn btn-primary" @click="modifyFilters">{{ showFilters ? 'Apply' : 'Modify' }} Filters</div>
         </div>
     </div>
@@ -435,7 +471,7 @@ const props = defineProps({
         default: () => {
         },
     },
-    geographicReaches: {
+    greaches: {
         type: Array,
         default: () => [],
     },
@@ -451,6 +487,10 @@ const props = defineProps({
         type: Array,
         default: () => [],
     },
+    itypes: {
+        type: Array,
+        default: () => [],
+    },
 })
 
 const portfolios = computed(() => {
@@ -463,7 +503,7 @@ const showFilters = ref(false)
 
 const filters = ref({
     portfolio: null,
-    geographicReaches: null,
+    greaches: null,
     regions: null,
     countries: null,
     categories: null,
@@ -471,6 +511,7 @@ const filters = ref({
     endDate: null,
     minBudget: null,
     maxBudget: null,
+    itypes: null,
 })
 
 const minBudgetError = computed(() => {
