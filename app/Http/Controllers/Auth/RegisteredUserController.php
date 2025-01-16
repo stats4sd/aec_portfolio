@@ -30,12 +30,12 @@ class RegisteredUserController extends Controller
                 ->first();
         }
 
-        if(!$invite) {
+        if (!$invite) {
             abort(403, "It looks like the invitation token is invalid. Please contact the person who invited you to the platform and ask for a new invitation.");
         }
 
-        if($invite->is_confirmed) {
-           abort(403, "It looks like this invitation has already been used. If you have created an account, please <a href='" .url('login') . "'>login</a>. If you need a new invitation, please contact the person who sent you the invitation email.");
+        if ($invite->is_confirmed) {
+            abort(403, "It looks like this invitation has already been used. If you have created an account, please <a href='" . url('login') . "'>login</a>. If you need a new invitation, please contact the person who sent you the invitation email.");
         }
 
 
@@ -60,6 +60,8 @@ class RegisteredUserController extends Controller
             'email' => $request->email,
             'password' => Hash::make($request->password),
         ]);
+
+        // TODO: find code segment to create model_has_roles record, add orgnisation_id
 
         event(new Registered($user));
 
