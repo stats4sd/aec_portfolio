@@ -45,7 +45,6 @@ class Kernel extends HttpKernel
         'api' => [
             // \Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class,
             \Illuminate\Routing\Middleware\ThrottleRequests::class . ':api',
-            TeamsPermission::class,
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
         ],
     ];
