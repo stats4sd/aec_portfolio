@@ -84,7 +84,7 @@ Route::group([
 
     // routes that require a selected organisation
     Route::group([
-        'middleware' => ['org.selected'],
+        'middleware' => ['org.selected', 'teams.permission'],
     ], function () {
 
         Route::get('organisation/show', [OrganisationController::class, 'show'])->name('organisation.self.show');
@@ -102,8 +102,9 @@ Route::group([
             return redirect("admin/organisation/show");
         })->name('portfolio.index');
 
-        Route::group([
-            'middleware' => ['project.set'],
+        Route::group(
+            [
+                'middleware' => ['project.set'],
             ],
             function () {
 
@@ -120,9 +121,8 @@ Route::group([
 
                 Route::post('project/{project}/generate-pdf', [GeneratePdfFileController::class, 'generateInitiativeSummary']);
                 Route::post('assessment/{assessment}/generate-pdf', [GeneratePdfFileController::class, 'generateAssessmentSummary']);
-
-
-            });
+            }
+        );
 
         Route::post('session/store', [SessionController::class, 'store']);
         Route::post('session/reset', [SessionController::class, 'reset']);
