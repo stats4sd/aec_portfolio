@@ -82,6 +82,10 @@ return [
          */
 
         'model_morph_key' => 'model_id',
+
+        // use a custom foreign key for teams
+        // we use organisations as teams, the custom foreign key should be organisation_id
+        'team_foreign_key' => 'organisation_id',
     ],
 
     /*
@@ -140,4 +144,7 @@ return [
 
         'store' => 'default',
     ],
+
+    // to enable team level roles and permissions
+    'teams' => true,
 ];
