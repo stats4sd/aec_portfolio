@@ -161,7 +161,7 @@ const assessment = computed(() => props.principleAssessment.assessment ?? null)
 const has_rating = computed(() => props.principleAssessment.rating !== null || props.principleAssessment.is_na)
 
 // for user to enter new score tag
-const newCustomTag = ref([])
+const newCustomTag = ref('')
 
 // score tags
 const tagNameRefs = ref([])
@@ -172,9 +172,8 @@ function addCustomScoreTag() {
         description: '',
     })
 
-    const index = props.principleAssessment.custom_score_tags.length - 1;
+    newCustomTag.value = '';
 
-    nextTick(() => tagNameRefs.value[index].focus());
 }
 
 function removeCustomScoreTag(index) {
