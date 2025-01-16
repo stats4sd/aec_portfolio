@@ -82,7 +82,9 @@
                         </div>
 
                         <div>
-                            <h5>Presence of Examples // Indicators <br/>for {{ principle.name }}</h5>
+                            <h5>Presence of Examples // Indicators
+                                <br/>for {{ principle.name }}
+                            </h5>
                             <p>Below are some common examples of {{ principle.name }} within a project. Tick the ones that are present within the project. You may also add additional examples below to further support the rating given.</p>
 
                             <div v-for="tag in principle.score_tags" class="checkbox-group mb-2 example-list">
@@ -94,33 +96,10 @@
                                     hide-details="auto"
                                 ></v-checkbox>
                             </div>
-                        </div>
-
-                        <div>
-                            <p><b>Add new examples</b><br/>Type to add your own custom examples to support your rating. Click the + button or press Enter to add an example. You may add as many as you wish.</p>
-
-                            <div class="d-flex form-group">
-
-                                <v-text-field
-                                    v-model="newCustomTag"
-                                    label="Enter a descriptive name for the example / indicator"
-                                    density="compact"
-                                    variant="underlined"
-                                    append-icon="mdi-plus-circle"
-                                    @click:append="addCustomScoreTag"
-                                    @keydown.enter="addCustomScoreTag"
-                                />
-                            </div>
-
-                        </div>
-
-                        <div class="mt-8">
-                            <div v-for="(tag, index) in principleAssessment.custom_score_tags" class="d-flex form-group">
-
+                            <div v-for="(tag, index) in principleAssessment.custom_score_tags" class="d-flex">
                                 <v-text-field
                                     ref="tagNameRefs"
                                     v-model="tag.name"
-                                    label="Enter a descriptive name for the example / indicator"
                                     density="compact"
                                     variant="underlined"
                                     prepend-icon="mdi-check"
@@ -128,6 +107,29 @@
                                     @click:append="removeCustomScoreTag(index)"
                                 />
                             </div>
+
+
+                            <div>
+                                <p>
+                                    <b>Add new examples</b><br/>Type to add your own custom examples to support your rating. Click the + button or press Enter to add an example. You may add as many as you wish.
+                                </p>
+
+                                <div class="d-flex form-group">
+
+                                    <v-text-field
+                                        ref="newTagRef"
+                                        v-model="newCustomTag"
+                                        label="Enter a descriptive name for the example / indicator"
+                                        density="compact"
+                                        variant="underlined"
+                                        append-icon="mdi-plus-circle"
+                                        @click:append="addCustomScoreTag"
+                                        @keydown.enter="addCustomScoreTag"
+                                    />
+                                </div>
+
+                            </div>
+
 
                         </div>
 
@@ -162,6 +164,7 @@ const has_rating = computed(() => props.principleAssessment.rating !== null || p
 
 // for user to enter new score tag
 const newCustomTag = ref('')
+const newTagRef = ref('');
 
 // score tags
 const tagNameRefs = ref([])
@@ -173,6 +176,13 @@ function addCustomScoreTag() {
     })
 
     newCustomTag.value = '';
+
+    nextTick(() => {
+        newTagRef.value.scrollIntoView({
+            behavior: 'smooth',
+            block: 'center',
+        })
+    })
 
 }
 
@@ -197,7 +207,7 @@ async function save(nextAction) {
         props.principleAssessment.rating = 0;
     }
 
-    if(props.principleAssessment.is_na) {
+    if (props.principleAssessment.is_na) {
         props.principleAssessment.rating = null;
     }
 
