@@ -102,12 +102,13 @@
                             <div class="d-flex form-group">
 
                                 <v-text-field
-                                    ref="temp"
+                                    v-model="newCustomTag"
                                     label="Enter a descriptive name for the example / indicator"
                                     density="compact"
                                     variant="underlined"
                                     append-icon="mdi-plus-circle"
-                                    @click:append="addCustomScoreTagWithScoreTagName()"
+                                    @click:append="addCustomScoreTag"
+                                    @keydown.enter="addCustomScoreTag"
                                 />
                             </div>
 
@@ -127,18 +128,6 @@
                                     @click:append="removeCustomScoreTag(index)"
                                 />
                             </div>
-
-                            <!-- TODO: remove it -->
-                            <!--
-                            <button class="btn btn-secondary" @click="addCustomScoreTag">
-                                <i class="la la-plus"></i> Add New Example
-                            </button>
-                            -->
-
-                            <!-- TODO: remove it, it is for testing -->
-                            <button class="btn btn-secondary" @click="addCustomScoreTagWithScoreTagName('abc')">
-                                <i class="la la-plus"></i> Add New Example
-                            </button>
 
                         </div>
 
@@ -165,49 +154,28 @@ const props = defineProps({
     principleAssessment: Object,
     assessmentType: String,
     closing: Boolean,
-    // how to add props to extract form value?
-    temp: String,
 })
 
 const principle = computed(() => props.principleAssessment.principle ?? null)
 const assessment = computed(() => props.principleAssessment.assessment ?? null)
 const has_rating = computed(() => props.principleAssessment.rating !== null || props.principleAssessment.is_na)
 
-// TODO: how to extract form value?
-const temp = '123';
+// for user to enter new score tag
+const newCustomTag = ref([])
 
 // score tags
 const tagNameRefs = ref([])
 
 function addCustomScoreTag() {
     props.principleAssessment.custom_score_tags.push({
-        name: '',
+        name: newCustomTag.value,
         description: '',
     })
 
     const index = props.principleAssessment.custom_score_tags.length - 1;
 
-    nextTick(() => tagNameRefs.value[index].focus())
+    nextTick(() => tagNameRefs.value[index].focus());
 }
-
-function addCustomScoreTagWithScoreTagName(scoreTagName) {
-    alert(props.temp);
-
-    alert(scoreTagName);
-
-    return;
-
-
-    props.principleAssessment.custom_score_tags.push({
-        name: scoreTagName,
-        description: '',
-    })
-
-    const index = props.principleAssessment.custom_score_tags.length - 1;
-
-    nextTick(() => tagNameRefs.value[index].focus())
-}
-
 
 function removeCustomScoreTag(index) {
     console.log('hi', index)
