@@ -35,30 +35,38 @@ return new class extends Migration
                 ->cascadeOnUpdate()
                 ->cascadeOnDelete();
 
+            $table->foreignId('organisation_id')
+                ->references('id')
+                ->on('organisations')
+                ->cascadeOnUpdate()
+                ->cascadeOnDelete();
+
+            $table->foreignId('portfolio_id')
+                ->references('id')
+                ->on('portfolios')
+                ->cascadeOnUpdate()
+                ->cascadeOnDelete();
+
             $table->string('code')->nullable();
             $table->string('name')->nullable();
             $table->string('category')->nullable();
             $table->text('description')->nullable();
             $table->string('currency')->nullable();
-
             $table->string('exchange_rate')->nullable();
             $table->string('exchange_rate_eur')->nullable();
             $table->string('budget')->nullable();
             $table->string('uses_only_own_funds')->nullable();
             $table->string('main_recipient')->nullable();
-
             $table->string('start_date')->nullable();
             $table->string('end_date')->nullable();
             $table->string('geographic_reach')->nullable();
             $table->string('continent_1')->nullable();
             $table->string('continent_2')->nullable();
-
             $table->string('region_1')->nullable();
             $table->string('region_2')->nullable();
             $table->string('country_1')->nullable();
             $table->string('country_2')->nullable();
             $table->string('country_3')->nullable();
-
             $table->string('country_4')->nullable();
             $table->text('validation_result')->nullable();
 

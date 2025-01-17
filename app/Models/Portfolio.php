@@ -62,6 +62,11 @@ class Portfolio extends Model
         return $this->hasMany(Project::class);
     }
 
+    public function tempProjects()
+    {
+        return $this->hasMany(TempProject::class);
+    }
+
     /*
     |--------------------------------------------------------------------------
     | SCOPES

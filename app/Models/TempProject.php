@@ -16,4 +16,15 @@ class TempProject extends Model
     {
         return $this->belongsTo(ProjectImport::class);
     }
+
+    public function organisation()
+    {
+        return $this->belongsTo(Organisation::class);
+    }
+
+    public function portfolio()
+    {
+        return $this->belongsTo(Portfolio::class)
+            ->withoutGlobalScope('organisation');
+    }
 }

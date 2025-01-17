@@ -28,6 +28,7 @@ use App\Http\Controllers\Admin\UserCrudController;
 use App\Http\Controllers\Admin\UserFeedbackCrudController;
 use App\Http\Controllers\Admin\RevisionCrudController;
 use App\Http\Controllers\Admin\CustomScoreTagCrudController;
+use App\Http\Controllers\Admin\TempProjectCrudController;
 use App\Http\Controllers\AssessmentController;
 use App\Http\Controllers\GeneratePdfFileController;
 use App\Http\Controllers\GenericDashboardController;
@@ -102,8 +103,9 @@ Route::group([
             return redirect("admin/organisation/show");
         })->name('portfolio.index');
 
-        Route::group([
-            'middleware' => ['project.set'],
+        Route::group(
+            [
+                'middleware' => ['project.set'],
             ],
             function () {
 
@@ -120,9 +122,8 @@ Route::group([
 
                 Route::post('project/{project}/generate-pdf', [GeneratePdfFileController::class, 'generateInitiativeSummary']);
                 Route::post('assessment/{assessment}/generate-pdf', [GeneratePdfFileController::class, 'generateAssessmentSummary']);
-
-
-            });
+            }
+        );
 
         Route::post('session/store', [SessionController::class, 'store']);
         Route::post('session/reset', [SessionController::class, 'reset']);
@@ -179,8 +180,8 @@ Route::group([
     Route::crud('custom-score-tag', CustomScoreTagCrudController::class);
     Route::crud('help-text-entry', HelpTextEntryCrudController::class);
     Route::get('help-text-entry/find/{location}', [HelpTextEntryCrudController::class, 'find']);
+    Route::crud('temp-project', TempProjectCrudController::class);
 });
-
 Route::get('project/{id}/show-as-pdf', [ProjectCrudController::class, 'show'])
     ->middleware('auth.basic')
     ->name('project.show-as-pdf');
