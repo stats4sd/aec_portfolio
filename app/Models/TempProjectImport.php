@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 
-class ProjectImport extends Model implements HasMedia
+class TempProjectImport extends Model implements HasMedia
 {
     use CrudTrait, InteractsWithMedia;
 

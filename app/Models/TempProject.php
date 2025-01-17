@@ -12,9 +12,9 @@ class TempProject extends Model
 
     protected $guarded = ['id'];
 
-    public function projectImport(): BelongsTo
+    public function tempProjectImport(): BelongsTo
     {
-        return $this->belongsTo(ProjectImport::class);
+        return $this->belongsTo(TempProjectImport::class);
     }
 
     public function organisation()

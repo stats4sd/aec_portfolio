@@ -29,9 +29,9 @@ return new class extends Migration
         Schema::create('temp_projects', function (Blueprint $table) {
             $table->id();
 
-            $table->foreignId('project_import_id')
+            $table->foreignId('temp_project_import_id')
                 ->references('id')
-                ->on('project_imports')
+                ->on('temp_project_imports')
                 ->cascadeOnUpdate()
                 ->cascadeOnDelete();
 

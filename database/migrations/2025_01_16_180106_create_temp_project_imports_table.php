@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('project_imports', function (Blueprint $table) {
+        Schema::create('temp_project_imports', function (Blueprint $table) {
             $table->id();
 
             $table->foreignId('user_id')
@@ -29,6 +29,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('project_imports');
+        Schema::dropIfExists('temp_project_imports');
     }
 };

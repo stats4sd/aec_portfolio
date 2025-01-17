@@ -3,10 +3,10 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Models\Portfolio;
+use App\Models\TempProject;
+use App\Models\TempProjectImport;
 use Prologue\Alerts\Facades\Alert;
 use Maatwebsite\Excel\Facades\Excel;
-use App\Imports\ProjectWorkbookImport;
-use App\Http\Requests\TempProjectRequest;
 use Illuminate\Support\Facades\Validator;
 use App\Imports\TempProjectWorkbookImport;
 use Backpack\CRUD\app\Http\Controllers\CrudController;
@@ -39,17 +39,11 @@ class TempProjectCrudController extends CrudController
         CRUD::setEntityNameStrings('temp project', 'temp projects');
 
         // specify importer class
-        // TODO: change to TempProjectWorkbookImport
-        CRUD::set('import.importer', ProjectWorkbookImport::class);
-        // CRUD::set('import.importer', TempProjectWorkbookImport::class);
+        CRUD::set('import.importer', TempProjectWorkbookImport::class);
 
         // add import template file and template file filename
         CRUD::set('import.template', InitiativeImportTemplateExportWorkbook::class);
         CRUD::set('import.template-name', 'Agroecology Funding Tool - Initiative Import Template.xlsx');
-
-        // TODO: add validation request class
-        // set validation request class in function setupCreateOperation() originally
-        CRUD::setValidation(TempProjectRequest::class);
     }
 
     /**
@@ -85,14 +79,13 @@ class TempProjectCrudController extends CrudController
         // CRUD::column('country_3');
         // CRUD::column('country_4');
 
+        // Question: how to show validation result in multiple lines?
         CRUD::column('validation_result');
     }
 
 
     public function getImportForm()
     {
-        ray('TempProjectCrudController.getImportForm()...');
-
         $this->crud->hasAccessOrFail('import');
         $this->crud->setOperation('import');
 
@@ -100,7 +93,7 @@ class TempProjectCrudController extends CrudController
         $this->data['saveAction'] = $this->crud->getSaveAction();
 
         // TODO:
-        // 1. change entity name from "Temp Projects" to "Initiatives" after testing
+        // 1. change entity name from "Temp Projects" to "Initiatives"
         // 2. hide "<< Back to all temp projects" link
         $this->data['title'] = 'Import ' . $this->crud->entity_name . ' from excel file';
 
@@ -113,7 +106,6 @@ class TempProjectCrudController extends CrudController
             Instead of manually entering details for individual initiatives, you may choose to import them in bulk, and then add additional details using the edit feature within the platform. To ensure a successful import, please download the template provided below, and ensure your Excel file is in the correct format. The template file includes an example initiative.
             <br/><br/>
             <a href="' . url($this->crud->route . '/import-template') . '" class="btn btn-link" data-button-type="import-template"><i class="la la-download"></i> Download Template for Imports</a></br>
-
             ',
         ]);
 
@@ -136,8 +128,6 @@ class TempProjectCrudController extends CrudController
 
     public function postImportForm()
     {
-        ray('TempProjectCrudController.postImportForm()...');
-
         $this->crud->hasAccessOrFail('import');
         $importer = $this->crud->get('import.importer');
 
@@ -157,20 +147,22 @@ class TempProjectCrudController extends CrudController
         // find portfolio model
         $portfolio = Portfolio::find($request->portfolio);
 
+        // create or get ProjectImport model belongs to logged in user
+        $tempProjectImport = TempProjectImport::firstOrCreate([
+            'user_id' => auth()->user()->id,
+        ]);
 
-        // call Laravel Excel package to import excel file
-        // Questions:
-        // 1. How to set the validation request class?
-        // 2. portfolio is passed as a parameter, how will it be used?
+        // TODO: attach the uploaded excel file to TempProjectImport model
+        // Question: how to get the path of uploaded excel file in request?
+        // should we store the uploaded excel file in file system first?
+        // $yourModel->addMedia($pathToImage)->toMediaCollection('images');
+        // $tempProjectImport->addMedia($request->importFile)->toMediaCollection('project_import_excel_file');
 
-        // pass portfolio model to importer, which is specified in setup()
-        // Excel::import(new $importer($portfolio), $request->importFile);
+        // remove all temp_projects records related to this user
+        TempProject::where('temp_project_import_id', $tempProjectImport->id)->delete();
 
-        // TODO:
-        // 1. call Laravel Excel package to read excel file, return it as a collection
-        // 2. handle rows one by one, use validation request class to validate data and get validation result
-        // 3. create TempProject model with validation result for each row
-        // 4. redirect to TempProjectCrudController list view to show uploaded data with validation result
+        // call Laravel Excel package to import excel file into temp_projects table
+        Excel::import(new $importer($portfolio, $tempProjectImport), $request->importFile);
 
         Alert::success(trans('backpack::crud.insert_success'))->flash();
 

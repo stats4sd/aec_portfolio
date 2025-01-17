@@ -37,7 +37,12 @@ class ProjectRequest extends FormRequest
             'initiativeCategory' => 'required|exists:initiative_categories,id',
             'initiative_category_other' => 'nullable',
             'budget' => 'required|integer|gte:0',
+
+            // displayBudget is required for manual adding initiative in front-end,
+            // it is not necessary for project import
+            // comment it temporary for testing
             'displayBudget' => ['required', new DisplayBudgetRule],
+
             'currency' => 'required|max:3',
             'exchange_rate' => 'sometimes|required',
             'exchange_rate_eur' => 'sometimes|required',

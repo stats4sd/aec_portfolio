@@ -2,31 +2,29 @@
 
 namespace App\Imports;
 
-use App\Http\Requests\ProjectRequest;
-use App\Models\Continent;
-use App\Models\Country;
-use App\Models\InitiativeCategory;
 use App\Models\Portfolio;
-use App\Models\Project;
-use App\Models\Region;
+use Maatwebsite\Excel\Row;
+use App\Models\TempProject;
 use Illuminate\Support\Str;
-use Maatwebsite\Excel\Concerns\Importable;
+use App\Models\TempProjectImport;
+use App\Models\InitiativeCategory;
+use App\Http\Requests\ProjectRequest;
 use Maatwebsite\Excel\Concerns\OnEachRow;
+use PhpOffice\PhpSpreadsheet\Shared\Date;
+use Maatwebsite\Excel\Concerns\Importable;
 use Maatwebsite\Excel\Concerns\SkipsEmptyRows;
-use Maatwebsite\Excel\Concerns\WithCalculatedFormulas;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use Maatwebsite\Excel\Concerns\WithValidation;
-use Maatwebsite\Excel\Row;
-use PhpOffice\PhpSpreadsheet\Shared\Date;
+use Maatwebsite\Excel\Concerns\WithCalculatedFormulas;
 
-class ProjectImport implements OnEachRow, WithHeadingRow, SkipsEmptyRows, WithCalculatedFormulas, WithValidation
+class TempProjectImporter implements OnEachRow, WithHeadingRow, SkipsEmptyRows, WithCalculatedFormulas, WithValidation
 {
 
     use Importable;
 
     protected array $ignoreCodes;
 
-    public function __construct(public Portfolio $portfolio)
+    public function __construct(public Portfolio $portfolio, public TempProjectImport $tempProjectImport)
     {
         $this->ignoreCodes = [
             'enter a unique code for the initiative.',
@@ -38,7 +36,6 @@ class ProjectImport implements OnEachRow, WithHeadingRow, SkipsEmptyRows, WithCa
 
     public function onRow(Row $row)
     {
-
         $data = $row->toArray();
 
         // skip instructions and example row from template;
@@ -63,7 +60,11 @@ class ProjectImport implements OnEachRow, WithHeadingRow, SkipsEmptyRows, WithCa
             $usesOnlyOwnFunds = 0;
         }
 
-        $project = Project::create([
+        // TODO: validate each column in this row, return all validation results as a string
+        // Question: can we re-use ProjectRequest class and get all validation result as string?
+
+        $tempProject = TempProject::create([
+            'temp_project_import_id'  => $this->tempProjectImport->id,
             'portfolio_id' => $this->portfolio->id,
             'organisation_id' => $this->portfolio->organisation_id,
             'code' => $data['code'],
@@ -79,23 +80,10 @@ class ProjectImport implements OnEachRow, WithHeadingRow, SkipsEmptyRows, WithCa
             'start_date' => $startDate,
             'end_date' => $endDate,
             'geographic_reach' => $data['geographic_reach'],
+
+            // Question: how to store and show multiple lines validation result?
+            'validation_result' => 'Line 1\n<br/>Line2',
         ]);
-
-        $continentIds = collect($data['continents'])
-            ->map(fn($continent) => Continent::where('name', $continent)->first()?->id)
-            ->toArray();
-
-        $regionIds = collect($data['regions'])
-            ->map(fn($region) => Region::where('name', $region)->first()?->id)
-            ->toArray();
-
-        $countryIds = collect($data['countries'])
-            ->map(fn($country) => Country::where('name', $country)->first()?->id)
-            ->toArray();
-
-        $project->continents()->sync($continentIds);
-        $project->regions()->sync($regionIds);
-        $project->countries()->sync($countryIds);
     }
 
     public function rules(): array
@@ -117,8 +105,7 @@ class ProjectImport implements OnEachRow, WithHeadingRow, SkipsEmptyRows, WithCa
         $data['portfolio_id'] = $this->portfolio->id;
         $data['organisation_id'] = $this->portfolio->organisation_id;
 
-        $data['initiativeCategory'] =
-            InitiativeCategory::where('name', $data['category'])->first()?->id;
+        $data['initiativeCategory'] = InitiativeCategory::where('name', $data['category'])->first()?->id;
 
         if (Str::lower($data['uses_only_own_funds']) === 'yes') {
             $data['uses_only_own_funds'] = 1;

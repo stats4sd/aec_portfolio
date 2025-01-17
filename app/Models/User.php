@@ -84,8 +84,8 @@ class User extends Authenticatable
         return $this->hasMany(Organisation::class, 'signee_id');
     }
 
-    public function projectImport(): HasOne
+    public function tempProjectImport(): HasOne
     {
-        return $this->hasOne(ProjectImport::class);
+        return $this->hasOne(TempProjectImport::class);
     }
 }
