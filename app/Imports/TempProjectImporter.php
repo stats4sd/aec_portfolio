@@ -61,12 +61,8 @@ class TempProjectImporter implements OnEachRow, WithHeadingRow, SkipsEmptyRows, 
             $usesOnlyOwnFunds = 0;
         }
 
-        // TODO: validate each column in this row, return all validation results as a string
-        // Question: can we re-use ProjectRequest class and get all validation result as string?
-
-        // TODO: validation
-        $validationResult = null;
-        // $validationResult = $this->validate($data);
+        // validation
+        $validationResult = $this->validate($data);
 
         $valid = ($validationResult == '');
 
@@ -98,6 +94,10 @@ class TempProjectImporter implements OnEachRow, WithHeadingRow, SkipsEmptyRows, 
 
     private function validate($data)
     {
+        // user either leave empty or select one option for below fields with selection box in excel file:
+        // category, geographic_reach, continent_1, continent_2, region_1, region_2, country_1, country_2, country_3, country_4
+        // assume it is not necessary to have custom validation here
+
         $validationResult = '';
 
         $validationResult = $validationResult . $this->checkRequired('Name', $data['name']);
@@ -106,13 +106,25 @@ class TempProjectImporter implements OnEachRow, WithHeadingRow, SkipsEmptyRows, 
         $validationResult = $validationResult . $this->checkRequired('Category', $data['category']);
 
         $validationResult = $validationResult . $this->checkRequired('Currency', $data['currency']);
+        $validationResult = $validationResult . $this->checkLength('Currency', $data['currency'], 3);
+
         $validationResult = $validationResult . $this->checkRequired('Exchange rate', $data['exchange_rate']);
+
         $validationResult = $validationResult . $this->checkRequired('Exchange rate eur', $data['exchange_rate_eur']);
+
         $validationResult = $validationResult . $this->checkRequired('Budget', $data['budget']);
+        $validationResult = $validationResult . $this->checkPositiveInteger('Budget', $data['budget']);
+
         $validationResult = $validationResult . $this->checkRequired('Uses only own funds', $data['uses_only_own_funds']);
+
         $validationResult = $validationResult . $this->checkRequired('Main recipient', $data['main_recipient']);
+
         $validationResult = $validationResult . $this->checkRequired('Start date', $data['start_date']);
+
+        $validationResult = $validationResult . $this->checkDateAfterAnotherDate('Start date', 'End date', $data['start_date'], $data['end_date']);
+
         $validationResult = $validationResult . $this->checkRequired('Geographic reach', $data['geographic_reach']);
+
         $validationResult = $validationResult . $this->checkRequired('Continent 1', $data['continent_1']);
 
         return $validationResult;
@@ -129,18 +141,54 @@ class TempProjectImporter implements OnEachRow, WithHeadingRow, SkipsEmptyRows, 
         }
     }
 
-    // TODO: data type check
+    // positive integer check
+    private function checkPositiveInteger($fieldName, $fieldValue)
+    {
+        if ($fieldValue != null && !ctype_digit($fieldValue)) {
+            return $fieldName . ' needs to be a positive integer.<br/>';
+        } else {
+            return '';
+        }
+    }
 
-    // TODO: reasonable check
+    // check length
+    private function checkLength($fieldName, $fieldValue, $length)
+    {
+        if (Str::length($fieldValue) != $length) {
+            return $fieldName . ' needs to be ' . $length . ' characters long.<br/>';
+        } else {
+            return '';
+        }
+    }
 
+    // check date after another date
+    private function checkDateAfterAnotherDate($date1Name, $date2Name, $date1, $date2)
+    {
+        $startDate = null;
+        $endDate = null;
 
+        if ($date1) {
+            $startDate = Date::excelToDateTimeObject($date1);
+        }
 
+        if ($date2) {
+            $endDate = Date::excelToDateTimeObject($date2);
+        }
+
+        if ($endDate < $startDate) {
+            return $date2Name . ' needs to be later than ' . $date1Name . '.<br/>';
+        } else {
+            return '';
+        }
+    }
 
     public function rules(): array
     {
         return (new TempProjectRequest())->rules();
     }
 
+
+    // TODO: comment below functions to check if they are necessary
     public function isEmptyWhen(array $row): bool
     {
         return in_array($row['code'], $this->ignoreCodes, true) ||
@@ -151,7 +199,6 @@ class TempProjectImporter implements OnEachRow, WithHeadingRow, SkipsEmptyRows, 
     // Until then, we need to manually make sure the instructions and example rows pass validation...
     public function prepareForValidation($data, $index)
     {
-
         $data['portfolio_id'] = $this->portfolio->id;
         $data['organisation_id'] = $this->portfolio->organisation_id;
 
