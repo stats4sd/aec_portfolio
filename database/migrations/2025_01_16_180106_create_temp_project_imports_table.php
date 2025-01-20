@@ -20,6 +20,8 @@ return new class extends Migration
                 ->cascadeOnUpdate()
                 ->cascadeOnDelete();
 
+            $table->boolean('can_import')->default(0);
+
             $table->timestamps();
         });
     }

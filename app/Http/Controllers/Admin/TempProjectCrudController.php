@@ -41,7 +41,10 @@ class TempProjectCrudController extends CrudController
     {
         CRUD::setModel(\App\Models\TempProject::class);
         CRUD::setRoute(config('backpack.base.route_prefix') . '/temp-project');
-        CRUD::setEntityNameStrings('temp project', 'temp projects');
+
+        // TODO: show entity name as temp initiative temporary for testing
+        CRUD::setEntityNameStrings('temp initiative', 'temp initiatives');
+        // CRUD::setEntityNameStrings('initiative', 'initiatives');
 
         // specify importer class
         CRUD::set('import.importer', TempProjectWorkbookImport::class);
@@ -59,11 +62,13 @@ class TempProjectCrudController extends CrudController
      */
     protected function setupListOperation()
     {
-        // CRUD::column('project_import_id');
-
         CRUD::column('code');
         CRUD::column('name');
         CRUD::column('valid')->type('boolean');
+
+        // TODO: add import temp initiatives button
+
+        // TODO: add finalise button, only enable it if there is no validation error
     }
 
 
@@ -76,8 +81,7 @@ class TempProjectCrudController extends CrudController
         $this->data['saveAction'] = $this->crud->getSaveAction();
 
         // TODO:
-        // 1. change entity name from "Temp Projects" to "Initiatives"
-        // 2. hide "<< Back to all temp projects" link
+        // Question: how to hide "<< Back to all temp initiatives" link in Import page?
         $this->data['title'] = 'Import ' . $this->crud->entity_name . ' from excel file';
 
         $this->crud->addField([
@@ -147,6 +151,13 @@ class TempProjectCrudController extends CrudController
         // attach the uploaded excel file to TempProjectImport model
         $tempProjectImport->addMediaFromRequest('importFile')->toMediaCollection('project_import_excel_file');
 
+        // find number of invalid records
+        $numberOfInvalidRecords = TempProject::where('temp_project_import_id', $tempProjectImport->id)->where('valid', 0)->count();
+
+        // check if the uploaded file contains no error, then it is ready to import (enable Finalise button)
+        $tempProjectImport->can_import = $numberOfInvalidRecords == 0;
+        $tempProjectImport->save();
+
         Alert::success(trans('backpack::crud.insert_success'))->flash();
 
         // redirect to import redirect route if specified
@@ -170,9 +181,9 @@ class TempProjectCrudController extends CrudController
 
     protected function setupShowOperation()
     {
+        // add a widget to show validation result with color and multiple lines
         if ($this->crud->getCurrentEntry()->valid) {
 
-            // add a widget to show validation result with color and multiple lines
             Widget::add()->to('before_content')->type('div')->class('row')->content([
 
                 Widget::make(
@@ -182,14 +193,13 @@ class TempProjectCrudController extends CrudController
                         'wrapper' => ['class' => 'col-sm-4 col-md-8'],
                         'content'    => [
                             'header' => 'Validation result',
-                            'body'   => 'The project data is correct.',
+                            'body'   => 'The initiative data is correct.',
                         ]
                     ]
                 ),
             ]);
         } else {
 
-            // add a widget to show validation result with color and multiple lines
             Widget::add()->to('before_content')->type('div')->class('row')->content([
 
                 Widget::make(
