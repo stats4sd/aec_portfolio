@@ -7,6 +7,7 @@ use App\Models\TempProject;
 use App\Models\TempProjectImport;
 use Prologue\Alerts\Facades\Alert;
 use Maatwebsite\Excel\Facades\Excel;
+use Backpack\CRUD\app\Library\Widget;
 use Illuminate\Support\Facades\Validator;
 use App\Imports\TempProjectWorkbookImport;
 use Backpack\CRUD\app\Http\Controllers\CrudController;
@@ -24,7 +25,11 @@ use App\Exports\InitiativeImportTemplate\InitiativeImportTemplateExportWorkbook;
 class TempProjectCrudController extends CrudController
 {
     use ListOperation;
-    use ShowOperation;
+
+    use ShowOperation {
+        show as traitShow;
+    }
+
     use ImportOperation;
 
     /**
@@ -58,29 +63,7 @@ class TempProjectCrudController extends CrudController
 
         CRUD::column('code');
         CRUD::column('name');
-
-        // CRUD::column('category');
-        // CRUD::column('description');
-        // CRUD::column('currency');
-        // CRUD::column('exchange_rate');
-        // CRUD::column('exchange_rate_eur');
-        // CRUD::column('budget');
-        // CRUD::column('uses_only_own_funds');
-        // CRUD::column('main_recipient');
-        // CRUD::column('start_date');
-        // CRUD::column('end_date');
-        // CRUD::column('geographic_reach');
-        // CRUD::column('continent_1');
-        // CRUD::column('continent_2');
-        // CRUD::column('region_1');
-        // CRUD::column('region_2');
-        // CRUD::column('country_1');
-        // CRUD::column('country_2');
-        // CRUD::column('country_3');
-        // CRUD::column('country_4');
-
-        // Question: how to show validation result in multiple lines?
-        CRUD::column('validation_result');
+        CRUD::column('valid')->type('boolean');
     }
 
 
@@ -173,5 +156,77 @@ class TempProjectCrudController extends CrudController
 
         // redirect to list view
         return redirect(url($this->crud->route));
+    }
+
+
+    public function show($id)
+    {
+        // custom logic before
+        $content = $this->traitShow($id);
+
+        // custom logic after
+        return $content;
+    }
+
+    protected function setupShowOperation()
+    {
+        if ($this->crud->getCurrentEntry()->valid) {
+
+            // add a widget to show validation result with color and multiple lines
+            Widget::add()->to('before_content')->type('div')->class('row')->content([
+
+                Widget::make(
+                    [
+                        'type'    => 'card',
+                        'class'   => 'card bg-primary text-white',
+                        'wrapper' => ['class' => 'col-sm-4 col-md-8'],
+                        'content'    => [
+                            'header' => 'Validation result',
+                            'body'   => 'The project data is correct.',
+                        ]
+                    ]
+                ),
+            ]);
+        } else {
+
+            // add a widget to show validation result with color and multiple lines
+            Widget::add()->to('before_content')->type('div')->class('row')->content([
+
+                Widget::make(
+                    [
+                        'type'    => 'card',
+                        'class'   => 'card bg-error text-white',
+                        'wrapper' => ['class' => 'col-sm-4 col-md-8'],
+                        'content'    => [
+                            'header' => 'Validation result',
+                            'body'   => $this->crud->getCurrentEntry()->validation_result,
+                        ]
+                    ]
+                ),
+            ]);
+        }
+
+        CRUD::column('code');
+        CRUD::column('name');
+
+        CRUD::column('category');
+        CRUD::column('description');
+        CRUD::column('currency');
+        CRUD::column('exchange_rate');
+        CRUD::column('exchange_rate_eur');
+        CRUD::column('budget');
+        CRUD::column('uses_only_own_funds');
+        CRUD::column('main_recipient');
+        CRUD::column('start_date');
+        CRUD::column('end_date');
+        CRUD::column('geographic_reach');
+        CRUD::column('continent_1');
+        CRUD::column('continent_2');
+        CRUD::column('region_1');
+        CRUD::column('region_2');
+        CRUD::column('country_1');
+        CRUD::column('country_2');
+        CRUD::column('country_3');
+        CRUD::column('country_4');
     }
 }

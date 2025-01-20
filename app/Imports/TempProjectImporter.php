@@ -9,6 +9,7 @@ use Illuminate\Support\Str;
 use App\Models\TempProjectImport;
 use App\Models\InitiativeCategory;
 use App\Http\Requests\ProjectRequest;
+use App\Http\Requests\TempProjectRequest;
 use Maatwebsite\Excel\Concerns\OnEachRow;
 use PhpOffice\PhpSpreadsheet\Shared\Date;
 use Maatwebsite\Excel\Concerns\Importable;
@@ -63,6 +64,12 @@ class TempProjectImporter implements OnEachRow, WithHeadingRow, SkipsEmptyRows, 
         // TODO: validate each column in this row, return all validation results as a string
         // Question: can we re-use ProjectRequest class and get all validation result as string?
 
+        // TODO: validation
+        $validationResult = null;
+        // $validationResult = $this->validate($data);
+
+        $valid = ($validationResult == '');
+
         $tempProject = TempProject::create([
             'temp_project_import_id'  => $this->tempProjectImport->id,
             'portfolio_id' => $this->portfolio->id,
@@ -81,14 +88,57 @@ class TempProjectImporter implements OnEachRow, WithHeadingRow, SkipsEmptyRows, 
             'end_date' => $endDate,
             'geographic_reach' => $data['geographic_reach'],
 
+            'valid' => $valid,
+
             // Question: how to store and show multiple lines validation result?
-            'validation_result' => 'Line 1\n<br/>Line2',
+            'validation_result' => $validationResult,
         ]);
     }
 
+
+    private function validate($data)
+    {
+        $validationResult = '';
+
+        $validationResult = $validationResult . $this->checkRequired('Name', $data['name']);
+
+        // The existing project import does not handle initiative category
+        $validationResult = $validationResult . $this->checkRequired('Category', $data['category']);
+
+        $validationResult = $validationResult . $this->checkRequired('Currency', $data['currency']);
+        $validationResult = $validationResult . $this->checkRequired('Exchange rate', $data['exchange_rate']);
+        $validationResult = $validationResult . $this->checkRequired('Exchange rate eur', $data['exchange_rate_eur']);
+        $validationResult = $validationResult . $this->checkRequired('Budget', $data['budget']);
+        $validationResult = $validationResult . $this->checkRequired('Uses only own funds', $data['uses_only_own_funds']);
+        $validationResult = $validationResult . $this->checkRequired('Main recipient', $data['main_recipient']);
+        $validationResult = $validationResult . $this->checkRequired('Start date', $data['start_date']);
+        $validationResult = $validationResult . $this->checkRequired('Geographic reach', $data['geographic_reach']);
+        $validationResult = $validationResult . $this->checkRequired('Continent 1', $data['continent_1']);
+
+        return $validationResult;
+    }
+
+
+    // existing check
+    private function checkRequired($fieldName, $fieldValue)
+    {
+        if ($fieldValue == null || $fieldValue == '') {
+            return $fieldName . ' is required.<br/>';
+        } else {
+            return '';
+        }
+    }
+
+    // TODO: data type check
+
+    // TODO: reasonable check
+
+
+
+
     public function rules(): array
     {
-        return (new ProjectRequest())->rules();
+        return (new TempProjectRequest())->rules();
     }
 
     public function isEmptyWhen(array $row): bool

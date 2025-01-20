@@ -41,7 +41,7 @@ class ProjectRequest extends FormRequest
             // displayBudget is required for manual adding initiative in front-end,
             // it is not necessary for project import
             // comment it temporary for testing
-            'displayBudget' => ['required', new DisplayBudgetRule],
+            // 'displayBudget' => ['required', new DisplayBudgetRule],
 
             'currency' => 'required|max:3',
             'exchange_rate' => 'sometimes|required',

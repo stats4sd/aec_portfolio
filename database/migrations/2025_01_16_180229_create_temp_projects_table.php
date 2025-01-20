@@ -68,6 +68,7 @@ return new class extends Migration
             $table->string('country_2')->nullable();
             $table->string('country_3')->nullable();
             $table->string('country_4')->nullable();
+            $table->boolean('valid')->default(0);
             $table->text('validation_result')->nullable();
 
             $table->timestamps();
