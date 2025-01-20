@@ -152,17 +152,17 @@ class TempProjectCrudController extends CrudController
             'user_id' => auth()->user()->id,
         ]);
 
-        // TODO: attach the uploaded excel file to TempProjectImport model
-        // Question: how to get the path of uploaded excel file in request?
-        // should we store the uploaded excel file in file system first?
-        // $yourModel->addMedia($pathToImage)->toMediaCollection('images');
-        // $tempProjectImport->addMedia($request->importFile)->toMediaCollection('project_import_excel_file');
-
         // remove all temp_projects records related to this user
         TempProject::where('temp_project_import_id', $tempProjectImport->id)->delete();
 
         // call Laravel Excel package to import excel file into temp_projects table
         Excel::import(new $importer($portfolio, $tempProjectImport), $request->importFile);
+
+        // remove the previously attached excel file
+        $tempProjectImport->clearMediaCollection('project_import_excel_file');
+
+        // attach the uploaded excel file to TempProjectImport model
+        $tempProjectImport->addMediaFromRequest('importFile')->toMediaCollection('project_import_excel_file');
 
         Alert::success(trans('backpack::crud.insert_success'))->flash();
 
