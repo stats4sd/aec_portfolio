@@ -20,6 +20,12 @@ return new class extends Migration
                 ->cascadeOnUpdate()
                 ->cascadeOnDelete();
 
+            $table->foreignId('portfolio_id')
+                ->references('id')
+                ->on('portfolios')
+                ->cascadeOnUpdate()
+                ->cascadeOnDelete();
+
             $table->boolean('can_import')->default(0);
 
             $table->timestamps();

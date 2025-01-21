@@ -8,6 +8,7 @@ use App\Models\TempProjectImport;
 use Prologue\Alerts\Facades\Alert;
 use Maatwebsite\Excel\Facades\Excel;
 use Backpack\CRUD\app\Library\Widget;
+use App\Imports\ProjectWorkbookImport;
 use Illuminate\Support\Facades\Validator;
 use App\Imports\TempProjectWorkbookImport;
 use Backpack\CRUD\app\Http\Controllers\CrudController;
@@ -69,7 +70,17 @@ class TempProjectCrudController extends CrudController
         // add import button
         $this->crud->addButton('top', 'import', 'view', 'vendor.backpack.crud.buttons.import', 'end');
 
-        // TODO: add finalise button, only enable it if there is no validation error
+        // get TempProjectImport model
+        $tempProjectImport = TempProjectImport::firstOrCreate([
+            'user_id' => auth()->user()->id,
+        ]);
+
+        // add finalise button
+        if ($tempProjectImport->can_import) {
+            $this->crud->addButton('top', 'finalise', 'view', 'vendor.backpack.crud.buttons.finalise_enabled', 'end');
+        } else {
+            $this->crud->addButton('top', 'finalise', 'view', 'vendor.backpack.crud.buttons.finalise_disabled', 'end');
+        }
     }
 
     public function getImportForm()
@@ -138,6 +149,7 @@ class TempProjectCrudController extends CrudController
         // create or get ProjectImport model belongs to logged in user
         $tempProjectImport = TempProjectImport::firstOrCreate([
             'user_id' => auth()->user()->id,
+            'portfolio_id' => $portfolio->id,
         ]);
 
         // remove all temp_projects records related to this user
@@ -155,7 +167,10 @@ class TempProjectCrudController extends CrudController
         // find number of invalid records
         $numberOfInvalidRecords = TempProject::where('temp_project_import_id', $tempProjectImport->id)->where('valid', 0)->count();
 
-        // check if the uploaded file contains no error, then it is ready to import (enable Finalise button)
+        // store user selected portfolio id for later use
+        $tempProjectImport->portfolio_id = $portfolio->id;
+
+        // check if the uploaded file contains no error and ready for import (to show the enabled Finalise button)
         $tempProjectImport->can_import = $numberOfInvalidRecords == 0;
         $tempProjectImport->save();
 
@@ -239,5 +254,34 @@ class TempProjectCrudController extends CrudController
         CRUD::column('country_2');
         CRUD::column('country_3');
         CRUD::column('country_4');
+    }
+
+    // when all rows of project data are correct in the uploaded excel file, it is now ready to import excel file to projects records
+    public function finalise()
+    {
+        // get TempProjectImport model
+        $tempProjectImport = TempProjectImport::firstOrCreate([
+            'user_id' => auth()->user()->id,
+        ]);
+
+        $importer = ProjectWorkbookImport::class;
+        $portfolio = Portfolio::find($tempProjectImport->portfolio_id);
+        $excelFile = $tempProjectImport->getMedia('project_import_excel_file')->first()->getPath();
+
+        // call Laravel Excel package to import the uploaded excel file into projects table
+        Excel::import(new $importer($portfolio), $excelFile);
+
+        // remove all temp_projects records related to this user
+        TempProject::where('temp_project_import_id', $tempProjectImport->id)->delete();
+
+        // remove the previously attached excel file
+        $tempProjectImport->clearMediaCollection('project_import_excel_file');
+
+        // reset TempProjectImport model
+        $tempProjectImport->can_import = 0;
+        $tempProjectImport->save();
+
+        // redirect to Initiative page, list view
+        return redirect('/admin/project');
     }
 }
