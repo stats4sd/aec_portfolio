@@ -43,9 +43,7 @@ class TempProjectCrudController extends CrudController
         CRUD::setModel(TempProject::class);
         CRUD::setRoute(config('backpack.base.route_prefix') . '/temp-project');
 
-        // TODO: show entity name as temp initiative temporary for testing
-        CRUD::setEntityNameStrings('temp initiative', 'temp initiatives');
-        // CRUD::setEntityNameStrings('initiative', 'initiatives');
+        CRUD::setEntityNameStrings('initiative', 'initiatives');
 
         // specify importer class
         CRUD::set('import.importer', TempProjectWorkbookImport::class);
