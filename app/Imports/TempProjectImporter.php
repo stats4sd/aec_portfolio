@@ -3,11 +3,10 @@
 namespace App\Imports;
 
 use App\Models\Portfolio;
-use Maatwebsite\Excel\Row;
 use App\Models\TempProject;
-use Illuminate\Support\Str;
 use App\Models\TempProjectImport;
-use App\Models\InitiativeCategory;
+use Maatwebsite\Excel\Row;
+use Illuminate\Support\Str;
 use App\Http\Requests\TempProjectRequest;
 use Maatwebsite\Excel\Concerns\OnEachRow;
 use PhpOffice\PhpSpreadsheet\Shared\Date;
@@ -60,7 +59,7 @@ class TempProjectImporter implements OnEachRow, WithHeadingRow, SkipsEmptyRows, 
             $usesOnlyOwnFunds = 0;
         }
 
-        // validation
+        // do custom validation
         $validationResult = $this->validate($data);
 
         $valid = ($validationResult == '');
@@ -93,15 +92,15 @@ class TempProjectImporter implements OnEachRow, WithHeadingRow, SkipsEmptyRows, 
 
     private function validate($data)
     {
+        // Note:
         // user either leave empty or select one option for below fields with selection box in excel file:
         // category, geographic_reach, continent_1, continent_2, region_1, region_2, country_1, country_2, country_3, country_4
-        // assume it is not necessary to have custom validation here
+        // assume it is not necessary to have custom validation for them
 
         $validationResult = '';
 
         $validationResult = $validationResult . $this->checkRequired('Name', $data['name']);
 
-        // The existing project import does not handle initiative category
         $validationResult = $validationResult . $this->checkRequired('Category', $data['category']);
 
         $validationResult = $validationResult . $this->checkRequired('Currency', $data['currency']);
@@ -129,8 +128,7 @@ class TempProjectImporter implements OnEachRow, WithHeadingRow, SkipsEmptyRows, 
         return $validationResult;
     }
 
-
-    // existing check
+    // check for required field
     private function checkRequired($fieldName, $fieldValue)
     {
         if ($fieldValue == null || $fieldValue == '') {
@@ -140,7 +138,7 @@ class TempProjectImporter implements OnEachRow, WithHeadingRow, SkipsEmptyRows, 
         }
     }
 
-    // positive integer check
+    // check for positive integer
     private function checkPositiveInteger($fieldName, $fieldValue)
     {
         if ($fieldValue != null && !ctype_digit($fieldValue)) {
@@ -150,7 +148,7 @@ class TempProjectImporter implements OnEachRow, WithHeadingRow, SkipsEmptyRows, 
         }
     }
 
-    // check length
+    // check length of currency
     private function checkLength($fieldName, $fieldValue, $length)
     {
         if (Str::length($fieldValue) != $length) {
@@ -160,7 +158,7 @@ class TempProjectImporter implements OnEachRow, WithHeadingRow, SkipsEmptyRows, 
         }
     }
 
-    // check date after another date
+    // check if date2 is later than date1
     private function checkDateAfterAnotherDate($date1Name, $date2Name, $date1, $date2)
     {
         $startDate = null;
@@ -181,68 +179,17 @@ class TempProjectImporter implements OnEachRow, WithHeadingRow, SkipsEmptyRows, 
         }
     }
 
+    // Note:
+    // TempProjectRequest does not have any validation rules, so that non empty project records will be imported as temp_projects records for user review
     public function rules(): array
     {
         return (new TempProjectRequest())->rules();
     }
 
-
-
-
-
-    // TODO: comment below functions to check if they are necessary
+    // define how to determine if a row is considered as an empty row
     public function isEmptyWhen(array $row): bool
     {
         return in_array($row['code'], $this->ignoreCodes, true) ||
             ($row['code'] === null && $row['name'] === null);
-    }
-
-    // FIXME: This hack is only here until the isEmptyWhen() functionality is added to the toModel import (https://github.com/SpartnerNL/Laravel-Excel/pull/3828).
-    // Until then, we need to manually make sure the instructions and example rows pass validation...
-    public function prepareForValidation($data, $index)
-    {
-        $data['portfolio_id'] = $this->portfolio->id;
-        $data['organisation_id'] = $this->portfolio->organisation_id;
-
-        $data['initiativeCategory'] = InitiativeCategory::where('name', $data['category'])->first()?->id;
-
-        if (Str::lower($data['uses_only_own_funds']) === 'yes') {
-            $data['uses_only_own_funds'] = 1;
-        } else {
-            $data['uses_only_own_funds'] = 0;
-        }
-
-        if ($data['start_date'] && (is_int($data['start_date']) || is_float($data['start_date']))) {
-            $data['start_date'] = Date::excelToDateTimeObject($data['start_date']);
-        }
-
-        if ($data['end_date'] && (is_int($data['end_date']) || is_float($data['end_date']))) {
-            $data['end_date'] = Date::excelToDateTimeObject($data['end_date']);
-        }
-
-
-        // collect up locations
-        $continentKeys = collect($data)
-            ->keys()
-            ->map(fn($key) => Str::startsWith($key, 'continent_') ? $key : null)
-            ->filter(fn($key) => $key !== null);
-
-        $data['continents'] = $continentKeys->map(fn($key) => $data[$key])->filter(fn($continent) => $continent !== null)->toArray();
-
-        $regionKeys = collect($data)
-            ->keys()
-            ->map(fn($key) => Str::startsWith($key, 'region_') ? $key : null)
-            ->filter(fn($key) => $key !== null);
-
-        $data['regions'] = $regionKeys->map(fn($key) => $data[$key])->filter(fn($region) => $region !== null)->toArray();
-
-        $countryKeys = collect($data)
-            ->keys()
-            ->map(fn($key) => Str::startsWith($key, 'country_') ? $key : null)
-            ->filter(fn($key) => $key !== null);
-
-        $data['countries'] = $countryKeys->map(fn($key) => $data[$key])->filter(fn($country) => $country !== null)->toArray();
-
-        return $data;
     }
 }
