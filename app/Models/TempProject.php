@@ -5,7 +5,8 @@ namespace App\Models;
 use Backpack\CRUD\app\Models\Traits\CrudTrait;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use PhpOffice\PhpSpreadsheet\Calculation\Logical\Boolean;
+use Illuminate\Database\Eloquent\Builder;
+
 
 class TempProject extends Model
 {
@@ -16,6 +17,21 @@ class TempProject extends Model
     protected $casts = [
         'valid' => 'boolean',
     ];
+
+    protected static function booted()
+    {
+        // add global scope to show temp_projects belong to logged in user
+        static::addGlobalScope('user', function (Builder $builder) {
+            $user = auth()->user();
+
+            $tempProjectImportId = 0;
+            if ($user->tempProjectImport) {
+                $tempProjectImportId = $user->tempProjectImport->id;
+            }
+
+            $builder->where('temp_project_import_id', $tempProjectImportId);
+        });
+    }
 
     public function tempProjectImport(): BelongsTo
     {
