@@ -39,7 +39,7 @@ class TempProjectCrudController extends CrudController
      */
     public function setup()
     {
-        CRUD::setModel(\App\Models\TempProject::class);
+        CRUD::setModel(TempProject::class);
         CRUD::setRoute(config('backpack.base.route_prefix') . '/temp-project');
 
         // TODO: show entity name as temp initiative temporary for testing
@@ -66,11 +66,11 @@ class TempProjectCrudController extends CrudController
         CRUD::column('name');
         CRUD::column('valid')->type('boolean');
 
-        // TODO: add import temp initiatives button
+        // add import button
+        $this->crud->addButton('top', 'import', 'view', 'vendor.backpack.crud.buttons.import', 'end');
 
         // TODO: add finalise button, only enable it if there is no validation error
     }
-
 
     public function getImportForm()
     {
@@ -93,6 +93,7 @@ class TempProjectCrudController extends CrudController
             Instead of manually entering details for individual initiatives, you may choose to import them in bulk, and then add additional details using the edit feature within the platform. To ensure a successful import, please download the template provided below, and ensure your Excel file is in the correct format. The template file includes an example initiative.
             <br/><br/>
             <a href="' . url($this->crud->route . '/import-template') . '" class="btn btn-link" data-button-type="import-template"><i class="la la-download"></i> Download Template for Imports</a></br>
+
             ',
         ]);
 

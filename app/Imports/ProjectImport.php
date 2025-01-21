@@ -38,7 +38,6 @@ class ProjectImport implements OnEachRow, WithHeadingRow, SkipsEmptyRows, WithCa
 
     public function onRow(Row $row)
     {
-
         $data = $row->toArray();
 
         // skip instructions and example row from template;
