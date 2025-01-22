@@ -5,13 +5,15 @@ CREATE PROCEDURE `generate_dashboard_summary`(
     IN dashboardOthersId INT,
     IN organisationId INT,
     IN portfolioId INT,
-    IN regionIds VARCHAR(255),
-    IN countryIds VARCHAR(255),
-    IN categoryIds VARCHAR(255),
+    IN geographicReaches VARCHAR(16383),
+    IN regionIds VARCHAR(16383),
+    IN countryIds VARCHAR(16383),
+    IN categoryIds VARCHAR(16383),
     IN projectStartFrom INT,
     IN projectStartTo INT,
     IN budgetFrom INT,
     IN budgetTo INT,
+    IN institutionTypeIds VARCHAR(16383),
     OUT status INT,
     OUT message VARCHAR(1000),
     OUT totalCount BIGINT,
@@ -109,8 +111,9 @@ BEGIN
     WHERE p.id = p.id
     AND p.organisation_id = 9
     AND p.portfolio_id = 20
-    AND YEAR(p.start_date) BETWEEN 2020 AND 2030'
+    AND YEAR(p.start_date) BETWEEN 2020 AND 2030
     AND p.budget_eur BETWEEN 200 AND 1000
+    AND p.geographic_reach in ('Global level', 'Country level')
     AND pr.region_id = 11
     AND cp.country_id = 132;
 
@@ -153,6 +156,10 @@ BEGIN
         SET @SQLText = CONCAT(@SQLText, ' AND p.budget_eur <= ', budgetTo);
     END IF;
 
+    IF geographicReaches IS NOT NULL THEN
+       SET @SQLText = CONCAT(@SQLText, ' AND p.geographic_reach IN (''', REPLACE(geographicReaches, ',', ''',''') , ''')');
+    END IF;
+
     IF regionIds IS NOT NULL THEN
         SET @SQLText = CONCAT(@SQLText, ' AND pr.region_id IN (', regionIds, ')');
     END IF;
@@ -165,8 +172,8 @@ BEGIN
         SET @SQLText = CONCAT(@SQLText, ' AND p.initiative_category_id IN (', categoryIds, ')');
     END IF;
 
-    -- debug message
-    SELECT @SQLText FROM DUAL;
+    -- debug message to check SQL content
+    -- SELECT @SQLText FROM DUAL;
 
 
     -- execute dynamic SQL
@@ -195,7 +202,13 @@ BEGIN
     SET @SQLText = '';
     SET @SQLText = CONCAT(@SQLText, ' INSERT INTO dashboard_project (dashboard_id, project_id)');
     SET @SQLText = CONCAT(@SQLText, ' SELECT ', dashboardOthersId, ', p.id');
-    SET @SQLText = CONCAT(@SQLText, ' FROM projects p');
+
+    IF institutionTypeIds IS NULL THEN
+        SET @SQLText = CONCAT(@SQLText, ' FROM projects p');
+    ELSE
+        SET @SQLText = CONCAT(@SQLText, ' FROM organisations o, projects p');
+    END IF;
+
     SET @SQLText = CONCAT(@SQLText, ' LEFT JOIN portfolios po');
     SET @SQLText = CONCAT(@SQLText, ' ON p.portfolio_id = po.id');
     SET @SQLText = CONCAT(@SQLText, ' LEFT JOIN project_region pr');
@@ -223,6 +236,10 @@ BEGIN
         SET @SQLText = CONCAT(@SQLText, ' AND p.budget_eur >= ', budgetFrom);
     END IF;
 
+    IF geographicReaches IS NOT NULL THEN
+       SET @SQLText = CONCAT(@SQLText, ' AND p.geographic_reach IN (''', REPLACE(geographicReaches, ',', ''',''') , ''')');
+    END IF;
+
     IF budgetTo IS NOT NULL THEN
         SET @SQLText = CONCAT(@SQLText, ' AND p.budget_eur <= ', budgetTo);
     END IF;
@@ -238,6 +255,16 @@ BEGIN
     IF categoryIds IS NOT NULL THEN
         SET @SQLText = CONCAT(@SQLText, ' AND p.initiative_category_id IN (', categoryIds, ')');
     END IF;
+
+    IF institutionTypeIds IS NOT NULL THEN
+        SET @SQLText = CONCAT(@SQLText, ' AND p.organisation_id = o.id');
+        SET @SQLText = CONCAT(@SQLText, ' AND o.institution_type_id IN (', institutionTypeIds, ')');
+    END IF;
+
+
+    -- debug message to check SQL content
+    -- SELECT @SQLText FROM DUAL;
+
 
     -- execute dynamic SQL
     PREPARE stmt FROM @SQLText;
