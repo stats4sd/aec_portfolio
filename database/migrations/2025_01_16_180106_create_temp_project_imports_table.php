@@ -20,11 +20,19 @@ return new class extends Migration
                 ->cascadeOnUpdate()
                 ->cascadeOnDelete();
 
+            $table->foreignId('organisations_id')
+                ->references('id')
+                ->on('organisations')
+                ->cascadeOnUpdate()
+                ->cascadeOnDelete();
+
             $table->foreignId('portfolio_id')
                 ->references('id')
                 ->on('portfolios')
                 ->cascadeOnUpdate()
                 ->cascadeOnDelete();
+
+            $table->text('excel_file_path')->nullable();
 
             $table->boolean('can_import')->default(0);
 
