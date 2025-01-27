@@ -33,9 +33,9 @@ return new class extends Migration
                 ->cascadeOnDelete();
 
             $table->string('portfolio_name');
-
             $table->text('excel_file_path')->nullable();
-
+            $table->integer('invalid_records')->nullable();
+            $table->integer('total_records')->nullable();
             $table->boolean('can_import')->default(0);
 
             $table->timestamps();

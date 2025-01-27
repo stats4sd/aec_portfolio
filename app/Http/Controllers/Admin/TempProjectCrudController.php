@@ -100,6 +100,39 @@ class TempProjectCrudController extends CrudController
                 $this->crud->addClause('where', 'valid', '0');
             }
         );
+
+        // add a widget to show import summary
+        if ($tempProjectImport->can_import) {
+
+            Widget::add()->to('before_content')->type('div')->class('row')->content([
+                Widget::make(
+                    [
+                        'type'    => 'card',
+                        'class'   => 'card bg-success text-white',
+                        'wrapper' => ['class' => 'col-sm-4 col-md-8'],
+                        'content'    => [
+                            'header' => 'Import summary',
+                            'body'   => 'All initiatives data are correct. You can click the "Finalise" button to import them into system.',
+                        ]
+                    ]
+                ),
+            ]);
+        } else {
+
+            Widget::add()->to('before_content')->type('div')->class('row')->content([
+                Widget::make(
+                    [
+                        'type'    => 'card',
+                        'class'   => 'card bg-primary text-white',
+                        'wrapper' => ['class' => 'col-sm-4 col-md-8'],
+                        'content'    => [
+                            'header' => 'Import summary',
+                            'body'   => $tempProjectImport->invalid_records . ' out of ' . $tempProjectImport->total_records . ' projects require attention before finalising the import - please see the table below for details.',
+                        ]
+                    ]
+                ),
+            ]);
+        }
     }
 
     public function getImportForm()
@@ -188,11 +221,17 @@ class TempProjectCrudController extends CrudController
         // attach the uploaded excel file to TempProjectImport model
         $tempProjectImport->addMediaFromRequest('importFile')->toMediaCollection('project_import_excel_file');
 
+        $numberOfRecords = TempProject::where('temp_project_import_id', $tempProjectImport->id)->count();
+
         // find number of invalid records
         $numberOfInvalidRecords = TempProject::where('temp_project_import_id', $tempProjectImport->id)->where('valid', 0)->count();
 
         // store user selected portfolio id for later use
         $tempProjectImport->portfolio_id = $portfolio->id;
+
+        // store total number of invalid records and total number of records for later use
+        $tempProjectImport->invalid_records = $numberOfInvalidRecords;
+        $tempProjectImport->total_records = $numberOfRecords;
 
         // check if the uploaded file contains no error and ready for import (to show the enabled Finalise button)
         $tempProjectImport->can_import = $numberOfInvalidRecords == 0;
