@@ -161,17 +161,42 @@ class TempProjectCrudController extends CrudController
         ]);
 
 
-        $this->crud->addField([
-            'name' => 'portfolio',
-            'label' => 'Portfolio',
-            'type' => 'relationship',
-            'validationRules' => 'required',
-        ]);
+        // get TempProjectImport model
+        $user = auth()->user();
+        $selectedOrganisationId = Session::get('selectedOrganisationId');
+        $tempProjectImport = $user->tempProjectImports->where('organisation_id', $selectedOrganisationId)->first();
+
+        if (!$tempProjectImport) {
+            // this is a first import, let user to select a portfolio
+            $this->crud->addField([
+                'name' => 'portfolio',
+                'label' => 'Portfolio',
+                'type' => 'relationship',
+                'validationRules' => 'required',
+            ]);
+        } else {
+            // this is a re-upload, show the previously selected portfolio as the only option.
+            $this->crud->addField([
+                'name' => 'portfolio',
+                'label' => 'Portfolio',
+                'type' => 'select_from_array',
+                'options'     => [$tempProjectImport->portfolio_id => $tempProjectImport->portfolio_name],
+                'default'     => $tempProjectImport->portfolio_id,
+                'validationRules' => 'required',
+            ]);
+        }
+
+        // get the file name of the previously uploaded excel file
+        $excelFilename = '';
+
+        if ($tempProjectImport) {
+            $excelFilename = ' (' . $tempProjectImport->getMedia('project_import_excel_file')->first()->file_name . ')';
+        }
 
         $this->crud->addField([
             'name' => 'importFile',
             'type' => 'upload',
-            'label' => 'Select Excel File to Upload',
+            'label' => 'Select Excel File to Upload' . $excelFilename,
         ]);
 
         return view('file-util::vendor.backpack.crud.import::import', $this->data);

@@ -16,7 +16,7 @@ use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use Maatwebsite\Excel\Concerns\WithValidation;
 use Maatwebsite\Excel\Concerns\WithCalculatedFormulas;
 
-class TempProjectImporter implements OnEachRow, WithHeadingRow, SkipsEmptyRows, WithCalculatedFormulas, WithValidation
+class TempProjectImporter implements OnEachRow, WithHeadingRow, SkipsEmptyRows, WithCalculatedFormulas
 {
 
     use Importable;
@@ -177,13 +177,6 @@ class TempProjectImporter implements OnEachRow, WithHeadingRow, SkipsEmptyRows, 
         } else {
             return '';
         }
-    }
-
-    // Note:
-    // TempProjectRequest does not have any validation rules, so that non empty project records will be imported as temp_projects records for user review
-    public function rules(): array
-    {
-        return (new TempProjectRequest())->rules();
     }
 
     // define how to determine if a row is considered as an empty row
