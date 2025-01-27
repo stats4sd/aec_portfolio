@@ -2,10 +2,11 @@
 
 namespace App\Models;
 
-use Backpack\CRUD\app\Models\Traits\CrudTrait;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\Session;
 use Illuminate\Database\Eloquent\Builder;
+use Backpack\CRUD\app\Models\Traits\CrudTrait;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 
 class TempProject extends Model
@@ -25,8 +26,15 @@ class TempProject extends Model
             $user = auth()->user();
 
             $tempProjectImportId = 0;
-            if ($user->tempProjectImport) {
-                $tempProjectImportId = $user->tempProjectImport->id;
+
+            // get selectedOrganisationId from session
+            $selectedOrganisationId = Session::get('selectedOrganisationId');
+
+            // find TempProjectImport model for this user and this organisation
+            foreach ($user->tempProjectImports as $tempProjectImport) {
+                if ($tempProjectImport->organisation_id == $selectedOrganisationId) {
+                    $tempProjectImportId = $tempProjectImport->id;
+                }
             }
 
             $builder->where('temp_project_import_id', $tempProjectImportId);

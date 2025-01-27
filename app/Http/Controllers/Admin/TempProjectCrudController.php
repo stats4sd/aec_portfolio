@@ -9,6 +9,7 @@ use Prologue\Alerts\Facades\Alert;
 use Maatwebsite\Excel\Facades\Excel;
 use Backpack\CRUD\app\Library\Widget;
 use App\Imports\ProjectWorkbookImport;
+use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Validator;
 use App\Imports\TempProjectWorkbookImport;
 use Backpack\CRUD\app\Http\Controllers\CrudController;
@@ -144,9 +145,13 @@ class TempProjectCrudController extends CrudController
         // find portfolio model
         $portfolio = Portfolio::find($request->portfolio);
 
+        // get selectedOrganisationId from session
+        $selectedOrganisationId = Session::get('selectedOrganisationId');
+
         // create or get ProjectImport model belongs to logged in user
         $tempProjectImport = TempProjectImport::firstOrCreate([
             'user_id' => auth()->user()->id,
+            'organisation_id' => $selectedOrganisationId,
             'portfolio_id' => $portfolio->id,
         ]);
 
