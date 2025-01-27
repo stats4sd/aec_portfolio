@@ -20,7 +20,7 @@ return new class extends Migration
                 ->cascadeOnUpdate()
                 ->cascadeOnDelete();
 
-            $table->foreignId('organisations_id')
+            $table->foreignId('organisation_id')
                 ->references('id')
                 ->on('organisations')
                 ->cascadeOnUpdate()
