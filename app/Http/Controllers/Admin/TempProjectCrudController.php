@@ -87,6 +87,19 @@ class TempProjectCrudController extends CrudController
                 $this->crud->addButton('top', 'finalise', 'view', 'vendor.backpack.crud.buttons.finalise_disabled', 'end');
             }
         }
+
+        // add a "simple" filter called Invalid to show temp_projects records cannot pass validation
+        $this->crud->addFilter(
+            [
+                'type'  => 'simple',
+                'name'  => 'invalid',
+                'label' => 'Invalid'
+            ],
+            false,
+            function () {
+                $this->crud->addClause('where', 'valid', '0');
+            }
+        );
     }
 
     public function getImportForm()
