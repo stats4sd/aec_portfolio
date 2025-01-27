@@ -67,6 +67,7 @@ class ProjectImport implements OnEachRow, WithHeadingRow, SkipsEmptyRows, WithCa
             'organisation_id' => $this->portfolio->organisation_id,
             'code' => $data['code'],
             'name' => $data['name'],
+            'initiative_category_id' => $data['initiativeCategory'],
             'description' => $data['description'] ?? null,
             'currency' => $data['currency'],
             'exchange_rate' => $data['exchange_rate'],
