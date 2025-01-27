@@ -132,7 +132,7 @@ class TempProjectImporter implements OnEachRow, WithHeadingRow, SkipsEmptyRows, 
     private function checkRequired($fieldName, $fieldValue)
     {
         if ($fieldValue == null || $fieldValue == '') {
-            return $fieldName . ' is required.<br/>';
+            return '<li>' . $fieldName . ' is required.</li>';
         } else {
             return '';
         }
@@ -142,7 +142,7 @@ class TempProjectImporter implements OnEachRow, WithHeadingRow, SkipsEmptyRows, 
     private function checkPositiveInteger($fieldName, $fieldValue)
     {
         if ($fieldValue != null && !ctype_digit($fieldValue)) {
-            return $fieldName . ' needs to be a positive integer.<br/>';
+            return '<li>' . $fieldName . ' needs to be a positive integer.</li>';
         } else {
             return '';
         }
@@ -152,7 +152,7 @@ class TempProjectImporter implements OnEachRow, WithHeadingRow, SkipsEmptyRows, 
     private function checkLength($fieldName, $fieldValue, $length)
     {
         if (Str::length($fieldValue) != $length) {
-            return $fieldName . ' needs to be ' . $length . ' characters long.<br/>';
+            return '<li>' . $fieldName . ' needs to be ' . $length . ' characters long.</li>';
         } else {
             return '';
         }
@@ -173,7 +173,7 @@ class TempProjectImporter implements OnEachRow, WithHeadingRow, SkipsEmptyRows, 
         }
 
         if ($endDate < $startDate) {
-            return $date2Name . ' needs to be later than ' . $date1Name . '.<br/>';
+            return '<li>' . $date2Name . ' needs to be later than ' . $date1Name . '.</li>';
         } else {
             return '';
         }

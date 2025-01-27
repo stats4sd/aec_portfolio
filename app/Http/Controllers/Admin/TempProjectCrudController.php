@@ -66,6 +66,13 @@ class TempProjectCrudController extends CrudController
         CRUD::column('name');
         CRUD::column('valid')->type('boolean');
 
+        $this->crud->addColumn([
+            'name'  => 'validation_result',
+            'label' => 'Validation result',
+            'type'  => 'textarea',
+            'escaped' => false,
+        ]);
+
         // add import button
         $this->crud->addButton('top', 'import', 'view', 'vendor.backpack.crud.buttons.import', 'end');
 
