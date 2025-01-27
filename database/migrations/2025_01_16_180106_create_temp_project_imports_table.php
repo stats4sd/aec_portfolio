@@ -32,6 +32,8 @@ return new class extends Migration
                 ->cascadeOnUpdate()
                 ->cascadeOnDelete();
 
+            $table->string('portfolio_name');
+
             $table->text('excel_file_path')->nullable();
 
             $table->boolean('can_import')->default(0);

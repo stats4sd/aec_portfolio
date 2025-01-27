@@ -182,6 +182,7 @@ Route::group([
     Route::get('help-text-entry/find/{location}', [HelpTextEntryCrudController::class, 'find']);
     Route::crud('temp-project', TempProjectCrudController::class);
     Route::get('temp-project/finalise', [TempProjectCrudController::class, 'finalise']);
+    Route::get('temp-project/discard-import', [TempProjectCrudController::class, 'discardImport']);
 });
 Route::get('project/{id}/show-as-pdf', [ProjectCrudController::class, 'show'])
     ->middleware('auth.basic')

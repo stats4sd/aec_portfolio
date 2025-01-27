@@ -30,11 +30,10 @@ class TempProject extends Model
             // get selectedOrganisationId from session
             $selectedOrganisationId = Session::get('selectedOrganisationId');
 
-            // find TempProjectImport model for this user and this organisation
-            foreach ($user->tempProjectImports as $tempProjectImport) {
-                if ($tempProjectImport->organisation_id == $selectedOrganisationId) {
-                    $tempProjectImportId = $tempProjectImport->id;
-                }
+            $tempProjectImport = $user->tempProjectImports->where('organisation_id', $selectedOrganisationId)->first();
+
+            if ($tempProjectImport) {
+                $tempProjectImportId = $tempProjectImport->id;
             }
 
             $builder->where('temp_project_import_id', $tempProjectImportId);

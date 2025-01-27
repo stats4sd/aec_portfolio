@@ -69,16 +69,23 @@ class TempProjectCrudController extends CrudController
         // add import button
         $this->crud->addButton('top', 'import', 'view', 'vendor.backpack.crud.buttons.import', 'end');
 
-        // get TempProjectImport model
-        $tempProjectImport = TempProjectImport::firstOrCreate([
-            'user_id' => auth()->user()->id,
-        ]);
+        $user = auth()->user();
 
-        // add finalise button
-        if ($tempProjectImport->can_import) {
-            $this->crud->addButton('top', 'finalise', 'view', 'vendor.backpack.crud.buttons.finalise_enabled', 'end');
-        } else {
-            $this->crud->addButton('top', 'finalise', 'view', 'vendor.backpack.crud.buttons.finalise_disabled', 'end');
+        // get selectedOrganisationId from session
+        $selectedOrganisationId = Session::get('selectedOrganisationId');
+
+        $tempProjectImport = $user->tempProjectImports->where('organisation_id', $selectedOrganisationId)->first();
+
+        if ($tempProjectImport) {
+            // add discard import button
+            $this->crud->addButton('top', 'discardImport', 'view', 'vendor.backpack.crud.buttons.discard_import', 'end');
+
+            // add finalise button
+            if ($tempProjectImport->can_import) {
+                $this->crud->addButton('top', 'finalise', 'view', 'vendor.backpack.crud.buttons.finalise_enabled', 'end');
+            } else {
+                $this->crud->addButton('top', 'finalise', 'view', 'vendor.backpack.crud.buttons.finalise_disabled', 'end');
+            }
         }
     }
 
@@ -153,6 +160,7 @@ class TempProjectCrudController extends CrudController
             'user_id' => auth()->user()->id,
             'organisation_id' => $selectedOrganisationId,
             'portfolio_id' => $portfolio->id,
+            'portfolio_name' => $portfolio->name,
         ]);
 
         // remove all temp_projects records related to this user
@@ -262,27 +270,51 @@ class TempProjectCrudController extends CrudController
     // when all rows of project data are correct in the uploaded excel file, it is now ready to import excel file to projects records
     public function finalise()
     {
-        // get TempProjectImport model
-        $tempProjectImport = TempProjectImport::firstOrCreate([
-            'user_id' => auth()->user()->id,
-        ]);
+        $user = auth()->user();
 
-        $importer = ProjectWorkbookImport::class;
-        $portfolio = Portfolio::find($tempProjectImport->portfolio_id);
-        $excelFile = $tempProjectImport->getMedia('project_import_excel_file')->first()->getPath();
+        // get selectedOrganisationId from session
+        $selectedOrganisationId = Session::get('selectedOrganisationId');
 
-        // call Laravel Excel package to import the uploaded excel file into projects table
-        Excel::import(new $importer($portfolio), $excelFile);
+        $tempProjectImport = $user->tempProjectImports->where('organisation_id', $selectedOrganisationId)->first();
 
-        // remove all temp_projects records related to this user
-        TempProject::where('temp_project_import_id', $tempProjectImport->id)->delete();
+        if ($tempProjectImport) {
+            $importer = ProjectWorkbookImport::class;
+            $portfolio = Portfolio::find($tempProjectImport->portfolio_id);
+            $excelFile = $tempProjectImport->getMedia('project_import_excel_file')->first()->getPath();
 
-        // remove the previously attached excel file
-        $tempProjectImport->clearMediaCollection('project_import_excel_file');
+            // call Laravel Excel package to import the uploaded excel file into projects table
+            Excel::import(new $importer($portfolio), $excelFile);
 
-        // reset TempProjectImport model
-        $tempProjectImport->can_import = 0;
-        $tempProjectImport->save();
+            // remove all temp_projects records related to this user
+            TempProject::where('temp_project_import_id', $tempProjectImport->id)->delete();
+
+            // remove the previously attached excel file
+            $tempProjectImport->clearMediaCollection('project_import_excel_file');
+
+            // remove TempProjectImport model
+            $tempProjectImport->delete();
+        }
+
+        // redirect to Initiative page, list view
+        return redirect('/admin/project');
+    }
+
+    // discard import to remove temp_projects records and temp_project_import models
+    public function discardImport()
+    {
+        $user = auth()->user();
+
+        // get selectedOrganisationId from session
+        $selectedOrganisationId = Session::get('selectedOrganisationId');
+
+        $tempProjectImport = $user->tempProjectImports->where('organisation_id', $selectedOrganisationId)->first();
+
+        if ($tempProjectImport) {
+            // remove all temp_projects records related to this user
+            TempProject::where('temp_project_import_id', $tempProjectImport->id)->delete();
+
+            $tempProjectImport->delete();
+        }
 
         // redirect to Initiative page, list view
         return redirect('/admin/project');
