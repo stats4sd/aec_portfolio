@@ -60,14 +60,9 @@ return new class extends Migration
             $table->string('start_date')->nullable();
             $table->string('end_date')->nullable();
             $table->string('geographic_reach')->nullable();
-            $table->string('continent_1')->nullable();
-            $table->string('continent_2')->nullable();
-            $table->string('region_1')->nullable();
-            $table->string('region_2')->nullable();
-            $table->string('country_1')->nullable();
-            $table->string('country_2')->nullable();
-            $table->string('country_3')->nullable();
-            $table->string('country_4')->nullable();
+            $table->text('continents')->nullable();
+            $table->text('regions')->nullable();
+            $table->text('countries')->nullable();
             $table->boolean('valid')->default(0);
             $table->text('validation_result')->nullable();
 

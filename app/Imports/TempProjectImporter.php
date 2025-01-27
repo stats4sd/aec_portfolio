@@ -57,6 +57,38 @@ class TempProjectImporter implements OnEachRow, WithHeadingRow, SkipsEmptyRows, 
             $usesOnlyOwnFunds = 0;
         }
 
+        // collect up locations
+        // Note: considering TempProject model is stored to show the validation result for making corrections.
+        // I would recommend to store continents, regions, countries in CSV format for simplicity and readability.
+
+        $continentKeys = collect($data)
+            ->keys()
+            ->map(fn($key) => Str::startsWith($key, 'continent_') ? $key : null)
+            ->filter(fn($key) => $key !== null);
+
+        $data['continentsArray'] = $continentKeys->map(fn($key) => $data[$key])->filter(fn($continent) => $continent !== null)->toArray();
+
+        $data['continents'] = implode(', ', array_values($data['continentsArray']));
+
+        $regionKeys = collect($data)
+            ->keys()
+            ->map(fn($key) => Str::startsWith($key, 'region_') ? $key : null)
+            ->filter(fn($key) => $key !== null);
+
+        $data['regionsArray'] = $regionKeys->map(fn($key) => $data[$key])->filter(fn($region) => $region !== null)->toArray();
+
+        $data['regions'] = implode(', ', array_values($data['regionsArray']));
+
+        $countryKeys = collect($data)
+            ->keys()
+            ->map(fn($key) => Str::startsWith($key, 'country_') ? $key : null)
+            ->filter(fn($key) => $key !== null);
+
+        $data['countriesArray'] = $countryKeys->map(fn($key) => $data[$key])->filter(fn($country) => $country !== null)->toArray();
+
+        $data['countries'] = implode(', ', array_values($data['countriesArray']));
+
+
         // do custom validation
         $validationResult = $this->validate($data);
 
@@ -79,11 +111,10 @@ class TempProjectImporter implements OnEachRow, WithHeadingRow, SkipsEmptyRows, 
             'main_recipient' => $data['main_recipient'],
             'start_date' => $startDate,
             'end_date' => $endDate,
-            'geographic_reach' => $data['geographic_reach'],
-
+            'continents' => $data['continents'],
+            'regions' => $data['regions'],
+            'countries' => $data['countries'],
             'valid' => $valid,
-
-            // Question: how to store and show multiple lines validation result?
             'validation_result' => $validationResult,
         ]);
     }

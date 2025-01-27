@@ -341,14 +341,9 @@ class TempProjectCrudController extends CrudController
         CRUD::column('start_date');
         CRUD::column('end_date');
         CRUD::column('geographic_reach');
-        CRUD::column('continent_1');
-        CRUD::column('continent_2');
-        CRUD::column('region_1');
-        CRUD::column('region_2');
-        CRUD::column('country_1');
-        CRUD::column('country_2');
-        CRUD::column('country_3');
-        CRUD::column('country_4');
+        CRUD::column('continents');
+        CRUD::column('regions');
+        CRUD::column('countries');
     }
 
     // when all rows of project data are correct in the uploaded excel file, it is now ready to import excel file to projects records
