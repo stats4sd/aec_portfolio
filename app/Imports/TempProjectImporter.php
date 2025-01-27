@@ -3,17 +3,15 @@
 namespace App\Imports;
 
 use App\Models\Portfolio;
-use App\Models\TempProject;
-use App\Models\TempProjectImport;
 use Maatwebsite\Excel\Row;
+use App\Models\TempProject;
 use Illuminate\Support\Str;
-use App\Http\Requests\TempProjectRequest;
+use App\Models\TempProjectImport;
 use Maatwebsite\Excel\Concerns\OnEachRow;
 use PhpOffice\PhpSpreadsheet\Shared\Date;
 use Maatwebsite\Excel\Concerns\Importable;
 use Maatwebsite\Excel\Concerns\SkipsEmptyRows;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
-use Maatwebsite\Excel\Concerns\WithValidation;
 use Maatwebsite\Excel\Concerns\WithCalculatedFormulas;
 
 class TempProjectImporter implements OnEachRow, WithHeadingRow, SkipsEmptyRows, WithCalculatedFormulas
@@ -70,6 +68,7 @@ class TempProjectImporter implements OnEachRow, WithHeadingRow, SkipsEmptyRows, 
             'organisation_id' => $this->portfolio->organisation_id,
             'code' => $data['code'],
             'name' => $data['name'],
+            'category' => $data['category'],
             'description' => $data['description'] ?? null,
             'currency' => $data['currency'],
             'exchange_rate' => $data['exchange_rate'],
