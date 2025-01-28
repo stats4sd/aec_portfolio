@@ -30,9 +30,7 @@ class TempProjectCrudController extends CrudController
         index as traitIndex;
     }
 
-    use ShowOperation {
-        show as traitShow;
-    }
+    use ShowOperation;
 
     use ImportOperation;
 
@@ -61,6 +59,8 @@ class TempProjectCrudController extends CrudController
         if ($tempProjectImport = $this->getTempProjectImport()) {
             CRUD::setHeading("Importing into Portfolio: {$tempProjectImport->portfolio->name}");
         }
+
+        CRUD::setListView('vendor.backpack.crud.temp-project-list');
 
     }
 
@@ -300,15 +300,6 @@ class TempProjectCrudController extends CrudController
     }
 
 
-    public function show($id)
-    {
-        // custom logic before
-        $content = $this->traitShow($id);
-
-        // custom logic after
-        return $content;
-    }
-
     protected function setupShowOperation()
     {
         // add a widget to show validation result with color and multiple lines
@@ -378,6 +369,7 @@ class TempProjectCrudController extends CrudController
             // call Laravel Excel package to import the uploaded excel file into projects table
             Excel::import(new $importer($portfolio), $excelFile);
 
+
             // remove all temp_projects records related to this user
             TempProject::where('temp_project_import_id', $tempProjectImport->id)->delete();
 
@@ -395,7 +387,6 @@ class TempProjectCrudController extends CrudController
     // discard import to remove temp_projects records and temp_project_import models
     public function discardImport()
     {
-        $user = auth()->user();
 
         if ($tempProjectImport = $this->getTempProjectImport()) {
             // remove all temp_projects records related to this user

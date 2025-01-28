@@ -11,9 +11,21 @@
 @endphp
 
 @section('header')
+
+
+
     <section class="container-fluid">
+        <div class="px-4 py-2 mb-4 bg-light shadow-sm border border-primary d-flex flex-column justify-content-center align-items-center">
+            <div class="font-weight-bold mb-2">IMPORT PROCESS</div>
+            <div class="d-flex justify-content-center align-items-center">
+                <div class="px-4 font-weight-bold">1. Upload File</div>
+                <div class="px-4">2. Review list of initiatives</div>
+                <div class="px-4">3. Finalise</div>
+            </div>
+
+        </div>
         <h2>
-            <span class="text-capitalize">{!! $crud->getHeading() ?? 'Import '.$crud->entity_name_plural !!}.</span>
+            <span class="text-capitalize">{!! $crud->getHeading() ?? 'Import '.$crud->entity_name_plural !!}</span>
         </h2>
     </section>
 @endsection
