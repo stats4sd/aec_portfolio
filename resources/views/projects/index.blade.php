@@ -14,8 +14,7 @@
 
 
 @if($tempProjectImport)
-<div class="alert alert-warning show text-dark my-3">You have some imported initiatives data before, view them on the
-    <a href="{{ url('admin/temp-project') }}">Import Initiatives</a>.
+<div class="alert alert-warning show text-dark my-3 font-lg">You have an in-progress data import, started on {{ $tempProjectImport->started_At }}. You can continue the import here: <a href="{{ url('admin/temp-project') }}">Import Initiatives</a>.
 </div>
 @endif
 

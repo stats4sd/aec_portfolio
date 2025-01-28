@@ -26,7 +26,9 @@ use App\Exports\InitiativeImportTemplate\InitiativeImportTemplateExportWorkbook;
  */
 class TempProjectCrudController extends CrudController
 {
-    use ListOperation;
+    use ListOperation {
+        index as traitIndex;
+    }
 
     use ShowOperation {
         show as traitShow;
@@ -44,7 +46,7 @@ class TempProjectCrudController extends CrudController
         CRUD::setModel(TempProject::class);
         CRUD::setRoute(config('backpack.base.route_prefix') . '/temp-project');
 
-        CRUD::setEntityNameStrings('initiative', 'initiatives');
+        CRUD::setEntityNameStrings('initiative to import', 'initiatives to import');
 
         // specify importer class
         CRUD::set('import.importer', TempProjectWorkbookImport::class);
@@ -52,6 +54,22 @@ class TempProjectCrudController extends CrudController
         // add import template file and template file filename
         CRUD::set('import.template', InitiativeImportTemplateExportWorkbook::class);
         CRUD::set('import.template-name', 'Agroecology Funding Tool - Initiative Import Template.xlsx');
+        CRUD::setDefaultPageLength(50);
+
+    }
+
+    public function index()
+    {
+        // get selectedOrganisationId from session
+        $selectedOrganisationId = Session::get('selectedOrganisationId');
+
+        $tempProjectImport = auth()->user()->tempProjectImports->where('organisation_id', $selectedOrganisationId)->first();
+
+        if (!$tempProjectImport) {
+            return redirect(backpack_url('project'));
+        }
+
+        return $this->traitIndex();
     }
 
     /**
@@ -62,19 +80,20 @@ class TempProjectCrudController extends CrudController
      */
     protected function setupListOperation()
     {
+
         CRUD::column('code');
         CRUD::column('name');
         CRUD::column('valid')->type('boolean');
 
         $this->crud->addColumn([
-            'name'  => 'validation_result',
+            'name' => 'validation_result',
             'label' => 'Validation result',
-            'type'  => 'textarea',
+            'type' => 'textarea',
             'escaped' => false,
         ]);
 
         // add import button
-        $this->crud->addButton('top', 'import', 'view', 'vendor.backpack.crud.buttons.import', 'end');
+        $this->crud->addButton('top', 'import', 'view', 'vendor.backpack.crud.buttons.re-import', 'end');
 
         $user = auth()->user();
 
@@ -93,52 +112,55 @@ class TempProjectCrudController extends CrudController
             } else {
                 $this->crud->addButton('top', 'finalise', 'view', 'vendor.backpack.crud.buttons.finalise_disabled', 'end');
             }
-        }
 
-        // add a "simple" filter called Invalid to show temp_projects records cannot pass validation
-        $this->crud->addFilter(
-            [
-                'type'  => 'simple',
-                'name'  => 'invalid',
-                'label' => 'Invalid'
-            ],
-            false,
-            function () {
-                $this->crud->addClause('where', 'valid', '0');
+            // add a "simple" filter called Invalid to show temp_projects records cannot pass validation
+            $this->crud->addFilter(
+                [
+                    'type' => 'simple',
+                    'name' => 'invalid',
+                    'label' => 'Show only entries with validation errors',
+                ],
+                false,
+                function () {
+                    $this->crud->addClause('where', 'valid', '0');
+                }
+            );
+
+            // add a widget to show import summary
+            if ($tempProjectImport->can_import) {
+
+                Widget::add()->to('before_content')->type('div')->class('row')->content([
+                    Widget::make(
+                        [
+                            'type' => 'card',
+                            'class' => 'card bg-white text-dark shadow-xl border-success',
+                            'wrapper' => ['class' => 'col-12 col-lg-8'],
+                            'content' => [
+                                'body' => "{$tempProjectImport->total_records} initiatives found. You may review the entries in the table below. Click 'preview' to see the details of any initiative. You may wish to do some spot checks to ensure the data are what you expect to see.<br/><br/>
+                                Once you have confirmed the data are correct, click 'finalise' to complete the import into the $tempProjectImport->portfolio->name portfolio.",
+                            ],
+                        ]
+                    ),
+                ]);
+            } else {
+
+                Widget::add()->to('before_content')->type('div')->class('row')->content([
+                    Widget::make(
+                        [
+                            'type' => 'card',
+                            'class' => 'card bg-white text-dark shadow-xl border-danger',
+                            'wrapper' => ['class' => 'col-12 col-lg-8'],
+                            'content' => [
+                                'header' => 'Import Summary',
+                                'body' => "
+                                <b>Initiatives Found: {$tempProjectImport->total_records}</b><br/>
+                                <b class='text-danger'>Initiatives Requiring Review: {$tempProjectImport->invalid_records}</b>
+                                <br/><br/>Please review the validation errors in the table below, and make any required updates in your original Excel file. You can re-upload the file by clicking 'upload new file'.",
+                            ],
+                        ]
+                    ),
+                ]);
             }
-        );
-
-        // add a widget to show import summary
-        if ($tempProjectImport->can_import) {
-
-            Widget::add()->to('before_content')->type('div')->class('row')->content([
-                Widget::make(
-                    [
-                        'type'    => 'card',
-                        'class'   => 'card bg-success text-white',
-                        'wrapper' => ['class' => 'col-sm-4 col-md-8'],
-                        'content'    => [
-                            'header' => 'Import summary',
-                            'body'   => 'All initiatives data are correct. You can click the "Finalise" button to import them into system.',
-                        ]
-                    ]
-                ),
-            ]);
-        } else {
-
-            Widget::add()->to('before_content')->type('div')->class('row')->content([
-                Widget::make(
-                    [
-                        'type'    => 'card',
-                        'class'   => 'card bg-primary text-white',
-                        'wrapper' => ['class' => 'col-sm-4 col-md-8'],
-                        'content'    => [
-                            'header' => 'Import summary',
-                            'body'   => $tempProjectImport->invalid_records . ' out of ' . $tempProjectImport->total_records . ' projects require attention before finalising the import - please see the table below for details.',
-                        ]
-                    ]
-                ),
-            ]);
         }
     }
 
@@ -187,8 +209,8 @@ class TempProjectCrudController extends CrudController
                 'name' => 'portfolio',
                 'label' => 'Portfolio',
                 'type' => 'select_from_array',
-                'options'     => [$tempProjectImport->portfolio_id => $tempProjectImport->portfolio_name],
-                'default'     => $tempProjectImport->portfolio_id,
+                'options' => [$tempProjectImport->portfolio_id => $tempProjectImport->portfolio_name],
+                'default' => $tempProjectImport->portfolio_id,
                 'validationRules' => 'required',
             ]);
         }
@@ -299,13 +321,13 @@ class TempProjectCrudController extends CrudController
 
                 Widget::make(
                     [
-                        'type'    => 'card',
-                        'class'   => 'card bg-primary text-white',
+                        'type' => 'card',
+                        'class' => 'card bg-primary text-white',
                         'wrapper' => ['class' => 'col-sm-4 col-md-8'],
-                        'content'    => [
+                        'content' => [
                             'header' => 'Validation result',
-                            'body'   => 'The initiative data is correct.',
-                        ]
+                            'body' => 'The initiative data is correct.',
+                        ],
                     ]
                 ),
             ]);
@@ -315,13 +337,13 @@ class TempProjectCrudController extends CrudController
 
                 Widget::make(
                     [
-                        'type'    => 'card',
-                        'class'   => 'card bg-error text-white',
+                        'type' => 'card',
+                        'class' => 'card bg-error text-white',
                         'wrapper' => ['class' => 'col-sm-4 col-md-8'],
-                        'content'    => [
+                        'content' => [
                             'header' => 'Validation result',
-                            'body'   => $this->crud->getCurrentEntry()->validation_result,
-                        ]
+                            'body' => $this->crud->getCurrentEntry()->validation_result,
+                        ],
                     ]
                 ),
             ]);

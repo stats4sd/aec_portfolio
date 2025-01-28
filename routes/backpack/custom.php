@@ -165,6 +165,11 @@ Route::group([
         Route::view('support', 'support');
 
         Route::get('edit-account-info', [MyAccountController::class, 'getAccountInfoForm'])->name('backpack.account.info');
+
+        Route::crud('temp-project', TempProjectCrudController::class);
+        Route::get('temp-project/finalise', [TempProjectCrudController::class, 'finalise']);
+        Route::get('temp-project/discard-import', [TempProjectCrudController::class, 'discardImport']);
+
     });
 
 
@@ -180,9 +185,7 @@ Route::group([
     Route::crud('custom-score-tag', CustomScoreTagCrudController::class);
     Route::crud('help-text-entry', HelpTextEntryCrudController::class);
     Route::get('help-text-entry/find/{location}', [HelpTextEntryCrudController::class, 'find']);
-    Route::crud('temp-project', TempProjectCrudController::class);
-    Route::get('temp-project/finalise', [TempProjectCrudController::class, 'finalise']);
-    Route::get('temp-project/discard-import', [TempProjectCrudController::class, 'discardImport']);
+
 });
 Route::get('project/{id}/show-as-pdf', [ProjectCrudController::class, 'show'])
     ->middleware('auth.basic')
