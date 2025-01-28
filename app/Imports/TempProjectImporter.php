@@ -202,7 +202,7 @@ class TempProjectImporter implements OnEachRow, WithHeadingRow, SkipsEmptyRows, 
             $endDate = Date::excelToDateTimeObject($date2);
         }
 
-        if ($endDate < $startDate) {
+        if ($endDate && $endDate < $startDate) {
             return '<li>' . $date2Name . ' needs to be later than ' . $date1Name . '.</li>';
         } else {
             return '';

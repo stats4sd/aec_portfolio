@@ -32,4 +32,14 @@ class TempProjectImport extends Model implements HasMedia
             get: fn() =>  $this->created_at->format('Y-m-d'),
         );
     }
+
+    public function portfolio(): BelongsTo
+    {
+        return $this->belongsTo(Portfolio::class);
+    }
+
+    public function organisation(): BelongsTo
+    {
+        return $this->belongsTo(Organisation::class);
+    }
 }

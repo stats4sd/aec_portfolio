@@ -56,6 +56,12 @@ class TempProjectCrudController extends CrudController
         CRUD::set('import.template-name', 'Agroecology Funding Tool - Initiative Import Template.xlsx');
         CRUD::setDefaultPageLength(50);
 
+        CRUD::setHeading('Begin new import');
+
+        if ($tempProjectImport = $this->getTempProjectImport()) {
+            CRUD::setHeading("Importing into Portfolio: {$tempProjectImport->portfolio->name}");
+        }
+
     }
 
     public function index()
@@ -95,12 +101,7 @@ class TempProjectCrudController extends CrudController
         // add import button
         $this->crud->addButton('top', 'import', 'view', 'vendor.backpack.crud.buttons.re-import', 'end');
 
-        $user = auth()->user();
-
-        // get selectedOrganisationId from session
-        $selectedOrganisationId = Session::get('selectedOrganisationId');
-
-        $tempProjectImport = $user->tempProjectImports->where('organisation_id', $selectedOrganisationId)->first();
+        $tempProjectImport = $this->getTempProjectImport();
 
         if ($tempProjectImport) {
             // add discard import button
@@ -137,7 +138,7 @@ class TempProjectCrudController extends CrudController
                             'wrapper' => ['class' => 'col-12 col-lg-8'],
                             'content' => [
                                 'body' => "{$tempProjectImport->total_records} initiatives found. You may review the entries in the table below. Click 'preview' to see the details of any initiative. You may wish to do some spot checks to ensure the data are what you expect to see.<br/><br/>
-                                Once you have confirmed the data are correct, click 'finalise' to complete the import into the $tempProjectImport->portfolio->name portfolio.",
+                                Once you have confirmed the data are correct, click 'finalise' to complete the import into the portfolio: <b> {$tempProjectImport->portfolio->name}</b>",
                             ],
                         ]
                     ),
@@ -168,12 +169,14 @@ class TempProjectCrudController extends CrudController
     {
         $this->crud->hasAccessOrFail('import');
         $this->crud->setOperation('import');
+        $tempProjectImport = $this->getTempProjectImport();
+
+        if ($tempProjectImport) {
+            $this->crud->setHeading("Import Initiatives into portfolio: {$tempProjectImport->portfolio->name}");
+        }
 
         $this->data['crud'] = $this->crud;
         $this->data['saveAction'] = $this->crud->getSaveAction();
-
-        // TODO:
-        // Question: how to hide "<< Back to all temp initiatives" link in Import page?
         $this->data['title'] = 'Import ' . $this->crud->entity_name . ' from excel file';
 
         $this->crud->addField([
@@ -188,12 +191,6 @@ class TempProjectCrudController extends CrudController
 
             ',
         ]);
-
-
-        // get TempProjectImport model
-        $user = auth()->user();
-        $selectedOrganisationId = Session::get('selectedOrganisationId');
-        $tempProjectImport = $user->tempProjectImports->where('organisation_id', $selectedOrganisationId)->first();
 
         if (!$tempProjectImport) {
             // this is a first import, let user to select a portfolio
@@ -228,7 +225,7 @@ class TempProjectCrudController extends CrudController
             'label' => 'Select Excel File to Upload' . $excelFilename,
         ]);
 
-        return view('file-util::vendor.backpack.crud.import::import', $this->data);
+        return view('vendor.backpack.crud.operations.import', $this->data);
     }
 
     public function postImportForm()
@@ -371,12 +368,7 @@ class TempProjectCrudController extends CrudController
     // when all rows of project data are correct in the uploaded excel file, it is now ready to import excel file to projects records
     public function finalise()
     {
-        $user = auth()->user();
-
-        // get selectedOrganisationId from session
-        $selectedOrganisationId = Session::get('selectedOrganisationId');
-
-        $tempProjectImport = $user->tempProjectImports->where('organisation_id', $selectedOrganisationId)->first();
+        $tempProjectImport = $this->getTempProjectImport();
 
         if ($tempProjectImport) {
             $importer = ProjectWorkbookImport::class;
@@ -405,12 +397,7 @@ class TempProjectCrudController extends CrudController
     {
         $user = auth()->user();
 
-        // get selectedOrganisationId from session
-        $selectedOrganisationId = Session::get('selectedOrganisationId');
-
-        $tempProjectImport = $user->tempProjectImports->where('organisation_id', $selectedOrganisationId)->first();
-
-        if ($tempProjectImport) {
+        if ($tempProjectImport = $this->getTempProjectImport()) {
             // remove all temp_projects records related to this user
             TempProject::where('temp_project_import_id', $tempProjectImport->id)->delete();
 
@@ -419,5 +406,13 @@ class TempProjectCrudController extends CrudController
 
         // redirect to Initiative page, list view
         return redirect('/admin/project');
+    }
+
+    protected function getTempProjectImport(): ?TempProjectImport
+    {
+        // get selectedOrganisationId from session
+        $selectedOrganisationId = Session::get('selectedOrganisationId');
+
+        return auth()->user()->tempProjectImports->where('organisation_id', $selectedOrganisationId)->first();
     }
 }

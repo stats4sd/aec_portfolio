@@ -15,7 +15,7 @@
   <div class="container-fluid">
     <h2>
       <span class="text-capitalize">{!! $crud->getHeading() ?? $crud->entity_name_plural !!}</span>
-      <small id="datatable_info_stack">{!! $crud->getSubheading() ?? '' !!}</small>
+      <br/><span class="font-lg">{!! $crud->getSubheading() ?? '' !!}</span>
     </h2>
   </div>
 @endsection
@@ -37,7 +37,7 @@
               </div>
             @endif
           </div>
-          <div class="">
+          <div>
             <div id="datatable_search_stack" class="mt-sm-0 mt-2 d-print-none"></div>
           </div>
         </div>
