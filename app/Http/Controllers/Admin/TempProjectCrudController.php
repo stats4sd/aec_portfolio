@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Models\Portfolio;
 use App\Models\TempProject;
 use App\Models\TempProjectImport;
+use Maatwebsite\Excel\Validators\ValidationException;
 use Prologue\Alerts\Facades\Alert;
 use Maatwebsite\Excel\Facades\Excel;
 use Backpack\CRUD\app\Library\Widget;
@@ -53,6 +54,7 @@ class TempProjectCrudController extends CrudController
         CRUD::set('import.template', InitiativeImportTemplateExportWorkbook::class);
         CRUD::set('import.template-name', 'Agroecology Funding Tool - Initiative Import Template.xlsx');
         CRUD::setDefaultPageLength(50);
+        CRUD::setResponsiveTable(false);
 
         CRUD::setHeading('Begin new import');
 
@@ -95,74 +97,77 @@ class TempProjectCrudController extends CrudController
             'name' => 'validation_result',
             'label' => 'Validation result',
             'type' => 'textarea',
+            'priority' => 1,
             'escaped' => false,
         ]);
-
-        // add import button
-        $this->crud->addButton('top', 'import', 'view', 'vendor.backpack.crud.buttons.re-import', 'end');
-
         $tempProjectImport = $this->getTempProjectImport();
 
-        if ($tempProjectImport) {
-            // add discard import button
-            $this->crud->addButton('top', 'discardImport', 'view', 'vendor.backpack.crud.buttons.discard_import', 'end');
+        if (!$tempProjectImport) {
+            // will be redirected;
+            return;
+        }
 
-            // add finalise button
-            if ($tempProjectImport->can_import) {
-                $this->crud->addButton('top', 'finalise', 'view', 'vendor.backpack.crud.buttons.finalise_enabled', 'end');
-            } else {
-                $this->crud->addButton('top', 'finalise', 'view', 'vendor.backpack.crud.buttons.finalise_disabled', 'end');
+        // add import button
+        // add discard import button
+        $this->crud->addButton('top', 'discardImport', 'view', 'vendor.backpack.crud.buttons.discard_import', 'end');
+        $this->crud->addButton('top', 'import', 'view', 'vendor.backpack.crud.buttons.re-import', 'end');
+
+        // add finalise button
+        if ($tempProjectImport->can_import) {
+            $this->crud->addButton('top', 'finalise', 'view', 'vendor.backpack.crud.buttons.finalise_enabled', 'end');
+        } else {
+            $this->crud->addButton('top', 'finalise', 'view', 'vendor.backpack.crud.buttons.finalise_disabled', 'end');
+        }
+
+        // add a "simple" filter called Invalid to show temp_projects records cannot pass validation
+        $this->crud->addFilter(
+            [
+                'type' => 'simple',
+                'name' => 'invalid',
+                'label' => 'Show only entries with validation errors',
+            ],
+            false,
+            function () {
+                $this->crud->addClause('where', 'valid', '0');
             }
+        );
 
-            // add a "simple" filter called Invalid to show temp_projects records cannot pass validation
-            $this->crud->addFilter(
-                [
-                    'type' => 'simple',
-                    'name' => 'invalid',
-                    'label' => 'Show only entries with validation errors',
-                ],
-                false,
-                function () {
-                    $this->crud->addClause('where', 'valid', '0');
-                }
-            );
+        // add a widget to show import summary
+        if ($tempProjectImport->can_import) {
 
-            // add a widget to show import summary
-            if ($tempProjectImport->can_import) {
-
-                Widget::add()->to('before_content')->type('div')->class('row')->content([
-                    Widget::make(
-                        [
-                            'type' => 'card',
-                            'class' => 'card bg-white text-dark shadow-xl border-success',
-                            'wrapper' => ['class' => 'col-12 col-lg-8'],
-                            'content' => [
-                                'body' => "{$tempProjectImport->total_records} initiatives found. You may review the entries in the table below. Click 'preview' to see the details of any initiative. You may wish to do some spot checks to ensure the data are what you expect to see.<br/><br/>
+            Widget::add()->to('before_content')->type('div')->class('row')->content([
+                Widget::make(
+                    [
+                        'type' => 'card',
+                        'class' => 'card bg-white text-dark shadow-xl border-success',
+                        'wrapper' => ['class' => 'col-12 col-lg-8'],
+                        'content' => [
+                            'body' => "{$tempProjectImport->total_records} initiatives found. You may review the entries in the table below. Click 'preview' to see the details of any initiative. You may wish to do some spot checks to ensure the data are what you expect to see.<br/><br/>
                                 Once you have confirmed the data are correct, click 'finalise' to complete the import into the portfolio: <b> {$tempProjectImport->portfolio->name}</b>",
-                            ],
-                        ]
-                    ),
-                ]);
-            } else {
+                        ],
+                    ]
+                ),
+            ]);
+        } else {
 
-                Widget::add()->to('before_content')->type('div')->class('row')->content([
-                    Widget::make(
-                        [
-                            'type' => 'card',
-                            'class' => 'card bg-white text-dark shadow-xl border-danger',
-                            'wrapper' => ['class' => 'col-12 col-lg-8'],
-                            'content' => [
-                                'header' => 'Import Summary',
-                                'body' => "
+            Widget::add()->to('before_content')->type('div')->class('row')->content([
+                Widget::make(
+                    [
+                        'type' => 'card',
+                        'class' => 'card bg-white text-dark shadow-xl border-danger',
+                        'wrapper' => ['class' => 'col-12 col-lg-8'],
+                        'content' => [
+                            'header' => 'Import Summary',
+                            'body' => "
                                 <b>Initiatives Found: {$tempProjectImport->total_records}</b><br/>
                                 <b class='text-danger'>Initiatives Requiring Review: {$tempProjectImport->invalid_records}</b>
                                 <br/><br/>Please review the validation errors in the table below, and make any required updates in your original Excel file. You can re-upload the file by clicking 'upload new file'.",
-                            ],
-                        ]
-                    ),
-                ]);
-            }
+                        ],
+                    ]
+                ),
+            ]);
         }
+
     }
 
     public function getImportForm()
@@ -367,8 +372,14 @@ class TempProjectCrudController extends CrudController
             $excelFile = $tempProjectImport->getMedia('project_import_excel_file')->first()->getPath();
 
             // call Laravel Excel package to import the uploaded excel file into projects table
-            Excel::import(new $importer($portfolio), $excelFile);
 
+            try {
+
+                Excel::import(new $importer($portfolio), $excelFile);
+
+            } catch (ValidationException $e) {
+                dd($e);
+            }
 
             // remove all temp_projects records related to this user
             TempProject::where('temp_project_import_id', $tempProjectImport->id)->delete();

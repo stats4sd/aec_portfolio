@@ -155,7 +155,18 @@ class TempProjectImporter implements OnEachRow, WithHeadingRow, SkipsEmptyRows, 
 
         $validationResult = $validationResult . $this->checkRequired('Continent 1', $data['continent_1']);
 
+        $validationResult.= $this->checkUnique('Project Code', $data['code']);
+
         return $validationResult;
+    }
+
+    private function checkUnique($fieldName, $fieldValue) {
+
+        $projectCodes = $this->portfolio->organisation->projects->pluck('code')->unique();
+
+        if($fieldValue && $projectCodes->contains($fieldValue)) {
+            return "<li>The {$fieldName}: {$fieldValue} already exists in your organisation.</li>";
+        }
     }
 
     // check for required field

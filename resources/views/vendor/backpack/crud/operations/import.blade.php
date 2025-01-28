@@ -12,20 +12,18 @@
 
 @section('header')
 
-
-
     <section class="container-fluid">
         <div class="px-4 py-2 mb-4 bg-light shadow-sm border border-primary d-flex flex-column justify-content-center align-items-center">
             <div class="font-weight-bold mb-2">IMPORT PROCESS</div>
             <div class="d-flex justify-content-center align-items-center">
-                <div class="px-4 font-weight-bold">1. Upload File</div>
-                <div class="px-4">2. Review list of initiatives</div>
-                <div class="px-4">3. Finalise</div>
+                <div class="px-4 font-weight-bold">Step 1. Upload File</div>
+                <div class="px-4">Step 2. Review list of initiatives</div>
+                <div class="px-4">Step 3. Finalise</div>
             </div>
 
         </div>
         <h2>
-            <span class="text-capitalize">{!! $crud->getHeading() ?? 'Import '.$crud->entity_name_plural !!}</span>
+            <span class="text-capitalize">Step 1: {!! $crud->getHeading() ?? 'Import '.$crud->entity_name_plural !!}</span>
         </h2>
     </section>
 @endsection
@@ -61,13 +59,36 @@
                 @endif
 
 
-                <a href="{{ url($crud->route.'/discard-import') }}" class="btn btn-danger"><i class="fa fa-trash"></i> Discard import</a>
+                <a href="javascript:void(0)" data-toggle="modal" data-target="#discardImport" data-route="{{ url($crud->route.'/discard-import') }}" class="btn btn-danger" data-button-type="discard"><i class="la la-trash"></i> Discard Import</a>
                 <button type="submit" class="btn btn-success">
                     <span class="la la-save" role="presentation" aria-hidden="true"></span> &nbsp;
-                    <span data-value="saveImport">Submit File</span>
+                    <span data-value="saveImport">Submit and go to Step 2</span>
                 </button>
 
             </form>
+        </div>
+    </div>
+
+    <div class="modal fade" id="discardImport" tabindex="-1" role="dialog" aria-labelledby="discardImportLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="discardImportLabel">Discard IMport</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    Are you sure you wish to discard this import? This will delete all pending initiative entries. You may restart the import at any time by re-uploading the same Excel file.</span>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                    <form action="{{ route('import.discard') }}" method="POST">
+                        @csrf
+                        <button type="submit" class="btn btn-primary">Confirm Discard</button>
+                    </form>
+                </div>
+            </div>
         </div>
     </div>
 

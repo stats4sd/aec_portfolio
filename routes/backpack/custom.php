@@ -168,7 +168,7 @@ Route::group([
 
         Route::crud('temp-project', TempProjectCrudController::class);
         Route::get('temp-project/finalise', [TempProjectCrudController::class, 'finalise']);
-        Route::get('temp-project/discard-import', [TempProjectCrudController::class, 'discardImport']);
+        Route::post('temp-project/discard-import', [TempProjectCrudController::class, 'discardImport'])->name('import.discard');
 
     });
 

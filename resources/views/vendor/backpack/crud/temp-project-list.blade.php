@@ -16,15 +16,15 @@
         <div class="px-4 py-2 mb-4 bg-light shadow-sm border border-primary d-flex flex-column justify-content-center align-items-center">
             <div class="font-weight-bold mb-2">IMPORT PROCESS</div>
             <div class="d-flex justify-content-center align-items-center">
-                <div class="px-4 text-success">1. Upload File</div>
-                <div class="px-4 font-weight-bold">2. Review list of initiatives</div>
-                <div class="px-4">3. Finalise</div>
+                <div class="px-4 text-success">Step 1. Upload File</div>
+                <div class="px-4 font-weight-bold">Step 2. Review list of initiatives</div>
+                <div class="px-4">Step 3. Finalise</div>
             </div>
 
         </div>
 
         <h2>
-            <span class="text-capitalize">{!! $crud->getHeading() ?? $crud->entity_name_plural !!}</span>
+            <span class="text-capitalize">Step 2: {!! $crud->getHeading() ?? $crud->entity_name_plural !!}</span>
             <br/><span class="font-lg">{!! $crud->getSubheading() ?? '' !!}</span>
         </h2>
     </div>
@@ -58,55 +58,55 @@
             @endif
 
             <table
-                id="crudTable"
-                class="bg-white table table-striped table-hover nowrap rounded shadow-xs border-xs mt-2"
-                data-responsive-table="{{ (int) $crud->getOperationSetting('responsiveTable') }}"
-                data-has-details-row="{{ (int) $crud->getOperationSetting('detailsRow') }}"
-                data-has-bulk-actions="{{ (int) $crud->getOperationSetting('bulkActions') }}"
-                cellspacing="0">
+                    id="crudTable"
+                    class="bg-white table table-striped table-hover nowrap rounded shadow-xs border-xs mt-2"
+                    data-responsive-table="{{ (int) $crud->getOperationSetting('responsiveTable') }}"
+                    data-has-details-row="{{ (int) $crud->getOperationSetting('detailsRow') }}"
+                    data-has-bulk-actions="{{ (int) $crud->getOperationSetting('bulkActions') }}"
+                    cellspacing="0">
                 <thead>
                 <tr>
                     {{-- Table columns --}}
                     @foreach ($crud->columns() as $column)
                         <th
-                            data-orderable="{{ var_export($column['orderable'], true) }}"
-                            data-priority="{{ $column['priority'] }}"
-                            data-column-name="{{ $column['name'] }}"
-                            {{--
-                            data-visible-in-table => if developer forced field in table with 'visibleInTable => true'
-                            data-visible => regular visibility of the field
-                            data-can-be-visible-in-table => prevents the column to be loaded into the table (export-only)
-                            data-visible-in-modal => if column apears on responsive modal
-                            data-visible-in-export => if this field is exportable
-                            data-force-export => force export even if field are hidden
-                            --}}
+                                data-orderable="{{ var_export($column['orderable'], true) }}"
+                                data-priority="{{ $column['priority'] }}"
+                                data-column-name="{{ $column['name'] }}"
+                                {{--
+                                data-visible-in-table => if developer forced field in table with 'visibleInTable => true'
+                                data-visible => regular visibility of the field
+                                data-can-be-visible-in-table => prevents the column to be loaded into the table (export-only)
+                                data-visible-in-modal => if column apears on responsive modal
+                                data-visible-in-export => if this field is exportable
+                                data-force-export => force export even if field are hidden
+                                --}}
 
-                            {{-- If it is an export field only, we are done. --}}
-                            @if(isset($column['exportOnlyField']) && $column['exportOnlyField'] === true)
-                                data-visible="false"
-                            data-visible-in-table="false"
-                            data-can-be-visible-in-table="false"
-                            data-visible-in-modal="false"
-                            data-visible-in-export="true"
-                            data-force-export="true"
-                            @else
-                                data-visible-in-table="{{var_export($column['visibleInTable'] ?? false)}}"
-                            data-visible="{{var_export($column['visibleInTable'] ?? true)}}"
-                            data-can-be-visible-in-table="true"
-                            data-visible-in-modal="{{var_export($column['visibleInModal'] ?? true)}}"
-                            @if(isset($column['visibleInExport']))
-                                @if($column['visibleInExport'] === false)
-                                    data-visible-in-export="false"
-                            data-force-export="false"
-                            @else
+                                {{-- If it is an export field only, we are done. --}}
+                                @if(isset($column['exportOnlyField']) && $column['exportOnlyField'] === true)
+                                    data-visible="false"
+                                data-visible-in-table="false"
+                                data-can-be-visible-in-table="false"
+                                data-visible-in-modal="false"
                                 data-visible-in-export="true"
-                            data-force-export="true"
-                            @endif
-                            @else
-                                data-visible-in-export="true"
-                            data-force-export="false"
-                            @endif
-                            @endif
+                                data-force-export="true"
+                                @else
+                                    data-visible-in-table="{{var_export($column['visibleInTable'] ?? false)}}"
+                                data-visible="{{var_export($column['visibleInTable'] ?? true)}}"
+                                data-can-be-visible-in-table="true"
+                                data-visible-in-modal="{{var_export($column['visibleInModal'] ?? true)}}"
+                                @if(isset($column['visibleInExport']))
+                                    @if($column['visibleInExport'] === false)
+                                        data-visible-in-export="false"
+                                data-force-export="false"
+                                @else
+                                    data-visible-in-export="true"
+                                data-force-export="true"
+                                @endif
+                                @else
+                                    data-visible-in-export="true"
+                                data-force-export="false"
+                                @endif
+                                @endif
                         >
                             {{-- Bulk checkbox --}}
                             @if($loop->first && $crud->getOperationSetting('bulkActions'))
@@ -157,6 +157,30 @@
 
         </div>
 
+    </div>
+
+
+    <div class="modal fade" id="discardImport" tabindex="-1" role="dialog" aria-labelledby="discardImportLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="discardImportLabel">Discard IMport</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    Are you sure you wish to discard this import? This will delete all pending initiative entries. You may restart the import at any time by re-uploading the same Excel file.</span>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                    <form action="{{ route('import.discard') }}" method="POST">
+                        @csrf
+                        <button type="submit" class="btn btn-primary">Confirm Discard</button>
+                    </form>
+                </div>
+            </div>
+        </div>
     </div>
 
 @endsection
