@@ -32,7 +32,8 @@ class RegenerateTeamLevelRoleRecords extends Command
 
         $allOrganisations = Organisation::all();
 
-        $users = User::where('id', '=', 9)->with('roles')->get();
+        // $users = User::where('id', '=', 9)->with('roles')->get();
+        $users = User::with('roles')->get();
 
         foreach ($users as $user) {
             $this->comment($user->id . ' - ' . $user->name);
@@ -44,11 +45,10 @@ class RegenerateTeamLevelRoleRecords extends Command
             // Get the mininum role_id of user, suppose user can have one roles for any organisation currently
             $roles = DB::select('select min(role_id) as min_role_id from model_has_roles where model_id = ' . $user->id);
             $minRoleId = $roles[0]->min_role_id;
-            $this->comment(' ===> ' . $minRoleId);
+            $this->comment(' min_role_id ===> ' . $minRoleId);
 
             // Remove existing model_has_roles belong to user
             $deleteSql = "DELETE FROM model_has_roles WHERE model_id = " . $user->id;
-            ray($deleteSql);
             DB::statement($deleteSql);
 
             // Add role per user per organisations
@@ -57,7 +57,6 @@ class RegenerateTeamLevelRoleRecords extends Command
                 foreach ($allOrganisations as $organisation) {
                     $this->comment(' - ' . $organisation->name);
                     $insertSql = "INSERT INTO model_has_roles values ($minRoleId, 'App\\\Models\\\User', " . $user->id . ", " . $organisation->id . ")";
-                    ray($insertSql);
                     DB::statement($insertSql);
                 }
             } else {
@@ -65,12 +64,9 @@ class RegenerateTeamLevelRoleRecords extends Command
                 foreach ($user->organisations as $organisation) {
                     $this->comment(' - ' . $organisation->name);
                     $insertSql = "INSERT INTO model_has_roles values ($minRoleId, 'App\\\Models\\\User', " . $user->id . ", " . $organisation->id . ")";
-                    ray($insertSql);
                     DB::statement($insertSql);
                 }
             }
-
-            // TODO: need to check if it works by creating model_has_roles records by INSERT SQL
         }
 
         $this->info('end');
