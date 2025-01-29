@@ -2,14 +2,12 @@
 
 namespace App\Models;
 
-use Illuminate\Support\Facades\DB;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Traits\HasRoles;
 use Illuminate\Notifications\Notifiable;
 use Spatie\Permission\Models\Permission;
 use Illuminate\Database\Eloquent\Collection;
 use Backpack\CRUD\app\Models\Traits\CrudTrait;
-use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -67,14 +65,7 @@ class User extends Authenticatable
 
     public function isAdmin()
     {
-        // old approach: check if user has Site Admin role
         return $this->hasAnyRole('Site Admin');
-
-        // new approach: check if user has Site Admin role for any organisation
-        // $result = DB::select('SELECT COUNT(*) as record_count FROM model_has_roles WHERE role_id = 1 AND model_id = ' . auth()->user()->id);
-        // $recordCount = $result[0]->record_count;
-
-        // return $recordCount > 0;
     }
 
     public function withPermissionNames()

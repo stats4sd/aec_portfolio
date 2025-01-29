@@ -44,11 +44,6 @@ class Organisation extends Model
                 return;
             }
 
-            // show all organisations if user is Site Admin
-            // if (Auth::user()?->isAdmin()) {
-            //     return;
-            // }
-
             if (Auth::user()?->can('view institutions')) {
                 return;
             }

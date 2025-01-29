@@ -63,7 +63,6 @@
     </li>
     @endif
 
-    <!-- TODO: change to if(Auth::user()->isAdmin()) -->
     @if(Auth::user()->can('maintain institutions'))
     <li class="nav-item pr-4">
         <a class="nav-link d-flex justify-content-between align-items-center"
