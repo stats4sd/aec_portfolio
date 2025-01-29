@@ -61,6 +61,25 @@ class Organisation extends Model
                     ->update(['additional_status' => AssessmentStatus::NotStarted->value]);
             }
         });
+
+        // Add model_has_roles records for site admins and site managers when a new institution is created
+        static::created(function ($item) {
+            // add role for all Site Admin users
+            $siteAdmins = DB::select('SELECT DISTINCT model_id, role_id FROM model_has_roles WHERE role_id = 1');
+
+            foreach ($siteAdmins as $siteAdmin) {
+                $insertSql = "INSERT INTO model_has_roles VALUES (1, 'App\\\Models\\\User', " . $siteAdmin->model_id . ", " . $item->id . ")";
+                DB::statement($insertSql);
+            }
+
+            // add role for all Site Manager users
+            $siteManagers = DB::select('SELECT DISTINCT model_id, role_id FROM model_has_roles WHERE role_id = 2');
+
+            foreach ($siteManagers as $siteManager) {
+                $insertSql = "INSERT INTO model_has_roles VALUES (2, 'App\\\Models\\\User', " . $siteManager->model_id . ", " . $item->id . ")";
+                DB::statement($insertSql);
+            }
+        });
     }
 
 

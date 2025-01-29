@@ -43,7 +43,7 @@ class RegenerateTeamLevelRoleRecords extends Command
             // $this->comment(' ===> ' . $user->getRoleNames());
 
             // Get the mininum role_id of user, suppose user can have one roles for any organisation currently
-            $roles = DB::select('select min(role_id) as min_role_id from model_has_roles where model_id = ' . $user->id);
+            $roles = DB::select('SELECT MIN(role_id) AS min_role_id FROM model_has_roles WHERE model_id = ' . $user->id);
             $minRoleId = $roles[0]->min_role_id;
             $this->comment(' min_role_id ===> ' . $minRoleId);
 
@@ -56,14 +56,14 @@ class RegenerateTeamLevelRoleRecords extends Command
                 // handling for Site Admin, Site Manager
                 foreach ($allOrganisations as $organisation) {
                     $this->comment(' - ' . $organisation->name);
-                    $insertSql = "INSERT INTO model_has_roles values ($minRoleId, 'App\\\Models\\\User', " . $user->id . ", " . $organisation->id . ")";
+                    $insertSql = "INSERT INTO model_has_roles VALUES ($minRoleId, 'App\\\Models\\\User', " . $user->id . ", " . $organisation->id . ")";
                     DB::statement($insertSql);
                 }
             } else {
                 // handling for Ins Admin, Ins Assessor, Ins Member
                 foreach ($user->organisations as $organisation) {
                     $this->comment(' - ' . $organisation->name);
-                    $insertSql = "INSERT INTO model_has_roles values ($minRoleId, 'App\\\Models\\\User', " . $user->id . ", " . $organisation->id . ")";
+                    $insertSql = "INSERT INTO model_has_roles VALUES ($minRoleId, 'App\\\Models\\\User', " . $user->id . ", " . $organisation->id . ")";
                     DB::statement($insertSql);
                 }
             }
