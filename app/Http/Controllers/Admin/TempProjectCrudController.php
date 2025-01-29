@@ -143,7 +143,7 @@ class TempProjectCrudController extends CrudController
                         'content' => [
                             'header' => 'Import Summary',
                             'body' => "{$tempProjectImport->total_records} initiatives found. You may review the entries in the table below. Click 'preview' to see the details of any initiative. You may wish to do some spot checks to ensure the data are what you expect to see.<br/><br/>
-                                Once you have confirmed the data are correct, click 'finalise' to complete the import into the portfolio: <b> {$tempProjectImport->portfolio->name}</b>",
+                                Once you have confirmed the data are correct, click 'Finalise' to complete the import into the portfolio: <b> {$tempProjectImport->portfolio->name}</b>",
                         ],
                     ]
                 ),
