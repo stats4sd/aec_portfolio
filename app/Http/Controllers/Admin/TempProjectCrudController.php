@@ -63,7 +63,6 @@ class TempProjectCrudController extends CrudController
         }
 
         CRUD::setListView('vendor.backpack.crud.temp-project-list');
-
     }
 
     public function index()
@@ -142,6 +141,7 @@ class TempProjectCrudController extends CrudController
                         'class' => 'card bg-white text-dark shadow-xl border-success',
                         'wrapper' => ['class' => 'col-12 col-lg-8'],
                         'content' => [
+                            'header' => 'Import Summary',
                             'body' => "{$tempProjectImport->total_records} initiatives found. You may review the entries in the table below. Click 'preview' to see the details of any initiative. You may wish to do some spot checks to ensure the data are what you expect to see.<br/><br/>
                                 Once you have confirmed the data are correct, click 'finalise' to complete the import into the portfolio: <b> {$tempProjectImport->portfolio->name}</b>",
                         ],
@@ -161,13 +161,12 @@ class TempProjectCrudController extends CrudController
                             'body' => "
                                 <b>Initiatives Found: {$tempProjectImport->total_records}</b><br/>
                                 <b class='text-danger'>Initiatives Requiring Review: {$tempProjectImport->invalid_records}</b>
-                                <br/><br/>Please review the validation errors in the table below, and make any required updates in your original Excel file. You can re-upload the file by clicking 'upload new file'.",
+                                <br/><br/>Please review the validation errors in the table below, and make any required updates in your original Excel file. You can re-upload the file by clicking 'Re-upload file'.",
                         ],
                     ]
                 ),
             ]);
         }
-
     }
 
     public function getImportForm()
@@ -376,7 +375,6 @@ class TempProjectCrudController extends CrudController
             try {
 
                 Excel::import(new $importer($portfolio), $excelFile);
-
             } catch (ValidationException $e) {
                 dd($e);
             }
