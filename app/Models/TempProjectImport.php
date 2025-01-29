@@ -26,6 +26,26 @@ class TempProjectImport extends Model implements HasMedia
         return $this->hasMany(TempProject::class);
     }
 
+    public function validTempProjects(): HasMany
+    {
+        return $this->hasMany(TempProject::class)->where('valid', 1);
+    }
+
+    public function invalidTempProjects(): HasMany
+    {
+        return $this->hasMany(TempProject::class)->where('valid', 0);
+    }
+
+    public function canFinalise(): int
+    {
+        // if there are temp_projects records imported and there is no invalid temp_projects records
+        if ($this->tempProjects->count() > 0 && $this->invalidTempProjects->count() == 0) {
+            return 1;
+        }
+
+        return 0;
+    }
+
     public function startedAt(): Attribute
     {
         return new Attribute(

@@ -112,7 +112,7 @@ class TempProjectCrudController extends CrudController
         $this->crud->addButton('top', 'import', 'view', 'vendor.backpack.crud.buttons.re-import', 'end');
 
         // add finalise button
-        if ($tempProjectImport->can_import) {
+        if ($tempProjectImport->canFinalise()) {
             $this->crud->addButton('top', 'finalise', 'view', 'vendor.backpack.crud.buttons.finalise_enabled', 'end');
         } else {
             $this->crud->addButton('top', 'finalise', 'view', 'vendor.backpack.crud.buttons.finalise_disabled', 'end');
@@ -132,7 +132,7 @@ class TempProjectCrudController extends CrudController
         );
 
         // add a widget to show import summary
-        if ($tempProjectImport->can_import) {
+        if ($tempProjectImport->canFinalise()) {
 
             Widget::add()->to('before_content')->type('div')->class('row')->content([
                 Widget::make(
@@ -142,7 +142,7 @@ class TempProjectCrudController extends CrudController
                         'wrapper' => ['class' => 'col-12 col-lg-8'],
                         'content' => [
                             'header' => 'Import Summary',
-                            'body' => "{$tempProjectImport->total_records} initiatives found. You may review the entries in the table below. Click 'preview' to see the details of any initiative. You may wish to do some spot checks to ensure the data are what you expect to see.<br/><br/>
+                            'body' => "{$tempProjectImport->tempProjects->count()} initiatives found. You may review the entries in the table below. Click 'Preview' to see the details of any initiative. You may wish to do some spot checks to ensure the data are what you expect to see.<br/><br/>
                                 Once you have confirmed the data are correct, click 'Finalise' to complete the import into the portfolio: <b> {$tempProjectImport->portfolio->name}</b>",
                         ],
                     ]
@@ -159,8 +159,8 @@ class TempProjectCrudController extends CrudController
                         'content' => [
                             'header' => 'Import Summary',
                             'body' => "
-                                <b>Initiatives Found: {$tempProjectImport->total_records}</b><br/>
-                                <b class='text-danger'>Initiatives Requiring Review: {$tempProjectImport->invalid_records}</b>
+                                <b>Initiatives Found: {$tempProjectImport->tempProjects->count()}</b><br/>
+                                <b class='text-danger'>Initiatives Requiring Review: {$tempProjectImport->invalidTempProjects->count()}</b>
                                 <br/><br/>Please review the validation errors in the table below, and make any required updates in your original Excel file. You can re-upload the file by clicking 'Re-upload file'.",
                         ],
                     ]
@@ -276,20 +276,9 @@ class TempProjectCrudController extends CrudController
         // attach the uploaded excel file to TempProjectImport model
         $tempProjectImport->addMediaFromRequest('importFile')->toMediaCollection('project_import_excel_file');
 
-        $numberOfRecords = TempProject::where('temp_project_import_id', $tempProjectImport->id)->count();
-
-        // find number of invalid records
-        $numberOfInvalidRecords = TempProject::where('temp_project_import_id', $tempProjectImport->id)->where('valid', 0)->count();
-
         // store user selected portfolio id for later use
         $tempProjectImport->portfolio_id = $portfolio->id;
 
-        // store total number of invalid records and total number of records for later use
-        $tempProjectImport->invalid_records = $numberOfInvalidRecords;
-        $tempProjectImport->total_records = $numberOfRecords;
-
-        // check if the uploaded file contains no error and ready for import (to show the enabled Finalise button)
-        $tempProjectImport->can_import = $numberOfInvalidRecords == 0;
         $tempProjectImport->save();
 
         Alert::success(trans('backpack::crud.insert_success'))->flash();
