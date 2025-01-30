@@ -42,7 +42,7 @@ class RegenerateTeamLevelRoleRecords extends Command
             // $this->comment(' ===> ' . $user->roles);
             // $this->comment(' ===> ' . $user->getRoleNames());
 
-            // Get the mininum role_id of user, suppose user can have one roles for any organisation currently
+            // Get the mininum role_id of user, suppose user can have one role for any organisation currently
             $roles = DB::select('SELECT MIN(role_id) AS min_role_id FROM model_has_roles WHERE model_id = ' . $user->id);
             $minRoleId = $roles[0]->min_role_id;
             $this->comment(' min_role_id ===> ' . $minRoleId);

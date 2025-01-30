@@ -80,17 +80,14 @@
                             </div>
                         </div>
 
-                        <!-- TODO: hide it -->
-                        <!--
+                        <!-- hide organisation_id in user registration form -->
                         <div class="form-group row">
                             <label class="col-md-4 col-form-label text-md-right"></label>
 
                             <div class="col-md-6">
-                                <input id='organisation_id' type="text" class="form-control" name="organisation_id" value="{{ $invite->organisation_id }}">
+                                <input id='organisation_id' type="hidden" class="form-control" name="organisation_id" value="{{ $invite->organisation_id }}">
                             </div>
                         </div>
-                        -->
-
 
                         <div class="form-group row mb-0">
                             <div class="col-md-6 offset-md-4">
