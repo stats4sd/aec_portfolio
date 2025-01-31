@@ -28,6 +28,7 @@ use App\Http\Controllers\Admin\UserCrudController;
 use App\Http\Controllers\Admin\UserFeedbackCrudController;
 use App\Http\Controllers\Admin\RevisionCrudController;
 use App\Http\Controllers\Admin\CustomScoreTagCrudController;
+use App\Http\Controllers\Admin\TempProjectCrudController;
 use App\Http\Controllers\AssessmentController;
 use App\Http\Controllers\GeneratePdfFileController;
 use App\Http\Controllers\GenericDashboardController;
@@ -165,6 +166,11 @@ Route::group([
         Route::view('support', 'support');
 
         Route::get('edit-account-info', [MyAccountController::class, 'getAccountInfoForm'])->name('backpack.account.info');
+
+        Route::crud('temp-project', TempProjectCrudController::class);
+        Route::get('temp-project/finalise', [TempProjectCrudController::class, 'finalise']);
+        Route::post('temp-project/discard-import', [TempProjectCrudController::class, 'discardImport'])->name('import.discard');
+
     });
 
 
@@ -180,8 +186,8 @@ Route::group([
     Route::crud('custom-score-tag', CustomScoreTagCrudController::class);
     Route::crud('help-text-entry', HelpTextEntryCrudController::class);
     Route::get('help-text-entry/find/{location}', [HelpTextEntryCrudController::class, 'find']);
-});
 
+});
 Route::get('project/{id}/show-as-pdf', [ProjectCrudController::class, 'show'])
     ->middleware('auth.basic')
     ->name('project.show-as-pdf');

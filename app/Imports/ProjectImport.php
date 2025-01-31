@@ -2,29 +2,19 @@
 
 namespace App\Imports;
 
-use App\Enums\GeographicalReach;
 use App\Http\Requests\ProjectRequest;
 use App\Models\Continent;
 use App\Models\Country;
 use App\Models\InitiativeCategory;
-use App\Models\Organisation;
 use App\Models\Portfolio;
 use App\Models\Project;
 use App\Models\Region;
-use App\Models\User;
-use Carbon\Carbon;
-use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Maatwebsite\Excel\Concerns\Importable;
 use Maatwebsite\Excel\Concerns\OnEachRow;
 use Maatwebsite\Excel\Concerns\SkipsEmptyRows;
-use Maatwebsite\Excel\Concerns\ToArray;
-use Maatwebsite\Excel\Concerns\ToCollection;
-use Maatwebsite\Excel\Concerns\ToModel;
 use Maatwebsite\Excel\Concerns\WithCalculatedFormulas;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
-use Maatwebsite\Excel\Concerns\WithUpserts;
 use Maatwebsite\Excel\Concerns\WithValidation;
 use Maatwebsite\Excel\Row;
 use PhpOffice\PhpSpreadsheet\Shared\Date;
@@ -78,6 +68,7 @@ class ProjectImport implements OnEachRow, WithHeadingRow, SkipsEmptyRows, WithCa
             'organisation_id' => $this->portfolio->organisation_id,
             'code' => $data['code'],
             'name' => $data['name'],
+            'initiative_category_id' => $data['initiativeCategory'],
             'description' => $data['description'] ?? null,
             'currency' => $data['currency'],
             'exchange_rate' => $data['exchange_rate'],
@@ -106,8 +97,6 @@ class ProjectImport implements OnEachRow, WithHeadingRow, SkipsEmptyRows, WithCa
         $project->continents()->sync($continentIds);
         $project->regions()->sync($regionIds);
         $project->countries()->sync($countryIds);
-
-
     }
 
     public function rules(): array
@@ -171,6 +160,4 @@ class ProjectImport implements OnEachRow, WithHeadingRow, SkipsEmptyRows, WithCa
 
         return $data;
     }
-
-
 }

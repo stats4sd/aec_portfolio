@@ -81,4 +81,9 @@ class User extends Authenticatable
     {
         return $this->hasMany(Organisation::class, 'signee_id');
     }
+
+    public function tempProjectImports(): HasMany
+    {
+        return $this->hasMany(TempProjectImport::class);
+    }
 }

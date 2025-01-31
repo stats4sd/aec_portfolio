@@ -12,6 +12,12 @@
 <div class="alert alert-warning text-dark my-3">This institution has not yet digitally signed the data sharing agreement. An institution admin should update the settings in order to enable the ability to add and assess initiatives using the tool.</div>
 @endif
 
+
+@if($tempProjectImport)
+<div class="alert alert-warning show text-dark my-3 font-lg">You have an in-progress data import, started on {{ $tempProjectImport->started_At }}. You can continue the import here: <a href="{{ url('admin/temp-project') }}">Import Initiatives</a>.
+</div>
+@endif
+
 <div class="container-fluid mt-16" id="initiativesListPage">
     <initiatives-list
         :organisation="{{ $organisation }}"
@@ -28,8 +34,7 @@
         :settings="{{ json_encode($settings) }}"
         :status-help-text="{{ $statusHelpText }}"
         :score-help-text="{{ $scoreHelpText }}"
-        :expanded-projects="{{ json_encode($expandedProjects) }}"
-        />
+        :expanded-projects="{{ json_encode($expandedProjects) }}" />
 </div>
 
 @endsection

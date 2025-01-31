@@ -122,6 +122,12 @@ class ProjectController extends Controller
         $statusHelpText = HelpTextEntry::firstWhere('location', 'Initiatives - statuses');
         $scoreHelpText = HelpTextEntry::firstWhere('location', 'Initiatives - score');
 
+
+        // get TempProjectImport model
+        $user = auth()->user();
+        $selectedOrganisationId = Session::get('selectedOrganisationId');
+        $tempProjectImport = $user->tempProjectImports->where('organisation_id', $selectedOrganisationId)->first();
+
         return view('projects.index', [
             'organisation' => $org,
             'projects' => $projects,
@@ -138,6 +144,7 @@ class ProjectController extends Controller
             'statusHelpText' => $statusHelpText,
             'scoreHelpText' => $scoreHelpText,
             'expandedProjects' => $expandedProjects != null ? $expandedProjects : '',
+            'tempProjectImport' => $tempProjectImport,
         ]);
     }
 

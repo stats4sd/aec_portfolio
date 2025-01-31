@@ -1,0 +1,3 @@
+@if ($crud->hasAccess('import'))
+<a href="{{ url($crud->route.'/finalise') }}" class="btn btn-success">Step 3: Finalise</a>
+@endif

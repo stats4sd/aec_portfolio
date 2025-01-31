@@ -36,7 +36,7 @@
 
                 <div class="flex-grow-1 justify-content-end d-flex">
                     <a v-if="showAddButton" href="/admin/project/create" class="btn btn-primary mr-2 ml-auto">Add Initiative</a>
-                    <a v-if="showImportButton" href="/admin/project/import" class="btn btn-success mr-2">Import Initiatives</a>
+                    <a v-if="showImportButton" href="/admin/temp-project/import" class="btn btn-success mr-2">Import Initiatives</a>
                     <a v-if="showExportButton" href="/admin/organisation/export" class="btn btn-info">Export All Initiative Data</a>
                 </div>
             </div>

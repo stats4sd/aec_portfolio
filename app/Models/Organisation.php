@@ -89,6 +89,12 @@ class Organisation extends Model
             ->withoutGlobalScopes(['organisation']);
     }
 
+    public function tempProjects(): HasMany
+    {
+        return $this->hasMany(TempProject::class)
+            ->withoutGlobalScopes(['organisation']);
+    }
+
     public function assessments(): HasManyThrough
     {
         return $this->hasManyThrough(Assessment::class, Project::class);
