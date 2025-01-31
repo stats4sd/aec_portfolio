@@ -15,9 +15,13 @@ class SelectedOrganisationController extends Controller
         $organisations = Organisation::orderBy('name')->get();
 
         // if only one organisation is available to the user, automatically select it (same as the middleware)
-        if($organisations->count() === 1) {
+        if ($organisations->count() === 1) {
             $orgId = $organisations->first()->id;
-            return redirect(backpack_url("organisation/$orgId/show"));
+            Session::put('selectedOrganisationId', $orgId);
+
+            $redirect = backpack_url('organisation/show');
+
+            return redirect($redirect);
         }
 
         return view('organisations.select', ['organisations' => $organisations]);

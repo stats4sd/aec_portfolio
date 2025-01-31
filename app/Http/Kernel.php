@@ -3,7 +3,9 @@
 namespace App\Http;
 
 use App\Http\Middleware\EnsureOrganisationIsSelected;
+use App\Http\Middleware\SetOrgForPermissions;
 use App\Http\Middleware\SetProjectInSession;
+use App\Http\Middleware\TeamsPermission;
 use Illuminate\Foundation\Http\Kernel as HttpKernel;
 
 class Kernel extends HttpKernel
@@ -37,6 +39,7 @@ class Kernel extends HttpKernel
             \Illuminate\Session\Middleware\StartSession::class,
             \Illuminate\View\Middleware\ShareErrorsFromSession::class,
             \App\Http\Middleware\VerifyCsrfToken::class,
+            TeamsPermission::class,
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
         ],
 
@@ -67,5 +70,7 @@ class Kernel extends HttpKernel
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
         'org.selected' => EnsureOrganisationIsSelected::class,
         'project.set' => SetProjectInSession::class,
+        'teams.permission' => TeamsPermission::class,
+        'set_org_for_permissions' => SetOrgForPermissions::class,
     ];
 }

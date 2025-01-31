@@ -51,7 +51,8 @@ Route::group([
 
 ], function () { // custom admin routes
 
-    Route::get('selected_organisation', [SelectedOrganisationController::class, 'create']);
+    Route::get('selected_organisation', [SelectedOrganisationController::class, 'create'])
+    ->middleware(['set_org_for_permissions']);
     Route::post('selected_organisation', [SelectedOrganisationController::class, 'store']);
 
     Route::get('/', [SelectedOrganisationController::class, 'show']);
@@ -85,7 +86,7 @@ Route::group([
 
     // routes that require a selected organisation
     Route::group([
-        'middleware' => ['org.selected'],
+        'middleware' => ['org.selected', 'teams.permission'],
     ], function () {
 
         Route::get('organisation/show', [OrganisationController::class, 'show'])->name('organisation.self.show');
