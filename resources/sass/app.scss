@@ -299,3 +299,11 @@ label {
 .popover {
     font-size: 1em !important;
 }
+
+[filter-type=simple].nav-item.active {
+    font-weight: bold;
+
+    a:before {
+        html: "<i class='fa fa-check'></i>";
+    }
+}

@@ -15,7 +15,7 @@
   <div class="container-fluid">
     <h2>
       <span class="text-capitalize">{!! $crud->getHeading() ?? $crud->entity_name_plural !!}</span>
-      <small id="datatable_info_stack">{!! $crud->getSubheading() ?? '' !!}</small>
+      <br/><span class="font-lg">{!! $crud->getSubheading() ?? '' !!}</span>
     </h2>
   </div>
 @endsection
@@ -27,8 +27,8 @@
     {{-- THE ACTUAL CONTENT --}}
     <div class="{{ $crud->getListContentClass() }}">
 
-        <div class="row mb-0">
-          <div class="col-sm-6">
+        <div class="row mb-0 flex justify-content-between mx-2">
+          <div class="">
             @if ( $crud->buttons()->where('stack', 'top')->count() ||  $crud->exportButtons())
               <div class="d-print-none {{ $crud->hasAccess('create')?'with-border':'' }}">
 
@@ -37,7 +37,7 @@
               </div>
             @endif
           </div>
-          <div class="col-sm-6">
+          <div>
             <div id="datatable_search_stack" class="mt-sm-0 mt-2 d-print-none"></div>
           </div>
         </div>
