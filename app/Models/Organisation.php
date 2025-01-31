@@ -200,6 +200,12 @@ class Organisation extends Model
                         'user_id' => $user->id,
                         'organisation_id' => $this->id,
                     ]);
+
+                    // add model_has_roles records, existing user will have a role to this institution immediately
+                    DB::insert(
+                        'insert into model_has_roles (role_id, model_type, model_id, organisation_id) values (?, ?, ?, ?)',
+                        [$roleId, 'App\\Models\\User', $user->id, $this->id]
+                    );
                 }
             }
         }
