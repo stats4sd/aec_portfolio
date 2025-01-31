@@ -22,8 +22,8 @@ class DatabaseSeeder extends Seeder
         $this->call(InitiativeCategorySeeder::class);
         $this->call(InstitutionTypeSeeder::class);
         $this->call(UserFeedbackTypeSeeder::class);
-        $this->call(TestSeeder::class);
         $this->call(DashboardRatingSeeder::class);
+        $this->call(TestSeeder::class);
         $this->call(ProjectSeeder::class);
         $this->call(ScoreTagsTableSeeder::class);
         $this->call(HelpTextEntrySeeder::class);
