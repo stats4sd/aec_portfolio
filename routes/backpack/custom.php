@@ -50,7 +50,8 @@ Route::group([
 
 ], function () { // custom admin routes
 
-    Route::get('selected_organisation', [SelectedOrganisationController::class, 'create']);
+    Route::get('selected_organisation', [SelectedOrganisationController::class, 'create'])
+    ->middleware(['set_org_for_permissions']);
     Route::post('selected_organisation', [SelectedOrganisationController::class, 'store']);
 
     Route::get('/', [SelectedOrganisationController::class, 'show']);

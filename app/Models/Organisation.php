@@ -44,11 +44,6 @@ class Organisation extends Model
                 return;
             }
 
-            // temporarily set permissions ID to let admins and site managers access the site to choose an organisation
-            if (!getPermissionsTeamId()) {
-                setPermissionsTeamId(Organisation::first()->id);
-            }
-
             if (Auth::user()?->can('view institutions')) {
                 return;
             }

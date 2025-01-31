@@ -3,6 +3,7 @@
 namespace App\Http;
 
 use App\Http\Middleware\EnsureOrganisationIsSelected;
+use App\Http\Middleware\SetOrgForPermissions;
 use App\Http\Middleware\SetProjectInSession;
 use App\Http\Middleware\TeamsPermission;
 use Illuminate\Foundation\Http\Kernel as HttpKernel;
@@ -70,5 +71,6 @@ class Kernel extends HttpKernel
         'org.selected' => EnsureOrganisationIsSelected::class,
         'project.set' => SetProjectInSession::class,
         'teams.permission' => TeamsPermission::class,
+        'set_org_for_permissions' => SetOrgForPermissions::class,
     ];
 }
