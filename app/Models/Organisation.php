@@ -33,7 +33,7 @@ class Organisation extends Model
 
     protected $casts = [
         'has_additional_criteria' => 'boolean',
-        'agreement_signed_at' => 'date'
+        'agreement_signed_at' => 'date',
     ];
 
     protected static function booted()
@@ -42,6 +42,11 @@ class Organisation extends Model
 
             if (!Auth::check()) {
                 return;
+            }
+
+            // temporarily set permissions ID to let admins and site managers access the site to choose an organisation
+            if (!getPermissionsTeamId()) {
+                setPermissionsTeamId(1);
             }
 
             if (Auth::user()?->can('view institutions')) {
