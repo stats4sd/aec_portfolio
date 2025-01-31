@@ -46,7 +46,7 @@ class Organisation extends Model
 
             // temporarily set permissions ID to let admins and site managers access the site to choose an organisation
             if (!getPermissionsTeamId()) {
-                setPermissionsTeamId(1);
+                setPermissionsTeamId(Organisation::first()->id);
             }
 
             if (Auth::user()?->can('view institutions')) {
