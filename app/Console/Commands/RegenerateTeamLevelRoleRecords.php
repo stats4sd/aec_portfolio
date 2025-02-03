@@ -59,6 +59,10 @@ class RegenerateTeamLevelRoleRecords extends Command
                     $insertSql = "INSERT INTO model_has_roles VALUES ($minRoleId, 'App\\\Models\\\User', " . $user->id . ", " . $organisation->id . ")";
                     DB::statement($insertSql);
                 }
+
+                // remove existing organisation_members record, global roles should not have organisation_members record
+                $deleteSql = "DELETE FROM organisation_members WHERE user_id = " . $user->id;
+                DB::statement($deleteSql);
             } else {
                 // handling for Ins Admin, Ins Assessor, Ins Member
                 foreach ($user->organisations as $organisation) {

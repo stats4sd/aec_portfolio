@@ -88,10 +88,6 @@ class RegisteredUserController extends Controller
                 // add model_has_roles records for all organisations
                 $insertSql = "INSERT INTO model_has_roles VALUES (" . $minRoleId . ", 'App\\\Models\\\User', " . $user->id . ", " . $organisation->id . ")";
                 DB::statement($insertSql);
-
-                // add organisation_member records for all organisations
-                $insertSql = "INSERT INTO organisation_members (user_id, organisation_id, role) VALUES (" . $user->id . ", " . $organisation->id . ", 'editor')";
-                DB::statement($insertSql);
             }
         } else {
             // update organisation_id to model_has_roles record
