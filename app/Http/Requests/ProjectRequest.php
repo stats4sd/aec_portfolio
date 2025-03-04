@@ -32,7 +32,7 @@ class ProjectRequest extends FormRequest
             'organisation_id' => 'required',
             'portfolio_id' => 'required',
             'name' => 'required|string|max:255',
-            'code' => ['nullable', 'string', new UniqueProjectCode],
+            'code' => ['nullable', 'string', new UniqueProjectCode, 'max:255'],
             'description' => 'nullable|string|max:5000',
             'initiativeCategory' => 'required|exists:initiative_categories,id',
             'initiative_category_other' => 'nullable',
