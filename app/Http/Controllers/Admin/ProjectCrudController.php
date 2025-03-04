@@ -376,6 +376,7 @@ class ProjectCrudController extends CrudController
             ]);
 
         CRUD::field('main_recipient')
+            ->type('textarea')
             ->label('Please enter the main recipient of the funds for this initiative')
             ->hint('E.g., the institution or entity that directly receives the majority of the funds for this initiative');
 
