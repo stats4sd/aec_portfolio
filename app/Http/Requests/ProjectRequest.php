@@ -36,19 +36,19 @@ class ProjectRequest extends FormRequest
             'description' => 'nullable|string|max:5000',
             'initiativeCategory' => 'required|exists:initiative_categories,id',
             'initiative_category_other' => 'nullable',
-            'budget' => 'required|integer|gte:0',
+            'budget' => 'required|integer|gte:0|lt:2147483647',
 
             // displayBudget is required for manual adding initiative in front-end,
             // it is not necessary for project import
             // comment it temporary for testing
             // 'displayBudget' => ['required', new DisplayBudgetRule],
-            'fundingSources.*.source' => 'exclude_unless:uses_only_own_funds,1|required_without:fundingSources.*.institution_id',
+            'fundingSources.*.source' => 'exclude_unless:uses_only_own_funds,1|required_without:fundingSources.*.institution_id|max:255',
             'fundingSources.*.institution_id' => 'exclude_unless:uses_only_own_funds,1|required_without:fundingSources.*.source',
-            'fundingSources.*.amount' => 'exclude_unless:uses_only_own_funds,1|required|integer|gte:0',
+            'fundingSources.*.amount' => 'exclude_unless:uses_only_own_funds,1|required|integer|gte:0|lt:2147483647',
 
             'currency' => 'required|max:3',
-            'exchange_rate' => 'sometimes|required',
-            'exchange_rate_eur' => 'sometimes|required',
+            'exchange_rate' => 'sometimes|required|gte:0|lt:2147483647',
+            'exchange_rate_eur' => 'sometimes|required|gte:0|lt:2147483647',
             'uses_only_own_funds' => 'required|boolean',
             'main_recipient_id' => 'nullable',
             'main_recipient' => 'required|max:5000',
