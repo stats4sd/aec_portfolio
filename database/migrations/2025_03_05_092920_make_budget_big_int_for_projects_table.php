@@ -17,7 +17,7 @@ return new class extends Migration
             $table->bigInteger('budget_org')->change();
         });
 
-        Schema::table('portfolioses', function (Blueprint $table) {
+        Schema::table('portfolios', function (Blueprint $table) {
             $table->bigInteger('budget')->change();
         });
     }
