@@ -36,7 +36,7 @@ class ProjectRequest extends FormRequest
             'description' => 'nullable|string|max:5000',
             'initiativeCategory' => 'required|exists:initiative_categories,id',
             'initiative_category_other' => 'nullable',
-            'budget' => 'required|integer|gte:0|lte:2147483647',
+            'budget' => 'required|integer|gte:0|lte:9223372036854775807',
 
             // displayBudget is required for manual adding initiative in front-end,
             // it is not necessary for project import
