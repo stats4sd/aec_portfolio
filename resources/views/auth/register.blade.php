@@ -8,16 +8,16 @@
                 <div class="card-header">
                     <h3>{{ config('app.name') }}</h3>
                     Register
-                    </div>
+                </div>
 
                 <div class="card-body">
-                @if($invite)
-                        <div class="alert alert-info">
+                    @if($invite)
+                    <div class="alert alert-info">
 
-                            {{ $inviteMessage }}
-                            <br/><br/>
-                            Your invite is attached to your email address. Please use this same address when registering to get immediate access to the correct team/s and user permissions. You may change your email address after registration if you would prefer to use a different one.
-                        </div>
+                        {{ $inviteMessage }}
+                        <br /><br />
+                        Your invite is attached to your email address. Please use this same address when registering to get immediate access to the correct team/s and user permissions. You may change your email address after registration if you would prefer to use a different one.
+                    </div>
                     @endif
 
                     <form method="POST" action="{{ route('register') }}">
@@ -30,9 +30,9 @@
                                 <input id="name" type="text" class="form-control @error('name') is-invalid @enderror" name="name" value="{{ old('name') }}" required autocomplete="name" autofocus>
 
                                 @error('name')
-                                    <span class="invalid-feedback" role="alert">
-                                        <strong>{{ $message }}</strong>
-                                    </span>
+                                <span class="invalid-feedback" role="alert">
+                                    <strong>{{ $message }}</strong>
+                                </span>
                                 @enderror
                             </div>
                         </div>
@@ -42,18 +42,18 @@
 
                             <div class="col-md-6">
                                 <input
-                                id="email"
-                                type="email"
-                                class="form-control @error('email') is-invalid @enderror"
-                                name="email"
-                                value="{{ old('email') ?: ($invite ? $invite->email : null )}}"
-                                required
-                                autocomplete="email">
+                                    id="email"
+                                    type="email"
+                                    class="form-control @error('email') is-invalid @enderror"
+                                    name="email"
+                                    value="{{ old('email') ?: ($invite ? $invite->email : null )}}"
+                                    required
+                                    autocomplete="email">
 
                                 @error('email')
-                                    <span class="invalid-feedback" role="alert">
-                                        <strong>{{ $message }}</strong>
-                                    </span>
+                                <span class="invalid-feedback" role="alert">
+                                    <strong>{{ $message }}</strong>
+                                </span>
                                 @enderror
                             </div>
                         </div>
@@ -65,9 +65,9 @@
                                 <input id="password" type="password" class="form-control @error('password') is-invalid @enderror" name="password" required autocomplete="new-password">
 
                                 @error('password')
-                                    <span class="invalid-feedback" role="alert">
-                                        <strong>{{ $message }}</strong>
-                                    </span>
+                                <span class="invalid-feedback" role="alert">
+                                    <strong>{{ $message }}</strong>
+                                </span>
                                 @enderror
                             </div>
                         </div>
@@ -77,6 +77,15 @@
 
                             <div class="col-md-6">
                                 <input id="password-confirm" type="password" class="form-control" name="password_confirmation" required autocomplete="new-password">
+                            </div>
+                        </div>
+
+                        <!-- hide organisation_id in user registration form -->
+                        <div class="form-group row">
+                            <label class="col-md-4 col-form-label text-md-right"></label>
+
+                            <div class="col-md-6">
+                                <input id='organisation_id' type="hidden" class="form-control" name="organisation_id" value="{{ $invite->organisation_id }}">
                             </div>
                         </div>
 

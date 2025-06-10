@@ -2,26 +2,29 @@
 
 namespace App\Http\Controllers;
 
-use App\Enums\AssessmentStatus;
-use App\Models\Assessment;
+use Carbon\Carbon;
+use App\Models\Region;
 use App\Models\Country;
+use App\Models\Project;
 use App\Models\Currency;
-use App\Models\ExchangeRate;
-use App\Models\InitiativeCategory;
-use App\Models\Organisation;
 use App\Models\Portfolio;
 use App\Models\Principle;
-use App\Models\PrincipleAssessment;
-use App\Models\Project;
-use App\Models\ProjectRegion;
-use App\Models\Region;
-use Carbon\Carbon;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Relations\HasMany;
+use App\Models\Assessment;
+use Illuminate\Support\Arr;
+use App\Models\ExchangeRate;
+use App\Models\Organisation;
 use Illuminate\Http\Request;
+use App\Models\ProjectRegion;
+use App\Enums\AssessmentStatus;
+use App\Enums\GeographicalReach;
+use App\Models\InitiativeCategory;
+use App\Models\InstitutionType;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
+use App\Models\PrincipleAssessment;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class GenericDashboardController extends Controller
 {
@@ -45,10 +48,10 @@ class GenericDashboardController extends Controller
 
         $regions = $org->portfolios
             ->map(
-                fn (Portfolio $portfolio): Collection => $portfolio
+                fn(Portfolio $portfolio): Collection => $portfolio
                     ->projects
                     ->map(
-                        fn (Project $project): Collection => $project
+                        fn(Project $project): Collection => $project
                             ->regions
                     )
             )
@@ -58,10 +61,10 @@ class GenericDashboardController extends Controller
 
         $countries = $org->portfolios
             ->map(
-                fn (Portfolio $portfolio): Collection => $portfolio
+                fn(Portfolio $portfolio): Collection => $portfolio
                     ->projects
                     ->map(
-                        fn (Project $project): Collection => $project
+                        fn(Project $project): Collection => $project
                             ->countries
                     )
             )
@@ -71,10 +74,10 @@ class GenericDashboardController extends Controller
 
         $categories = $org->portfolios
             ->map(
-                fn (Portfolio $portfolio): Collection => $portfolio
+                fn(Portfolio $portfolio): Collection => $portfolio
                     ->projects
                     ->map(
-                        fn (Project $project): ?InitiativeCategory => $project
+                        fn(Project $project): ?InitiativeCategory => $project
                             ->initiativeCategory
                     )
             )
@@ -82,11 +85,14 @@ class GenericDashboardController extends Controller
             ->unique()
             ->values();
 
+        $itypes = InstitutionType::all();
+
         return [
             'organisation' => $org,
             'regions' => $regions,
             'countries' => $countries,
             'categories' => $categories,
+            'itypes' => $itypes,
         ];
     }
 
@@ -103,6 +109,7 @@ class GenericDashboardController extends Controller
 
         // nullable items are cast to "null" string for inclusion into SQL query
         $portfolioId = $request['portfolio']['id'] ?? 'null';
+        $greaches = $request['greaches'] ? "'" . implode(",", $request['greaches']) . "'" : 'null';
         $regionIds = $request['regions'] ? "'" . collect($request['regions'])->pluck('id')->join(', ') . "'" : 'null';
         $countryIds = $request['countries'] ? "'" . collect($request['countries'])->pluck('id')->join(', ') . "'" : 'null';
         $categoryIds = $request['categories'] ? "'" . collect($request['categories'])->pluck('id')->join(', ') . "'" : 'null';
@@ -110,20 +117,21 @@ class GenericDashboardController extends Controller
         $projectStartTo = $request['endDate'] ?? 'null';
         $budgetFrom = $request['minBudget'] ?? 'null';
         $budgetTo = $request['maxBudget'] ?? 'null';
+        $institutionTypeIds = $request['itypes'] ? "'" . collect($request['itypes'])->pluck('id')->join(', ') . "'" : 'null';
+
 
         // convert budget into EUR for filtering
-        if($budgetFrom !== 'null' || $budgetTo !== 'null') {
+        if ($budgetFrom !== 'null' || $budgetTo !== 'null') {
 
 
-        $orgCurrency = Organisation::find($organisationId)->currency;
-        $exchangeRate = ExchangeRate::where('base_currency_id', $orgCurrency)
-            ->where('target_currency_id', 'EUR')
-            ->orderBy('date', 'desc')
-            ->first(); // get the latest exchange rate
+            $orgCurrency = Organisation::find($organisationId)->currency;
+            $exchangeRate = ExchangeRate::where('base_currency_id', $orgCurrency)
+                ->where('target_currency_id', 'EUR')
+                ->orderBy('date', 'desc')
+                ->first(); // get the latest exchange rate
 
             $budgetFrom = $budgetFrom !== 'null'  ? $budgetFrom * $exchangeRate->rate : 'null';
             $budgetTo = $budgetTo !== 'null' ? $budgetTo * $exchangeRate->rate : 'null';
-
         }
 
         // sort principles by principle number by default
@@ -135,6 +143,7 @@ class GenericDashboardController extends Controller
             {$dashboardOthersId},
             {$organisationId},
             {$portfolioId},
+            {$greaches},
             {$regionIds},
             {$countryIds},
             {$categoryIds},
@@ -142,6 +151,7 @@ class GenericDashboardController extends Controller
             {$projectStartTo},
             {$budgetFrom},
             {$budgetTo},
+            {$institutionTypeIds},
             @status,
             @message,
             @totalCount,
@@ -200,7 +210,7 @@ class GenericDashboardController extends Controller
         }
 
         // prepare principles summary with sorting preference
-        $yoursPrinciplesSummarySorted = collect($yoursPrinciplesSummary)->filter(fn ($summary) => $summary !== null)->toArray();
+        $yoursPrinciplesSummarySorted = collect($yoursPrinciplesSummary)->filter(fn($summary) => $summary !== null)->toArray();
         $othersPrinciplesSummarySorted = [];
 
 
@@ -344,7 +354,7 @@ class GenericDashboardController extends Controller
             $message = 'There is no fully assessed initiative';
         } else {
             // calculate overall score and AE budget if number of fully assess initiative is bigger than zero
-            $assessmentScore = $allAssessmentsYours->sum(fn (Assessment $assessment) => $assessment->overall_score)
+            $assessmentScore = $allAssessmentsYours->sum(fn(Assessment $assessment) => $assessment->overall_score)
                 / $noOfInitiativeCompletedAssessment;
 
             // get the AE-budget for each project
@@ -406,7 +416,7 @@ class GenericDashboardController extends Controller
                     'value' => $value['value'] + $naList[$index]['value']
                 ];
             });
-        }, Principle::all()->map(fn (Principle $principle) => [
+        }, Principle::all()->map(fn(Principle $principle) => [
             'id' => $principle->id,
             'name' => $principle->name,
             'value' => 0

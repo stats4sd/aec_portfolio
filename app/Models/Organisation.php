@@ -33,7 +33,7 @@ class Organisation extends Model
 
     protected $casts = [
         'has_additional_criteria' => 'boolean',
-        'agreement_signed_at' => 'date'
+        'agreement_signed_at' => 'date',
     ];
 
     protected static function booted()
@@ -61,12 +61,37 @@ class Organisation extends Model
                     ->update(['additional_status' => AssessmentStatus::NotStarted->value]);
             }
         });
+
+        // Add model_has_roles records for site admins and site managers when a new institution is created
+        static::created(function ($item) {
+            // add role for all Site Admin users
+            $siteAdmins = DB::select('SELECT DISTINCT model_id, role_id FROM model_has_roles WHERE role_id = 1');
+
+            foreach ($siteAdmins as $siteAdmin) {
+                $insertSql = "INSERT INTO model_has_roles VALUES (1, 'App\\\Models\\\User', " . $siteAdmin->model_id . ", " . $item->id . ")";
+                DB::statement($insertSql);
+            }
+
+            // add role for all Site Manager users
+            $siteManagers = DB::select('SELECT DISTINCT model_id, role_id FROM model_has_roles WHERE role_id = 2');
+
+            foreach ($siteManagers as $siteManager) {
+                $insertSql = "INSERT INTO model_has_roles VALUES (2, 'App\\\Models\\\User', " . $siteManager->model_id . ", " . $item->id . ")";
+                DB::statement($insertSql);
+            }
+        });
     }
 
 
     public function projects(): HasMany
     {
         return $this->hasMany(Project::class)
+            ->withoutGlobalScopes(['organisation']);
+    }
+
+    public function tempProjects(): HasMany
+    {
+        return $this->hasMany(TempProject::class)
             ->withoutGlobalScopes(['organisation']);
     }
 
@@ -181,6 +206,12 @@ class Organisation extends Model
                         'user_id' => $user->id,
                         'organisation_id' => $this->id,
                     ]);
+
+                    // add model_has_roles records, existing user will have a role to this institution immediately
+                    DB::insert(
+                        'insert into model_has_roles (role_id, model_type, model_id, organisation_id) values (?, ?, ?, ?)',
+                        [$roleId, 'App\\Models\\User', $user->id, $this->id]
+                    );
                 }
             }
         }

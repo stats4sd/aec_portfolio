@@ -2,44 +2,39 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Exports\InitiativeImportTemplate\InitiativeImportTemplateExportWorkbook;
-use App\Imports\ProjectWorkbookImport;
-use App\Models\AdditionalCriteria;
-use App\Models\AdditionalCriteriaAssessment;
-use App\Models\AdditionalCriteriaCustomScoreTag;
-use App\Models\FundingSource;
-use App\Models\PrincipleAssessment;
 use App\Models\Region;
 use App\Models\Country;
 use App\Models\Project;
 use App\Models\RedLine;
-use App\Models\AdditionalCriteriaScoreTag;
+use App\Models\ScoreTag;
 use App\Models\Portfolio;
 use App\Models\Principle;
 use App\Models\Assessment;
-use App\Models\ScoreTag;
-use Backpack\CRUD\app\Http\Controllers\Operations\CreateOperation;
-use Backpack\CRUD\app\Http\Controllers\Operations\DeleteOperation;
-use Backpack\CRUD\app\Http\Controllers\Operations\ShowOperation;
-use Backpack\CRUD\app\Http\Controllers\Operations\UpdateOperation;
 use Illuminate\Support\Arr;
-use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use App\Models\Organisation;
+use App\Models\FundingSource;
 use App\Imports\ProjectImport;
 use App\Models\CustomScoreTag;
 use App\Enums\AssessmentStatus;
 use App\Enums\GeographicalReach;
+use App\Models\AdditionalCriteria;
 use App\Models\OrganisationMember;
 use Illuminate\Support\Facades\DB;
-use Maatwebsite\Excel\Concerns\WithCustomStartCell;
 use Prologue\Alerts\Facades\Alert;
+use App\Models\PrincipleAssessment;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Http\Requests\ProjectRequest;
 use Backpack\CRUD\app\Library\Widget;
+use App\Imports\ProjectWorkbookImport;
 use function mysql_xdevapi\getSession;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Validator;
 use phpDocumentor\Reflection\Types\True_;
+use App\Models\AdditionalCriteriaScoreTag;
+use App\Models\AdditionalCriteriaAssessment;
+use App\Models\AdditionalCriteriaCustomScoreTag;
+use Maatwebsite\Excel\Concerns\WithCustomStartCell;
 use Backpack\CRUD\app\Http\Controllers\CrudController;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use App\Http\Controllers\Admin\Operations\AssessOperation;
@@ -47,7 +42,13 @@ use App\Http\Controllers\Admin\Operations\ImportOperation;
 use App\Http\Controllers\Admin\Operations\RedlineOperation;
 use App\Http\Controllers\Admin\Traits\UsesSaveAndNextAction;
 use Backpack\Pro\Http\Controllers\Operations\FetchOperation;
+use Backpack\CRUD\app\Http\Controllers\Operations\ShowOperation;
 use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
+use Backpack\CRUD\app\Http\Controllers\Operations\CreateOperation;
+use Backpack\CRUD\app\Http\Controllers\Operations\DeleteOperation;
+use Backpack\CRUD\app\Http\Controllers\Operations\UpdateOperation;
+use App\Exports\InitiativeImportTemplate\InitiativeImportTemplateExportWorkbook;
+use App\Models\Continent;
 
 class ProjectCrudController extends CrudController
 {
@@ -204,8 +205,8 @@ class ProjectCrudController extends CrudController
             ->title('Initiative Timing');
 
 
-        CRUD::field('start_date')->type('date_picker')->label('Enter the start date for the project.');
-        CRUD::field('end_date')->type('date_picker')->label('Enter the end date for the project.')
+        CRUD::field('start_date')->type('date')->label('Enter the start date for the project.');
+        CRUD::field('end_date')->type('date')->label('Enter the end date for the project.')
             ->hint('This is optional');
 
         CRUD::field('currency-info')
@@ -282,10 +283,17 @@ class ProjectCrudController extends CrudController
             ->default($selectedOrganisation->currency)
             ->hint('Enter the 3-digit code for the currency, e.g. "EUR", or "USD"');
 
+        // change budget field to a hidden field
         CRUD::field('budget')
-            ->wrapper(['class' => 'form-group col-sm-8 required'])
+            ->type('hidden')
+            // ->wrapper(['class' => 'form-group col-sm-8 required'])
             ->hint('Enter the overall budget for the project');
 
+        // use displayBudget to accept budget with thousand separators
+        CRUD::field('displayBudget')
+            ->label('Budget')
+            ->wrapper(['class' => 'form-group col-sm-8 required'])
+            ->hint('Enter the overall budget for the project');
 
         CRUD::field('exchange_rate_title')
             ->type('section-title')
@@ -368,6 +376,7 @@ class ProjectCrudController extends CrudController
             ]);
 
         CRUD::field('main_recipient')
+            ->type('textarea')
             ->label('Please enter the main recipient of the funds for this initiative')
             ->hint('E.g., the institution or entity that directly receives the majority of the funds for this initiative');
 
@@ -387,6 +396,10 @@ class ProjectCrudController extends CrudController
             ->label('Select the continent / continents that this project works in.')
             ->allows_null(true);
 
+        CRUD::field('has_all_regions')->type('checkbox')
+            ->label('Does this project work in all the regions in the chosen continents?')
+            ->hint('If this box is ticked, the project will be assigned to every region from the chosen continents when you save your changes.');
+
         CRUD::field('regions')->type('relationship')
             ->label('Select the regions that this project works in')
             ->hint('Using the UN geo-scheme standard 49 list of regions/sub-regions (more information <a href="https://www.eea.europa.eu/data-and-maps/data/external/un-geoscheme-standard-m49">here</a>)')
@@ -394,6 +407,10 @@ class ProjectCrudController extends CrudController
             ->minimum_input_length(0)
             ->dependencies(['continents'])
             ->allows_null(true);
+
+        CRUD::field('has_all_countries')->type('checkbox')
+            ->label('Does this project work in all the countries in the chosen regions?')
+            ->hint('If this box is ticked, the project will be assigned to every country from the chosen regions when you save your changes.');
 
         CRUD::field('countries')->type('relationship')
             ->label('Select the country / countries that this project works in.')
@@ -409,7 +426,6 @@ class ProjectCrudController extends CrudController
 
         $this->removeAllSaveActions();
         $this->addSaveAndReturnToProjectListAction();
-
     }
 
     protected function setupUpdateOperation()
@@ -418,6 +434,7 @@ class ProjectCrudController extends CrudController
 
         $this->setupCreateOperation();
         CRUD::modifyField('code', ['hint' => '', 'validationRules' => 'required', 'validationMessages' => ['required' => 'The code field is required']]);
+
         $this->crud->setValidation();
     }
 
@@ -482,110 +499,139 @@ class ProjectCrudController extends CrudController
             'principleAssessments.customScoreTags',
             'additionalCriteriaAssessment.scoreTags',
             'additionalCriteriaAssessment.customScoreTags',
-            ])
+        ])
             ->each(function (Assessment $assessment) use ($clone) {
-            $newAssessment = $assessment->replicate();
-            $newAssessment->project_id = $clone->id;
-            $newAssessment->save();
+                $newAssessment = $assessment->replicate();
+                $newAssessment->project_id = $clone->id;
+                $newAssessment->save();
 
 
-            $redlinesWithPivot = $assessment->redlines->mapWithKeys(function (Redline $redline) {
-                return [
-                    $redline->id => ['value' => $redline->pivot->value],
-                ];
-            });
-
-            $newAssessment->redLines()->sync($redlinesWithPivot->toArray());
-
-
-            // iterate through the principleAssessments and create new ones (along with score tags and custom score tags)
-            $assessment->principleAssessments->each(function (PrincipleAssessment $principleAssessment) use ($newAssessment) {
-
-                unset($principleAssessment->id);
-                unset($principleAssessment->assessment_id);
-                unset($principleAssessment->created_at);
-                unset($principleAssessment->updated_at);
-
-                $newPrincipleAssessment = $newAssessment->principleAssessments()->create($principleAssessment->toArray());
-
-                // for each scoreTag linked to the original PrincipleAssessment, also sync it to the new PrincipleAssessment
-                $scoreTagsWithPivot = $principleAssessment->scoreTags->mapWithKeys(function (ScoreTag $scoreTag) use ($newAssessment) {
+                $redlinesWithPivot = $assessment->redlines->mapWithKeys(function (Redline $redline) {
                     return [
-                        $scoreTag->id => [
-                            'assessment_id' => $newAssessment->id,
-                        ],
+                        $redline->id => ['value' => $redline->pivot->value],
                     ];
                 });
 
-                $newPrincipleAssessment->scoreTags()->sync($scoreTagsWithPivot->toArray());
+                $newAssessment->redLines()->sync($redlinesWithPivot->toArray());
 
-                $principleAssessment->customScoreTags->each(function (CustomScoreTag $customScoreTag) use ($newPrincipleAssessment) {
-                    unset($customScoreTag->id);
-                    unset($customScoreTag->principle_assessment_id);
-                    unset($customScoreTag->created_at);
-                    unset($customScoreTag->updated_at);
 
-                    $customScoreTag->assessment_id = $newPrincipleAssessment->assessment_id;
+                // iterate through the principleAssessments and create new ones (along with score tags and custom score tags)
+                $assessment->principleAssessments->each(function (PrincipleAssessment $principleAssessment) use ($newAssessment) {
 
-                    $newPrincipleAssessment->customScoreTags()->create($customScoreTag->toArray());
+                    unset($principleAssessment->id);
+                    unset($principleAssessment->assessment_id);
+                    unset($principleAssessment->created_at);
+                    unset($principleAssessment->updated_at);
+
+                    $newPrincipleAssessment = $newAssessment->principleAssessments()->create($principleAssessment->toArray());
+
+                    // for each scoreTag linked to the original PrincipleAssessment, also sync it to the new PrincipleAssessment
+                    $scoreTagsWithPivot = $principleAssessment->scoreTags->mapWithKeys(function (ScoreTag $scoreTag) use ($newAssessment) {
+                        return [
+                            $scoreTag->id => [
+                                'assessment_id' => $newAssessment->id,
+                            ],
+                        ];
+                    });
+
+                    $newPrincipleAssessment->scoreTags()->sync($scoreTagsWithPivot->toArray());
+
+                    $principleAssessment->customScoreTags->each(function (CustomScoreTag $customScoreTag) use ($newPrincipleAssessment) {
+                        unset($customScoreTag->id);
+                        unset($customScoreTag->principle_assessment_id);
+                        unset($customScoreTag->created_at);
+                        unset($customScoreTag->updated_at);
+
+                        $customScoreTag->assessment_id = $newPrincipleAssessment->assessment_id;
+
+                        $newPrincipleAssessment->customScoreTags()->create($customScoreTag->toArray());
+                    });
                 });
 
+                $assessment->additionalCriteriaAssessment->each(function (AdditionalCriteriaAssessment $additionalCriteriaAssessment) use ($newAssessment) {
+
+                    unset($additionalCriteriaAssessment->id);
+                    unset($additionalCriteriaAssessment->assessment_id);
+                    unset($additionalCriteriaAssessment->created_at);
+                    unset($additionalCriteriaAssessment->updated_at);
+
+                    $newAdditionalCriteriaAssessment = $newAssessment->additionalCriteriaAssessment()->create($additionalCriteriaAssessment->toArray());
+
+                    $scoreTagsWithPivot = $additionalCriteriaAssessment->scoreTags->mapWithKeys(function (AdditionalCriteriaScoreTag $scoreTag) use ($newAssessment) {
+                        return [
+                            $scoreTag->id => [
+                                'assessment_id' => $newAssessment->id,
+                            ],
+                        ];
+                    });
+
+                    $newAdditionalCriteriaAssessment->scoreTags()->sync($scoreTagsWithPivot);
+
+                    $additionalCriteriaAssessment->customScoreTags->each(function (AdditionalCriteriaCustomScoreTag $customScoreTag) use ($newAdditionalCriteriaAssessment) {
+                        unset($customScoreTag->id);
+                        unset($customScoreTag->additional_criteria_assessment_id);
+                        unset($customScoreTag->created_at);
+                        unset($customScoreTag->updated_at);
+
+                        $customScoreTag->assessment_id = $newAdditionalCriteriaAssessment->assessment_id;
+
+                        $newAdditionalCriteriaAssessment->customScoreTags()->create($customScoreTag->toArray());
+                    });
+                });
             });
-
-            $assessment->additionalCriteriaAssessment->each(function (AdditionalCriteriaAssessment $additionalCriteriaAssessment) use ($newAssessment){
-
-                unset($additionalCriteriaAssessment->id);
-                unset($additionalCriteriaAssessment->assessment_id);
-                unset($additionalCriteriaAssessment->created_at);
-                unset($additionalCriteriaAssessment->updated_at);
-
-                $newAdditionalCriteriaAssessment = $newAssessment->additionalCriteriaAssessment()->create($additionalCriteriaAssessment->toArray());
-
-                $scoreTagsWithPivot = $additionalCriteriaAssessment->scoreTags->mapWithKeys(function (AdditionalCriteriaScoreTag $scoreTag) use ($newAssessment) {
-                    return [
-                        $scoreTag->id => [
-                            'assessment_id' => $newAssessment->id,
-                        ],
-                    ];
-                });
-
-                $newAdditionalCriteriaAssessment->scoreTags()->sync($scoreTagsWithPivot);
-
-                $additionalCriteriaAssessment->customScoreTags->each(function (AdditionalCriteriaCustomScoreTag $customScoreTag) use ($newAdditionalCriteriaAssessment) {
-                    unset($customScoreTag->id);
-                    unset($customScoreTag->additional_criteria_assessment_id);
-                    unset($customScoreTag->created_at);
-                    unset($customScoreTag->updated_at);
-
-                    $customScoreTag->assessment_id = $newAdditionalCriteriaAssessment->assessment_id;
-
-                    $newAdditionalCriteriaAssessment->customScoreTags()->create($customScoreTag->toArray());
-                });
-
-            });
-
-
-        });
 
         // as the clone was created without events; save it again to trigger any "on save" events
         $clone->save();
 
         return $clone;
-
     }
 
     public function store()
     {
+        $this->calculateBudget();
+
         $this->calculateBudgetEur();
+
+        $this->handleAllRegionSelection();
+
+        $this->handleAllCountrySelection();
 
         return $this->traitStore();
     }
 
     public function update()
     {
+        $this->calculateBudget();
+
         $this->calculateBudgetEur();
 
+        $this->handleAllRegionSelection();
+
+        $this->handleAllCountrySelection();
+
         return $this->traitUpdate();
+    }
+
+    // convert displayBudget to a number, set it to budget
+    public function calculateBudget()
+    {
+        // get display budget with thousand separator
+        $displayBudget = $this->crud->getRequest()->displayBudget;
+
+        // possible improvement:
+        // when displayBudget lost focus, show error message if it is not a number
+
+        // remove possible thousand separators, e.g. comma, dot
+        $budget = Str::replace(',', '', $displayBudget);
+        $budget = Str::replace('.', '', $budget);
+
+        // check if displayBudget can be converted into a number
+        // to keep it simple, return 0 if it is not a number
+        if (!ctype_digit($budget)) {
+            $budget = 0;
+        }
+
+        $this->crud->getRequest()->request->set('budget', $budget);
     }
 
     public function calculateBudgetEur()
@@ -883,4 +929,52 @@ class ProjectCrudController extends CrudController
         ]);
     }
 
+    private function handleAllRegionSelection()
+    {
+        $hasAllRegions = $this->crud->getRequest()->has_all_regions;
+
+        if ($hasAllRegions) {
+
+            $continents = $this->crud->getRequest()->continents;
+
+            $regions = Region::whereHas('continent', function ($query) use ($continents) {
+                $query->whereIn('continents.id', $continents);
+            })
+                ->get()
+                ->pluck('id')
+                ->toArray();
+
+            $this->crud->getRequest()->request->set('regions', $regions);
+        }
+    }
+
+    private function handleAllCountrySelection()
+    {
+        $hasAllCountries = $this->crud->getRequest()->has_all_countries;
+
+        if ($hasAllCountries) {
+
+            $regions = $this->crud->getRequest()->regions;
+
+            // Error handling for below combination
+            // 1. has_all_regions is false (user does not want to include all regions) AND
+            // 2. regions selection box is empty (user does not choose any region) AND
+            // 3. has_all_countries is true (user want to include all countries from region, but there is no region chosen...)
+            //
+            // It is not possible to find any country from no region...
+            // return null for countries to avoid throwing error, appropriate validation message will be showed in front end
+            $countries = null;
+
+            if ($regions) {
+                $countries = Country::whereHas('region', function ($query) use ($regions) {
+                    $query->whereIn('regions.id', $regions);
+                })
+                    ->get()
+                    ->pluck('id')
+                    ->toArray();
+            }
+
+            $this->crud->getRequest()->request->set('countries', $countries);
+        }
+    }
 }

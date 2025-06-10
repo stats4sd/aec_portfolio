@@ -17,11 +17,27 @@ class TestSeeder extends Seeder
      */
     public function run()
     {
-        $user = User::factory()->create(['name' => 'Site Admin', 'email' => 'site_admin@example.com']);
-        $user->assignRole('Site Admin');
 
-        $user = User::factory()->create(['name' => 'Site Manager', 'email' => 'site_manager@example.com']);
-        $user->assignRole('Site Manager');
+        $institution = Organisation::create([
+            'name' => 'Test Institution 1',
+            'geographic_reach' => GeographicalReach::Global->value,
+            'currency' => 'EUR',
+            'has_additional_criteria' => 0,
+            'description' => 'This is a test organisation',
+        ]);
+
+
+        $admin = User::factory()->create(['name' => 'Site Admin', 'email' => 'site_admin@example.com']);
+        $manager = User::factory()->create(['name' => 'Site Manager', 'email' => 'site_manager@example.com']);
+
+
+        setPermissionsTeamId($institution->id);
+
+        $admin->assignRole('Site Admin');
+        $manager->assignRole('Site Manager');
+
+
+        // Add some test users to the test organisation
 
         $user1 = User::factory()->create(['name' => 'Institutional Admin', 'email' => 'ins_admin@example.com']);
         $user1->assignRole('Institutional Admin');
@@ -31,14 +47,6 @@ class TestSeeder extends Seeder
 
         $user3 = User::factory()->create(['name' => 'Institutional Member', 'email' => 'ins_member@example.com']);
         $user3->assignRole('Institutional Member');
-
-        $institution = Organisation::create([
-            'name' => 'Test Institution 1',
-            'geographic_reach' => GeographicalReach::Global->value,
-            'currency' => 'EUR',
-            'has_additional_criteria' => 0,
-            'description' => 'This is a test organisation',
-        ]);
 
         $portfolio = $institution->portfolios()->create([
             'name' => 'Test Portfolio 1',

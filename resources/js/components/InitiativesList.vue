@@ -36,7 +36,7 @@
 
                 <div class="flex-grow-1 justify-content-end d-flex">
                     <a v-if="showAddButton" href="/admin/project/create" class="btn btn-primary mr-2 ml-auto">Add Initiative</a>
-                    <a v-if="showImportButton" href="/admin/project/import" class="btn btn-success mr-2">Import Initiatives</a>
+                    <a v-if="showImportButton" href="/admin/temp-project/import" class="btn btn-success mr-2">Import Initiatives</a>
                     <a v-if="showExportButton" href="/admin/organisation/export" class="btn btn-info">Export All Initiative Data</a>
                 </div>
             </div>
@@ -87,6 +87,7 @@
 
     <InitiativeListCard
         v-for="initiative in filteredInitiatives"
+        :id="initiative.id"
         :key="initiative.id"
         @remove_initiative="removeInitiative"
         @refresh_initiative="refreshInitiative"
@@ -99,6 +100,7 @@
         :enable-assess-button="enableAssessButton"
         :status-help-text="statusHelpText"
         :score-help-text="scoreHelpText"
+        :expanded-start="expandedProjects[initiative.id]"
     />
 
 </template>
@@ -129,6 +131,7 @@ const props = defineProps({
     enableReassessButton: Boolean,
     enableAssessButton: Boolean,
     settings: Object,
+    expandedProjects: Object,
 });
 
 // Sorting

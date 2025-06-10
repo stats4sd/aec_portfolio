@@ -30,6 +30,8 @@ Project extends Model
     protected $casts = [
         'start_date' => 'date',
         'end_date' => 'date',
+        'has_all_regions' => 'boolean',
+        'has_all_countries' => 'boolean',
     ];
 
     protected static function booted()
@@ -134,8 +136,31 @@ Project extends Model
                     return $this->budget_org * $this->latest_assessment->overall_score / 100;
                 }
                 return 0;
-
             }
+        );
+    }
+
+    // computed field to show budget with thousand separator
+    public function displayBudget(): Attribute
+    {
+        return new Attribute(
+            get: fn() => number_format($this->budget),
+        );
+    }
+
+    // computed field to show budget_eur with thousand separator
+    public function displayBudgetEur(): Attribute
+    {
+        return new Attribute(
+            get: fn() => number_format($this->budget_eur),
+        );
+    }
+
+    // computed field to show budget org with thousand separator
+    public function displayBudgetOrg(): Attribute
+    {
+        return new Attribute(
+            get: fn() => number_format($this->budget_org),
         );
     }
 }

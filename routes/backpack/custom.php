@@ -28,6 +28,7 @@ use App\Http\Controllers\Admin\UserCrudController;
 use App\Http\Controllers\Admin\UserFeedbackCrudController;
 use App\Http\Controllers\Admin\RevisionCrudController;
 use App\Http\Controllers\Admin\CustomScoreTagCrudController;
+use App\Http\Controllers\Admin\TempProjectCrudController;
 use App\Http\Controllers\AssessmentController;
 use App\Http\Controllers\GeneratePdfFileController;
 use App\Http\Controllers\GenericDashboardController;
@@ -50,41 +51,49 @@ Route::group([
 
 ], function () { // custom admin routes
 
-    Route::get('selected_organisation', [SelectedOrganisationController::class, 'create']);
+    Route::get('selected_organisation', [SelectedOrganisationController::class, 'create'])
+        ->middleware(['set_org_for_permissions']);
     Route::post('selected_organisation', [SelectedOrganisationController::class, 'store']);
 
     Route::get('/', [SelectedOrganisationController::class, 'show']);
 
-    Route::crud('organisation-crud', OrganisationCrudController::class);
+
+    // for admin panel routes, find user's role (Site Admin or Site Manager) from any organisation is fine
+    Route::group([
+        'middleware' => ['set_org_for_permissions'],
+    ], function () {
+
+        Route::crud('organisation-crud', OrganisationCrudController::class);
+
+        Route::crud('red-flag', RedLineCrudController::class);
+        Route::crud('principle', PrincipleCrudController::class);
+        Route::crud('score-tag', ScoreTagCrudController::class);
+
+        Route::crud('user', UserCrudController::class);
+        Route::crud('role-invite', RoleInviteCrudController::class);
+
+        Route::crud('country', CountryCrudController::class);
+        Route::crud('continent', ContinentCrudController::class);
+        Route::crud('region', RegionCrudController::class);
 
 
-    Route::crud('red-flag', RedLineCrudController::class);
-    Route::crud('principle', PrincipleCrudController::class);
-    Route::crud('score-tag', ScoreTagCrudController::class);
+        Route::get('organisation-members', [OrganisationMemberController::class, 'show']);
 
-    Route::crud('user', UserCrudController::class);
-    Route::crud('role-invite', RoleInviteCrudController::class);
+        Route::get('organisation/{organisation}/members/create', [OrganisationMemberController::class, 'create'])->name('organisationmembers.create');
+        Route::post('organisation/{organisation}/members', [OrganisationMemberController::class, 'store'])->name('organisationmembers.store');
+        Route::get('organisation/{organisation}/members/{user}/edit', [OrganisationMemberController::class, 'edit'])->name('organisationmembers.edit');
+        Route::put('organisation/{organisation}/members/{user}', [OrganisationMemberController::class, 'update'])->name('organisationmembers.update');
+        Route::delete('organisation/{organisation}/members/{user}', [OrganisationMemberController::class, 'destroy'])->name('organisationmembers.destroy');
 
-    Route::crud('country', CountryCrudController::class);
-    Route::crud('continent', ContinentCrudController::class);
-    Route::crud('region', RegionCrudController::class);
+        Route::get('organisation/export-all', [OrganisationController::class, 'exportAll'])->name('organisation.export-all');
 
+        Route::get('organisation/export-merged', [OrganisationController::class, 'mergeAll']);
+    });
 
-    Route::get('organisation-members', [OrganisationMemberController::class, 'show']);
-
-    Route::get('organisation/{organisation}/members/create', [OrganisationMemberController::class, 'create'])->name('organisationmembers.create');
-    Route::post('organisation/{organisation}/members', [OrganisationMemberController::class, 'store'])->name('organisationmembers.store');
-    Route::get('organisation/{organisation}/members/{user}/edit', [OrganisationMemberController::class, 'edit'])->name('organisationmembers.edit');
-    Route::put('organisation/{organisation}/members/{user}', [OrganisationMemberController::class, 'update'])->name('organisationmembers.update');
-    Route::delete('organisation/{organisation}/members/{user}', [OrganisationMemberController::class, 'destroy'])->name('organisationmembers.destroy');
-
-    Route::get('organisation/export-all', [OrganisationController::class, 'exportAll'])->name('organisation.export-all');
-
-    Route::get('organisation/export-merged', [OrganisationController::class, 'mergeAll']);
 
     // routes that require a selected organisation
     Route::group([
-        'middleware' => ['org.selected'],
+        'middleware' => ['org.selected', 'teams.permission'],
     ], function () {
 
         Route::get('organisation/show', [OrganisationController::class, 'show'])->name('organisation.self.show');
@@ -102,20 +111,31 @@ Route::group([
             return redirect("admin/organisation/show");
         })->name('portfolio.index');
 
-        Route::crud('project', ProjectCrudController::class);
-        Route::get('project', [ProjectController::class, 'index']);
-        Route::post('project/{id}/reassess', [ProjectCrudController::class, 'reAssess']);
-        Route::post('project/{project}/duplicate', [ProjectCrudController::class, 'duplicate']);
+        Route::group(
+            [
+                'middleware' => ['project.set'],
+            ],
+            function () {
+
+                Route::crud('project', ProjectCrudController::class);
+                Route::get('project', [ProjectController::class, 'index']);
+                Route::post('project/{id}/reassess', [ProjectCrudController::class, 'reAssess']);
+                Route::post('project/{project}/duplicate', [ProjectCrudController::class, 'duplicate']);
+
+                Route::crud('assessment', AssessmentCrudController::class);
+                Route::get('assessment/{assessment}/show', [ProjectCrudController::class, 'showAssessment']);
+                Route::get('assessment/{assessment}/assess', [AssessmentController::class, 'assess']);
+                Route::get('assessment/{assessment}/assess-custom', [AssessmentController::class, 'assessCustom']);
+                Route::post('assessment/{assessment}/finalise', [AssessmentController::class, 'finaliseAssessment']);
+
+                Route::post('project/{project}/generate-pdf', [GeneratePdfFileController::class, 'generateInitiativeSummary']);
+                Route::post('assessment/{assessment}/generate-pdf', [GeneratePdfFileController::class, 'generateAssessmentSummary']);
+            }
+        );
 
         Route::post('session/store', [SessionController::class, 'store']);
         Route::post('session/reset', [SessionController::class, 'reset']);
 
-
-        Route::crud('assessment', AssessmentCrudController::class);
-        Route::get('assessment/{assessment}/show', [ProjectCrudController::class, 'showAssessment']);
-        Route::get('assessment/{assessment}/assess', [AssessmentController::class, 'assess']);
-        Route::get('assessment/{assessment}/assess-custom', [AssessmentController::class, 'assessCustom']);
-        Route::post('assessment/{assessment}/finalise', [AssessmentController::class, 'finaliseAssessment']);
 
         Route::post('additional/{assessment}/finalise', [AssessmentController::class, 'finaliseAssessmentCustom']);
 
@@ -143,8 +163,6 @@ Route::group([
         Route::get('data-removal/{removeRequest}/perform', [RemovalRequestCrudController::class, 'perform']);
 
         Route::post('generatePdf', [GeneratePdfFileController::class, 'generatePdfFile']);
-        Route::post('project/{project}/generate-pdf', [GeneratePdfFileController::class, 'generateInitiativeSummary']);
-        Route::post('assessment/{assessment}/generate-pdf', [GeneratePdfFileController::class, 'generateAssessmentSummary']);
 
 
         // download files
@@ -155,11 +173,15 @@ Route::group([
         Route::view('support', 'support');
 
         Route::get('edit-account-info', [MyAccountController::class, 'getAccountInfoForm'])->name('backpack.account.info');
+
+        Route::crud('temp-project', TempProjectCrudController::class);
+        Route::get('temp-project/finalise', [TempProjectCrudController::class, 'finalise']);
+        Route::post('temp-project/discard-import', [TempProjectCrudController::class, 'discardImport'])->name('import.discard');
     });
 
 
     Route::post('edit-account-info', [MyAccountController::class, 'postAccountInfoForm'])->name('backpack.account.info.store');
-    Route::post('change-password', [MyAccountController::class,'postChangePasswordForm'])->name('backpack.account.password');
+    Route::post('change-password', [MyAccountController::class, 'postChangePasswordForm'])->name('backpack.account.password');
     Route::crud('initiative-category', InitiativeCategoryCrudController::class);
     Route::crud('institution-type', InstitutionTypeCrudController::class);
     Route::crud('user-feedback', UserFeedbackCrudController::class);
@@ -171,7 +193,6 @@ Route::group([
     Route::crud('help-text-entry', HelpTextEntryCrudController::class);
     Route::get('help-text-entry/find/{location}', [HelpTextEntryCrudController::class, 'find']);
 });
-
 Route::get('project/{id}/show-as-pdf', [ProjectCrudController::class, 'show'])
     ->middleware('auth.basic')
     ->name('project.show-as-pdf');

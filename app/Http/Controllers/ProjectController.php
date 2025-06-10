@@ -18,14 +18,31 @@ class ProjectController extends Controller
      */
     public function index(Request $request)
     {
+
+        // get project id from session for redirection
+        $projectId = Session::get('projectId');
+
+        // ray('project id: ' . $projectId);
+
+        // redirect if project id existed in session before
+        if ($projectId) {
+
+            // ray('redirecting');
+            Session::put('projectId', '');
+            return redirect(url('admin/project#' . $projectId));
+        }
+
+        $expandedProjects = Session::get('expandProject');
+
+
         // handle portfolio url - override existing session
-        if($request->has('portfolioFilter'))  {
+        if ($request->has('portfolioFilter')) {
             Session::put('portfolioFilter', $request->get('portfolioFilter'));
         }
 
         $projects = Project::with([
             'portfolio' => [
-                'organisation'
+                'organisation',
             ],
             'assessments' => [
                 'principles',
@@ -79,7 +96,6 @@ class ProjectController extends Controller
             if (Auth::user()->can('assess project')) {
                 $enableAssessButton = true;
             }
-
         }
 
         // get settings from session
@@ -89,6 +105,9 @@ class ProjectController extends Controller
         $principleStatusFilterValue = Session::get('principleStatusFilterValue') ?? '';
         $portfolioFilter = Session::get('portfolioFilter') ?? '';
         $searchString = Session::get('searchString') ?? '';
+
+        // get previously editing project id from session
+        $projectId = Session::get('projectId') ?? '';
 
         $settings = [
             'sortBy' => $sortBy,
@@ -102,6 +121,12 @@ class ProjectController extends Controller
         // get help text for cards. We do this manually here so that we don't need to send ajax requests from every card individually.
         $statusHelpText = HelpTextEntry::firstWhere('location', 'Initiatives - statuses');
         $scoreHelpText = HelpTextEntry::firstWhere('location', 'Initiatives - score');
+
+
+        // get TempProjectImport model
+        $user = auth()->user();
+        $selectedOrganisationId = Session::get('selectedOrganisationId');
+        $tempProjectImport = $user->tempProjectImports->where('organisation_id', $selectedOrganisationId)->first();
 
         return view('projects.index', [
             'organisation' => $org,
@@ -118,6 +143,8 @@ class ProjectController extends Controller
             'settings' => $settings,
             'statusHelpText' => $statusHelpText,
             'scoreHelpText' => $scoreHelpText,
+            'expandedProjects' => $expandedProjects != null ? $expandedProjects : '',
+            'tempProjectImport' => $tempProjectImport,
         ]);
     }
 
@@ -162,4 +189,20 @@ class ProjectController extends Controller
         //
     }
 
+    // store project Id into session
+    public function storeProjectIdInSession()
+    {
+        $projectId = request('projectId');
+        $expanded = request('expanded');
+
+        // use for expanding a project
+
+        if ($expanded) {
+            Session::put('expandProject.' . $projectId, $projectId);
+        } else {
+            Session::pull('expandProject.' . $projectId);
+        }
+
+        return Session::get('expandProject');
+    }
 }

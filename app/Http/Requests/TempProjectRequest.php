@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class PortfolioRequest extends FormRequest
+class TempProjectRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,13 +24,7 @@ class PortfolioRequest extends FormRequest
      */
     public function rules()
     {
-        return [
-            'name' => 'required|max:255',
-            'description' => 'nullable',
-            'currency' => 'nullable',
-            'budget' => 'nullable|gte:0|max:18446744073709551615',
-            'displayBudget' => 'nullable',
-        ];
+        return [];
     }
 
     /**
@@ -52,8 +46,6 @@ class PortfolioRequest extends FormRequest
      */
     public function messages()
     {
-        return [
-            //
-        ];
+        return [];
     }
 }
