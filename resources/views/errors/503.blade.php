@@ -5,12 +5,12 @@
 @endphp
 
 @section('title')
-  It's not you, it's me.
+ Updates in progress
 @endsection
 
 @section('description')
   @php
-    $default_error_message = "The server is overloaded or down for maintenance. Please try again later.";
+    $default_error_message = "This site is temporarily offline while we deploy updates and run some maintenance checks. Please try again in a few minutes.";
   @endphp
-  {!! isset($exception)? ($exception->getMessage()?$exception->getMessage():$default_error_message): $default_error_message !!}
+  {!! $default_error_message !!}
 @endsection
