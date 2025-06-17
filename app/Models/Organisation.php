@@ -44,6 +44,12 @@ class Organisation extends Model
                 return;
             }
 
+            // if the logged in user is the default Site Admin user account with ID 1, he is allowed to see all organisations
+            // Note: this is modified for BrowserShot as it uses account support@stats4sd.org for authentication to generate page content for PDF file
+            if (Auth::user()->id == 1) {
+                return;
+            }
+
             if (Auth::user()?->can('view institutions')) {
                 return;
             }
